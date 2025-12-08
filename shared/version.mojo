@@ -1,7 +1,7 @@
 """
 ML Odyssey Version Module
 
-Provides centralized version information for all Mojo modules.
+Provides centralized version information for all Mojo modules
 
 Usage:
     from shared.version import VERSION, get_version
@@ -21,29 +21,29 @@ alias VERSION_PATCH = 0
 
 fn get_version() -> String:
     """
-        Get the version string.
+        Get the version string
 
     Returns:
-            Version string in format "MAJOR.MINOR.PATCH".
+            Version string in format "MAJOR.MINOR.PATCH"
     """
     return VERSION
 
 
 fn get_version_tuple() -> Tuple[Int, Int, Int]:
     """
-        Get the version as a tuple of integers.
+        Get the version as a tuple of integers
 
     Returns:
-            Tuple of (major, minor, patch).
+            Tuple of (major, minor, patch)
     """
     return (VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH)
 
 
 fn version_info() -> String:
     """
-        Get detailed version information.
+        Get detailed version information
 
     Returns:
-            Formatted string with version details.
+            Formatted string with version details
     """
     return "ML Odyssey v" + VERSION + " (Mojo-based AI Research Platform)"

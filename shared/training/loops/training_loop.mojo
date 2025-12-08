@@ -41,21 +41,21 @@ fn training_step(
     data: ExTensor,
     labels: ExTensor,
 ) raises -> Float64:
-    """Execute single training step (forward, backward, update).
+    """Execute single training step (forward, backward, update)
 
-Args:
-        model_forward: Function to compute model forward pass.
-        compute_loss: Function to compute loss.
-        optimizer_step: Function to update weights.
-        zero_gradients: Function to zero gradients.
-        data: Input batch data.
-        labels: Target labels.
+    Args:
+            model_forward: Function to compute model forward pass
+            compute_loss: Function to compute loss
+            optimizer_step: Function to update weights
+            zero_gradients: Function to zero gradients
+            data: Input batch data
+            labels: Target labels
 
-Returns:
-        Loss value for this batch.
+    Returns:
+            Loss value for this batch
 
-Raises:
-        Error if any step fails.
+    Raises:
+            Error if any step fails
     """
     # Zero gradients from previous step
     zero_gradients()
@@ -89,17 +89,17 @@ fn train_one_epoch(
 ) raises:
     """Train for one epoch.
 
-Args:
-        model_forward: Forward pass function.
-        compute_loss: Loss computation function.
-        optimizer_step: Weight update function.
-        zero_gradients: Gradient zeroing function.
-        train_loader: Training data loader.
-        metrics: Training metrics to update.
-        log_interval: Log metrics every N batches.
+    Args:
+            model_forward: Forward pass function
+            compute_loss: Loss computation function
+            optimizer_step: Weight update function
+            zero_gradients: Gradient zeroing function
+            train_loader: Training data loader
+            metrics: Training metrics to update
+            log_interval: Log metrics every N batches
 
-Raises:
-        Error if training fails.
+    Raises:
+            Error if training fails
     """
     var epoch_loss = Float64(0.0)
     var num_batches = 0
@@ -113,7 +113,7 @@ Raises:
 
     # Iterate over batches
     while train_loader.has_next():
-        var batch = train_loader.next().
+        var batch = train_loader.next()
 
         # Training step
         var batch_loss = training_step(
@@ -128,10 +128,10 @@ Raises:
         # Update metrics
         loss_tracker.update(Float32(batch_loss))
         epoch_loss += batch_loss
-        num_batches += 1.
+        num_batches += 1
 
         # Update batch counter in metrics
-        metrics.current_batch = num_batches.
+        metrics.current_batch = num_batches
 
         # Log progress
         if num_batches % log_interval == 0:
@@ -143,7 +143,7 @@ Raises:
                 + String(train_loader.num_batches)
                 + " - Loss: "
                 + String(avg_loss)
-            ).
+            )
 
     # Update epoch metrics
     var epoch_avg_loss = epoch_loss / Float64(num_batches)
@@ -179,7 +179,7 @@ struct TrainingLoop:
             train_images, train_labels, batch_size=128,
             compute_batch_loss=my_batch_fn,
             total_epochs=100, current_epoch=1
-        ).
+        )
     """
 
     var log_interval: Int
@@ -188,65 +188,65 @@ struct TrainingLoop:
 
     fn __init__(
         out self,
-        log_interval: Int = 10,.
-        clip_gradients: Bool = False,.
-        max_grad_norm: Float64 = 1.0,.
+        log_interval: Int = 10,
+        clip_gradients: Bool = False,
+        max_grad_norm: Float64 = 1.0,
     ):
         """Initialize training loop.
 
         Args:
-            log_interval: Log metrics every N batches.
-            clip_gradients: Whether to clip gradients.
-            max_grad_norm: Maximum gradient norm for clipping.
+            log_interval: Log metrics every N batches
+            clip_gradients: Whether to clip gradients
+            max_grad_norm: Maximum gradient norm for clipping
         """
         self.log_interval = log_interval
         self.clip_gradients = clip_gradients
-        self.max_grad_norm = max_grad_norm.
+        self.max_grad_norm = max_grad_norm
 
     fn run_epoch_manual(
         self,
-        train_data: ExTensor,.
-        train_labels: ExTensor,.
-        batch_size: Int,.
-        compute_batch_loss: fn (ExTensor, ExTensor) raises -> Float32,.
-        epoch: Int,.
-        total_epochs: Int,.
+        train_data: ExTensor,
+        train_labels: ExTensor,
+        batch_size: Int,
+        compute_batch_loss: fn (ExTensor, ExTensor) raises -> Float32,
+        epoch: Int,
+        total_epochs: Int,
     ) raises -> Float32:
         """Run one epoch with manual batch processing.
 
         This method consolidates the common training pattern used across
-        all examples (AlexNet, VGG16, LeNet, ResNet).
+        all examples (AlexNet, VGG16, LeNet, ResNet)
 
         Args:
             train_data: Training input data (batch_size dimension first)
             train_labels: Training labels
             batch_size: Mini-batch size
-            compute_batch_loss: Function to process one batch and return loss.
+            compute_batch_loss: Function to process one batch and return loss
                                Signature: fn(batch_data: ExTensor, batch_labels: ExTensor) -> Float32
             epoch: Current epoch number (1-indexed)
             total_epochs: Total number of epochs
 
         Returns:
-            Average loss for the epoch.
+            Average loss for the epoch
 
         Raises:
-            Error if training fails.
+            Error if training fails
         """
         var num_samples = train_data.shape()[0]
         var num_batches = (num_samples + batch_size - 1) // batch_size
-        var total_loss = Float32(0.0).
+        var total_loss = Float32(0.0)
 
-        print("Epoch [", epoch, "/", total_epochs, "]").
+        print("Epoch [", epoch, "/", total_epochs, "]")
 
         for batch_idx in range(num_batches):
             var start_idx = batch_idx * batch_size
             var end_idx = min(start_idx + batch_size, num_samples)
-            var actual_batch_size = end_idx - start_idx.
+            var actual_batch_size = end_idx - start_idx
 
             # Extract batch slice (when slicing fully supported, use that)
             # For now, pass full data - model-specific code handles batching
             var batch_loss = compute_batch_loss(train_data, train_labels)
-            total_loss += batch_loss.
+            total_loss += batch_loss
 
             # Print progress every log_interval batches
             if (batch_idx + 1) % self.log_interval == 0:
@@ -258,7 +258,7 @@ struct TrainingLoop:
                     num_batches,
                     "] - Loss: ",
                     avg_loss,
-                ).
+                )
 
             # TODO: Remove after tensor slicing is optimized
             # break.
@@ -266,29 +266,29 @@ struct TrainingLoop:
         var avg_loss = total_loss / Float32(num_batches)
         print("  Average Loss: ", avg_loss)
 
-        return avg_loss.
+        return avg_loss
 
     fn run_epoch(
         self,
-        model_forward: fn (ExTensor) raises -> ExTensor,.
-        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,.
-        optimizer_step: fn () raises -> None,.
-        zero_gradients: fn () raises -> None,.
+        model_forward: fn (ExTensor) raises -> ExTensor,
+        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,
+        optimizer_step: fn () raises -> None,
+        zero_gradients: fn () raises -> None,
         mut train_loader: DataLoader,
         mut metrics: TrainingMetrics,
     ) raises:
         """Run one training epoch.
 
         Args:
-            model_forward: Forward pass function.
-            compute_loss: Loss computation function.
-            optimizer_step: Weight update function.
-            zero_gradients: Gradient zeroing function.
-            train_loader: Training data loader.
-            metrics: Training metrics to update.
+            model_forward: Forward pass function
+            compute_loss: Loss computation function
+            optimizer_step: Weight update function
+            zero_gradients: Gradient zeroing function
+            train_loader: Training data loader
+            metrics: Training metrics to update
 
         Raises:
-            Error if training fails.
+            Error if training fails
         """
         train_one_epoch(
             model_forward,
@@ -302,37 +302,37 @@ struct TrainingLoop:
 
     fn run(
         self,
-        model_forward: fn (ExTensor) raises -> ExTensor,.
-        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,.
-        optimizer_step: fn () raises -> None,.
-        zero_gradients: fn () raises -> None,.
+        model_forward: fn (ExTensor) raises -> ExTensor,
+        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,
+        optimizer_step: fn () raises -> None,
+        zero_gradients: fn () raises -> None,
         mut train_loader: DataLoader,
-        num_epochs: Int,.
+        num_epochs: Int,
         mut metrics: TrainingMetrics,
     ) raises:
         """Run complete training loop.
 
         Args:
-            model_forward: Forward pass function.
-            compute_loss: Loss computation function.
-            optimizer_step: Weight update function.
-            zero_gradients: Gradient zeroing function.
-            train_loader: Training data loader (mutable for iteration).
-            num_epochs: Number of epochs to train.
-            metrics: Training metrics to update.
+            model_forward: Forward pass function
+            compute_loss: Loss computation function
+            optimizer_step: Weight update function
+            zero_gradients: Gradient zeroing function
+            train_loader: Training data loader (mutable for iteration)
+            num_epochs: Number of epochs to train
+            metrics: Training metrics to update
 
         Raises:
-            Error if training fails.
+            Error if training fails
         """
         print("\nStarting training for " + String(num_epochs) + " epochs...")
-        print("=" * 50).
+        print("=" * 50)
 
         for epoch in range(num_epochs):
             metrics.current_epoch = epoch
-            metrics.reset_epoch().
+            metrics.reset_epoch()
 
             print("\nEpoch " + String(epoch + 1) + "/" + String(num_epochs))
-            print("-" * 50).
+            print("-" * 50)
 
             self.run_epoch(
                 model_forward,
@@ -341,8 +341,8 @@ struct TrainingLoop:
                 zero_gradients,
                 train_loader,
                 metrics,
-            ).
+            )
 
         print("\n" + "=" * 50)
         print("Training complete!")
-        metrics.print_summary().
+        metrics.print_summary()

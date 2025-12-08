@@ -5,7 +5,7 @@ This module provides callback implementations for common training workflows:
 - ModelCheckpoint: Save model checkpoints during training
 - LoggingCallback: Log training metrics at specified intervals
 
-All callbacks implement the Callback trait from base.mojo.
+All callbacks implement the Callback trait from base.mojo
 """
 
 from collections import Dict
@@ -27,19 +27,19 @@ from shared.training.base import (
 struct EarlyStopping(Callback, Copyable, Movable):
     """Stop training when monitored metric stops improving.
 
-    Early stopping monitors a validation metric and stops training when.
-    the metric fails to improve for a specified number of epochs (patience).
+    Early stopping monitors a validation metric and stops training when
+    the metric fails to improve for a specified number of epochs (patience)
 
-    Supports both minimization (e.g., loss) and maximization (e.g., accuracy) modes.
+    Supports both minimization (e.g., loss) and maximization (e.g., accuracy) modes
 
     Attributes:
-        monitor: Name of metric to monitor (e.g., "val_loss", "val_accuracy").
-        patience: Number of epochs with no improvement before stopping.
-        min_delta: Minimum change to qualify as improvement.
-        mode: "min" for minimization (loss), "max" for maximization (accuracy).
-        best_value: Best value seen so far.
-        wait_count: Epochs since last improvement.
-        stopped: Whether training has been stopped.
+        monitor: Name of metric to monitor (e.g., "val_loss", "val_accuracy")
+        patience: Number of epochs with no improvement before stopping
+        min_delta: Minimum change to qualify as improvement
+        mode: "min" for minimization (loss), "max" for maximization (accuracy)
+        best_value: Best value seen so far
+        wait_count: Epochs since last improvement
+        stopped: Whether training has been stopped
 
     Example:
         ```mojo
@@ -71,52 +71,52 @@ struct EarlyStopping(Callback, Copyable, Movable):
 
     fn __init__(
         out self,
-        monitor: String = "val_loss",.
-        patience: Int = 5,.
-        min_delta: Float64 = 0.0,.
-        mode: String = "min",.
+        monitor: String = "val_loss",
+        patience: Int = 5,
+        min_delta: Float64 = 0.0,
+        mode: String = "min",
     ):
         """Initialize early stopping callback.
 
         Args:
-            monitor: Metric to monitor (e.g., "val_loss", "val_accuracy").
-            patience: Epochs to wait before stopping.
-            min_delta: Minimum improvement threshold.
-            mode: "min" for metrics to minimize (loss), "max" for metrics to maximize (accuracy).
+            monitor: Metric to monitor (e.g., "val_loss", "val_accuracy")
+            patience: Epochs to wait before stopping
+            min_delta: Minimum improvement threshold
+            mode: "min" for metrics to minimize (loss), "max" for metrics to maximize (accuracy)
         """
         self.monitor = monitor
         self.patience = patience
         self.min_delta = min_delta
-        self.mode = mode.
+        self.mode = mode
 
         # Initialize best_value based on mode
         if mode == "max":
             self.best_value = Float64(-1e9)
-        else:  # mode == "min" (default).
-            self.best_value = Float64(1e9).
+        else:  # mode == "min" (default)
+            self.best_value = Float64(1e9)
 
         self.wait_count = 0
-        self.stopped = False.
+        self.stopped = False
 
     fn on_train_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """Reset state at training start."""
         # Reset best_value based on mode
         if self.mode == "max":
             self.best_value = Float64(-1e9)
-        else:  # mode == "min" (default).
-            self.best_value = Float64(1e9).
+        else:  # mode == "min" (default)
+            self.best_value = Float64(1e9)
 
         self.wait_count = 0
         self.stopped = False
-        return CallbackSignal(0).
+        return CallbackSignal(0)
 
     fn on_train_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at training end."""
-        return CallbackSignal(0).
+        return CallbackSignal(0)
 
     fn on_epoch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at epoch begin."""
-        return CallbackSignal(0).
+        return CallbackSignal(0)
 
     fn on_epoch_end(
         mut self, mut state: TrainingState
@@ -124,54 +124,54 @@ struct EarlyStopping(Callback, Copyable, Movable):
         """Check for improvement and decide whether to stop.
 
         Args:
-            state: Training state with current metrics.
+            state: Training state with current metrics
 
         Returns:
-            STOP if patience exhausted, CONTINUE otherwise.
+            STOP if patience exhausted, CONTINUE otherwise
         """
         # Check if monitored metric exists
         if self.monitor not in state.metrics:
-            return CallbackSignal(0).
+            return CallbackSignal(0)
 
-        var current_value = state.metrics[self.monitor].
+        var current_value = state.metrics[self.monitor]
 
         # Check for improvement based on mode
         var improved: Bool
         if self.mode == "max":
             # For maximization (e.g., accuracy): current > best
             improved = (current_value - self.best_value) >= self.min_delta
-        else:  # mode == "min" (default).
+        else:  # mode == "min" (default)
             # For minimization (e.g., loss): best > current
-            improved = (self.best_value - current_value) >= self.min_delta.
+            improved = (self.best_value - current_value) >= self.min_delta
 
         if improved:
             self.best_value = current_value
             self.wait_count = 0
         else:
-            self.wait_count += 1.
+            self.wait_count += 1.0
 
         if self.wait_count >= self.patience:
             self.stopped = True
             state.should_stop = True
-            return CallbackSignal(1).
+            return CallbackSignal(1)
 
-        return CallbackSignal(0).
+        return CallbackSignal(0)
 
     fn on_batch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at batch begin."""
-        return CallbackSignal(0).
+        return CallbackSignal(0)
 
     fn on_batch_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at batch end."""
-        return CallbackSignal(0).
+        return CallbackSignal(0)
 
     fn should_stop(self) -> Bool:
         """Check if training should stop.
 
         Returns:
-            True if patience exhausted, False otherwise.
+            True if patience exhausted, False otherwise
         """
-        return self.stopped.
+        return self.stopped
 
 
 # ============================================================================
@@ -183,23 +183,23 @@ struct EarlyStopping(Callback, Copyable, Movable):
 struct ModelCheckpoint(Callback, Copyable, Movable):
     """Save model checkpoints during training.
 
-    Saves the model state at specified intervals or when metrics improve.
-    Can be configured to save every epoch or only when monitored metric improves.
+    Saves the model state at specified intervals or when metrics improve
+    Can be configured to save every epoch or only when monitored metric improves
 
     Error Handling:
-        If checkpoint saving fails, a warning is printed but training continues.
+        If checkpoint saving fails, a warning is printed but training continues
         This prevents training interruption due to I/O failures (e.g., disk full,
-        permission denied). The error message clearly identifies the cause.
+        permission denied). The error message clearly identifies the cause
 
     Attributes:
-        filepath: Path template for saving checkpoints (supports {epoch} placeholder).
-        monitor: Metric to monitor for best model tracking.
-        save_best_only: If True, only save when monitored metric improves.
-        save_frequency: Save every N epochs (ignored if save_best_only=True).
+        filepath: Path template for saving checkpoints (supports {epoch} placeholder)
+        monitor: Metric to monitor for best model tracking
+        save_best_only: If True, only save when monitored metric improves
+        save_frequency: Save every N epochs (ignored if save_best_only=True)
         mode: "min" or "max" for monitored metric.
-        best_value: Best value of monitored metric.
-        save_count: Number of checkpoints saved.
-        error_count: Number of failed checkpoint save attempts.
+        best_value: Best value of monitored metric
+        save_count: Number of checkpoints saved
+        error_count: Number of failed checkpoint save attempts
 
     Example:
         ```mojo
@@ -230,47 +230,47 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
 
     fn __init__(
         out self,
-        filepath: String = "checkpoint.pt",.
-        monitor: String = "val_loss",.
-        save_best_only: Bool = False,.
-        save_frequency: Int = 1,.
-        mode: String = "min",.
+        filepath: String = "checkpoint.pt",
+        monitor: String = "val_loss",
+        save_best_only: Bool = False,
+        save_frequency: Int = 1,
+        mode: String = "min",
     ):
         """Initialize checkpoint callback.
 
         Args:
-            filepath: Path template for saving checkpoints (supports {epoch} placeholder).
-            monitor: Metric to monitor for best model.
-            save_best_only: If True, only save when monitored metric improves.
-            save_frequency: Save every N epochs (ignored if save_best_only=True).
-            mode: "min" for metrics to minimize (loss), "max" for metrics to maximize (accuracy).
+            filepath: Path template for saving checkpoints (supports {epoch} placeholder)
+            monitor: Metric to monitor for best model
+            save_best_only: If True, only save when monitored metric improves
+            save_frequency: Save every N epochs (ignored if save_best_only=True)
+            mode: "min" for metrics to minimize (loss), "max" for metrics to maximize (accuracy)
         """
         self.filepath = filepath
         self.monitor = monitor
         self.save_best_only = save_best_only
         self.save_frequency = save_frequency
-        self.mode = mode.
+        self.mode = mode
 
         # Initialize best_value based on mode
         if mode == "max":
             self.best_value = Float64(-1e9)
-        else:  # mode == "min" (default).
-            self.best_value = Float64(1e9).
+        else:  # mode == "min" (default)
+            self.best_value = Float64(1e9)
 
         self.save_count = 0
-        self.error_count = 0.
+        self.error_count = 0
 
     fn on_train_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at training start."""
-        return CallbackSignal(0).
+        return CallbackSignal(0)
 
     fn on_train_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at training end."""
-        return CallbackSignal(0).
+        return CallbackSignal(0)
 
     fn on_epoch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at epoch begin."""
-        return CallbackSignal(0).
+        return CallbackSignal(0)
 
     fn on_epoch_end(
         mut self, mut state: TrainingState
@@ -281,28 +281,28 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
         - If save_best_only=True: Save only when monitored metric improves
         - Otherwise: Save every save_frequency epochs
 
-        If saving fails, logs a warning but continues training to prevent I/O.
-        errors from interrupting the training process.
+        If saving fails, logs a warning but continues training to prevent I/O
+        errors from interrupting the training process
 
         Args:
-            state: Training state with current epoch number and metrics.
+            state: Training state with current epoch number and metrics
 
         Returns:
-            CONTINUE always (even if checkpoint save fails).
+            CONTINUE always (even if checkpoint save fails)
         """
-        var should_save = False.
+        var should_save = False
 
         if self.save_best_only:
             # Save only if monitored metric improves
             if self.monitor in state.metrics:
-                var current_value = state.metrics[self.monitor].
+                var current_value = state.metrics[self.monitor]
 
                 # Check for improvement based on mode
                 var improved: Bool
                 if self.mode == "max":
                     improved = current_value > self.best_value
                 else:  # mode == "min" (default)
-                    improved = current_value < self.best_value.
+                    improved = current_value < self.best_value
 
                 if improved:
                     self.best_value = current_value
@@ -310,19 +310,19 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
         else:
             # Save at specified frequency
             if state.epoch % self.save_frequency == 0:
-                should_save = True.
+                should_save = True
 
         if should_save:
-            self.save_count += 1.
+            self.save_count += 1.0
 
             # Build checkpoint path from template and epoch number
-            var checkpoint_path = self.filepath.
+            var checkpoint_path = self.filepath
 
             # Replace {epoch} placeholder with current epoch number
             var epoch_str = String(state.epoch)
             if "{epoch}" in checkpoint_path:
                 var parts = checkpoint_path.split("{epoch}")
-                checkpoint_path = parts[0] + epoch_str + parts[1].
+                checkpoint_path = parts[0] + epoch_str + parts[1]
 
             # Log checkpoint save action
             print(
@@ -330,38 +330,38 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
                 checkpoint_path,
                 "at epoch",
                 state.epoch,
-            ).
+            )
 
             # Note: Actual model serialization would happen here when model interface is available.
             # For now, we track the save action. Error handling would be implemented
             # to catch I/O failures (disk full, permission denied, etc.) and continue training.
 
         # Always return CONTINUE to prevent I/O errors from stopping training
-        return CallbackSignal(0).
+        return CallbackSignal(0)
 
     fn on_batch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at batch begin."""
-        return CallbackSignal(0).
+        return CallbackSignal(0)
 
     fn on_batch_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at batch end."""
-        return CallbackSignal(0).
+        return CallbackSignal(0)
 
     fn get_save_count(self) -> Int:
         """Get number of checkpoints saved.
 
         Returns:
-            Number of checkpoints saved so far.
+            Number of checkpoints saved so far
         """
-        return self.save_count.
+        return self.save_count
 
     fn get_error_count(self) -> Int:
         """Get number of checkpoint save errors.
 
         Returns:
-            Number of failed checkpoint save attempts.
+            Number of failed checkpoint save attempts
         """
-        return self.error_count.
+        return self.error_count
 
 
 # ============================================================================
@@ -373,11 +373,11 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
 struct LoggingCallback(Callback, Copyable, Movable):
     """Log training metrics at specified intervals.
 
-    Logs training progress to stdout at regular intervals.
+    Logs training progress to stdout at regular intervals
 
     Attributes:
-        log_interval: Log every N epochs.
-        log_count: Number of times logged.
+        log_interval: Log every N epochs
+        log_count: Number of times logged
 
     Example:
         ```mojo
@@ -392,22 +392,22 @@ struct LoggingCallback(Callback, Copyable, Movable):
         """Initialize logging callback.
 
         Args:
-            log_interval: Log every N epochs.
+            log_interval: Log every N epochs
         """
         self.log_interval = log_interval
-        self.log_count = 0.
+        self.log_count = 0
 
     fn on_train_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """Log training start."""
-        return CallbackSignal(0).
+        return CallbackSignal(0)
 
     fn on_train_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """Log training end."""
-        return CallbackSignal(0).
+        return CallbackSignal(0)
 
     fn on_epoch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at epoch begin."""
-        return CallbackSignal(0).
+        return CallbackSignal(0)
 
     fn on_epoch_end(
         mut self, mut state: TrainingState
@@ -415,38 +415,38 @@ struct LoggingCallback(Callback, Copyable, Movable):
         """Log metrics at end of epoch.
 
         Args:
-            state: Training state with metrics.
+            state: Training state with metrics
 
         Returns:
-            CONTINUE always.
+            CONTINUE always
         """
         if state.epoch % self.log_interval == 0:
-            self.log_count += 1.
+            self.log_count += 1.0
 
             # Log epoch and metrics
             # Format: [Epoch N] metric1: value1 | metric2: value2 | lr: learning_rate
-            var log_msg = "[Epoch " + String(state.epoch + 1) + "]".
+            var log_msg = "[Epoch " + String(state.epoch + 1) + "]"
 
             # Note: Actual metric logging will be implemented when Dict iteration
             # is fully available in Mojo. For now, we track the logging action.
             # The log_count increments correctly to verify logging is happening.
 
-            print(log_msg).
+            print(log_msg)
 
-        return CallbackSignal(0).
+        return CallbackSignal(0)
 
     fn on_batch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at batch begin."""
-        return CallbackSignal(0).
+        return CallbackSignal(0)
 
     fn on_batch_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at batch end."""
-        return CallbackSignal(0).
+        return CallbackSignal(0)
 
     fn get_log_count(self) -> Int:
         """Get number of times logged.
 
         Returns:
-            Number of logging calls made.
+            Number of logging calls made
         """
-        return self.log_count.
+        return self.log_count

@@ -1,7 +1,7 @@
 """
 Mathematical Operations Module.
 
-This module contains low-level mathematical operations optimized for performance.
+This module contains low-level mathematical operations optimized for performance
 All operations leverage Mojo's SIMD capabilities for parallel execution.
 
 Components:

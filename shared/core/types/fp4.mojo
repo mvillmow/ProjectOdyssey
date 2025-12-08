@@ -5,7 +5,7 @@ This module implements the E2M1 format used in blocked FP4 formats (MXFP4, NVFP4
 - 2 exponent bits (bias = 1)
 - 1 mantissa bit
 
-E2M1 is NOT used standalone - it requires a block-level scale factor.
+E2M1 is NOT used standalone - it requires a block-level scale factor
 This module provides the base encoding/decoding for MXFP4 and NVFP4.
 
 Key characteristics:
@@ -46,19 +46,19 @@ from math import isnan, isinf
 struct FP4_E2M1(Copyable, Movable, Representable, Stringable):
     """4-bit floating point number in E2M1 format.
 
-    Memory layout (4 bits stored in UInt8):
-    - Bit 3: Sign bit
-    - Bits 2-1: Exponent (2 bits, bias = 1)
-    - Bit 0: Mantissa (1 bit)
+        Memory layout (4 bits stored in UInt8):
+        - Bit 3: Sign bit
+        - Bits 2-1: Exponent (2 bits, bias = 1)
+        - Bit 0: Mantissa (1 bit)
 
-    Special values:
-    - Zero: exp=0, mantissa=0
-    - Max normal: exp=2, mantissa=1 (value = 6.0 before scaling)
-    - Min normal: exp=1, mantissa=0 (value = 1.0 before scaling)
+        Special values:
+        - Zero: exp=0, mantissa=0
+        - Max normal: exp=2, mantissa=1 (value = 6.0 before scaling)
+        - Min normal: exp=1, mantissa=0 (value = 1.0 before scaling)
 
-Note:
-        E2M1 values are meaningless without a block-level scale factor.
-        Use MXFP4 or NVFP4 for complete block-based representations.
+    Note:
+            E2M1 values are meaningless without a block-level scale factor
+            Use MXFP4 or NVFP4 for complete block-based representations
     """
 
     var value: UInt8  # Only lower 4 bits are used
@@ -67,47 +67,47 @@ Note:
         """Initialize FP4_E2M1 from raw 4-bit value.
 
         Args:
-            value: Raw 4-bit representation (only lower 4 bits used).
+            value: Raw 4-bit representation (only lower 4 bits used)
         """
-        self.value = value & 0xF  # Mask to 4 bits.
+        self.value = value & 0xF  # Mask to 4 bits
 
     @staticmethod
     fn from_float32(x: Float32, scale: Float32 = 1.0) -> Self:
         """Convert Float32 to FP4 E2M1 format with given scale.
 
         Args:
-            x: Float32 value to convert.
-            scale: Block-level scale factor.
+            x: Float32 value to convert
+            scale: Block-level scale factor
 
         Returns:
-            FP4_E2M1 representation.
+            FP4_E2M1 representation
 
         Note:
-            The value is divided by scale before encoding.
-            Values outside representable range are clamped.
+            The value is divided by scale before encoding
+            Values outside representable range are clamped
         """
         # Handle special cases
         if isnan(x):
-            return FP4_E2M1(0b0111)  # Max value as NaN representation.
+            return FP4_E2M1(0b0111)  # Max value as NaN representation
 
         if isinf(x):
             if x > 0:
                 return FP4_E2M1(0b0111)  # Max positive value
             else:
-                return FP4_E2M1(0b1111)  # Max negative value.
+                return FP4_E2M1(0b1111)  # Max negative value
 
         # Scale the input
-        var scaled = x / scale.
+        var scaled = x / scale
 
         if scaled == 0.0:
-            return FP4_E2M1(0)  # +0.
+            return FP4_E2M1(0)  # +0
 
         # Extract sign
         var sign: UInt8 = 0
         var abs_scaled = scaled
         if scaled < 0:
             sign = 1
-            abs_scaled = -scaled.
+            abs_scaled = -scaled
 
         # E2M1 representable values (before scaling):
         # exp=0, mantissa=0: 0
@@ -121,11 +121,11 @@ Note:
         # Clamp to representable range [0, 6.0]
         if abs_scaled >= 6.0:
             # Return max value: sign=s, exp=3, mantissa=1
-            return FP4_E2M1((sign << 3) | 0b111).
+            return FP4_E2M1((sign << 3) | 0b111)
 
         if abs_scaled < 0.5:
             # Return zero (subnormals not well-defined for E2M1)
-            return FP4_E2M1(sign << 3).
+            return FP4_E2M1(sign << 3)
 
         # Find best representation
         # Quantize to nearest representable value
@@ -149,29 +149,29 @@ Note:
             mantissa = 0  # 4.0
         else:
             exp = 3
-            mantissa = 1  # 6.0.
+            mantissa = 1  # 6.0
 
         # Combine: sign(1) | exponent(2) | mantissa(1)
         var bits = (sign << 3) | (exp << 1) | mantissa
-        return FP4_E2M1(bits).
+        return FP4_E2M1(bits)
 
     fn to_float32(self, scale: Float32 = 1.0) -> Float32:
         """Convert FP4 E2M1 to Float32 with given scale.
 
         Args:
-            scale: Block-level scale factor.
+            scale: Block-level scale factor
 
         Returns:
-            Float32 representation of the scaled E2M1 value.
+            Float32 representation of the scaled E2M1 value
         """
         # Extract components (4 bits total)
         var sign = (self.value >> 3) & 0x1
         var exp = (self.value >> 1) & 0x3  # 2 bits
-        var mantissa = self.value & 0x1  # 1 bit.
+        var mantissa = self.value & 0x1  # 1 bit
 
         # Handle zero
         if exp == 0:
-            return Float32(0.0) if sign == 0 else Float32(-0.0).
+            return Float32(0.0) if sign == 0 else Float32(-0.0)
 
         # Compute unscaled value
         # E2M1: value = 2^(exp-1) * (1 + mantissa/2)
@@ -179,7 +179,7 @@ Note:
         var exponent = exp.cast[DType.int32]() - 1
         var base = Float32(1.0) + Float32(
             mantissa.cast[DType.float32]()
-        ) * Float32(0.5).
+        ) * Float32(0.5)
 
         # Compute 2^exponent
         var unscaled = base
@@ -188,28 +188,28 @@ Note:
                 unscaled *= 2.0
         elif exponent < 0:
             for _ in range(-exponent):
-                unscaled /= 2.0.
+                unscaled /= 2.0
 
         # Apply sign and scale
         var result = unscaled * scale
         if sign == 1:
-            result = -result.
+            result = -result
 
-        return result.
+        return result
 
     fn __str__(self) -> String:
-        """String representation showing FP4 value as Float32 (unscaled).
+        """String representation showing FP4 value as Float32 (unscaled)
 
         Returns:
-            String representation.
+            String representation
         """
-        return "FP4_E2M1(" + String(self.to_float32(scale=1.0)) + ")".
+        return "FP4_E2M1(" + String(self.to_float32(scale=1.0)) + ")"
 
     fn __repr__(self) -> String:
         """Detailed representation showing bits and value.
 
         Returns:
-            Detailed string representation.
+            Detailed string representation
         """
         return (
             "FP4_E2M1(bits=0x"
@@ -223,20 +223,20 @@ Note:
         """Check equality by comparing raw bits.
 
         Args:
-            other: Other FP4_E2M1 value.
+            other: Other FP4_E2M1 value
 
         Returns:
-            True if bit patterns match.
+            True if bit patterns match
         """
-        return self.value == other.value.
+        return self.value == other.value
 
     fn __ne__(self, other: Self) -> Bool:
         """Check inequality.
 
         Args:
-            other: Other FP4_E2M1 value.
+            other: Other FP4_E2M1 value
 
         Returns:
-            True if bit patterns differ.
+            True if bit patterns differ
         """
-        return self.value != other.value.
+        return self.value != other.value

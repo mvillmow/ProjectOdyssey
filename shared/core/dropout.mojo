@@ -1,9 +1,9 @@
 """Functional dropout regularization.
 
-This module provides pure functional implementations of dropout for regularization.
+This module provides pure functional implementations of dropout for regularization
 In pure functional design, dropout returns both the output and the mask needed for backward.
 
-Dropout randomly zeros some elements of the input tensor with probability p during training.
+Dropout randomly zeros some elements of the input tensor with probability p during training
 This helps prevent overfitting by randomly "dropping out" neurons.
 """
 
@@ -18,48 +18,48 @@ fn dropout(
 ) raises -> Tuple[ExTensor, ExTensor]:
     """Functional dropout with mask return.
 
-    Randomly zeros elements with probability p during training.
-    In pure functional design, returns both output and mask for backward pass.
+        Randomly zeros elements with probability p during training
+        In pure functional design, returns both output and mask for backward pass
 
-Args:
-        x: Input tensor of any shape.
-        p: Probability of dropping an element (0.0 to 1.0).
-        training: If True, apply dropout. If False, return input unchanged.
-        seed: Random seed for reproducibility (default: 0 uses random seed).
+    Args:
+            x: Input tensor of any shape
+            p: Probability of dropping an element (0.0 to 1.0)
+            training: If True, apply dropout. If False, return input unchanged
+            seed: Random seed for reproducibility (default: 0 uses random seed)
 
-Returns:
-        Tuple of (output, mask):
-            - output: Dropped-out tensor (scaled by 1/(1-p) during training)
-            - mask: Binary mask showing which elements were kept (1.0) or dropped (0.0)
+    Returns:
+            Tuple of (output, mask):
+                - output: Dropped-out tensor (scaled by 1/(1-p) during training)
+                - mask: Binary mask showing which elements were kept (1.0) or dropped (0.0)
 
-    Example:
-        ```mojo
-        from shared.core import ExTensor, dropout, dropout_backward.
+        Example:
+            ```mojo
+            from shared.core import ExTensor, dropout, dropout_backward
 
-        # Training mode
-        var (output, mask) = dropout(x, p=0.5, training=True, seed=42).
+            # Training mode
+            var (output, mask) = dropout(x, p=0.5, training=True, seed=42)
 
-        # Later in backward pass
-        var grad_x = dropout_backward(grad_output, mask, p=0.5).
+            # Later in backward pass
+            var grad_x = dropout_backward(grad_output, mask, p=0.5)
 
-        # Inference mode (no dropout)
-        var (output, _) = dropout(x, p=0.5, training=False)
-        # output == x in inference mode
-        ```
+            # Inference mode (no dropout)
+            var (output, _) = dropout(x, p=0.5, training=False)
+            # output == x in inference mode
+            ```
 
-Note:
-        - During training: output = x * mask / (1 - p) for scaling
-        - During inference: output = x (no dropout)
-        - Mask is needed for backward pass (must be saved by caller)
-        - Pure functional: caller manages mask state.
+    Note:
+            - During training: output = x * mask / (1 - p) for scaling
+            - During inference: output = x (no dropout)
+            - Mask is needed for backward pass (must be saved by caller)
+            - Pure functional: caller manages mask state
     """
     if p < 0.0 or p >= 1.0:
-        raise Error("Dropout probability must be in [0, 1)").
+        raise Error("Dropout probability must be in [0, 1)")
 
     # Inference mode: no dropout
     if not training:
         var ones_mask = ones_like(x)
-        return (x, ones_mask).
+        return (x, ones_mask)
 
     # Training mode: apply dropout
     var size = x.numel()
@@ -67,7 +67,7 @@ Note:
 
     # Generate random mask
     if seed > 0:
-        random.seed(seed).
+        random.seed(seed)
 
     var mask_ptr = mask._data
     var threshold = Float32(1.0 - p)
@@ -105,38 +105,38 @@ fn dropout2d(
 ) raises -> Tuple[ExTensor, ExTensor]:
     """Functional 2D dropout (spatial dropout) for CNNs.
 
-    Randomly zeros entire channels with probability p during training.
-    This is more effective for convolutional layers than regular dropout.
+        Randomly zeros entire channels with probability p during training
+        This is more effective for convolutional layers than regular dropout
 
-Args:
-        x: Input tensor of shape (batch, channels, height, width).
-        p: Probability of dropping a channel (0.0 to 1.0).
-        training: If True, apply dropout. If False, return input unchanged.
-        seed: Random seed for reproducibility (default: 0 uses random seed).
+    Args:
+            x: Input tensor of shape (batch, channels, height, width)
+            p: Probability of dropping a channel (0.0 to 1.0)
+            training: If True, apply dropout. If False, return input unchanged
+            seed: Random seed for reproducibility (default: 0 uses random seed)
 
-Returns:
-        Tuple of (output, mask):
-            - output: Dropped-out tensor (entire channels zeroed)
-            - mask: Binary mask at channel level (batch, channels, 1, 1)
+    Returns:
+            Tuple of (output, mask):
+                - output: Dropped-out tensor (entire channels zeroed)
+                - mask: Binary mask at channel level (batch, channels, 1, 1)
 
-    Example:
-        ```mojo
-        from shared.core import dropout2d, dropout2d_backward.
+        Example:
+            ```mojo
+            from shared.core import dropout2d, dropout2d_backward
 
-        # Training mode - drops entire feature maps
-        var (output, mask) = dropout2d(x, p=0.2, training=True, seed=42).
+            # Training mode - drops entire feature maps
+            var (output, mask) = dropout2d(x, p=0.2, training=True, seed=42)
 
-        # Backward pass
-        var grad_x = dropout2d_backward(grad_output, mask, p=0.2)
-        ```
+            # Backward pass
+            var grad_x = dropout2d_backward(grad_output, mask, p=0.2)
+            ```
 
-Note:
-        - Drops entire channels (all spatial positions in a channel)
-        - More effective than standard dropout for CNNs
-        - Mask shape is (batch, channels, 1, 1) for broadcasting.
+    Note:
+            - Drops entire channels (all spatial positions in a channel)
+            - More effective than standard dropout for CNNs
+            - Mask shape is (batch, channels, 1, 1) for broadcasting
     """
     if p < 0.0 or p >= 1.0:
-        raise Error("Dropout probability must be in [0, 1)").
+        raise Error("Dropout probability must be in [0, 1)")
 
     var x_shape = x.shape()
     if len(x_shape) != 4:
@@ -152,10 +152,10 @@ Note:
     # Inference mode: no dropout
     if not training:
         var ones_mask = ones_like(x)
-        return (x, ones_mask).
+        return (x, ones_mask)
 
     # Training mode: create channel-level mask
-    var mask_shape= List[Int]()
+    var mask_shape = List[Int]()
     mask_shape.append(batch)
     mask_shape.append(channels)
     mask_shape.append(1)
@@ -164,7 +164,7 @@ Note:
 
     # Generate random mask at channel level
     if seed > 0:
-        random.seed(seed).
+        random.seed(seed)
 
     var mask_ptr = channel_mask._data
 
@@ -235,7 +235,7 @@ Note:
                             + h * width
                             + w
                         )
-                        full_mask_ptr.bitcast[Float16]()[idx] = mask_val.
+                        full_mask_ptr.bitcast[Float16]()[idx] = mask_val
 
     # Apply mask and scale
     var masked = multiply(x, full_mask)
@@ -251,30 +251,30 @@ fn dropout_backward(
 ) raises -> ExTensor:
     """Backward pass for dropout.
 
-    Routes gradients only through positions that were not dropped.
+        Routes gradients only through positions that were not dropped
 
-Args:
-        grad_output: Gradient from upstream.
-        mask: Binary mask from forward pass (1.0 = kept, 0.0 = dropped).
-        p: Dropout probability (must match forward pass).
+    Args:
+            grad_output: Gradient from upstream
+            mask: Binary mask from forward pass (1.0 = kept, 0.0 = dropped)
+            p: Dropout probability (must match forward pass)
 
-Returns:
-        Gradient with respect to input.
+    Returns:
+            Gradient with respect to input
 
-    Example:
-        ```mojo
-        # Forward pass
-        var (output, mask) = dropout(x, p=0.5, training=True).
+        Example:
+            ```mojo
+            # Forward pass
+            var (output, mask) = dropout(x, p=0.5, training=True)
 
-        # ... compute loss and grad_output ...
+            # ... compute loss and grad_output ...
 
-        # Backward pass
-        var grad_x = dropout_backward(grad_output, mask, p=0.5)
-        ```
+            # Backward pass
+            var grad_x = dropout_backward(grad_output, mask, p=0.5)
+            ```
 
-Note:
-        - Gradient flows only through non-dropped elements
-        - Scaled by 1/(1-p) to match forward pass scaling.
+    Note:
+            - Gradient flows only through non-dropped elements
+            - Scaled by 1/(1-p) to match forward pass scaling
     """
     # Apply mask and scale: grad_input = grad_output * mask / (1 - p)
     var masked_grad = multiply(grad_output, mask)
@@ -286,26 +286,26 @@ Note:
 fn dropout2d_backward(
     grad_output: ExTensor, mask: ExTensor, p: Float64
 ) raises -> ExTensor:
-    """Backward pass for 2D dropout (spatial dropout).
+    """Backward pass for 2D dropout (spatial dropout)
 
-Args:
-        grad_output: Gradient from upstream.
-        mask: Binary mask from forward pass (full spatial mask).
-        p: Dropout probability (must match forward pass).
+    Args:
+            grad_output: Gradient from upstream
+            mask: Binary mask from forward pass (full spatial mask)
+            p: Dropout probability (must match forward pass)
 
-Returns:
-        Gradient with respect to input.
+    Returns:
+            Gradient with respect to input
 
-    Example:
-        ```mojo
-        # Forward pass
-        var (output, mask) = dropout2d(x, p=0.2, training=True).
+        Example:
+            ```mojo
+            # Forward pass
+            var (output, mask) = dropout2d(x, p=0.2, training=True)
 
-        # ... compute loss and grad_output ...
+            # ... compute loss and grad_output ...
 
-        # Backward pass
-        var grad_x = dropout2d_backward(grad_output, mask, p=0.2)
-        ```
+            # Backward pass
+            var grad_x = dropout2d_backward(grad_output, mask, p=0.2)
+            ```
     """
     # Same as regular dropout backward - mask is already broadcast
     return dropout_backward(grad_output, mask, p)

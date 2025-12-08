@@ -38,7 +38,7 @@ struct PlotData(Copyable, Movable):
         self.ylabel = ""
         self.x_data = List[Float32]()
         self.y_data = List[Float32]()
-        self.label = "".
+        self.label = ""
 
 
 struct PlotSeries(Copyable, Movable):
@@ -54,11 +54,11 @@ struct PlotSeries(Copyable, Movable):
         self.title = ""
         self.xlabel = ""
         self.ylabel = ""
-        self.series_data = List[PlotData]().
+        self.series_data = List[PlotData]()
 
     fn add_series(mut self, var series: PlotData):
         """Add data series to plot."""
-        self.series_data.append(series^).
+        self.series_data.append(series^)
 
 
 struct ConfusionMatrixData(Copyable, Movable):
@@ -76,7 +76,7 @@ struct ConfusionMatrixData(Copyable, Movable):
         self.matrix = List[List[Int]]()
         self.accuracy = 0.0
         self.precision = 0.0
-        self.recall = 0.0.
+        self.recall = 0.0
 
 
 # ============================================================================
@@ -93,33 +93,33 @@ fn plot_training_curves(
 ) -> Bool:
     """Plot training and validation curves.
 
-    Creates a figure with training and validation losses (and optionally
-    accuracies) plotted against epochs. Useful for understanding model
-    convergence and detecting overfitting.
+        Creates a figure with training and validation losses (and optionally
+        accuracies) plotted against epochs. Useful for understanding model
+        convergence and detecting overfitting
 
-Args:
-        train_losses: Training loss per epoch.
-        val_losses: Validation loss per epoch.
-        train_accs: Optional training accuracy per epoch.
-        val_accs: Optional validation accuracy per epoch.
-        save_path: Path to save figure (empty = display only).
+    Args:
+            train_losses: Training loss per epoch
+            val_losses: Validation loss per epoch
+            train_accs: Optional training accuracy per epoch
+            val_accs: Optional validation accuracy per epoch
+            save_path: Path to save figure (empty = display only)
 
-Returns:
-        True if plotting successful, False if error.
+    Returns:
+            True if plotting successful, False if error
 
-    Example:
-        ```mojo
-        var train_losses = List[Float32]()
-        var val_losses = List[Float32]().
+        Example:
+            ```mojo
+            var train_losses = List[Float32]()
+            var val_losses = List[Float32]()
 
-        # Collect losses during training...
-        for epoch in range(num_epochs):
-            var loss = train_epoch(model, data)
-            train_losses.append(loss).
+            # Collect losses during training...
+            for epoch in range(num_epochs):
+                var loss = train_epoch(model, data)
+                train_losses.append(loss)
 
-        # Plot curves
-        plot_training_curves(train_losses, val_losses, save_path="curves.png")
-        ```
+            # Plot curves
+            plot_training_curves(train_losses, val_losses, save_path="curves.png")
+            ```
     """
     # Create JSON structure for plotting data
     var result = String(
@@ -149,7 +149,7 @@ Returns:
             if i > 0:
                 result += ","
             result += String(train_accs[i])
-        result += "]".
+        result += "]"
 
     if len(val_accs) > 0:
         result += ',"val_accs":['
@@ -157,7 +157,7 @@ Returns:
             if i > 0:
                 result += ","
             result += String(val_accs[i])
-        result += "]".
+        result += "]"
 
     result += "}}"
     return True
@@ -168,13 +168,13 @@ fn plot_loss_only(
 ) -> Bool:
     """Plot single loss curve.
 
-Args:
-        losses: Loss per epoch.
-        label: Label for the line.
-        save_path: Path to save figure.
+    Args:
+            losses: Loss per epoch
+            label: Label for the line
+            save_path: Path to save figure
 
-Returns:
-        True if successful.
+    Returns:
+            True if successful
     """
     # Create JSON structure for loss plotting
     var result = String('{"type":"line_chart","title":"')
@@ -195,13 +195,13 @@ fn plot_accuracy_only(
 ) -> Bool:
     """Plot single accuracy curve.
 
-Args:
-        accuracies: Accuracy per epoch.
-        label: Label for the line.
-        save_path: Path to save figure.
+    Args:
+            accuracies: Accuracy per epoch
+            label: Label for the line
+            save_path: Path to save figure
 
-Returns:
-        True if successful.
+    Returns:
+            True if successful
     """
     # Create JSON structure for accuracy plotting
     var result = String('{"type":"line_chart","title":"')
@@ -225,13 +225,13 @@ fn compute_confusion_matrix(
 ) -> List[List[Int]]:
     """Compute confusion matrix from predictions.
 
-Args:
-        y_true: True labels.
-        y_pred: Predicted labels.
-        num_classes: Number of classes (auto-detect if 0).
+    Args:
+            y_true: True labels
+            y_pred: Predicted labels
+            num_classes: Number of classes (auto-detect if 0)
 
-Returns:
-        Confusion matrix (num_classes x num_classes).
+    Returns:
+            Confusion matrix (num_classes x num_classes)
     """
     # Determine number of classes
     var max_class = 0
@@ -240,11 +240,11 @@ Returns:
             max_class = y_true[i]
     for i in range(len(y_pred)):
         if y_pred[i] > max_class:
-            max_class = y_pred[i].
+            max_class = y_pred[i]
 
     var n_classes = max_class + 1
     if num_classes > n_classes:
-        n_classes = num_classes.
+        n_classes = num_classes
 
     # Initialize confusion matrix
     var matrix = List[List[Int]]()
@@ -252,7 +252,7 @@ Returns:
         var row = List[Int]()
         for _ in range(n_classes):
             row.append(0)
-        matrix.append(row^).
+        matrix.append(row^)
 
     # Fill confusion matrix
     for i in range(len(y_true)):
@@ -264,7 +264,7 @@ Returns:
             and pred_label >= 0
             and pred_label < n_classes
         ):
-            matrix[true_label][pred_label] += 1.
+            matrix[true_label][pred_label] += 1.0
 
     return matrix^
 
@@ -278,33 +278,33 @@ fn plot_confusion_matrix(
 ) -> Bool:
     """Plot confusion matrix heatmap.
 
-    Creates a heatmap visualization of the confusion matrix with class names
-    on axes. Optionally normalizes to percentages. Useful for analyzing
-    which classes are most often confused.
+        Creates a heatmap visualization of the confusion matrix with class names
+        on axes. Optionally normalizes to percentages. Useful for analyzing
+        which classes are most often confused
 
-Args:
-        y_true: True labels.
-        y_pred: Predicted labels.
-        class_names: Names of classes (optional).
-        normalize: Normalize to percentages (default: raw counts).
-        save_path: Path to save figure.
+    Args:
+            y_true: True labels
+            y_pred: Predicted labels
+            class_names: Names of classes (optional)
+            normalize: Normalize to percentages (default: raw counts)
+            save_path: Path to save figure
 
-Returns:
-        True if successful.
+    Returns:
+            True if successful
 
-    Example:
-        ```mojo
-        var y_true  = List[Int]()  # True labels
-        var y_pred  = List[Int]()  # Predictions.
+        Example:
+            ```mojo
+            var y_true  = List[Int]()  # True labels
+            var y_pred  = List[Int]()  # Predictions
 
-        # Collect predictions during evaluation...
+            # Collect predictions during evaluation...
 
-        var classes = List[String]()
-        classes.append("cat")
-        classes.append("dog").
+            var classes = List[String]()
+            classes.append("cat")
+            classes.append("dog")
 
-        plot_confusion_matrix(y_true, y_pred, class_names=classes)
-        ```
+            plot_confusion_matrix(y_true, y_pred, class_names=classes)
+            ```
     """
     # Compute confusion matrix
     var matrix = compute_confusion_matrix(y_true, y_pred)
@@ -319,7 +319,7 @@ Returns:
             var row = List[Float32]()
             for j in range(len(matrix[i])):
                 row.append(Float32(matrix[i][j]))
-            normalized.append(row^).
+            normalized.append(row^)
 
     # Create JSON structure for heatmap
     var result = String('{"type":"heatmap","title":"Confusion Matrix","data":{')
@@ -346,7 +346,7 @@ Returns:
             result += '"'
             result += class_names[i]
             result += '"'
-        result += "]".
+        result += "]"
 
     result += "}}"
     return True
@@ -355,11 +355,11 @@ Returns:
 fn normalize_confusion_matrix(matrix: List[List[Int]]) -> List[List[Float32]]:
     """Normalize confusion matrix to percentages.
 
-Args:
-        matrix: Raw confusion matrix.
+    Args:
+            matrix: Raw confusion matrix
 
-Returns:
-        Normalized matrix with values in [0, 1].
+    Returns:
+            Normalized matrix with values in [0, 1]
     """
     # Create normalized matrix
     var normalized = List[List[Float32]]()
@@ -368,7 +368,7 @@ Returns:
         # Compute row sum (total samples for this class)
         var row_sum = 0
         for j in range(len(matrix[i])):
-            row_sum += matrix[i][j].
+            row_sum += matrix[i][j]
 
         # Normalize row by dividing by row sum
         var norm_row = List[Float32]()
@@ -377,7 +377,7 @@ Returns:
                 norm_row.append(Float32(matrix[i][j]) / Float32(row_sum))
             else:
                 norm_row.append(0.0)
-        normalized.append(norm_row^).
+        normalized.append(norm_row^)
 
     return normalized^
 
@@ -387,11 +387,11 @@ fn compute_matrix_metrics(
 ) -> Tuple[Float32, Float32, Float32]:
     """Compute accuracy, precision, recall from confusion matrix.
 
-Args:
-        matrix: Confusion matrix.
+    Args:
+            matrix: Confusion matrix
 
-Returns:
-        Tuple of (accuracy, precision, recall).
+    Returns:
+            Tuple of (accuracy, precision, recall)
     """
     # Compute total samples and correct predictions
     var total = 0
@@ -400,12 +400,12 @@ Returns:
         for j in range(len(matrix[i])):
             total += matrix[i][j]
             if i == j:
-                correct += matrix[i][j].
+                correct += matrix[i][j]
 
     # Compute accuracy
     var accuracy = Float32(0.0)
     if total > 0:
-        accuracy = Float32(correct) / Float32(total).
+        accuracy = Float32(correct) / Float32(total)
 
     # Compute precision and recall (macro-averaged)
     var precision_sum = Float32(0.0)
@@ -418,19 +418,19 @@ Returns:
         var fp = 0
         for k in range(n_classes):
             if k != i:
-                fp += matrix[k][i].
+                fp += matrix[k][i]
 
         if tp + fp > 0:
-            precision_sum += Float32(tp) / Float32(tp + fp).
+            precision_sum += Float32(tp) / Float32(tp + fp)
 
         # Recall for class i: TP / (TP + FN)
         var false_neg = 0
         for k in range(n_classes):
             if k != i:
-                false_neg += matrix[i][k].
+                false_neg += matrix[i][k]
 
         if tp + false_neg > 0:
-            recall_sum += Float32(tp) / Float32(tp + false_neg).
+            recall_sum += Float32(tp) / Float32(tp + false_neg)
 
     var precision = precision_sum / Float32(
         n_classes
@@ -452,30 +452,30 @@ fn visualize_model_architecture(
 ) -> Bool:
     """Visualize neural network architecture as diagram.
 
-    Creates a diagram showing model structure with layer types, shapes,
-    and connections. Useful for documentation and understanding model
-    design.
+        Creates a diagram showing model structure with layer types, shapes,
+        and connections. Useful for documentation and understanding model
+        design
 
-Args:
-        model_name: Name of model.
-        layer_info: List of layer descriptions.
-        save_path: Path to save figure.
+    Args:
+            model_name: Name of model
+            layer_info: List of layer descriptions
+            save_path: Path to save figure
 
-Returns:
-        True if successful.
+    Returns:
+            True if successful
 
-    Example:
-        ```mojo
-        var layers = List[String]()
-        layers.append("Input: (batch, 1, 28, 28)")
-        layers.append("Conv2d: (batch, 32, 28, 28)")
-        layers.append("ReLU: (batch, 32, 28, 28)")
-        layers.append("MaxPool2d: (batch, 32, 14, 14)")
-        layers.append("Flatten: (batch, 6272)")
-        layers.append("Linear: (batch, 10)")
+        Example:
+            ```mojo
+            var layers = List[String]()
+            layers.append("Input: (batch, 1, 28, 28)")
+            layers.append("Conv2d: (batch, 32, 28, 28)")
+            layers.append("ReLU: (batch, 32, 28, 28)")
+            layers.append("MaxPool2d: (batch, 32, 14, 14)")
+            layers.append("Flatten: (batch, 6272)")
+            layers.append("Linear: (batch, 10)")
 
-        visualize_model_architecture("LeNet5", layers)
-        ```
+            visualize_model_architecture("LeNet5", layers)
+            ```
     """
     # Create JSON structure for architecture diagram
     var result = String('{"type":"architecture","model":"')
@@ -498,13 +498,13 @@ fn visualize_tensor_shapes(
 ) -> Bool:
     """Visualize tensor shapes through layers.
 
-Args:
-        input_shape: Input tensor shape.
-        layer_shapes: Shapes at each layer.
-        save_path: Path to save figure.
+    Args:
+            input_shape: Input tensor shape
+            layer_shapes: Shapes at each layer
+            save_path: Path to save figure
 
-Returns:
-        True if successful.
+    Returns:
+            True if successful
     """
     # Create JSON structure for tensor shape progression
     var result = String('{"type":"tensor_shapes","input_shape":[')
@@ -541,16 +541,16 @@ fn visualize_gradient_flow(
 ) -> Bool:
     """Visualize gradient flow through network.
 
-    Creates a plot showing gradient magnitude at each layer, useful for
-    detecting vanishing or exploding gradients.
+        Creates a plot showing gradient magnitude at each layer, useful for
+        detecting vanishing or exploding gradients
 
-Args:
-        gradients: Gradient magnitudes per layer.
-        layer_names: Names of layers (optional).
-        save_path: Path to save figure.
+    Args:
+            gradients: Gradient magnitudes per layer
+            layer_names: Names of layers (optional)
+            save_path: Path to save figure
 
-Returns:
-        True if successful.
+    Returns:
+            True if successful
     """
     # Create JSON structure for gradient flow plot
     var result = String('{"type":"gradient_flow","gradients":[')
@@ -569,7 +569,7 @@ Returns:
             result += '"'
             result += layer_names[i]
             result += '"'
-        result += "]".
+        result += "]"
 
     result += "}"
     return True
@@ -578,11 +578,11 @@ Returns:
 fn detect_gradient_issues(gradients: List[Float32]) -> Tuple[Bool, Bool]:
     """Detect vanishing or exploding gradients.
 
-Args:
-        gradients: Gradient magnitudes per layer.
+    Args:
+            gradients: Gradient magnitudes per layer
 
-Returns:
-        Tuple of (has_vanishing, has_exploding).
+    Returns:
+            Tuple of (has_vanishing, has_exploding)
     """
     # Thresholds for vanishing and exploding gradients
     var vanishing_threshold = Float32(1e-7)
@@ -595,7 +595,7 @@ Returns:
         if gradients[i] < vanishing_threshold:
             has_vanishing = True
         if gradients[i] > exploding_threshold:
-            has_exploding = True.
+            has_exploding = True
 
     return Tuple[Bool, Bool](has_vanishing, has_exploding)
 
@@ -611,28 +611,28 @@ fn show_images(
     nrow: Int = 8,
     save_path: String = "",
 ) -> Bool:
-    """Display grid of images (useful for dataset visualization).
+    """Display grid of images (useful for dataset visualization)
 
-    Creates a grid of images from a batch. Useful for visualizing
-    training data and augmentation effects.
+        Creates a grid of images from a batch. Useful for visualizing
+        training data and augmentation effects
 
-Args:
-        images: Batch of images (as simplified list of strings/paths).
-        labels: Optional labels for each image.
-        nrow: Number of images per row.
-        save_path: Path to save figure.
+    Args:
+            images: Batch of images (as simplified list of strings/paths)
+            labels: Optional labels for each image
+            nrow: Number of images per row
+            save_path: Path to save figure
 
-Returns:
-        True if successful.
+    Returns:
+            True if successful
 
-    Example:
-        ```mojo
-        var image_files = List[String]()
-        var labels = List[String]().
+        Example:
+            ```mojo
+            var image_files = List[String]()
+            var labels = List[String]()
 
-        # Load first batch...
-        show_images(image_files, labels=labels, nrow=8)
-        ```
+            # Load first batch...
+            show_images(image_files, labels=labels, nrow=8)
+            ```
     """
     # Create JSON structure for image grid
     var result = String('{"type":"image_grid","nrow":')
@@ -655,7 +655,7 @@ Returns:
             result += '"'
             result += labels[i]
             result += '"'
-        result += "]".
+        result += "]"
 
     result += "}"
     return True
@@ -669,14 +669,14 @@ fn show_augmented_images(
 ) -> Bool:
     """Show original and augmented versions side by side.
 
-Args:
-        original: Original images.
-        augmented: Augmented versions.
-        nrow: Images per row.
-        save_path: Path to save figure.
+    Args:
+            original: Original images
+            augmented: Augmented versions
+            nrow: Images per row
+            save_path: Path to save figure
 
-Returns:
-        True if successful.
+    Returns:
+            True if successful
     """
     # Create JSON structure for augmentation comparison
     var result = String('{"type":"augmentation_comparison","nrow":')
@@ -711,13 +711,13 @@ fn visualize_feature_maps(
 ) -> Bool:
     """Visualize learned feature maps from a layer.
 
-Args:
-        feature_maps: Feature maps (as simplified strings).
-        layer_name: Name of layer.
-        save_path: Path to save figure.
+    Args:
+            feature_maps: Feature maps (as simplified strings)
+            layer_name: Name of layer
+            save_path: Path to save figure
 
-Returns:
-        True if successful.
+    Returns:
+            True if successful
     """
     # Create JSON structure for feature map visualization
     var result = String('{"type":"feature_maps"')
@@ -744,12 +744,12 @@ Returns:
 fn save_figure(filepath: String, format: String = "png") -> Bool:
     """Save current matplotlib figure to file.
 
-Args:
-        filepath: Output file path.
-        format: Image format (png, jpg, pdf, svg).
+    Args:
+            filepath: Output file path
+            format: Image format (png, jpg, pdf, svg)
 
-Returns:
-        True if successful.
+    Returns:
+            True if successful
     """
     # Create JSON structure for figure saving
     var result = String('{"type":"save_figure","filepath":"')

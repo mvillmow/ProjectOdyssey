@@ -36,44 +36,44 @@ from .extensor import ExTensor
 fn add_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """SIMD-optimized element-wise addition for same-shape tensors.
 
-    Uses vectorized operations when possible, falls back to broadcasting.
-    for different shapes. Achieves 2-8x speedup for large same-shape tensors.
+        Uses vectorized operations when possible, falls back to broadcasting
+        for different shapes. Achieves 2-8x speedup for large same-shape tensors
 
-Args:
-        a: First tensor.
-        b: Second tensor.
+    Args:
+            a: First tensor
+            b: Second tensor
 
-Returns:
-        New tensor containing a + b.
+    Returns:
+            New tensor containing a + b
 
-Raises:
-        Error if dtypes don't match.
+    Raises:
+            Error if dtypes don't match.
 
-    Performance:
-        - Same shape, float32: ~4x speedup
-        - Same shape, float64: ~2x speedup
-        - Different shapes: Falls back to scalar broadcasting
+        Performance:
+            - Same shape, float32: ~4x speedup
+            - Same shape, float64: ~2x speedup
+            - Different shapes: Falls back to scalar broadcasting
 
-Examples:
-        # Same shape - uses SIMD
-        var a = ones([1024, 1024], DType.float32)
-        var b = ones([1024, 1024], DType.float32)
-        var c = add_simd(a, b)  # SIMD accelerated.
+    Examples:
+            # Same shape - uses SIMD
+            var a = ones([1024, 1024], DType.float32)
+            var b = ones([1024, 1024], DType.float32)
+            var c = add_simd(a, b)  # SIMD accelerated
 
-        # Broadcasting - falls back to scalar
-        var x = ones([1, 1024], DType.float32)
-        var y = ones([1024, 1024], DType.float32)
-        var z = add_simd(x, y)  # Scalar broadcasting.
+            # Broadcasting - falls back to scalar
+            var x = ones([1, 1024], DType.float32)
+            var y = ones([1024, 1024], DType.float32)
+            var z = add_simd(x, y)  # Scalar broadcasting
     """
     if a.dtype() != b.dtype():
-        raise Error("Cannot add tensors with different dtypes").
+        raise Error("Cannot add tensors with different dtypes")
 
     # Check if we can use SIMD (same shape, contiguous)
     if a.shape() != b.shape():
         # Fall back to broadcasting
-        from .arithmetic import add.
+        from .arithmetic import add
 
-        return add(a, b).
+        return add(a, b)
 
     var result = ExTensor(a.shape(), a.dtype())
 
@@ -84,9 +84,9 @@ Examples:
         _add_simd_float64(a, b, result)
     else:
         # Fall back to scalar for other dtypes
-        from .arithmetic import add.
+        from .arithmetic import add
 
-        return add(a, b).
+        return add(a, b)
 
     return result^
 
@@ -105,7 +105,7 @@ fn _add_simd_float32(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     fn vectorized_add[width: Int](idx: Int) unified {mut}:
         var a_vec = a_ptr.load[width=width](idx)
         var b_vec = b_ptr.load[width=width](idx)
-        result_ptr.store[width=width](idx, a_vec + b_vec).
+        result_ptr.store[width=width](idx, a_vec + b_vec)
 
     vectorize[simd_width](size, vectorized_add)
 
@@ -124,7 +124,7 @@ fn _add_simd_float64(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     fn vectorized_add[width: Int](idx: Int) unified {mut}:
         var a_vec = a_ptr.load[width=width](idx)
         var b_vec = b_ptr.load[width=width](idx)
-        result_ptr.store[width=width](idx, a_vec + b_vec).
+        result_ptr.store[width=width](idx, a_vec + b_vec)
 
     vectorize[simd_width](size, vectorized_add)
 
@@ -137,23 +137,23 @@ fn _add_simd_float64(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
 fn subtract_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """SIMD-optimized element-wise subtraction for same-shape tensors.
 
-Args:
-        a: First tensor.
-        b: Second tensor.
+    Args:
+            a: First tensor
+            b: Second tensor
 
-Returns:
-        New tensor containing a - b.
+    Returns:
+            New tensor containing a - b
 
-Raises:
-        Error if dtypes don't match.
+    Raises:
+            Error if dtypes don't match.
     """
     if a.dtype() != b.dtype():
-        raise Error("Cannot subtract tensors with different dtypes").
+        raise Error("Cannot subtract tensors with different dtypes")
 
     if a.shape() != b.shape():
-        from .arithmetic import subtract.
+        from .arithmetic import subtract
 
-        return subtract(a, b).
+        return subtract(a, b)
 
     var result = ExTensor(a.shape(), a.dtype())
 
@@ -162,9 +162,9 @@ Raises:
     elif a.dtype() == DType.float64:
         _subtract_simd_float64(a, b, result)
     else:
-        from .arithmetic import subtract.
+        from .arithmetic import subtract
 
-        return subtract(a, b).
+        return subtract(a, b)
 
     return result^
 
@@ -185,7 +185,7 @@ fn _subtract_simd_float32(
     fn vectorized_subtract[width: Int](idx: Int) unified {mut}:
         var a_vec = a_ptr.load[width=width](idx)
         var b_vec = b_ptr.load[width=width](idx)
-        result_ptr.store[width=width](idx, a_vec - b_vec).
+        result_ptr.store[width=width](idx, a_vec - b_vec)
 
     vectorize[simd_width](size, vectorized_subtract)
 
@@ -206,7 +206,7 @@ fn _subtract_simd_float64(
     fn vectorized_subtract[width: Int](idx: Int) unified {mut}:
         var a_vec = a_ptr.load[width=width](idx)
         var b_vec = b_ptr.load[width=width](idx)
-        result_ptr.store[width=width](idx, a_vec - b_vec).
+        result_ptr.store[width=width](idx, a_vec - b_vec)
 
     vectorize[simd_width](size, vectorized_subtract)
 
@@ -219,23 +219,23 @@ fn _subtract_simd_float64(
 fn multiply_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """SIMD-optimized element-wise multiplication for same-shape tensors.
 
-Args:
-        a: First tensor.
-        b: Second tensor.
+    Args:
+            a: First tensor
+            b: Second tensor
 
-Returns:
-        New tensor containing a * b.
+    Returns:
+            New tensor containing a * b
 
-Raises:
-        Error if dtypes don't match.
+    Raises:
+            Error if dtypes don't match.
     """
     if a.dtype() != b.dtype():
-        raise Error("Cannot multiply tensors with different dtypes").
+        raise Error("Cannot multiply tensors with different dtypes")
 
     if a.shape() != b.shape():
-        from .arithmetic import multiply.
+        from .arithmetic import multiply
 
-        return multiply(a, b).
+        return multiply(a, b)
 
     var result = ExTensor(a.shape(), a.dtype())
 
@@ -244,9 +244,9 @@ Raises:
     elif a.dtype() == DType.float64:
         _multiply_simd_float64(a, b, result)
     else:
-        from .arithmetic import multiply.
+        from .arithmetic import multiply
 
-        return multiply(a, b).
+        return multiply(a, b)
 
     return result^
 
@@ -267,7 +267,7 @@ fn _multiply_simd_float32(
     fn vectorized_multiply[width: Int](idx: Int) unified {mut}:
         var a_vec = a_ptr.load[width=width](idx)
         var b_vec = b_ptr.load[width=width](idx)
-        result_ptr.store[width=width](idx, a_vec * b_vec).
+        result_ptr.store[width=width](idx, a_vec * b_vec)
 
     vectorize[simd_width](size, vectorized_multiply)
 
@@ -288,7 +288,7 @@ fn _multiply_simd_float64(
     fn vectorized_multiply[width: Int](idx: Int) unified {mut}:
         var a_vec = a_ptr.load[width=width](idx)
         var b_vec = b_ptr.load[width=width](idx)
-        result_ptr.store[width=width](idx, a_vec * b_vec).
+        result_ptr.store[width=width](idx, a_vec * b_vec)
 
     vectorize[simd_width](size, vectorized_multiply)
 
@@ -301,23 +301,23 @@ fn _multiply_simd_float64(
 fn divide_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """SIMD-optimized element-wise division for same-shape tensors.
 
-Args:
-        a: First tensor (numerator).
-        b: Second tensor (denominator).
+    Args:
+            a: First tensor (numerator)
+            b: Second tensor (denominator)
 
-Returns:
-        New tensor containing a / b.
+    Returns:
+            New tensor containing a / b
 
-Raises:
-        Error if dtypes don't match or division by zero.
+    Raises:
+            Error if dtypes don't match or division by zero.
     """
     if a.dtype() != b.dtype():
-        raise Error("Cannot divide tensors with different dtypes").
+        raise Error("Cannot divide tensors with different dtypes")
 
     if a.shape() != b.shape():
-        from .arithmetic import divide.
+        from .arithmetic import divide
 
-        return divide(a, b).
+        return divide(a, b)
 
     var result = ExTensor(a.shape(), a.dtype())
 
@@ -326,9 +326,9 @@ Raises:
     elif a.dtype() == DType.float64:
         _divide_simd_float64(a, b, result)
     else:
-        from .arithmetic import divide.
+        from .arithmetic import divide
 
-        return divide(a, b).
+        return divide(a, b)
 
     return result^
 
@@ -347,7 +347,7 @@ fn _divide_simd_float32(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     fn vectorized_divide[width: Int](idx: Int) unified {mut}:
         var a_vec = a_ptr.load[width=width](idx)
         var b_vec = b_ptr.load[width=width](idx)
-        result_ptr.store[width=width](idx, a_vec / b_vec).
+        result_ptr.store[width=width](idx, a_vec / b_vec)
 
     vectorize[simd_width](size, vectorized_divide)
 
@@ -366,6 +366,6 @@ fn _divide_simd_float64(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     fn vectorized_divide[width: Int](idx: Int) unified {mut}:
         var a_vec = a_ptr.load[width=width](idx)
         var b_vec = b_ptr.load[width=width](idx)
-        result_ptr.store[width=width](idx, a_vec / b_vec).
+        result_ptr.store[width=width](idx, a_vec / b_vec)
 
     vectorize[simd_width](size, vectorized_divide)

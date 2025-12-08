@@ -33,42 +33,42 @@ fn binary_cross_entropy(
 ) raises -> ExTensor:
     """Binary cross-entropy loss for binary classification.
 
-    Formula:
-        BCE = -[y*log(p) + (1-y)*log(1-p)].
+        Formula:
+            BCE = -[y*log(p) + (1-y)*log(1-p)]
 
-    where:
-        p = predictions (should be in [0, 1] range, typically from sigmoid)
-        y = targets (ground truth labels, 0 or 1).
+        where:
+            p = predictions (should be in [0, 1] range, typically from sigmoid)
+            y = targets (ground truth labels, 0 or 1)
 
-Args:
-        predictions: Predicted probabilities, shape (batch_size,) or (batch_size, 1).
-        targets: Ground truth binary labels (0 or 1), same shape as predictions.
-        epsilon: Small constant for numerical stability (prevents log(0)).
+    Args:
+            predictions: Predicted probabilities, shape (batch_size,) or (batch_size, 1)
+            targets: Ground truth binary labels (0 or 1), same shape as predictions
+            epsilon: Small constant for numerical stability (prevents log(0))
 
-Returns:
-        Loss tensor of same shape as inputs (element-wise loss)
-        Use mean() or sum() to get scalar loss for backpropagation.
+    Returns:
+            Loss tensor of same shape as inputs (element-wise loss)
+            Use mean() or sum() to get scalar loss for backpropagation
 
-Raises:
-        Error if shapes don't match or dtypes are incompatible.
+    Raises:
+            Error if shapes don't match or dtypes are incompatible.
 
-    Example:
-        ```mojo
-        var predictions = sigmoid(logits)  # (batch_size,)
-        var targets = ... # (batch_size,) with values 0 or 1
-        var loss_per_sample = binary_cross_entropy(predictions, targets)
-        var loss = mean(loss_per_sample)  # Scalar loss for backprop
-        ```
+        Example:
+            ```mojo
+            var predictions = sigmoid(logits)  # (batch_size,)
+            var targets = ... # (batch_size,) with values 0 or 1
+            var loss_per_sample = binary_cross_entropy(predictions, targets)
+            var loss = mean(loss_per_sample)  # Scalar loss for backprop
+            ```
 
-    Numerical Stability:
-        - Clips predictions to [epsilon, 1-epsilon] to prevent log(0)
-        - Uses epsilon=1e-7 by default.
+        Numerical Stability:
+            - Clips predictions to [epsilon, 1-epsilon] to prevent log(0)
+            - Uses epsilon=1e-7 by default
     """
     if predictions.dtype() != targets.dtype():
-        raise Error("Predictions and targets must have the same dtype").
+        raise Error("Predictions and targets must have the same dtype")
 
     if predictions.shape() != targets.shape():
-        raise Error("Predictions and targets must have the same shape").
+        raise Error("Predictions and targets must have the same shape")
 
     # Clip predictions to prevent log(0) and log(1)
     var clipped = clip(predictions, epsilon, 1.0 - epsilon)
@@ -100,38 +100,38 @@ fn binary_cross_entropy_backward(
 ) raises -> ExTensor:
     """Backward pass for binary cross-entropy loss.
 
-    Computes gradient of BCE loss with respect to predictions.
+        Computes gradient of BCE loss with respect to predictions
 
-    Formula:
-        ∂BCE/∂p = -y/p + (1-y)/(1-p).
+        Formula:
+            ∂BCE/∂p = -y/p + (1-y)/(1-p)
 
-    Which simplifies to:
-        ∂BCE/∂p = (-y(1-p) + (1-y)p) / (p(1-p))
-        ∂BCE/∂p = (p - y) / (p(1-p)).
+        Which simplifies to:
+            ∂BCE/∂p = (-y(1-p) + (1-y)p) / (p(1-p))
+            ∂BCE/∂p = (p - y) / (p(1-p))
 
-    For numerical stability, we add epsilon to the denominator:
-        ∂BCE/∂p = (p - y) / (p(1-p) + epsilon).
+        For numerical stability, we add epsilon to the denominator:
+            ∂BCE/∂p = (p - y) / (p(1-p) + epsilon)
 
-Args:
-        grad_output: Gradient from upstream (e.g., from mean_backward).
-        predictions: Original predictions passed to forward pass.
-        targets: Original targets passed to forward pass.
-        epsilon: Small constant for numerical stability (default: 1e-7).
+    Args:
+            grad_output: Gradient from upstream (e.g., from mean_backward)
+            predictions: Original predictions passed to forward pass
+            targets: Original targets passed to forward pass
+            epsilon: Small constant for numerical stability (default: 1e-7)
 
-Returns:
-        Gradient with respect to predictions, same shape as predictions.
+    Returns:
+            Gradient with respect to predictions, same shape as predictions
 
-    Example:
-        ```mojo
-         Forward
-        var bce_loss = binary_cross_entropy(predictions, targets)
-        var loss = mean(bce_loss).
+        Example:
+            ```mojo
+             Forward
+            var bce_loss = binary_cross_entropy(predictions, targets)
+            var loss = mean(bce_loss)
 
-        # Backward
-        var grad_loss = ones_like(loss)
-        var grad_bce = mean_backward(grad_loss, bce_loss)
-        var grad_pred = binary_cross_entropy_backward(grad_bce, predictions, targets)
-        ```
+            # Backward
+            var grad_loss = ones_like(loss)
+            var grad_bce = mean_backward(grad_loss, bce_loss)
+            var grad_pred = binary_cross_entropy_backward(grad_bce, predictions, targets)
+            ```
     """
     # Gradient formula: (p - y) / (p(1-p) + epsilon)
     var one = ones_like(predictions)
@@ -164,35 +164,35 @@ fn mean_squared_error(
 ) raises -> ExTensor:
     """Mean squared error loss for regression.
 
-    Formula:
-        MSE = (predictions - targets)^2.
+        Formula:
+            MSE = (predictions - targets)^2
 
-    Returns element-wise squared error. Use mean() to get scalar loss.
+        Returns element-wise squared error. Use mean() to get scalar loss
 
-Args:
-        predictions: Predicted values, any shape.
-        targets: Ground truth values, same shape as predictions.
+    Args:
+            predictions: Predicted values, any shape
+            targets: Ground truth values, same shape as predictions
 
-Returns:
-        Squared error tensor, same shape as inputs.
-        Use mean() or sum() to get scalar loss for backpropagation.
+    Returns:
+            Squared error tensor, same shape as inputs
+            Use mean() or sum() to get scalar loss for backpropagation
 
-Raises:
-        Error if shapes don't match or dtypes are incompatible.
+    Raises:
+            Error if shapes don't match or dtypes are incompatible.
 
-    Example:
-        ```mojo
-        var predictions = model(x)  # (batch_size, output_dim)
-        var targets = y_true        # (batch_size, output_dim)
-        var loss_per_sample = mean_squared_error(predictions, targets)
-        var loss = mean(loss_per_sample)  # Scalar loss
-        ```
+        Example:
+            ```mojo
+            var predictions = model(x)  # (batch_size, output_dim)
+            var targets = y_true        # (batch_size, output_dim)
+            var loss_per_sample = mean_squared_error(predictions, targets)
+            var loss = mean(loss_per_sample)  # Scalar loss
+            ```
     """
     if predictions.dtype() != targets.dtype():
-        raise Error("Predictions and targets must have the same dtype").
+        raise Error("Predictions and targets must have the same dtype")
 
     if predictions.shape() != targets.shape():
-        raise Error("Predictions and targets must have the same shape").
+        raise Error("Predictions and targets must have the same shape")
 
     # MSE = (predictions - targets)^2
     var diff = subtract(predictions, targets)
@@ -204,30 +204,30 @@ fn mean_squared_error_backward(
 ) raises -> ExTensor:
     """Backward pass for mean squared error loss.
 
-    Computes gradient of MSE loss with respect to predictions.
+        Computes gradient of MSE loss with respect to predictions
 
-    Formula:
-        ∂MSE/∂predictions = 2 * (predictions - targets).
+        Formula:
+            ∂MSE/∂predictions = 2 * (predictions - targets)
 
-Args:
-        grad_output: Gradient from upstream (e.g., from mean_backward).
-        predictions: Original predictions passed to forward pass.
-        targets: Original targets passed to forward pass.
+    Args:
+            grad_output: Gradient from upstream (e.g., from mean_backward)
+            predictions: Original predictions passed to forward pass
+            targets: Original targets passed to forward pass
 
-Returns:
-        Gradient with respect to predictions, same shape as predictions.
+    Returns:
+            Gradient with respect to predictions, same shape as predictions
 
-    Example:
-        ```mojo
-         Forward.
-        var squared_error = mean_squared_error(predictions, targets)
-        var loss = mean(squared_error).
+        Example:
+            ```mojo
+             Forward
+            var squared_error = mean_squared_error(predictions, targets)
+            var loss = mean(squared_error)
 
-        # Backward
-        var grad_loss = ones_like(loss)
-        var grad_squared_error = mean_backward(grad_loss, squared_error)
-        var grad_pred = mean_squared_error_backward(grad_squared_error, predictions, targets)
-        ```
+            # Backward
+            var grad_loss = ones_like(loss)
+            var grad_squared_error = mean_backward(grad_loss, squared_error)
+            var grad_pred = mean_squared_error_backward(grad_squared_error, predictions, targets)
+            ```
     """
     # Gradient: 2 * (predictions - targets)
     var diff = subtract(predictions, targets)
@@ -246,45 +246,45 @@ fn cross_entropy(
 ) raises -> ExTensor:
     """Cross-entropy loss for multi-class classification.
 
-    Formula:
-        CE = -sum(targets * log(softmax(logits))).
+        Formula:
+            CE = -sum(targets * log(softmax(logits)))
 
-    This implementation uses the log-sum-exp trick for numerical stability.
+        This implementation uses the log-sum-exp trick for numerical stability
 
-Args:
-        logits: Raw model outputs (before softmax), shape (batch_size, num_classes).
-        targets: One-hot encoded ground truth, same shape as logits.
-        axis: Axis along which to compute softmax (default: -1, last axis).
-        epsilon: Small constant for numerical stability in log operations (default: 1e-7).
+    Args:
+            logits: Raw model outputs (before softmax), shape (batch_size, num_classes)
+            targets: One-hot encoded ground truth, same shape as logits
+            axis: Axis along which to compute softmax (default: -1, last axis)
+            epsilon: Small constant for numerical stability in log operations (default: 1e-7)
 
-Returns:
-        Loss tensor, shape depends on reduction.
-        Use mean() to get scalar loss for backpropagation.
+    Returns:
+            Loss tensor, shape depends on reduction
+            Use mean() to get scalar loss for backpropagation
 
-Raises:
-        Error if shapes don't match or dtypes are incompatible.
+    Raises:
+            Error if shapes don't match or dtypes are incompatible.
 
-    Example:
-        ```mojo
-        var logits = model(x)           # (batch_size, num_classes)
-        var targets_onehot = ...        # (batch_size, num_classes) one-hot
-        var loss_per_sample = cross_entropy(logits, targets_onehot)
-        var loss = mean(loss_per_sample)  # Scalar loss
-        ```
+        Example:
+            ```mojo
+            var logits = model(x)           # (batch_size, num_classes)
+            var targets_onehot = ...        # (batch_size, num_classes) one-hot
+            var loss_per_sample = cross_entropy(logits, targets_onehot)
+            var loss = mean(loss_per_sample)  # Scalar loss
+            ```
 
-Note:
-        For efficiency, this does NOT compute softmax explicitly.
-        Instead, it uses: CE = -sum(targets * (logits - log_sum_exp(logits))).
+    Note:
+            For efficiency, this does NOT compute softmax explicitly
+            Instead, it uses: CE = -sum(targets * (logits - log_sum_exp(logits)))
 
-    Numerical Stability:
-        - Uses log-sum-exp trick to prevent overflow/underflow
-        - Adds epsilon to log argument to prevent log(0).
+        Numerical Stability:
+            - Uses log-sum-exp trick to prevent overflow/underflow
+            - Adds epsilon to log argument to prevent log(0)
     """
     if logits.dtype() != targets.dtype():
-        raise Error("Logits and targets must have the same dtype").
+        raise Error("Logits and targets must have the same dtype")
 
     if logits.shape() != targets.shape():
-        raise Error("Logits and targets must have the same shape").
+        raise Error("Logits and targets must have the same shape")
 
     # Implement cross-entropy with log-sum-exp trick for numerical stability
     # CE = -sum(targets * (logits - log_sum_exp(logits)))
@@ -337,33 +337,33 @@ fn cross_entropy_backward(
 ) raises -> ExTensor:
     """Backward pass for cross-entropy loss.
 
-    For cross-entropy with softmax, the gradient simplifies to:
-        ∂CE/∂logits = softmax(logits) - targets.
+        For cross-entropy with softmax, the gradient simplifies to:
+            ∂CE/∂logits = softmax(logits) - targets
 
-    This beautiful result comes from the chain rule and the properties.
-    of the softmax function.
+        This beautiful result comes from the chain rule and the properties
+        of the softmax function
 
-Args:
-        grad_output: Gradient from upstream (scalar for mean reduction).
-        logits: Original logits passed to forward pass, shape (batch, num_classes).
-        targets: Original one-hot targets, shape (batch, num_classes).
+    Args:
+            grad_output: Gradient from upstream (scalar for mean reduction)
+            logits: Original logits passed to forward pass, shape (batch, num_classes)
+            targets: Original one-hot targets, shape (batch, num_classes)
 
-Returns:
-        Gradient with respect to logits, shape (batch, num_classes).
+    Returns:
+            Gradient with respect to logits, shape (batch, num_classes)
 
-    Example:
-        ```mojo
-        from shared.core import cross_entropy, cross_entropy_backward.
+        Example:
+            ```mojo
+            from shared.core import cross_entropy, cross_entropy_backward
 
-        # Forward pass
-        var loss = cross_entropy(logits, targets)
-        # Backward pass (grad_output is usually 1.0 for scalar loss)
-        var grad_logits = cross_entropy_backward(grad_output, logits, targets)
-        ```
+            # Forward pass
+            var loss = cross_entropy(logits, targets)
+            # Backward pass (grad_output is usually 1.0 for scalar loss)
+            var grad_logits = cross_entropy_backward(grad_output, logits, targets)
+            ```
 
-Note:
-        The gradient is already averaged over the batch if the forward pass.
-        used mean reduction.
+    Note:
+            The gradient is already averaged over the batch if the forward pass
+            used mean reduction
     """
     # Compute softmax probabilities
     var axis = len(logits.shape()) - 1  # Last axis is classes
@@ -391,47 +391,47 @@ fn smooth_l1_loss(
 ) raises -> ExTensor:
     """Smooth L1 loss (Huber loss) for robust regression.
 
-    Formula:
-        If |x| < beta:
-            L = 0.5 * (x)^2 / beta
-        Else:
-            L = |x| - 0.5 * beta.
+        Formula:
+            If |x| < beta:
+                L = 0.5 * (x)^2 / beta
+            Else:
+                L = |x| - 0.5 * beta
 
-        where x = predictions - targets.
+            where x = predictions - targets
 
-    This loss is less sensitive to outliers than MSE, making it more robust
-    for regression tasks with noisy data.
+        This loss is less sensitive to outliers than MSE, making it more robust
+        for regression tasks with noisy data
 
-Args:
-        predictions: Predicted values, any shape.
-        targets: Ground truth values, same shape as predictions.
-        beta: Threshold parameter that controls the transition between L2 and L1.
-                Smaller beta makes the function more similar to L1.
-                Default: 1.0
+    Args:
+            predictions: Predicted values, any shape
+            targets: Ground truth values, same shape as predictions
+            beta: Threshold parameter that controls the transition between L2 and L1
+                    Smaller beta makes the function more similar to L1
+                    Default: 1.0
 
-Returns:
-        Loss tensor, same shape as inputs. Use mean() to get scalar loss.
+    Returns:
+            Loss tensor, same shape as inputs. Use mean() to get scalar loss
 
-Raises:
-        Error if shapes don't match or dtypes are incompatible.
+    Raises:
+            Error if shapes don't match or dtypes are incompatible.
 
-    Example:
-        ```mojo
-        var predictions = model(x)  # (batch_size, output_dim)
-        var targets = y_true        # (batch_size, output_dim)
-        var loss_per_sample = smooth_l1_loss(predictions, targets, beta=1.0)
-        var loss = mean(loss_per_sample)  # Scalar loss for backprop
-        ```
+        Example:
+            ```mojo
+            var predictions = model(x)  # (batch_size, output_dim)
+            var targets = y_true        # (batch_size, output_dim)
+            var loss_per_sample = smooth_l1_loss(predictions, targets, beta=1.0)
+            var loss = mean(loss_per_sample)  # Scalar loss for backprop
+            ```
 
-    Numerical Stability:
-        - Uses absolute value for robust handling of differences
-        - Beta parameter prevents division by zero in gradient.
+        Numerical Stability:
+            - Uses absolute value for robust handling of differences
+            - Beta parameter prevents division by zero in gradient
     """
     if predictions.dtype() != targets.dtype():
-        raise Error("Predictions and targets must have the same dtype").
+        raise Error("Predictions and targets must have the same dtype")
 
     if predictions.shape() != targets.shape():
-        raise Error("Predictions and targets must have the same shape").
+        raise Error("Predictions and targets must have the same shape")
 
     # Compute differences: x = predictions - targets
     var diff = subtract(predictions, targets)
@@ -471,38 +471,38 @@ fn smooth_l1_loss_backward(
     targets: ExTensor,
     beta: Float32 = 1.0,
 ) raises -> ExTensor:
-    """Backward pass for Smooth L1 loss (Huber loss).
+    """Backward pass for Smooth L1 loss (Huber loss)
 
-    Computes gradient of Smooth L1 loss with respect to predictions.
+        Computes gradient of Smooth L1 loss with respect to predictions
 
-    Formula:
-        If |x| < beta:
-            ∂L/∂pred = x / beta
-        Else:
-            ∂L/∂pred = sign(x).
+        Formula:
+            If |x| < beta:
+                ∂L/∂pred = x / beta
+            Else:
+                ∂L/∂pred = sign(x)
 
-        where x = predictions - targets, sign(x) = 1 if x > 0 else -1.
+            where x = predictions - targets, sign(x) = 1 if x > 0 else -1
 
-Args:
-        grad_output: Gradient from upstream (e.g., from mean_backward).
-        predictions: Original predictions passed to forward pass.
-        targets: Original targets passed to forward pass.
-        beta: Threshold parameter (must match forward pass).
+    Args:
+            grad_output: Gradient from upstream (e.g., from mean_backward)
+            predictions: Original predictions passed to forward pass
+            targets: Original targets passed to forward pass
+            beta: Threshold parameter (must match forward pass)
 
-Returns:
-        Gradient with respect to predictions, same shape as predictions.
+    Returns:
+            Gradient with respect to predictions, same shape as predictions
 
-    Example:
-        ```mojo
-         Forward
-        var smoothl1_loss = smooth_l1_loss(predictions, targets, beta=1.0)
-        var loss = mean(smoothl1_loss).
+        Example:
+            ```mojo
+             Forward
+            var smoothl1_loss = smooth_l1_loss(predictions, targets, beta=1.0)
+            var loss = mean(smoothl1_loss)
 
-        # Backward
-        var grad_loss = ones_like(loss)
-        var grad_smoothl1 = mean_backward(grad_loss, smoothl1_loss)
-        var grad_pred = smooth_l1_loss_backward(grad_smoothl1, predictions, targets, beta=1.0)
-        ```
+            # Backward
+            var grad_loss = ones_like(loss)
+            var grad_smoothl1 = mean_backward(grad_loss, smoothl1_loss)
+            var grad_pred = smooth_l1_loss_backward(grad_smoothl1, predictions, targets, beta=1.0)
+            ```
     """
     if grad_output.dtype() != predictions.dtype():
         raise Error(
@@ -554,49 +554,49 @@ Returns:
 
 
 fn hinge_loss(predictions: ExTensor, targets: ExTensor) raises -> ExTensor:
-    """Hinge loss for Support Vector Machines (SVMs).
+    """Hinge loss for Support Vector Machines (SVMs)
 
-    Formula:
-        L = max(0, 1 - y * pred).
+        Formula:
+            L = max(0, 1 - y * pred)
 
-    where:
-        y = targets (must be -1 or 1)
-        pred = predictions (model output).
+        where:
+            y = targets (must be -1 or 1)
+            pred = predictions (model output)
 
-    The hinge loss penalizes predictions that are not confident enough.
-    A prediction is correct when y * pred >= 1 (margin of 1).
+        The hinge loss penalizes predictions that are not confident enough
+        A prediction is correct when y * pred >= 1 (margin of 1)
 
-Args:
-        predictions: Model predictions (real-valued scores).
-        targets: Ground truth labels, must be -1 or 1, same shape as predictions.
+    Args:
+            predictions: Model predictions (real-valued scores)
+            targets: Ground truth labels, must be -1 or 1, same shape as predictions
 
-Returns:
-        Loss tensor, same shape as inputs. Use mean() to get scalar loss.
+    Returns:
+            Loss tensor, same shape as inputs. Use mean() to get scalar loss
 
-Raises:
-        Error if shapes don't match or dtypes are incompatible.
+    Raises:
+            Error if shapes don't match or dtypes are incompatible.
 
-    Example:
-        ```mojo
-        var predictions = model(x)  # (batch_size,) or (batch_size, 1)
-        var targets = y_true        # (batch_size,) with values -1 or 1
-        var loss_per_sample = hinge_loss(predictions, targets)
-        var loss = mean(loss_per_sample)  # Scalar loss for backprop
-        ```
+        Example:
+            ```mojo
+            var predictions = model(x)  # (batch_size,) or (batch_size, 1)
+            var targets = y_true        # (batch_size,) with values -1 or 1
+            var loss_per_sample = hinge_loss(predictions, targets)
+            var loss = mean(loss_per_sample)  # Scalar loss for backprop
+            ```
 
-Note:
-        Hinge loss is typically used with hard labels (-1 or 1) rather than
-        probabilities. For multi-class SVM, use with one-vs-rest strategy.
+    Note:
+            Hinge loss is typically used with hard labels (-1 or 1) rather than
+            probabilities. For multi-class SVM, use with one-vs-rest strategy
 
-    Numerical Stability:
-        - Uses max(0, ...) to prevent negative losses
-        - Avoids numerical issues with extreme values.
+        Numerical Stability:
+            - Uses max(0, ...) to prevent negative losses
+            - Avoids numerical issues with extreme values
     """
     if predictions.dtype() != targets.dtype():
-        raise Error("Predictions and targets must have the same dtype").
+        raise Error("Predictions and targets must have the same dtype")
 
     if predictions.shape() != targets.shape():
-        raise Error("Predictions and targets must have the same shape").
+        raise Error("Predictions and targets must have the same shape")
 
     # Compute y * pred
     var y_pred = multiply(targets, predictions)
@@ -620,35 +620,35 @@ fn hinge_loss_backward(
 ) raises -> ExTensor:
     """Backward pass for hinge loss.
 
-    Computes gradient of hinge loss with respect to predictions.
+        Computes gradient of hinge loss with respect to predictions
 
-    Formula:
-        If y * pred < 1 (margin violated):
-            ∂L/∂pred = -y
-        Else (margin satisfied):
-            ∂L/∂pred = 0.
+        Formula:
+            If y * pred < 1 (margin violated):
+                ∂L/∂pred = -y
+            Else (margin satisfied):
+                ∂L/∂pred = 0
 
-    where y = targets, pred = predictions
+        where y = targets, pred = predictions
 
-Args:
-        grad_output: Gradient from upstream (e.g., from mean_backward).
-        predictions: Original predictions passed to forward pass.
-        targets: Original targets passed to forward pass (-1 or 1).
+    Args:
+            grad_output: Gradient from upstream (e.g., from mean_backward)
+            predictions: Original predictions passed to forward pass
+            targets: Original targets passed to forward pass (-1 or 1)
 
-Returns:
-        Gradient with respect to predictions, same shape as predictions.
+    Returns:
+            Gradient with respect to predictions, same shape as predictions
 
-    Example:
-        ```mojo
-         Forward
-        var hinge = hinge_loss(predictions, targets)
-        var loss = mean(hinge).
+        Example:
+            ```mojo
+             Forward
+            var hinge = hinge_loss(predictions, targets)
+            var loss = mean(hinge)
 
-        # Backward
-        var grad_loss = ones_like(loss)
-        var grad_hinge = mean_backward(grad_loss, hinge)
-        var grad_pred = hinge_loss_backward(grad_hinge, predictions, targets)
-        ```
+            # Backward
+            var grad_loss = ones_like(loss)
+            var grad_hinge = mean_backward(grad_loss, hinge)
+            var grad_pred = hinge_loss_backward(grad_hinge, predictions, targets)
+            ```
     """
     if grad_output.dtype() != predictions.dtype():
         raise Error(
@@ -690,49 +690,49 @@ fn focal_loss(
 ) raises -> ExTensor:
     """Focal loss for addressing class imbalance in classification.
 
-    Formula:
-        FL = -alpha * (1 - p)^gamma * target * log(p) - (1 - alpha) * p^gamma * (1 - target) * log(1 - p).
+        Formula:
+            FL = -alpha * (1 - p)^gamma * target * log(p) - (1 - alpha) * p^gamma * (1 - target) * log(1 - p)
 
-    where:
-        p = predictions (probabilities, should be in [0, 1] range)
-        target = ground truth labels (0 or 1)
-        alpha = weighting factor (default: 0.25)
-        gamma = focusing parameter (default: 2.0)
+        where:
+            p = predictions (probabilities, should be in [0, 1] range)
+            target = ground truth labels (0 or 1)
+            alpha = weighting factor (default: 0.25)
+            gamma = focusing parameter (default: 2.0)
 
-    The focal loss applies a modulating term (1 - p)^gamma to the cross entropy loss.
-    This down-weights easy examples and focuses training on hard examples.
-    It is particularly useful for addressing class imbalance.
+        The focal loss applies a modulating term (1 - p)^gamma to the cross entropy loss
+        This down-weights easy examples and focuses training on hard examples
+        It is particularly useful for addressing class imbalance
 
-Args:
-        predictions: Predicted probabilities, shape (batch_size,) or (batch_size, 1).
-        targets: Ground truth binary labels (0 or 1), same shape as predictions.
-        alpha: Weighting factor for class 1 (default: 0.25).
-        gamma: Focusing parameter (default: 2.0).
+    Args:
+            predictions: Predicted probabilities, shape (batch_size,) or (batch_size, 1)
+            targets: Ground truth binary labels (0 or 1), same shape as predictions
+            alpha: Weighting factor for class 1 (default: 0.25)
+            gamma: Focusing parameter (default: 2.0)
 
-Returns:
-        Loss tensor of same shape as inputs (element-wise loss)
-        Use mean() to get scalar loss for backpropagation.
+    Returns:
+            Loss tensor of same shape as inputs (element-wise loss)
+            Use mean() to get scalar loss for backpropagation
 
-Raises:
-        Error if shapes don't match or dtypes are incompatible.
+    Raises:
+            Error if shapes don't match or dtypes are incompatible.
 
-    Example:
-        ```mojo
-        var predictions = sigmoid(logits)  # (batch_size,)
-        var targets = ...  # (batch_size,) with values 0 or 1
-        var loss_per_sample = focal_loss(predictions, targets)
-        var loss = mean(loss_per_sample)  # Scalar loss
-        ```
+        Example:
+            ```mojo
+            var predictions = sigmoid(logits)  # (batch_size,)
+            var targets = ...  # (batch_size,) with values 0 or 1
+            var loss_per_sample = focal_loss(predictions, targets)
+            var loss = mean(loss_per_sample)  # Scalar loss
+            ```
 
-    Numerical Stability:
-        - Clips predictions to [epsilon, 1-epsilon] to prevent log(0)
-        - Uses epsilon=1e-7 by default.
+        Numerical Stability:
+            - Clips predictions to [epsilon, 1-epsilon] to prevent log(0)
+            - Uses epsilon=1e-7 by default
     """
     if predictions.dtype() != targets.dtype():
-        raise Error("Predictions and targets must have the same dtype").
+        raise Error("Predictions and targets must have the same dtype")
 
     if predictions.shape() != targets.shape():
-        raise Error("Predictions and targets must have the same shape").
+        raise Error("Predictions and targets must have the same shape")
 
     var epsilon = 1e-7
 
@@ -785,35 +785,35 @@ fn focal_loss_backward(
 ) raises -> ExTensor:
     """Backward pass for focal loss.
 
-    Computes gradient of focal loss with respect to predictions.
+        Computes gradient of focal loss with respect to predictions
 
-    The gradient formula for focal loss is:
-        dFL/dp = alpha * gamma * (1-p)^(gamma-1) * target * log(p)
-                 - alpha * (1-p)^gamma * target / p
-                 - (1-alpha) * gamma * p^(gamma-1) * (1-target) * log(1-p)
-                 + (1-alpha) * p^gamma * (1-target) / (1-p).
+        The gradient formula for focal loss is:
+            dFL/dp = alpha * gamma * (1-p)^(gamma-1) * target * log(p)
+                     - alpha * (1-p)^gamma * target / p
+                     - (1-alpha) * gamma * p^(gamma-1) * (1-target) * log(1-p)
+                     + (1-alpha) * p^gamma * (1-target) / (1-p)
 
-Args:
-        grad_output: Gradient from upstream (e.g., from mean_backward).
-        predictions: Original predictions passed to forward pass.
-        targets: Original targets passed to forward pass.
-        alpha: Weighting factor (default: 0.25).
-        gamma: Focusing parameter (default: 2.0).
+    Args:
+            grad_output: Gradient from upstream (e.g., from mean_backward)
+            predictions: Original predictions passed to forward pass
+            targets: Original targets passed to forward pass
+            alpha: Weighting factor (default: 0.25)
+            gamma: Focusing parameter (default: 2.0)
 
-Returns:
-        Gradient with respect to predictions, same shape as predictions.
+    Returns:
+            Gradient with respect to predictions, same shape as predictions
 
-    Example:
-        ```mojo
-         Forward
-        var focal = focal_loss(predictions, targets, alpha, gamma)
-        var loss = mean(focal).
+        Example:
+            ```mojo
+             Forward
+            var focal = focal_loss(predictions, targets, alpha, gamma)
+            var loss = mean(focal)
 
-        # Backward
-        var grad_loss = ones_like(loss)
-        var grad_focal = mean_backward(grad_loss, focal)
-        var grad_pred = focal_loss_backward(grad_focal, predictions, targets, alpha, gamma)
-        ```
+            # Backward
+            var grad_loss = ones_like(loss)
+            var grad_focal = mean_backward(grad_loss, focal)
+            var grad_pred = focal_loss_backward(grad_focal, predictions, targets, alpha, gamma)
+            ```
     """
     var epsilon = 1e-7
 
@@ -894,50 +894,50 @@ fn kl_divergence(
 ) raises -> ExTensor:
     """Kullback-Leibler divergence loss for distribution matching.
 
-    Formula:
-        KL(p||q) = p * log(p / q) = p * (log(p) - log(q)).
+        Formula:
+            KL(p||q) = p * log(p / q) = p * (log(p) - log(q))
 
-    where:
-        p = reference distribution (target)
-        q = approximating distribution (predicted).
+        where:
+            p = reference distribution (target)
+            q = approximating distribution (predicted)
 
-    KL divergence measures how much one probability distribution differs from another.
-    It is always non-negative and is zero only when p == q almost everywhere.
+        KL divergence measures how much one probability distribution differs from another
+        It is always non-negative and is zero only when p == q almost everywhere
 
-Args:
-        p: Reference distribution (target), should sum to 1 along class axis.
-        q: Approximating distribution (predicted), should sum to 1 along class axis.
-        epsilon: Small constant for numerical stability (default: 1e-7).
+    Args:
+            p: Reference distribution (target), should sum to 1 along class axis
+            q: Approximating distribution (predicted), should sum to 1 along class axis
+            epsilon: Small constant for numerical stability (default: 1e-7)
 
-Returns:
-        Element-wise KL divergence contribution, same shape as inputs
-        Use sum() or mean() to get scalar loss for backpropagation.
+    Returns:
+            Element-wise KL divergence contribution, same shape as inputs
+            Use sum() or mean() to get scalar loss for backpropagation
 
-Raises:
-        Error if shapes don't match or dtypes are incompatible.
+    Raises:
+            Error if shapes don't match or dtypes are incompatible.
 
-    Example:
-        ```mojo
-        var p_dist = softmax(targets_logits, axis=1)  # (batch_size, num_classes)
-        var q_dist = softmax(predictions_logits, axis=1)  # (batch_size, num_classes)
-        var kl_per_element = kl_divergence(p_dist, q_dist)  # (batch_size, num_classes)
-        var loss_per_sample = sum(kl_per_element, axis=1)  # (batch_size,)
-        var loss = mean(loss_per_sample)  # Scalar loss
-        ```
+        Example:
+            ```mojo
+            var p_dist = softmax(targets_logits, axis=1)  # (batch_size, num_classes)
+            var q_dist = softmax(predictions_logits, axis=1)  # (batch_size, num_classes)
+            var kl_per_element = kl_divergence(p_dist, q_dist)  # (batch_size, num_classes)
+            var loss_per_sample = sum(kl_per_element, axis=1)  # (batch_size,)
+            var loss = mean(loss_per_sample)  # Scalar loss
+            ```
 
-Note:
-        This implementation assumes inputs are already probabilities (sum to 1).
-        For raw logits, apply softmax first.
+    Note:
+            This implementation assumes inputs are already probabilities (sum to 1)
+            For raw logits, apply softmax first
 
-    Numerical Stability:
-        - Clips both p and q to [epsilon, 1] to prevent log(0)
-        - Handles zero probabilities gracefully.
+        Numerical Stability:
+            - Clips both p and q to [epsilon, 1] to prevent log(0)
+            - Handles zero probabilities gracefully
     """
     if p.dtype() != q.dtype():
-        raise Error("p and q must have the same dtype").
+        raise Error("p and q must have the same dtype")
 
     if p.shape() != q.shape():
-        raise Error("p and q must have the same shape").
+        raise Error("p and q must have the same shape")
 
     # Clip both distributions to prevent log(0)
     var clipped_p = clip(p, epsilon, 1.0)
@@ -960,36 +960,36 @@ fn kl_divergence_backward(
 ) raises -> ExTensor:
     """Backward pass for KL divergence loss.
 
-    Computes gradient of KL divergence with respect to q (the predicted distribution).
+        Computes gradient of KL divergence with respect to q (the predicted distribution)
 
-    Formula:
-        dKL/dq = -p / q.
+        Formula:
+            dKL/dq = -p / q
 
-    The gradient with respect to p is:
-        dKL/dp = log(p) - log(q) + 1 (not used in typical backprop since targets are fixed).
+        The gradient with respect to p is:
+            dKL/dp = log(p) - log(q) + 1 (not used in typical backprop since targets are fixed)
 
-Args:
-        grad_output: Gradient from upstream, same shape as forward output (same as inputs).
-        p: Reference distribution passed to forward pass.
-        q: Approximating distribution passed to forward pass.
-        epsilon: Small constant for numerical stability (default: 1e-7).
+    Args:
+            grad_output: Gradient from upstream, same shape as forward output (same as inputs)
+            p: Reference distribution passed to forward pass
+            q: Approximating distribution passed to forward pass
+            epsilon: Small constant for numerical stability (default: 1e-7)
 
-Returns:
-        Gradient with respect to q, same shape as q.
+    Returns:
+            Gradient with respect to q, same shape as q
 
-    Example:
-        ```mojo
-         Forward
-        var kl_per_element = kl_divergence(p_dist, q_dist)
-        var loss_per_sample = sum(kl_per_element, axis=1)
-        var loss = mean(loss_per_sample).
+        Example:
+            ```mojo
+             Forward
+            var kl_per_element = kl_divergence(p_dist, q_dist)
+            var loss_per_sample = sum(kl_per_element, axis=1)
+            var loss = mean(loss_per_sample)
 
-        # Backward
-        var grad_loss = ones_like(loss)
-        var grad_per_sample = mean_backward(grad_loss, loss_per_sample)
-        var grad_per_element = sum_backward(grad_per_sample, kl_per_element)
-        var grad_q = kl_divergence_backward(grad_per_element, p_dist, q_dist)
-        ```
+            # Backward
+            var grad_loss = ones_like(loss)
+            var grad_per_sample = mean_backward(grad_loss, loss_per_sample)
+            var grad_per_element = sum_backward(grad_per_sample, kl_per_element)
+            var grad_q = kl_divergence_backward(grad_per_element, p_dist, q_dist)
+            ```
     """
     # Clip q to prevent division by zero
     var clipped_q = clip(q, epsilon, 1.0)

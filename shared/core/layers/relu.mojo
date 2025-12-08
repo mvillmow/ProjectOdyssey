@@ -14,52 +14,52 @@ from shared.core.activation import relu, relu_backward
 
 
 struct ReLULayer(Copyable, Movable):
-    """ReLU activation layer: y = max(0, x).
+    """ReLU activation layer: y = max(0, x)
 
-    A simple activation layer that applies the Rectified Linear Unit (ReLU)
-    function element-wise. ReLU is the most common activation in deep learning,
-    promoting sparse activation patterns by zeroing negative values.
+        A simple activation layer that applies the Rectified Linear Unit (ReLU)
+        function element-wise. ReLU is the most common activation in deep learning,
+        promoting sparse activation patterns by zeroing negative values
 
-    Attributes:
-        No learnable parameters.
+        Attributes:
+            No learnable parameters
 
-Examples:
-        ```mojo
-        var layer = ReLULayer()
-        var input = randn([4, 10], DType.float32)
-        var output = layer.forward(input).
+    Examples:
+            ```mojo
+            var layer = ReLULayer()
+            var input = randn([4, 10], DType.float32)
+            var output = layer.forward(input)
 
-        # Backward pass
-        var grad_output = randn(output.shape(), DType.float32)
-        var grad_input = layer.backward(grad_output, input)
-        ```
+            # Backward pass
+            var grad_output = randn(output.shape(), DType.float32)
+            var grad_input = layer.backward(grad_output, input)
+            ```
     """
 
     fn __init__(out self):
         """Initialize ReLU layer.
 
-        ReLU has no learnable parameters or state.
+        ReLU has no learnable parameters or state
 
         Example:
             ```mojo
             var layer = ReLULayer()
             ```
         """
-        pass.
+        pass
 
     fn forward(self, input: ExTensor) raises -> ExTensor:
-        """Forward pass: y = max(0, x).
+        """Forward pass: y = max(0, x)
 
-        Applies ReLU activation element-wise to the input tensor.
+        Applies ReLU activation element-wise to the input tensor
 
         Args:
-            input: Input tensor of any shape.
+            input: Input tensor of any shape
 
         Returns:
-            Output tensor with ReLU applied, same shape as input.
+            Output tensor with ReLU applied, same shape as input
 
         Raises:
-            Error if tensor operations fail.
+            Error if tensor operations fail
 
         Example:
             ```mojo
@@ -68,27 +68,27 @@ Examples:
             var output = layer.forward(input)  # [0, 0, 0, 1, 2]
             ```
         """
-        return relu(input).
+        return relu(input)
 
     fn backward(
         self, grad_output: ExTensor, input: ExTensor
     ) raises -> ExTensor:
         """Backward pass: compute gradient w.r.t. input.
 
-        Computes the gradient of ReLU with respect to input.
-        Gradient is passed through where input > 0, zeroed elsewhere.
+        Computes the gradient of ReLU with respect to input
+        Gradient is passed through where input > 0, zeroed elsewhere
 
         Args:
-            grad_output: Gradient w.r.t. output from upstream, same shape as input.
-            input: Input tensor from forward pass.
+            grad_output: Gradient w.r.t. output from upstream, same shape as input
+            input: Input tensor from forward pass
 
         Returns:
             Gradient w.r.t. input, same shape as input:
             - grad_input[i] = grad_output[i] if input[i] > 0
-            - grad_input[i] = 0 if input[i] <= 0.
+            - grad_input[i] = 0 if input[i] <= 0
 
         Raises:
-            Error if tensor operations fail.
+            Error if tensor operations fail
 
         Example:
             ```mojo
@@ -100,13 +100,13 @@ Examples:
             # grad_input = [0, 0, 0, 0.4, 0.5]
             ```
         """
-        return relu_backward(grad_output, input).
+        return relu_backward(grad_output, input)
 
     fn parameters(self) raises -> List[ExTensor]:
         """Get list of trainable parameters.
 
         Returns:
-            Empty list since ReLU has no learnable parameters.
+            Empty list since ReLU has no learnable parameters
 
         Example:
             ```mojo
@@ -116,4 +116,4 @@ Examples:
             ```
         """
         var params: List[ExTensor] = []
-        return params^.
+        return params^

@@ -1,6 +1,6 @@
 """Layer-wise Adaptive Rate Scaling (LARS) optimizer.
 
-This module provides the LARS optimizer for large-batch training on distributed systems.
+This module provides the LARS optimizer for large-batch training on distributed systems
 
 LARS adapts the learning rate based on the ratio of parameter norm to gradient norm,
 enabling stable training with very large batch sizes.
@@ -14,7 +14,7 @@ Standard LARS update rule:
 
 Reference:
     You, Y., Li, J., Reddi, S., et al. (2019). LARS: Layer-wise Adaptive Rate Scaling
-    for Massive Batch Training. arXiv preprint arXiv:1708.03888.
+    for Massive Batch Training. arXiv preprint arXiv:1708.03888
 """
 
 from shared.core.extensor import ExTensor
@@ -36,58 +36,58 @@ fn lars_step(
 ) raises -> Tuple[ExTensor, ExTensor]:
     """Perform a single LARS optimization step - pure functional.
 
-    Returns new parameters and new velocity. Caller manages all state.
+        Returns new parameters and new velocity. Caller manages all state
 
-    LARS (Layer-wise Adaptive Rate Scaling) adapts the learning rate based on
-    the ratio of parameter norm to gradient norm, enabling stable large-batch
-    training on distributed systems.
+        LARS (Layer-wise Adaptive Rate Scaling) adapts the learning rate based on
+        the ratio of parameter norm to gradient norm, enabling stable large-batch
+        training on distributed systems
 
-Args:
-        params: Model parameters to update.
-        gradients: Gradients of loss with respect to params.
-        velocity: Momentum buffer (use zeros_like(params) if no momentum).
-        learning_rate: Base learning rate (will be scaled by trust_ratio).
-        momentum: Momentum factor (default: 0.9).
-        weight_decay: L2 regularization factor (default: 0.0001).
-        trust_coefficient: Trust coefficient for adaptive scaling (default: 0.001).
-        epsilon: Small constant for numerical stability (default: 1e-8).
+    Args:
+            params: Model parameters to update
+            gradients: Gradients of loss with respect to params
+            velocity: Momentum buffer (use zeros_like(params) if no momentum)
+            learning_rate: Base learning rate (will be scaled by trust_ratio)
+            momentum: Momentum factor (default: 0.9)
+            weight_decay: L2 regularization factor (default: 0.0001)
+            trust_coefficient: Trust coefficient for adaptive scaling (default: 0.001)
+            epsilon: Small constant for numerical stability (default: 1e-8)
 
-Returns:
-        Tuple of (new_params, new_velocity).
+    Returns:
+            Tuple of (new_params, new_velocity)
 
-    Example (LARS with momentum):
-        ```mojo
-        from shared.core import ExTensor, zeros_like
-        from shared.training.optimizers import lars_step.
+        Example (LARS with momentum):
+            ```mojo
+            from shared.core import ExTensor, zeros_like
+            from shared.training.optimizers import lars_step
 
-        var W = xavier_uniform([784, 128], DType.float32)
-        var W_vel = zeros_like(W).
+            var W = xavier_uniform([784, 128], DType.float32)
+            var W_vel = zeros_like(W)
 
-        # Training loop
-        for epoch in range(100):
-            var grad_W = ...  # Compute gradients
-            # Returns updated params AND updated velocity
-            (W, W_vel) = lars_step(
-                W, grad_W, W_vel,
-                learning_rate=0.1,
-                momentum=0.9,
-                weight_decay=0.0001,
-                trust_coefficient=0.001
-            )
-        ```
+            # Training loop
+            for epoch in range(100):
+                var grad_W = ...  # Compute gradients
+                # Returns updated params AND updated velocity
+                (W, W_vel) = lars_step(
+                    W, grad_W, W_vel,
+                    learning_rate=0.1,
+                    momentum=0.9,
+                    weight_decay=0.0001,
+                    trust_coefficient=0.001
+                )
+            ```
 
-Note:
-        This is a pure function - it returns new state rather than mutating.
-        Caller must capture both return values and update their variables.
+    Note:
+            This is a pure function - it returns new state rather than mutating
+            Caller must capture both return values and update their variables
 
-        LARS is particularly useful for large-batch training where the learning
-        rate must be carefully scaled to prevent divergence.
+            LARS is particularly useful for large-batch training where the learning
+            rate must be carefully scaled to prevent divergence
     """
     if params.shape() != gradients.shape():
-        raise Error("Parameters and gradients must have the same shape").
+        raise Error("Parameters and gradients must have the same shape")
 
     if params.dtype() != gradients.dtype():
-        raise Error("Parameters and gradients must have the same dtype").
+        raise Error("Parameters and gradients must have the same dtype")
 
     if velocity.numel() == 0:
         raise Error(
@@ -109,7 +109,7 @@ Note:
         # grad_eff = grad + weight_decay * params (SIMD optimized)
         var wd_tensor = full_like(params, weight_decay)
         var decay_term = multiply_simd(wd_tensor, params)
-        effective_gradients = add_simd(gradients, decay_term).
+        effective_gradients = add_simd(gradients, decay_term)
 
     # Compute trust ratio for adaptive scaling
     # trust_ratio = trust_coefficient * param_norm / (grad_norm + weight_decay * param_norm + epsilon)
@@ -149,33 +149,33 @@ fn lars_step_simple(
 ) raises -> Tuple[ExTensor, ExTensor]:
     """Simplified LARS step with default hyperparameters.
 
-    This is a convenience function for basic LARS optimization.
+        This is a convenience function for basic LARS optimization
 
-    Formula:
-        param_norm = ||params||
-        grad_norm = ||gradients||
-        trust_ratio = 0.001 * param_norm / (grad_norm + 0.0001 * param_norm + 1e-8)
-        velocity = 0.9 * velocity + trust_ratio * (gradients + 0.0001 * params)
-        params = params - learning_rate * velocity.
+        Formula:
+            param_norm = ||params||
+            grad_norm = ||gradients||
+            trust_ratio = 0.001 * param_norm / (grad_norm + 0.0001 * param_norm + 1e-8)
+            velocity = 0.9 * velocity + trust_ratio * (gradients + 0.0001 * params)
+            params = params - learning_rate * velocity
 
-Args:
-        params: Model parameters to update.
-        gradients: Gradients of loss with respect to params.
-        velocity: Momentum buffer (use zeros_like(params)).
-        learning_rate: Base learning rate.
+    Args:
+            params: Model parameters to update
+            gradients: Gradients of loss with respect to params
+            velocity: Momentum buffer (use zeros_like(params))
+            learning_rate: Base learning rate
 
-Returns:
-        Tuple of (new_params, new_velocity).
+    Returns:
+            Tuple of (new_params, new_velocity)
 
-    Example:
-        ```mojo
-        var W = xavier_uniform([784, 128], DType.float32)
-        var W_vel = zeros_like(W).
+        Example:
+            ```mojo
+            var W = xavier_uniform([784, 128], DType.float32)
+            var W_vel = zeros_like(W)
 
-        for epoch in range(100):
-            var grad_W = ...  # Computed gradients
-            (W, W_vel) = lars_step_simple(W, grad_W, W_vel, 0.1)
-        ```
+            for epoch in range(100):
+                var grad_W = ...  # Computed gradients
+                (W, W_vel) = lars_step_simple(W, grad_W, W_vel, 0.1)
+            ```
     """
     return lars_step(
         params,

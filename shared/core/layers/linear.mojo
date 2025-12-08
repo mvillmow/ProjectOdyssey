@@ -13,17 +13,17 @@ from shared.core.extensor import ExTensor, zeros, randn, zeros_like
 
 
 struct Linear(Copyable, Movable):
-    """Linear layer: y = xW + b.
+    """Linear layer: y = xW + b
 
     A fully connected neural network layer that transforms inputs
     from in_features to out_features dimensions with proper matrix
-    multiplication and bias broadcasting.
+    multiplication and bias broadcasting
 
     Attributes:
-        weight: Weight matrix of shape (in_features, out_features).
-        bias: Bias vector of shape (out_features,).
-        in_features: Input feature dimension.
-        out_features: Output feature dimension.
+        weight: Weight matrix of shape (in_features, out_features)
+        bias: Bias vector of shape (out_features,)
+        in_features: Input feature dimension
+        out_features: Output feature dimension
     """
 
     var weight: ExTensor
@@ -34,14 +34,14 @@ struct Linear(Copyable, Movable):
     fn __init__(out self, in_features: Int, out_features: Int) raises:
         """Initialize linear layer with random weights and zero bias.
 
-        Uses Xavier-style initialization for weights. Bias is initialized to zero.
+        Uses Xavier-style initialization for weights. Bias is initialized to zero
 
         Args:
-            in_features: Number of input features.
-            out_features: Number of output features.
+            in_features: Number of input features
+            out_features: Number of output features
 
         Raises:
-            Error if tensor creation fails.
+            Error if tensor creation fails
 
         Example:
             ```mojo
@@ -49,28 +49,28 @@ struct Linear(Copyable, Movable):
             ```
         """
         self.in_features = in_features
-        self.out_features = out_features.
+        self.out_features = out_features
 
         # Initialize weights with randn (standard normal distribution)
-        self.weight = randn([in_features, out_features], DType.float32).
+        self.weight = randn([in_features, out_features], DType.float32)
 
         # Initialize bias to zeros
-        self.bias = zeros([out_features], DType.float32).
+        self.bias = zeros([out_features], DType.float32)
 
     fn forward(self, input: ExTensor) raises -> ExTensor:
-        """Forward pass: y = xW + b.
+        """Forward pass: y = xW + b
 
         Computes the linear transformation: output = input @ weight + bias
-        Supports batched inputs through matrix multiplication broadcasting.
+        Supports batched inputs through matrix multiplication broadcasting
 
         Args:
-            input: Input tensor of shape (batch_size, in_features) or (in_features,).
+            input: Input tensor of shape (batch_size, in_features) or (in_features,)
 
         Returns:
-            Output tensor of shape (batch_size, out_features) or (out_features,).
+            Output tensor of shape (batch_size, out_features) or (out_features,)
 
         Raises:
-            Error if tensor operations fail.
+            Error if tensor operations fail
 
         Example:
             ```mojo
@@ -81,23 +81,23 @@ struct Linear(Copyable, Movable):
         """
         # Compute: output = input @ weight + bias
         # Matrix multiplication: input @ weight
-        var matmul_result = input @ self.weight.
+        var matmul_result = input @ self.weight
 
         # Add bias with broadcasting support
         # For single sample: (out_features,) + (out_features,) = (out_features,)
         # For batch: (batch_size, out_features) + (out_features,) = (batch_size, out_features)
-        var output = matmul_result + self.bias.
+        var output = matmul_result + self.bias
 
-        return output.
+        return output
 
     fn parameters(self) raises -> List[ExTensor]:
         """Get list of trainable parameters.
 
         Returns:
-            List containing [weight, bias] tensors.
+            List containing [weight, bias] tensors
 
         Raises:
-            Error if tensor copying fails.
+            Error if tensor copying fails
 
         Example:
             ```mojo
@@ -118,4 +118,4 @@ struct Linear(Copyable, Movable):
             bias_copy._data[i] = self.bias._data[i]
         params.append(weight_copy^)
         params.append(bias_copy^)
-        return params^.
+        return params^

@@ -1,13 +1,13 @@
 """Learning Rate Schedulers
 
-Scheduler implementations for adjusting learning rates during training.
+Scheduler implementations for adjusting learning rates during training
 
 Includes:
 - StepLR: Step decay scheduler (decay every N epochs)
 - CosineAnnealingLR: Cosine annealing scheduler
 - WarmupLR: Linear warmup scheduler
 
-All schedulers are struct-based implementations of the LRScheduler trait.
+All schedulers are struct-based implementations of the LRScheduler trait
 """
 
 # Export scheduler implementations

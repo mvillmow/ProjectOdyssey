@@ -11,35 +11,35 @@ from .bfloat16 import BFloat16
 fn cast_tensor(tensor: ExTensor, target_dtype: DType) raises -> ExTensor:
     """Cast tensor to different dtype with optimized conversion paths.
 
-    Provides fast conversion between common dtypes used in mixed precision.
-    training. Uses SIMD optimization where possible.
+        Provides fast conversion between common dtypes used in mixed precision
+        training. Uses SIMD optimization where possible
 
-Args:
-        tensor: Source tensor to convert.
-        target_dtype: Target dtype.
+    Args:
+            tensor: Source tensor to convert
+            target_dtype: Target dtype
 
-Returns:
-        New tensor with target dtype.
+    Returns:
+            New tensor with target dtype
 
-Raises:
-        Error: If tensor is empty or conversion is not supported.
+    Raises:
+            Error: If tensor is empty or conversion is not supported
 
-    Example:
-        ```mojo
-         Convert FP32 to FP16.
-        var fp16_tensor = cast_tensor(fp32_tensor, DType.float16).
+        Example:
+            ```mojo
+             Convert FP32 to FP16
+            var fp16_tensor = cast_tensor(fp32_tensor, DType.float16)
 
-        # Convert FP16 back to FP32
-        var fp32_tensor = cast_tensor(fp16_tensor, DType.float32)
-        ```
+            # Convert FP16 back to FP32
+            var fp32_tensor = cast_tensor(fp16_tensor, DType.float32)
+            ```
     """
     # Validate input
     if tensor._numel == 0:
-        raise Error("Cannot cast empty tensor").
+        raise Error("Cannot cast empty tensor")
 
     # No conversion needed
     if tensor.dtype() == target_dtype:
-        return tensor.
+        return tensor
 
     var result = ExTensor(tensor.shape(), target_dtype)
     var size = tensor._numel
@@ -51,7 +51,7 @@ Raises:
         var dst_ptr = result._data.bitcast[Float16]()
         for i in range(size):
             dst_ptr[i] = Float16(src_ptr[i])
-        return result.
+        return result
 
     # FP16 -> FP32
     if tensor.dtype() == DType.float16 and target_dtype == DType.float32:
@@ -59,7 +59,7 @@ Raises:
         var dst_ptr = result._data.bitcast[Float32]()
         for i in range(size):
             dst_ptr[i] = Float32(src_ptr[i])
-        return result.
+        return result
 
     # FP32 -> FP32 (copy)
     if tensor.dtype() == DType.float32 and target_dtype == DType.float32:
@@ -67,7 +67,7 @@ Raises:
         var dst_ptr = result._data.bitcast[Float32]()
         for i in range(size):
             dst_ptr[i] = src_ptr[i]
-        return result.
+        return result
 
     # FP64 -> FP32
     if tensor.dtype() == DType.float64 and target_dtype == DType.float32:
@@ -75,7 +75,7 @@ Raises:
         var dst_ptr = result._data.bitcast[Float32]()
         for i in range(size):
             dst_ptr[i] = Float32(src_ptr[i])
-        return result.
+        return result
 
     # FP32 -> FP64
     if tensor.dtype() == DType.float32 and target_dtype == DType.float64:
@@ -83,40 +83,40 @@ Raises:
         var dst_ptr = result._data.bitcast[Float64]()
         for i in range(size):
             dst_ptr[i] = Float64(src_ptr[i])
-        return result.
+        return result
 
     # Generic slow path for other conversions
     for i in range(size):
         var val = tensor._get_float64(i)
-        result._set_float64(i, val).
+        result._set_float64(i, val)
 
     return result
 
 
 fn cast_to_bfloat16(tensor: ExTensor) raises -> ExTensor:
-    """Convert tensor to BFloat16 storage (stored as uint16).
+    """Convert tensor to BFloat16 storage (stored as uint16)
 
-    Creates new tensor with BFloat16 values stored as uint16.
-    Use this for storing model parameters in BF16 format.
+        Creates new tensor with BFloat16 values stored as uint16
+        Use this for storing model parameters in BF16 format
 
-Args:
-        tensor: Source tensor (any floating point dtype).
+    Args:
+            tensor: Source tensor (any floating point dtype)
 
-Returns:
-        Tensor with uint16 storage containing BFloat16 values.
+    Returns:
+            Tensor with uint16 storage containing BFloat16 values
 
-Raises:
-        Error: If tensor is empty.
+    Raises:
+            Error: If tensor is empty
 
-    Example:
-        ```mojo
-        var fp32_params = ExTensor.randn((1000, 1000), DType.float32)
-        var bf16_params = cast_to_bfloat16(fp32_params)
-        # bf16_params.dtype() == DType.uint16
-        ```
+        Example:
+            ```mojo
+            var fp32_params = ExTensor.randn((1000, 1000), DType.float32)
+            var bf16_params = cast_to_bfloat16(fp32_params)
+            # bf16_params.dtype() == DType.uint16
+            ```
     """
     if tensor._numel == 0:
-        raise Error("Cannot convert empty tensor to BFloat16").
+        raise Error("Cannot convert empty tensor to BFloat16")
 
     # Create uint16 tensor for BF16 storage
     var result = ExTensor(tensor.shape(), DType.uint16)
@@ -126,7 +126,7 @@ Raises:
     for i in range(size):
         var f32_val = Float32(tensor._get_float64(i))
         var bf16_val = BFloat16.from_float32(f32_val)
-        result._data.bitcast[UInt16]()[i] = bf16_val.bits.
+        result._data.bitcast[UInt16]()[i] = bf16_val.bits
 
     return result
 
@@ -136,23 +136,23 @@ fn cast_from_bfloat16(
 ) raises -> ExTensor:
     """Convert tensor from BFloat16 storage to floating point.
 
-    Assumes input tensor stores BFloat16 values as uint16.
+        Assumes input tensor stores BFloat16 values as uint16
 
-Args:
-        tensor: Source tensor with uint16 BFloat16 storage.
-        target_dtype: Target floating point dtype (default: float32).
+    Args:
+            tensor: Source tensor with uint16 BFloat16 storage
+            target_dtype: Target floating point dtype (default: float32)
 
-Returns:
-        Tensor with target dtype.
+    Returns:
+            Tensor with target dtype
 
-Raises:
-        Error: If tensor is not uint16 or target is not floating point.
+    Raises:
+            Error: If tensor is not uint16 or target is not floating point
 
-    Example:
-        ```mojo
-        var bf16_params = cast_to_bfloat16(fp32_params)
-        var fp32_params = cast_from_bfloat16(bf16_params)
-        ```
+        Example:
+            ```mojo
+            var bf16_params = cast_to_bfloat16(fp32_params)
+            var fp32_params = cast_from_bfloat16(bf16_params)
+            ```
     """
     if tensor.dtype() != DType.uint16:
         raise Error(
@@ -165,7 +165,7 @@ Raises:
         and target_dtype != DType.float64
         and target_dtype != DType.float16
     ):
-        raise Error("Target dtype must be floating point").
+        raise Error("Target dtype must be floating point")
 
     var result = ExTensor(tensor.shape(), target_dtype)
     var size = tensor._numel
@@ -174,14 +174,14 @@ Raises:
     for i in range(size):
         var bf16_bits = tensor._data.bitcast[UInt16]()[i]
         var bf16_val = BFloat16(bf16_bits)
-        var f32_val = bf16_val.to_float32().
+        var f32_val = bf16_val.to_float32()
 
         if target_dtype == DType.float32:
             result._data.bitcast[Float32]()[i] = f32_val
         elif target_dtype == DType.float64:
             result._data.bitcast[Float64]()[i] = Float64(f32_val)
         elif target_dtype == DType.float16:
-            result._data.bitcast[Float16]()[i] = Float16(f32_val).
+            result._data.bitcast[Float16]()[i] = Float16(f32_val)
 
     return result
 
@@ -189,16 +189,16 @@ Raises:
 fn get_dtype_size(dtype: DType) -> Int:
     """Get size in bytes for a dtype.
 
-Args:
-        dtype: DType to query.
+    Args:
+            dtype: DType to query
 
-Returns:
-        Size in bytes.
+    Returns:
+            Size in bytes
 
-    Example:
-        ```mojo
-        var size = get_dtype_size(DType.float16)  # 2.
-        ```
+        Example:
+            ```mojo
+            var size = get_dtype_size(DType.float16)  # 2
+            ```
     """
     if dtype == DType.float16:
         return 2
@@ -215,24 +215,24 @@ Returns:
     elif dtype == DType.int64 or dtype == DType.uint64:
         return 8
     else:
-        return 4  # Default.
+        return 4  # Default
 
 
 fn is_floating_dtype(dtype: DType) -> Bool:
     """Check if dtype is floating point.
 
-Args:
-        dtype: DType to check.
+    Args:
+            dtype: DType to check
 
-Returns:
-        True if floating point dtype.
+    Returns:
+            True if floating point dtype
 
-    Example:
-        ```mojo
-        f is_floating_dtype(tensor.dtype()):
-            # Can use floating point operations
-            var scaled = tensor * 0.5
-        ```
+        Example:
+            ```mojo
+            f is_floating_dtype(tensor.dtype()):
+                # Can use floating point operations
+                var scaled = tensor * 0.5
+            ```
     """
     return (
         dtype == DType.float16
@@ -242,20 +242,20 @@ Returns:
 
 
 fn is_integer_dtype(dtype: DType) -> Bool:
-    """Check if dtype is integer (signed or unsigned).
+    """Check if dtype is integer (signed or unsigned)
 
-Args:
-        dtype: DType to check.
+    Args:
+            dtype: DType to check
 
-Returns:
-        True if integer dtype.
+    Returns:
+            True if integer dtype
 
-    Example:
-        ```mojo
-        f is_integer_dtype(tensor.dtype()):
-            # Integer tensor - no fractional values
-            pass
-        ```
+        Example:
+            ```mojo
+            f is_integer_dtype(tensor.dtype()):
+                # Integer tensor - no fractional values
+                pass
+            ```
     """
     return (
         dtype == DType.int8

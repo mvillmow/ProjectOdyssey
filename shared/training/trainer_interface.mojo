@@ -22,25 +22,25 @@ from shared.core import ExTensor
 struct TrainerConfig(Copyable, Movable):
     """Configuration for trainer behavior.
 
-    Centralizes all training hyperparameters and settings.
+    Centralizes all training hyperparameters and settings
 
     Mixed Precision Training:
         The mixed precision infrastructure (GradientScaler, master weights, etc.)
         is fully implemented and tested. Configuration options are available but
         automatic integration with the training loop requires implementing the
-        backward pass (autograd).
+        backward pass (autograd)
 
         Once autograd is available, setting use_mixed_precision=True will enable:
         - Automatic gradient scaling to prevent FP16 underflow
         - Dynamic loss scaling with overflow detection
         - Master weights in FP32 for optimizer precision
-        - 2-3x speedup with minimal accuracy loss.
+        - 2-3x speedup with minimal accuracy loss
 
         Current Status:
         - ✅ GradientScaler fully implemented and tested
         - ✅ Master weight conversion utilities available
         - ✅ Gradient clipping with validation
-        - ⚠️  Automatic training loop integration pending autograd.
+        - ⚠️  Automatic training loop integration pending autograd
 
         Example (when autograd is available):
             var config = TrainerConfig(
@@ -48,7 +48,7 @@ struct TrainerConfig(Copyable, Movable):
                 precision_dtype=DType.float16,
                 loss_scale=65536.0,
                 gradient_clip_norm=1.0
-            ).
+            )
     """
 
     var num_epochs: Int
@@ -67,17 +67,17 @@ struct TrainerConfig(Copyable, Movable):
 
     fn __init__(
         out self,
-        num_epochs: Int = 10,.
-        batch_size: Int = 32,.
-        learning_rate: Float64 = 0.001,.
-        log_interval: Int = 10,.
-        validate_interval: Int = 1,.
-        save_checkpoints: Bool = False,.
-        checkpoint_interval: Int = 5,.
-        use_mixed_precision: Bool = False,.
-        precision_dtype: DType = DType.float32,.
-        loss_scale: Float32 = 65536.0,.
-        gradient_clip_norm: Float32 = 0.0,.
+        num_epochs: Int = 10,
+        batch_size: Int = 32,
+        learning_rate: Float64 = 0.001,
+        log_interval: Int = 10,
+        validate_interval: Int = 1,
+        save_checkpoints: Bool = False,
+        checkpoint_interval: Int = 5,
+        use_mixed_precision: Bool = False,
+        precision_dtype: DType = DType.float32,
+        loss_scale: Float32 = 65536.0,
+        gradient_clip_norm: Float32 = 0.0,
     ):
         """Initialize trainer configuration with defaults."""
         self.num_epochs = num_epochs
@@ -90,13 +90,13 @@ struct TrainerConfig(Copyable, Movable):
         self.use_mixed_precision = use_mixed_precision
         self.precision_dtype = precision_dtype
         self.loss_scale = loss_scale
-        self.gradient_clip_norm = gradient_clip_norm.
+        self.gradient_clip_norm = gradient_clip_norm
 
 
 struct TrainingMetrics(Copyable, Movable):
     """Metrics collected during training.
 
-    Stores current and historical metrics for analysis.
+    Stores current and historical metrics for analysis
     """
 
     var current_epoch: Int
@@ -121,39 +121,39 @@ struct TrainingMetrics(Copyable, Movable):
         self.val_accuracy = 0.0
         self.best_val_loss = 1e10  # Initialize to very large value
         self.best_val_accuracy = 0.0
-        self.best_epoch = 0.
+        self.best_epoch = 0
 
     fn update_train_metrics(mut self, loss: Float64, accuracy: Float64):
         """Update training metrics for current batch.
 
         Args:
-            loss: Current batch loss.
-            accuracy: Current batch accuracy.
+            loss: Current batch loss
+            accuracy: Current batch accuracy
         """
         self.train_loss = loss
-        self.train_accuracy = accuracy.
+        self.train_accuracy = accuracy
 
     fn update_val_metrics(mut self, loss: Float64, accuracy: Float64):
         """Update validation metrics and track best results.
 
         Args:
-            loss: Validation loss.
-            accuracy: Validation accuracy.
+            loss: Validation loss
+            accuracy: Validation accuracy
         """
         self.val_loss = loss
-        self.val_accuracy = accuracy.
+        self.val_accuracy = accuracy
 
         # Track best validation results
         if loss < self.best_val_loss:
             self.best_val_loss = loss
             self.best_val_accuracy = accuracy
-            self.best_epoch = self.current_epoch.
+            self.best_epoch = self.current_epoch
 
     fn reset_epoch(mut self):
         """Reset epoch-level metrics."""
         self.current_batch = 0
         self.train_loss = 0.0
-        self.train_accuracy = 0.0.
+        self.train_accuracy = 0.0
 
     fn print_summary(self):
         """Print training metrics summary."""
@@ -178,14 +178,14 @@ struct TrainingMetrics(Copyable, Movable):
             + String(self.best_epoch)
             + ")"
         )
-        print("-" * 50).
+        print("-" * 50)
 
 
 trait Trainer:
     """Abstract interface for all trainer implementations.
 
-    Defines the contract that all trainers must follow, ensuring.
-    consistent API across different training strategies.
+    Defines the contract that all trainers must follow, ensuring
+    consistent API across different training strategies
 
     Key methods:
     - train(): Execute training loop
@@ -201,17 +201,17 @@ trait Trainer:
     - on_batch_begin()
     - on_batch_end()
     - on_validation_begin()
-    - on_validation_end().
+    - on_validation_end()
     """
 
     fn train(mut self, num_epochs: Int) raises:
         """Execute training loop for specified number of epochs.
 
         Args:
-            num_epochs: Number of epochs to train.
+            num_epochs: Number of epochs to train
 
         Raises:
-            Error if training fails.
+            Error if training fails
         """
         ...
 
@@ -219,10 +219,10 @@ trait Trainer:
         """Evaluate model on validation set.
 
         Returns:
-            Validation loss.
+            Validation loss
 
         Raises:
-            Error if validation fails.
+            Error if validation fails
         """
         ...
 
@@ -230,11 +230,11 @@ trait Trainer:
         """Train model with periodic validation.
 
         Args:
-            num_epochs: Number of epochs to train.
+            num_epochs: Number of epochs to train
             validate_every: Validate every N epochs (default=1)
 
         Raises:
-            Error if training or validation fails.
+            Error if training or validation fails
         """
         ...
 
@@ -242,7 +242,7 @@ trait Trainer:
 struct DataBatch(Copyable, Movable):
     """Single batch of training/validation data.
 
-    Represents a mini-batch with input features and labels.
+    Represents a mini-batch with input features and labels
     """
 
     var data: ExTensor  # Input features [batch_size, feature_dim]
@@ -253,20 +253,20 @@ struct DataBatch(Copyable, Movable):
         """Initialize data batch.
 
         Args:
-            data: Input features tensor (ownership transferred).
-            labels: Labels tensor (ownership transferred).
+            data: Input features tensor (ownership transferred)
+            labels: Labels tensor (ownership transferred)
         """
         self.data = data^
         self.labels = labels^
-        self.batch_size = self.data.shape()[0].
+        self.batch_size = self.data.shape()[0]
 
 
 struct DataLoader(Copyable, Movable):
     """Simple data loader for batching.
 
-    Provides iteration over dataset in batches.
-    NOTE: This is a minimal implementation for testing.
-    Production code should use proper data loading infrastructure.
+    Provides iteration over dataset in batches
+    NOTE: This is a minimal implementation for testing
+    Production code should use proper data loading infrastructure
     """
 
     var data: ExTensor
@@ -282,62 +282,62 @@ struct DataLoader(Copyable, Movable):
         """Initialize data loader.
 
         Args:
-            data: Full dataset features (ownership transferred).
-            labels: Full dataset labels (ownership transferred).
-            batch_size: Batch size.
+            data: Full dataset features (ownership transferred)
+            labels: Full dataset labels (ownership transferred)
+            batch_size: Batch size
         """
         self.data = data^
         self.labels = labels^
         self.batch_size = batch_size
         self.num_samples = self.data.shape()[0]
         self.num_batches = (self.num_samples + batch_size - 1) // batch_size
-        self.current_batch = 0.
+        self.current_batch = 0
 
     fn reset(mut self):
         """Reset loader to beginning."""
-        self.current_batch = 0.
+        self.current_batch = 0
 
     fn has_next(self) -> Bool:
         """Check if more batches available.
 
         Returns:
-            True if more batches available.
+            True if more batches available
         """
-        return self.current_batch < self.num_batches.
+        return self.current_batch < self.num_batches
 
     fn next(mut self) raises -> DataBatch:
         """Get next batch.
 
         Returns:
-            Next data batch.
+            Next data batch
 
         Raises:
-            Error if no more batches.
+            Error if no more batches
         """
         if not self.has_next():
-            raise Error("No more batches available").
+            raise Error("No more batches available")
 
         var start_idx = self.current_batch * self.batch_size
         var end_idx = min(start_idx + self.batch_size, self.num_samples)
-        var actual_batch_size = end_idx - start_idx.
+        var actual_batch_size = end_idx - start_idx
 
         # Extract batch slice
-        var batch_data_shape= List[Int]()
+        var batch_data_shape = List[Int]()
         batch_data_shape.append(actual_batch_size)
         batch_data_shape.append(self.data.shape()[1])
-        var batch_data = ExTensor(batch_data_shape, self.data.dtype()).
+        var batch_data = ExTensor(batch_data_shape, self.data.dtype())
 
-        var batch_labels_shape= List[Int]()
+        var batch_labels_shape = List[Int]()
         batch_labels_shape.append(actual_batch_size)
-        var batch_labels = ExTensor(batch_labels_shape, self.labels.dtype()).
+        var batch_labels = ExTensor(batch_labels_shape, self.labels.dtype())
 
         # Copy data (simplified - real implementation would use slicing)
         # For now, we'll just create placeholders
         # TODO: Implement proper tensor slicing in ExTensor
 
-        self.current_batch += 1.
+        self.current_batch += 1.0
 
-        return DataBatch(batch_data, batch_labels).
+        return DataBatch(batch_data, batch_labels)
 
 
 fn create_simple_dataloader(
@@ -345,12 +345,12 @@ fn create_simple_dataloader(
 ) -> DataLoader:
     """Create a simple dataloader for training.
 
-Args:
-        data: Full dataset features (ownership transferred).
-        labels: Full dataset labels (ownership transferred).
-        batch_size: Batch size.
+    Args:
+            data: Full dataset features (ownership transferred)
+            labels: Full dataset labels (ownership transferred)
+            batch_size: Batch size
 
-Returns:
-        DataLoader instance.
+    Returns:
+            DataLoader instance
     """
     return DataLoader(data^, labels^, batch_size)

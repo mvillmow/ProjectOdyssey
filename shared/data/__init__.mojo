@@ -1,6 +1,6 @@
 """Data Loading Package
 
-Provides data loaders for common ML datasets and utilities for handling various data formats.
+Provides data loaders for common ML datasets and utilities for handling various data formats
 
 Modules:
     formats: Low-level data format loaders (IDX, CIFAR, etc.)

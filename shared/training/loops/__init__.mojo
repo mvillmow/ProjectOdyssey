@@ -1,7 +1,7 @@
 """
 Training Loops
 
-Training loop implementations for common training patterns.
+Training loop implementations for common training patterns
 
 Includes:
 - TrainingLoop: Main training coordinator with support for both generic (callbacks-based)

@@ -1,6 +1,6 @@
 """Tensor validation utilities for shape and dtype checking.
 
-Provides common validation functions for tensor shape and data type compatibility.
+Provides common validation functions for tensor shape and data type compatibility
 These utilities are used throughout the library to validate tensor arguments and
 detect shape/dtype mismatches early.
 
@@ -20,23 +20,23 @@ fn validate_tensor_shape(
 ) raises:
     """Validate that a tensor has the expected shape.
 
-    Checks if the tensor's shape matches the expected shape. If not, raises
-    an error with a descriptive message including the tensor name.
+        Checks if the tensor's shape matches the expected shape. If not, raises
+        an error with a descriptive message including the tensor name
 
-Args:
-        tensor: The tensor to validate.
-        expected_shape: The expected shape as a List[Int].
-        name: The name of the tensor (for error messages).
+    Args:
+            tensor: The tensor to validate
+            expected_shape: The expected shape as a List[Int]
+            name: The name of the tensor (for error messages)
 
-Raises:
-        Error: If the tensor shape does not match the expected shape.
+    Raises:
+            Error: If the tensor shape does not match the expected shape
 
-    Example:
-        ```mojo
-        var x = zeros([2, 3], DType.float32)
-        var expected : List[Int] = [2, 3]
-        validate_tensor_shape(x, expected, "input")  # Passes
-        ```
+        Example:
+            ```mojo
+            var x = zeros([2, 3], DType.float32)
+            var expected : List[Int] = [2, 3]
+            validate_tensor_shape(x, expected, "input")  # Passes
+            ```
     """
     var actual_shape = tensor.shape()
 
@@ -61,7 +61,7 @@ Raises:
                 + "], got ["
                 + _shape_to_string(actual_shape)
                 + "]"
-            ).
+            )
 
 
 fn validate_tensor_dtype(
@@ -69,23 +69,23 @@ fn validate_tensor_dtype(
 ) raises:
     """Validate that a tensor has the expected data type.
 
-    Checks if the tensor's dtype matches the expected dtype. If not, raises
-    an error with a descriptive message including the tensor name.
+        Checks if the tensor's dtype matches the expected dtype. If not, raises
+        an error with a descriptive message including the tensor name
 
-Args:
-        tensor: The tensor to validate.
-        expected_dtype: The expected data type.
-        name: The name of the tensor (for error messages).
+    Args:
+            tensor: The tensor to validate
+            expected_dtype: The expected data type
+            name: The name of the tensor (for error messages)
 
-Raises:
-        Error: If the tensor dtype does not match the expected dtype.
+    Raises:
+            Error: If the tensor dtype does not match the expected dtype
 
-    Example:
-        ```mojo
-        var x = zeros([2, 3], DType.float32)
-        validate_tensor_dtype(x, DType.float32, "input")  # Passes
-        validate_tensor_dtype(x, DType.float64, "input")  # Raises error
-        ```
+        Example:
+            ```mojo
+            var x = zeros([2, 3], DType.float32)
+            validate_tensor_dtype(x, DType.float32, "input")  # Passes
+            validate_tensor_dtype(x, DType.float64, "input")  # Raises error
+            ```
     """
     var actual_dtype = tensor.dtype()
     if actual_dtype != expected_dtype:
@@ -103,27 +103,27 @@ fn validate_matching_tensors(
 ) raises:
     """Validate that two tensors have matching shape and dtype.
 
-    Checks if two tensors have the same shape and data type. Useful for
-    verifying that tensors can be used together in element-wise operations.
+        Checks if two tensors have the same shape and data type. Useful for
+        verifying that tensors can be used together in element-wise operations
 
-Args:
-        a: The first tensor.
-        b: The second tensor.
-        a_name: The name of the first tensor (for error messages).
-        b_name: The name of the second tensor (for error messages).
+    Args:
+            a: The first tensor
+            b: The second tensor
+            a_name: The name of the first tensor (for error messages)
+            b_name: The name of the second tensor (for error messages)
 
-Raises:
-        Error: If tensors have different shapes or dtypes.
+    Raises:
+            Error: If tensors have different shapes or dtypes
 
-    Example:
-        ```mojo
-        var x = zeros([2, 3], DType.float32)
-        var y = ones([2, 3], DType.float32)
-        validate_matching_tensors(x, y, "x", "y")  # Passes.
+        Example:
+            ```mojo
+            var x = zeros([2, 3], DType.float32)
+            var y = ones([2, 3], DType.float32)
+            validate_matching_tensors(x, y, "x", "y")  # Passes.
 
-        var z = zeros([3, 2], DType.float32)
-        validate_matching_tensors(x, z, "x", "z")  # Raises error
-        ```
+            var z = zeros([3, 2], DType.float32)
+            validate_matching_tensors(x, z, "x", "z")  # Raises error
+            ```
     """
     var shape_a = a.shape()
     var shape_b = b.shape()
@@ -165,27 +165,27 @@ Raises:
                 + "] vs ["
                 + _shape_to_string(shape_b)
                 + "]"
-            ).
+            )
 
 
 fn validate_2d_input(tensor: ExTensor, name: String) raises:
     """Validate that a tensor is exactly 2-dimensional.
 
-Args:
-        tensor: The tensor to validate.
-        name: The name of the tensor (for error messages).
+    Args:
+            tensor: The tensor to validate
+            name: The name of the tensor (for error messages)
 
-Raises:
-        Error: If the tensor is not 2D.
+    Raises:
+            Error: If the tensor is not 2D
 
-    Example:
-        ```mojo
-        var x = zeros([2, 3], DType.float32)
-        validate_2d_input(x, "input")  # Passes.
+        Example:
+            ```mojo
+            var x = zeros([2, 3], DType.float32)
+            validate_2d_input(x, "input")  # Passes.
 
-        var y = zeros([2, 3, 4], DType.float32)
-        validate_2d_input(y, "input")  # Raises error
-        ```
+            var y = zeros([2, 3, 4], DType.float32)
+            validate_2d_input(y, "input")  # Raises error
+            ```
     """
     var shape = tensor.shape()
     var ndim = len(shape)
@@ -204,21 +204,21 @@ Raises:
 fn validate_4d_input(tensor: ExTensor, name: String) raises:
     """Validate that a tensor is exactly 4-dimensional.
 
-Args:
-        tensor: The tensor to validate.
-        name: The name of the tensor (for error messages).
+    Args:
+            tensor: The tensor to validate
+            name: The name of the tensor (for error messages)
 
-Raises:
-        Error: If the tensor is not 4D.
+    Raises:
+            Error: If the tensor is not 4D
 
-    Example:
-        ```mojo
-        var x = zeros([2, 3, 4, 5], DType.float32)
-        validate_4d_input(x, "input")  # Passes.
+        Example:
+            ```mojo
+            var x = zeros([2, 3, 4, 5], DType.float32)
+            validate_4d_input(x, "input")  # Passes.
 
-        var y = zeros([2, 3, 4], DType.float32)
-        validate_4d_input(y, "input")  # Raises error
-        ```
+            var y = zeros([2, 3, 4], DType.float32)
+            validate_4d_input(y, "input")  # Raises error
+            ```
     """
     var shape = tensor.shape()
     var ndim = len(shape)
@@ -242,18 +242,18 @@ Raises:
 fn _shape_to_string(shape: List[Int]) -> String:
     """Convert a shape list to a string representation.
 
-Args:
-        shape: The shape as a List[Int].
+    Args:
+            shape: The shape as a List[Int]
 
-Returns:
-        A string like "2, 3, 4" for shape [2, 3, 4].
+    Returns:
+            A string like "2, 3, 4" for shape [2, 3, 4]
     """
     if len(shape) == 0:
-        return "".
+        return ""
 
     var result = String(shape[0])
     for i in range(1, len(shape)):
-        result += ", " + String(shape[i]).
+        result += ", " + String(shape[i])
 
     return result
 
@@ -261,11 +261,11 @@ Returns:
 fn _dtype_to_string(dtype: DType) -> String:
     """Convert a DType to a readable string representation.
 
-Args:
-        dtype: The data type.
+    Args:
+            dtype: The data type
 
-Returns:
-        A string like "float32", "int64", etc.
+    Returns:
+            A string like "float32", "int64", etc.
     """
     if dtype == DType.float32:
         return "float32"
@@ -292,4 +292,4 @@ Returns:
     elif dtype == DType.bool:
         return "bool"
     else:
-        return "unknown".
+        return "unknown"

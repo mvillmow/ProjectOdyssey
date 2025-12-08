@@ -12,28 +12,28 @@ Architecture:
     - Functions return new values, never mutate inputs
 
 Modules:
-    extensor: Core tensor type and creation functions.
+    extensor: Core tensor type and creation functions
     types: Custom data types (FP8 for E4M3, BF8 for E5M2 8-bit floating point)
     arithmetic: Element-wise arithmetic operations (add, subtract, multiply, divide)
     matrix: Matrix operations (matmul, transpose, dot, outer)
     activation: Activation functions (relu, sigmoid, tanh, softmax, gelu)
-    activation_ops: Activation operation utilities (scalar exp functions).
-    linear: Linear transformations.
-    conv: Convolutional operations.
-    pooling: Pooling operations.
+    activation_ops: Activation operation utilities (scalar exp functions)
+    linear: Linear transformations
+    conv: Convolutional operations
+    pooling: Pooling operations
     elementwise: Element-wise math functions (exp, log, sqrt, abs, clip)
     comparison: Comparison operations (equal, less, greater)
-    broadcasting: Broadcasting utilities.
-    initializers: Weight initialization functions.
-    loss: Loss functions.
-    loss_utils: Utility functions for loss computation (clipping, epsilon handling, blending).
-    numerical_safety: NaN/Inf detection, gradient monitoring, numerical stability checks.
-    dtype_dispatch: Generic dtype dispatch helpers for eliminating dtype branching.
-    reduction: Reduction operations (sum, mean, max, min) with forward and backward passes.
-    reduction_utils: Utility functions for reduction operations (coordinate/stride computation).
-    utils: Utility functions (argmax, top_k_indices, top_k, argsort).
-    scalar_ops: Scalar mathematical operations (sqrt, pow for float32 and float64).
-    normalize_ops: Normalization operations for data preprocessing (RGB normalization).
+    broadcasting: Broadcasting utilities
+    initializers: Weight initialization functions
+    loss: Loss functions
+    loss_utils: Utility functions for loss computation (clipping, epsilon handling, blending)
+    numerical_safety: NaN/Inf detection, gradient monitoring, numerical stability checks
+    dtype_dispatch: Generic dtype dispatch helpers for eliminating dtype branching
+    reduction: Reduction operations (sum, mean, max, min) with forward and backward passes
+    reduction_utils: Utility functions for reduction operations (coordinate/stride computation)
+    utils: Utility functions (argmax, top_k_indices, top_k, argsort)
+    scalar_ops: Scalar mathematical operations (sqrt, pow for float32 and float64)
+    normalize_ops: Normalization operations for data preprocessing (RGB normalization)
 
 Example:
    ```mojo

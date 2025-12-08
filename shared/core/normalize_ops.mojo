@@ -1,12 +1,12 @@
 """Normalization operations for data preprocessing.
 
-This module provides pure functional operations for normalizing input data.
+This module provides pure functional operations for normalizing input data
 Unlike normalization.mojo which contains statistical normalization layers
 (batch norm, layer norm, etc.), this module contains utility functions for
 preprocessing and data transformations.
 
 Functions:
-    normalize_rgb: Normalize RGB images with per-channel mean and std deviation.
+    normalize_rgb: Normalize RGB images with per-channel mean and std deviation
 
 Example:
     from shared.core.normalize_ops import normalize_rgb
@@ -33,40 +33,40 @@ fn normalize_rgb(
 ) raises -> ExTensor:
     """Normalize RGB images with per-channel mean and standard deviation.
 
-    Applies normalization to RGB images using the formula:
-        normalized = (pixel / 255.0 - mean) / std.
+        Applies normalization to RGB images using the formula:
+            normalized = (pixel / 255.0 - mean) / std
 
-    This is commonly used with ImageNet statistics for transfer learning.
+        This is commonly used with ImageNet statistics for transfer learning
 
-Args:
-        images: Input uint8 tensor of shape (N, 3, H, W).
-        mean: Mean values for R, G, B channels (e.g., (0.485, 0.456, 0.406)).
-        std: Std deviation values for R, G, B channels (e.g., (0.229, 0.224, 0.225)).
+    Args:
+            images: Input uint8 tensor of shape (N, 3, H, W)
+            mean: Mean values for R, G, B channels (e.g., (0.485, 0.456, 0.406))
+            std: Std deviation values for R, G, B channels (e.g., (0.229, 0.224, 0.225))
 
-Returns:
-        Normalized float32 tensor of shape (N, 3, H, W).
+    Returns:
+            Normalized float32 tensor of shape (N, 3, H, W)
 
-Raises:
-        Error: If input is not 4D or doesn't have 3 channels.
+    Raises:
+            Error: If input is not 4D or doesn't have 3 channels.
 
-    Example:
-        ```mojo
-        from shared.core.normalize_ops import normalize_rgb.
+        Example:
+            ```mojo
+            from shared.core.normalize_ops import normalize_rgb
 
-        # ImageNet normalization
-        var mean = (Float32(0.485), Float32(0.456), Float32(0.406))
-        var std = (Float32(0.229), Float32(0.224), Float32(0.225))
-        var normalized = normalize_rgb(images, mean, std)
-        ```
+            # ImageNet normalization
+            var mean = (Float32(0.485), Float32(0.456), Float32(0.406))
+            var std = (Float32(0.229), Float32(0.224), Float32(0.225))
+            var normalized = normalize_rgb(images, mean, std)
+            ```
 
-Note:
-        - Input must be uint8 [0, 255]
-        - Output is float32 with normalized values
-        - Common for CIFAR-10, ImageNet, and other RGB datasets.
+    Note:
+            - Input must be uint8 [0, 255]
+            - Output is float32 with normalized values
+            - Common for CIFAR-10, ImageNet, and other RGB datasets
     """
     var shape = images.shape()
     if len(shape) != 4:
-        raise Error("normalize_rgb requires 4D input (N, 3, H, W)").
+        raise Error("normalize_rgb requires 4D input (N, 3, H, W)")
 
     var num_images = shape[0]
     var num_channels = shape[1]
@@ -105,7 +105,7 @@ Note:
                     + w
                 )
                 var pixel_r = Float32(src_data[idx_r]) / 255.0
-                dst_data[idx_r] = (pixel_r - mean_r) / std_r.
+                dst_data[idx_r] = (pixel_r - mean_r) / std_r
 
                 # G channel (c=1)
                 var idx_g = (
@@ -115,7 +115,7 @@ Note:
                     + w
                 )
                 var pixel_g = Float32(src_data[idx_g]) / 255.0
-                dst_data[idx_g] = (pixel_g - mean_g) / std_g.
+                dst_data[idx_g] = (pixel_g - mean_g) / std_g
 
                 # B channel (c=2)
                 var idx_b = (
@@ -125,6 +125,6 @@ Note:
                     + w
                 )
                 var pixel_b = Float32(src_data[idx_b]) / 255.0
-                dst_data[idx_b] = (pixel_b - mean_b) / std_b.
+                dst_data[idx_b] = (pixel_b - mean_b) / std_b
 
     return normalized

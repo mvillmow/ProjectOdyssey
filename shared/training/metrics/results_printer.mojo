@@ -32,25 +32,25 @@ fn print_training_progress(
 ) raises:
     """Print formatted training progress during epoch.
 
-    Displays current epoch, batch number, loss value, and learning rate
-    in a consistent format for monitoring training progress.
+        Displays current epoch, batch number, loss value, and learning rate
+        in a consistent format for monitoring training progress
 
-Args:
-        epoch: Current epoch number (1-indexed).
-        total_epochs: Total number of epochs.
-        batch: Current batch number (1-indexed).
-        total_batches: Total number of batches in epoch.
-        loss: Current batch loss value.
-        learning_rate: Current learning rate (default: 0.01).
+    Args:
+            epoch: Current epoch number (1-indexed)
+            total_epochs: Total number of epochs
+            batch: Current batch number (1-indexed)
+            total_batches: Total number of batches in epoch
+            loss: Current batch loss value
+            learning_rate: Current learning rate (default: 0.01)
 
-    Example:
-        ```mojo
-        rint_training_progress(1, 200, 10, 100, 0.234, 0.01)
-        Output:
-        Epoch [1/200] Batch [10/100] Loss: 0.234000 LR: 0.010000
-        ```
+        Example:
+            ```mojo
+            rint_training_progress(1, 200, 10, 100, 0.234, 0.01)
+            Output:
+            Epoch [1/200] Batch [10/100] Loss: 0.234000 LR: 0.010000
+            ```
 
-    Issue: #2353
+        Issue: #2353
     """
     var output = "Epoch [" + String(epoch) + "/" + String(total_epochs) + "] "
     output = (
@@ -77,30 +77,30 @@ fn print_evaluation_summary(
 ) raises:
     """Print formatted evaluation summary after epoch.
 
-    Displays training and test metrics in a clean side-by-side format
-    for easy comparison of model performance.
+        Displays training and test metrics in a clean side-by-side format
+        for easy comparison of model performance
 
-Args:
-        epoch: Current epoch number (1-indexed).
-        total_epochs: Total number of epochs.
-        train_loss: Training loss value.
-        train_accuracy: Training accuracy (0.0 to 1.0).
-        test_loss: Test/validation loss value.
-        test_accuracy: Test/validation accuracy (0.0 to 1.0).
+    Args:
+            epoch: Current epoch number (1-indexed)
+            total_epochs: Total number of epochs
+            train_loss: Training loss value
+            train_accuracy: Training accuracy (0.0 to 1.0)
+            test_loss: Test/validation loss value
+            test_accuracy: Test/validation accuracy (0.0 to 1.0)
 
-    Example:
-        ```mojo
-        rint_evaluation_summary(1, 200, 0.523, 0.923, 0.645, 0.891)
-        Output:
-        ============================================================
-        Epoch [1/200] Results
-        ============================================================
-        Train Loss: 0.523000  Train Acc: 92.30%
-        Test Loss:  0.645000  Test Acc:  89.10%
-        ============================================================
-        ```
+        Example:
+            ```mojo
+            rint_evaluation_summary(1, 200, 0.523, 0.923, 0.645, 0.891)
+            Output:
+            ============================================================
+            Epoch [1/200] Results
+            ============================================================
+            Train Loss: 0.523000  Train Acc: 92.30%
+            Test Loss:  0.645000  Test Acc:  89.10%
+            ============================================================
+            ```
 
-    Issue: #2353
+        Issue: #2353
     """
     print("=" * 60)
     print("Epoch [" + String(epoch) + "/" + String(total_epochs) + "] Results")
@@ -134,36 +134,36 @@ fn print_per_class_accuracy(
 ) raises:
     """Print per-class accuracy metrics in formatted table.
 
-    Displays accuracy for each class in a table format, with optional
-    class names for improved interpretability.
+        Displays accuracy for each class in a table format, with optional
+        class names for improved interpretability
 
-Args:
-        per_class_accuracies: Tensor of shape [num_classes] with per-class accuracy.
-        class_names: Optional list of class name strings (default: empty).
-        column_width: Width of each column in characters (default: 15).
+    Args:
+            per_class_accuracies: Tensor of shape [num_classes] with per-class accuracy
+            class_names: Optional list of class name strings (default: empty)
+            column_width: Width of each column in characters (default: 15)
 
-    Example:
-        ```mojo
-        var per_class = ExTensor(List[Int](10), DType.float64)
-        # ... populate with per-class accuracies ...
-        print_per_class_accuracy(per_class).
+        Example:
+            ```mojo
+            var per_class = ExTensor(List[Int](10), DType.float64)
+            # ... populate with per-class accuracies ...
+            print_per_class_accuracy(per_class)
 
-        Output:
-        ============================================================
-        Per-Class Accuracy
-        ============================================================
-        Class      Accuracy
-        ============================================================
-        0          0.920000
-        1          0.945000
-        ...
-        ```
+            Output:
+            ============================================================
+            Per-Class Accuracy
+            ============================================================
+            Class      Accuracy
+            ============================================================
+            0          0.920000
+            1          0.945000
+            ...
+            ```
 
-Note:
-        If class_names is provided, it must have same length as per_class_accuracies.
-        If class_names is empty, classes are displayed as numeric indices.
+    Note:
+            If class_names is provided, it must have same length as per_class_accuracies
+            If class_names is empty, classes are displayed as numeric indices
 
-    Issue: #2353
+        Issue: #2353
     """
     var shape = per_class_accuracies.shape()
     var num_classes = shape[0]
@@ -176,7 +176,7 @@ Note:
     if len(class_names) > 0:
         print("Class" + " " * 10 + "Accuracy")
     else:
-        print("Class" + " " * 10 + "Accuracy").
+        print("Class" + " " * 10 + "Accuracy")
 
     print("-" * 60)
 
@@ -186,9 +186,9 @@ Note:
         if per_class_accuracies._dtype == DType.float32:
             acc = Float64(per_class_accuracies._data.bitcast[Float32]()[i])
         else:  # float64.
-            acc = per_class_accuracies._data.bitcast[Float64]()[i].
+            acc = per_class_accuracies._data.bitcast[Float64]()[i]
 
-        var acc_str = String(acc).
+        var acc_str = String(acc)
 
         if len(class_names) > 0 and i < len(class_names):
             # Use provided class name
@@ -197,7 +197,7 @@ Note:
         else:
             # Use numeric index
             var class_idx = String(i)
-            print(class_idx + " " * (15 - len(class_idx)) + acc_str).
+            print(class_idx + " " * (15 - len(class_idx)) + acc_str)
 
     print("=" * 60)
 
@@ -215,41 +215,41 @@ fn print_confusion_matrix(
 ) raises:
     """Print confusion matrix in formatted table.
 
-    Displays confusion matrix with proper alignment and optional class names.
-    Can display raw counts or normalized values.
+        Displays confusion matrix with proper alignment and optional class names
+        Can display raw counts or normalized values
 
-Args:
-        matrix: Confusion matrix tensor of shape [num_classes, num_classes].
-        class_names: Optional list of class name strings (default: empty).
-        normalized: If True, display as percentages (default: False).
-        column_width: Width of each column in characters (default: 10).
+    Args:
+            matrix: Confusion matrix tensor of shape [num_classes, num_classes]
+            class_names: Optional list of class name strings (default: empty)
+            normalized: If True, display as percentages (default: False)
+            column_width: Width of each column in characters (default: 10)
 
-    Example:
-        ```mojo
-        var cm = ConfusionMatrix(num_classes=3)
-        # ... populate matrix ...
-        var matrix = cm.normalize(mode="none")
-        print_confusion_matrix(matrix).
+        Example:
+            ```mojo
+            var cm = ConfusionMatrix(num_classes=3)
+            # ... populate matrix ...
+            var matrix = cm.normalize(mode="none")
+            print_confusion_matrix(matrix)
 
-        Output:
-        ============================================================
-        Confusion Matrix (Raw Counts)
-        ============================================================
-              Predicted
-                0    1    2
-        True 0 90    5    5
-             1  3   92    5
-             2  2    4   94
-        ============================================================
-        ```
+            Output:
+            ============================================================
+            Confusion Matrix (Raw Counts)
+            ============================================================
+                  Predicted
+                    0    1    2
+            True 0 90    5    5
+                 1  3   92    5
+                 2  2    4   94
+            ============================================================
+            ```
 
-Note:
-        - Rows represent true labels
-        - Columns represent predicted labels
-        - Values are right-aligned within columns
-        - If class_names provided, used for row/column labels.
+    Note:
+            - Rows represent true labels
+            - Columns represent predicted labels
+            - Values are right-aligned within columns
+            - If class_names provided, used for row/column labels
 
-    Issue: #2353
+        Issue: #2353
     """
     var shape = matrix.shape()
     var num_classes = shape[0]
@@ -280,7 +280,7 @@ Note:
             var padded = idx_str
             while len(padded) < column_width:
                 padded = padded + " "
-            class_header = class_header + padded.
+            class_header = class_header + padded
 
     print(class_header)
 
@@ -297,9 +297,9 @@ Note:
             row_label = "True " + idx_str
         # Pad to label width (8 chars)
         while len(row_label) < 8:
-            row_label = row_label + " ".
+            row_label = row_label + " "
 
-        var row_str = row_label.
+        var row_str = row_label
 
         # Row values
         for c in range(num_classes):
@@ -311,7 +311,7 @@ Note:
             elif matrix._dtype == DType.float32:
                 value = Float64(matrix._data.bitcast[Float32]()[idx])
             else:  # float64
-                value = matrix._data.bitcast[Float64]()[idx].
+                value = matrix._data.bitcast[Float64]()[idx]
 
             var val_str: String
             if normalized:
@@ -319,14 +319,14 @@ Note:
                 var pct = value * 100.0
                 val_str = String(pct)
             else:
-                val_str = String(value).
+                val_str = String(value)
 
             # Right-align value within column width
             while len(val_str) < column_width:
                 val_str = " " + val_str
-            row_str = row_str + val_str.
+            row_str = row_str + val_str
 
-        print(row_str).
+        print(row_str)
 
     print("=" * 60)
 
@@ -345,31 +345,31 @@ fn print_training_summary(
 ) raises:
     """Print final training summary with best metrics.
 
-    Displays consolidated summary of training including best achieved metrics
-    and the epoch at which they occurred.
+        Displays consolidated summary of training including best achieved metrics
+        and the epoch at which they occurred
 
-Args:
-        total_epochs: Total number of epochs trained.
-        best_train_loss: Best training loss achieved.
-        best_test_loss: Best test/validation loss achieved.
-        best_accuracy: Best accuracy achieved (0.0 to 1.0).
-        best_epoch: Epoch at which best accuracy was achieved.
+    Args:
+            total_epochs: Total number of epochs trained
+            best_train_loss: Best training loss achieved
+            best_test_loss: Best test/validation loss achieved
+            best_accuracy: Best accuracy achieved (0.0 to 1.0)
+            best_epoch: Epoch at which best accuracy was achieved
 
-    Example:
-        ```mojo
-        rint_training_summary(200, 0.034, 0.156, 0.965, 187)
-        Output:
-        ============================================================
-        Training Summary
-        ============================================================
-        Total Epochs:        200
-        Best Train Loss:     0.034000 (Epoch 187)
-        Best Test Loss:      0.156000
-        Best Accuracy:       96.50%
-        ============================================================
-        ```
+        Example:
+            ```mojo
+            rint_training_summary(200, 0.034, 0.156, 0.965, 187)
+            Output:
+            ============================================================
+            Training Summary
+            ============================================================
+            Total Epochs:        200
+            Best Train Loss:     0.034000 (Epoch 187)
+            Best Test Loss:      0.156000
+            Best Accuracy:       96.50%
+            ============================================================
+            ```
 
-    Issue: #2353
+        Issue: #2353
     """
     var best_acc_pct = best_accuracy * 100.0
 

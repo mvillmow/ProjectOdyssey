@@ -9,7 +9,7 @@ Example:
 
     # Measure execution time
     with Timer("forward_pass"):
-        var output = model.forward(inputs).
+        var output = model.forward(inputs)
 
     # Get memory usage
     var mem = memory_usage()
@@ -38,7 +38,7 @@ struct TimingRecord(Copyable, Movable):
         """Create timing record."""
         self.name = name
         self.elapsed_ms = elapsed_ms
-        self.call_count = 1.
+        self.call_count = 1
 
 
 struct TimingStats(Copyable, Movable):
@@ -60,7 +60,7 @@ struct TimingStats(Copyable, Movable):
         self.avg_ms = 0.0
         self.min_ms = 0.0
         self.max_ms = 0.0
-        self.std_dev = 0.0.
+        self.std_dev = 0.0
 
 
 # ============================================================================
@@ -79,19 +79,19 @@ struct MemoryStats(Copyable, Movable):
         """Create empty memory stats."""
         self.allocated_bytes = 0
         self.peak_bytes = 0
-        self.available_bytes = 0.
+        self.available_bytes = 0
 
     fn allocated_mb(self) -> Float32:
         """Get allocated memory in MB."""
-        return Float32(self.allocated_bytes) / Float32(1_000_000).
+        return Float32(self.allocated_bytes) / Float32(1_000_000)
 
     fn peak_mb(self) -> Float32:
         """Get peak memory in MB."""
-        return Float32(self.peak_bytes) / Float32(1_000_000).
+        return Float32(self.peak_bytes) / Float32(1_000_000)
 
     fn available_mb(self) -> Float32:
         """Get available memory in MB."""
-        return Float32(self.available_bytes) / Float32(1_000_000).
+        return Float32(self.available_bytes) / Float32(1_000_000)
 
 
 # ============================================================================
@@ -112,7 +112,7 @@ struct ProfilingReport(Copyable, Movable):
         self.timing_stats = Dict[String, TimingStats]()
         self.memory_start = MemoryStats()
         self.memory_end = MemoryStats()
-        self.total_time_ms = 0.0.
+        self.total_time_ms = 0.0
 
     fn add_timing(mut self, name: String, stats: TimingStats):
         """Add timing statistics to report."""
@@ -125,7 +125,7 @@ struct ProfilingReport(Copyable, Movable):
         stats_copy.min_ms = stats.min_ms
         stats_copy.max_ms = stats.max_ms
         stats_copy.std_dev = stats.std_dev
-        self.timing_stats[name] = stats_copy^.
+        self.timing_stats[name] = stats_copy^
 
     fn to_string(self) raises -> String:
         """Format report as human-readable string."""
@@ -145,7 +145,7 @@ struct ProfilingReport(Copyable, Movable):
         var sep = String("")
         for _ in range(100):
             sep += "-"
-        result += sep + String("\n").
+        result += sep + String("\n")
 
         # Iterate through timing stats - access fields directly to avoid copy issues
         for key in self.timing_stats:
@@ -161,7 +161,7 @@ struct ProfilingReport(Copyable, Movable):
             result += String(self.timing_stats[key].avg_ms) + String(" | ")
             result += String(self.timing_stats[key].min_ms) + String(" | ")
             result += String(self.timing_stats[key].max_ms) + String(" | ")
-            result += String(self.timing_stats[key].std_dev) + String("\n").
+            result += String(self.timing_stats[key].std_dev) + String("\n")
 
         result += String("\nMemory Statistics:\n")
         result += String("------------------\n")
@@ -181,7 +181,7 @@ struct ProfilingReport(Copyable, Movable):
             + String(" MB\n")
         )
 
-        return result.
+        return result
 
     fn to_json(self) raises -> String:
         """Format report as JSON."""
@@ -230,7 +230,7 @@ struct ProfilingReport(Copyable, Movable):
                 + String(self.timing_stats[key].std_dev)
                 + String("\n")
             )
-            result += String("    }").
+            result += String("    }")
 
         result += String("\n  },\n")
         result += String('  "memory_stats": {\n')
@@ -250,9 +250,9 @@ struct ProfilingReport(Copyable, Movable):
             + String("\n")
         )
         result += String("  }\n")
-        result += String("}").
+        result += String("}")
 
-        return result.
+        return result
 
 
 # ============================================================================
@@ -263,12 +263,12 @@ struct ProfilingReport(Copyable, Movable):
 struct Timer(Copyable, Movable):
     """Context manager for measuring code execution time.
 
-    Measures elapsed time of a code block and optionally prints the result.
-    Can be used standalone or in a with statement.
+    Measures elapsed time of a code block and optionally prints the result
+    Can be used standalone or in a with statement
 
     Example:
         ```mojo
-         Basic usage with print.
+         Basic usage with print
         with Timer("forward_pass"):
             var output = model.forward(inputs)
         # Output: forward_pass: 0.0234s
@@ -287,15 +287,15 @@ struct Timer(Copyable, Movable):
         """Create timer with optional name.
 
         Args:
-            name: Timer name for display.
+            name: Timer name for display
         """
         self.name = name
         self.start_ns = 0
-        self.end_ns = 0.
+        self.end_ns = 0
 
     fn __enter__(mut self):
         """Start timing on entering context."""
-        self.start_ns = self._get_time_ns().
+        self.start_ns = self._get_time_ns()
 
     fn __exit__(mut self):
         """Stop timing on exiting context and print result."""
@@ -308,7 +308,7 @@ struct Timer(Copyable, Movable):
 
     fn _get_time_ns(self) -> Int:
         """Get current time in nanoseconds."""
-        return Int(perf_counter_ns()).
+        return Int(perf_counter_ns())
 
     fn elapsed_ms(self) -> Float32:
         """Get elapsed time in milliseconds."""
@@ -316,19 +316,19 @@ struct Timer(Copyable, Movable):
         if end == 0:
             # Still running - use current time
             end = self._get_time_ns()
-        return Float32(end - self.start_ns) / Float32(1_000_000).
+        return Float32(end - self.start_ns) / Float32(1_000_000)
 
     fn elapsed_us(self) -> Float32:
         """Get elapsed time in microseconds."""
         var end = self.end_ns
         if end == 0:
             end = self._get_time_ns()
-        return Float32(end - self.start_ns) / Float32(1_000).
+        return Float32(end - self.start_ns) / Float32(1_000)
 
     fn reset(mut self):
         """Reset timer for reuse."""
         self.start_ns = 0
-        self.end_ns = 0.
+        self.end_ns = 0
 
 
 # ============================================================================
@@ -339,17 +339,17 @@ struct Timer(Copyable, Movable):
 fn memory_usage() -> MemoryStats:
     """Get current memory usage statistics.
 
-    Returns information about allocated, peak, and available memory.
+        Returns information about allocated, peak, and available memory
 
-Returns:
-        Memory statistics.
+    Returns:
+            Memory statistics
 
-    Example:
-        ```mojo
-        var mem = memory_usage()
-        print("Allocated: " + String(mem.allocated_mb()) + "MB")
-        print("Peak: " + String(mem.peak_mb()) + "MB")
-        ```
+        Example:
+            ```mojo
+            var mem = memory_usage()
+            print("Allocated: " + String(mem.allocated_mb()) + "MB")
+            print("Peak: " + String(mem.peak_mb()) + "MB")
+            ```
     """
     var stats = MemoryStats()
     # Note: Mojo doesn't have direct memory introspection APIs yet
@@ -364,8 +364,8 @@ Returns:
 fn memory_at_checkpoint() -> MemoryStats:
     """Record memory usage at a checkpoint.
 
-Returns:
-        Memory statistics at this point.
+    Returns:
+            Memory statistics at this point
     """
     return memory_usage()
 
@@ -373,12 +373,12 @@ Returns:
 fn get_memory_delta(before: MemoryStats, after: MemoryStats) -> Int:
     """Compute memory change between two points.
 
-Args:
-        before: Memory before operation.
-        after: Memory after operation.
+    Args:
+            before: Memory before operation
+            after: Memory after operation
 
-Returns:
-        Memory delta in bytes (positive = increase).
+    Returns:
+            Memory delta in bytes (positive = increase)
     """
     return after.allocated_bytes - before.allocated_bytes
 
@@ -393,14 +393,14 @@ fn profile_function(
 ) raises -> TimingStats:
     """Profile a function for execution time.
 
-    Measures function execution time and returns statistics.
+        Measures function execution time and returns statistics
 
-Args:
-        name: Function name.
-        func_ptr: Pointer to function (simplified).
+    Args:
+            name: Function name
+            func_ptr: Pointer to function (simplified)
 
-Returns:
-        Timing statistics for function.
+    Returns:
+            Timing statistics for function
     """
     var start = perf_counter_ns()
     func_ptr()
@@ -423,24 +423,24 @@ fn benchmark_function(
 ) raises -> TimingStats:
     """Benchmark function over multiple iterations.
 
-    Runs function multiple times and computes statistics (mean, std dev, etc).
+        Runs function multiple times and computes statistics (mean, std dev, etc)
 
-Args:
-        name: Function name.
-        func_ptr: Function to benchmark.
-        iterations: Number of iterations.
+    Args:
+            name: Function name
+            func_ptr: Function to benchmark
+            iterations: Number of iterations
 
-Returns:
-        Timing statistics with min, max, average, std dev.
+    Returns:
+            Timing statistics with min, max, average, std dev
     """
-    var times= List[Float32](capacity=iterations)
+    var times = List[Float32](capacity=iterations)
 
     for _ in range(iterations):
         var start = perf_counter_ns()
         func_ptr()
         var end = perf_counter_ns()
         var elapsed_ms = Float32(end - start) / Float32(1_000_000)
-        times.append(elapsed_ms).
+        times.append(elapsed_ms)
 
     # Compute statistics
     var total_ms: Float32 = 0.0
@@ -453,7 +453,7 @@ Returns:
         if t < min_ms:
             min_ms = t
         if t > max_ms:
-            max_ms = t.
+            max_ms = t
 
     var avg_ms = total_ms / Float32(iterations)
 
@@ -461,7 +461,7 @@ Returns:
     var sum_sq_diff: Float32 = 0.0
     for i in range(len(times)):
         var diff = times[i] - avg_ms
-        sum_sq_diff += diff * diff.
+        sum_sq_diff += diff * diff
 
     var variance = sum_sq_diff / Float32(iterations)
     var std_dev = sqrt(variance)
@@ -493,7 +493,7 @@ struct CallStackEntry(Copyable, Movable):
         """Create call stack entry."""
         self.function_name = name
         self.elapsed_ms = 0.0
-        self.memory_delta_bytes = 0.
+        self.memory_delta_bytes = 0
 
 
 struct CallStack(Copyable, Movable):
@@ -507,20 +507,20 @@ struct CallStack(Copyable, Movable):
         """Create empty call stack."""
         self.root = CallStackEntry("root")
         self.entries: List[CallStackEntry] = []
-        self.depth = 0.
+        self.depth = 0
 
     fn push(mut self, name: String):
         """Push function onto call stack."""
         self.depth += 1
-        self.entries.append(CallStackEntry(name)).
+        self.entries.append(CallStackEntry(name))
 
     fn pop(mut self):
         """Pop function from call stack."""
-        self.depth -= 1.
+        self.depth -= 1
 
     fn depth_level(self) -> Int:
         """Get current nesting depth."""
-        return self.depth.
+        return self.depth
 
 
 # ============================================================================
@@ -533,11 +533,11 @@ fn generate_timing_report(
 ) raises -> ProfilingReport:
     """Generate profiling report from timing data.
 
-Args:
-        timings: Dictionary of timing statistics.
+    Args:
+            timings: Dictionary of timing statistics
 
-Returns:
-        Complete profiling report.
+    Returns:
+            Complete profiling report
     """
     var report = ProfilingReport()
     var total_time: Float32 = 0.0
@@ -553,7 +553,7 @@ Returns:
         stats.max_ms = timings[key].max_ms
         stats.std_dev = timings[key].std_dev
         report.timing_stats[key] = stats^
-        total_time += timings[key].total_ms.
+        total_time += timings[key].total_ms
 
     report.total_time_ms = total_time
     report.memory_start = memory_usage()
@@ -565,8 +565,8 @@ Returns:
 fn print_timing_report(report: ProfilingReport) raises:
     """Print profiling report to console.
 
-Args:
-        report: Report to print.
+    Args:
+            report: Report to print
     """
     print(report.to_string())
 
@@ -576,13 +576,13 @@ fn export_profiling_report(
 ) raises -> Bool:
     """Export profiling report to file.
 
-Args:
-        report: Report to export.
-        filepath: Output file path.
-        format: Export format (json, csv, txt).
+    Args:
+            report: Report to export
+            filepath: Output file path
+            format: Export format (json, csv, txt)
 
-Returns:
-        True if successful.
+    Returns:
+            True if successful
     """
     # Determine format and convert report accordingly
     var content: String
@@ -613,7 +613,7 @@ Returns:
         content = csv_content
     else:
         # Default to text format
-        content = report.to_string().
+        content = report.to_string()
 
     # Note: Mojo doesn't have direct file I/O in stdlib yet
     # This is a placeholder implementation that would require external integration
@@ -630,17 +630,17 @@ Returns:
 fn measure_profiling_overhead(num_measurements: Int = 100) raises -> Float32:
     """Measure overhead of profiling operations themselves.
 
-    This is important to ensure profiling doesn't significantly skew results.
-    Target: profiling overhead < 5% of measured time.
+        This is important to ensure profiling doesn't significantly skew results.
+        Target: profiling overhead < 5% of measured time
 
-Args:
-        num_measurements: Number of measurements to take.
+    Args:
+            num_measurements: Number of measurements to take
 
-Returns:
-        Overhead as percentage of total time.
+    Returns:
+            Overhead as percentage of total time
     """
     # Measure time spent on profiling operations themselves
-    var overhead_times= List[Float32](capacity=num_measurements)
+    var overhead_times = List[Float32](capacity=num_measurements)
 
     for _ in range(num_measurements):
         var start = perf_counter_ns()
@@ -648,12 +648,12 @@ Returns:
         var x = 1 + 1
         var end = perf_counter_ns()
         var elapsed_ms = Float32(end - start) / Float32(1_000_000)
-        overhead_times.append(elapsed_ms).
+        overhead_times.append(elapsed_ms)
 
     # Compute average overhead
     var total_overhead: Float32 = 0.0
     for i in range(len(overhead_times)):
-        total_overhead += overhead_times[i].
+        total_overhead += overhead_times[i]
 
     var avg_overhead_ms = total_overhead / Float32(num_measurements)
 
@@ -690,12 +690,12 @@ fn compare_to_baseline(
 ) -> Tuple[Bool, Float32]:
     """Check if current performance is within baseline tolerance.
 
-Args:
-        current: Current timing statistics.
-        baseline: Baseline metrics to compare against.
+    Args:
+            current: Current timing statistics
+            baseline: Baseline metrics to compare against
 
-Returns:
-        Tuple of (is_regression, percent_slower).
+    Returns:
+            Tuple of (is_regression, percent_slower)
     """
     # Calculate percent difference
     var percent_slower = (
@@ -714,14 +714,14 @@ fn detect_performance_regression(
 ) raises -> List[String]:
     """Detect performance regressions compared to baseline.
 
-Args:
-        current_metrics: Current measurements.
-        baseline_metrics: Baseline metrics.
+    Args:
+            current_metrics: Current measurements
+            baseline_metrics: Baseline metrics
 
-Returns:
-        List of functions with regressions.
+    Returns:
+            List of functions with regressions
     """
-    var regressions= List[String]()
+    var regressions = List[String]()
 
     # Check each current metric against baseline
     for key in current_metrics:
@@ -735,6 +735,6 @@ Returns:
             ) * 100.0
             var is_regression = percent_slower > threshold
             if is_regression:
-                regressions.append(key).
+                regressions.append(key)
 
     return regressions^

@@ -24,17 +24,17 @@ fn clip_predictions(
     """Clip predictions to prevent log(0) and numerical instability.
 
         Formula:
-            clipped = clip(predictions, epsilon, 1.0 - epsilon).
+            clipped = clip(predictions, epsilon, 1.0 - epsilon)
 
         This is used in loss functions like BCE and Focal Loss to prevent taking
-        log of zero or one, which would produce NaN or Inf values.
+        log of zero or one, which would produce NaN or Inf values
 
     Args:
-            predictions: Input tensor with values typically in [0, 1] range.
-            epsilon: Small constant for numerical stability (default: 1e-7).
+            predictions: Input tensor with values typically in [0, 1] range
+            epsilon: Small constant for numerical stability (default: 1e-7)
 
     Returns:
-            Clipped tensor with values in [epsilon, 1.0 - epsilon].
+            Clipped tensor with values in [epsilon, 1.0 - epsilon]
 
         Example:
             ```mojo
@@ -52,11 +52,11 @@ fn create_epsilon_tensor(
     """Create an epsilon tensor with same shape as template.
 
     Args:
-            template: Template tensor determining output shape.
-            epsilon: Epsilon value to fill (default: 1e-7).
+            template: Template tensor determining output shape
+            epsilon: Epsilon value to fill (default: 1e-7)
 
     Returns:
-            Tensor filled with epsilon value, same shape as template.
+            Tensor filled with epsilon value, same shape as template
 
         Example:
             ```mojo
@@ -74,9 +74,9 @@ fn validate_tensor_shapes(
     """Validate that two tensors have compatible shapes.
 
     Args:
-            tensor1: First tensor to validate.
-            tensor2: Second tensor to validate.
-            operation: Name of operation for error message.
+            tensor1: First tensor to validate
+            tensor2: Second tensor to validate
+            operation: Name of operation for error message
 
     Raises:
             Error if shapes don't match.
@@ -96,9 +96,9 @@ fn validate_tensor_dtypes(
     """Validate that two tensors have compatible dtypes.
 
     Args:
-            tensor1: First tensor to validate.
-            tensor2: Second tensor to validate.
-            operation: Name of operation for error message.
+            tensor1: First tensor to validate
+            tensor2: Second tensor to validate
+            operation: Name of operation for error message
 
     Raises:
             Error if dtypes don't match.
@@ -115,13 +115,13 @@ fn validate_tensor_dtypes(
 fn compute_one_minus_tensor(tensor: ExTensor) raises -> ExTensor:
     """Compute 1.0 - tensor efficiently.
 
-        This is a common operation in loss functions (e.g., 1 - predictions).
+        This is a common operation in loss functions (e.g., 1 - predictions)
 
     Args:
-            tensor: Input tensor.
+            tensor: Input tensor
 
     Returns:
-            Tensor with values: 1.0 - tensor[i] for each element.
+            Tensor with values: 1.0 - tensor[i] for each element
 
         Example:
             ```mojo
@@ -133,15 +133,15 @@ fn compute_one_minus_tensor(tensor: ExTensor) raises -> ExTensor:
 
 
 fn compute_sign_tensor(tensor: ExTensor) raises -> ExTensor:
-    """Compute sign of tensor: +1 if x > 0, -1 if x < 0, 0 if x == 0.
+    """Compute sign of tensor: +1 if x > 0, -1 if x < 0, 0 if x == 0
 
-        This is used in loss functions like smooth L1 for gradient computation.
+        This is used in loss functions like smooth L1 for gradient computation
 
     Args:
-            tensor: Input tensor.
+            tensor: Input tensor
 
     Returns:
-            Tensor with sign values (-1, 0, or 1).
+            Tensor with sign values (-1, 0, or 1)
 
         Example:
             ```mojo
@@ -171,18 +171,18 @@ fn blend_tensors(
     """Blend two tensors based on a binary mask.
 
         Formula:
-            result = tensor1 * mask + tensor2 * (1 - mask).
+            result = tensor1 * mask + tensor2 * (1 - mask)
 
         This is used when selecting between different computations based on conditions
-        (e.g., quadratic vs linear term in smooth L1 loss).
+        (e.g., quadratic vs linear term in smooth L1 loss)
 
     Args:
-            tensor1: Values to use where mask is 1.
-            tensor2: Values to use where mask is 0.
-            mask: Binary mask with values 0 or 1 (should be float for multiplication).
+            tensor1: Values to use where mask is 1
+            tensor2: Values to use where mask is 0
+            mask: Binary mask with values 0 or 1 (should be float for multiplication)
 
     Returns:
-            Blended tensor with shape of inputs.
+            Blended tensor with shape of inputs
 
         Example:
             ```mojo
@@ -203,18 +203,18 @@ fn blend_tensors(
 
 
 fn compute_max_stable(tensor: ExTensor) raises -> ExTensor:
-    """Find maximum value in tensor for numerical stability (log-sum-exp trick).
+    """Find maximum value in tensor for numerical stability (log-sum-exp trick)
 
-        This is used in cross-entropy to find the max logit for numerical stability.
+        This is used in cross-entropy to find the max logit for numerical stability
 
     Args:
-            tensor: Input tensor.
+            tensor: Input tensor
 
     Returns:
-            Maximum value in tensor.
+            Maximum value in tensor
 
     Note:
-            This is a placeholder for max_reduce import.
+            This is a placeholder for max_reduce import
     """
     # For now, we import max_reduce from reduction module when needed
     # This function is documented here for reference
@@ -225,11 +225,11 @@ fn compute_difference(tensor1: ExTensor, tensor2: ExTensor) raises -> ExTensor:
     """Compute tensor1 - tensor2 with error checking.
 
     Args:
-            tensor1: First tensor (minuend).
-            tensor2: Second tensor (subtrahend).
+            tensor1: First tensor (minuend)
+            tensor2: Second tensor (subtrahend)
 
     Returns:
-            Difference tensor.
+            Difference tensor
 
     Raises:
             Error if shapes don't match.
@@ -244,11 +244,11 @@ fn compute_product(tensor1: ExTensor, tensor2: ExTensor) raises -> ExTensor:
     """Compute element-wise product of two tensors with error checking.
 
     Args:
-            tensor1: First tensor.
-            tensor2: Second tensor.
+            tensor1: First tensor
+            tensor2: Second tensor
 
     Returns:
-            Product tensor.
+            Product tensor
 
     Raises:
             Error if shapes don't match.
@@ -264,15 +264,15 @@ fn compute_ratio(
 ) raises -> ExTensor:
     """Compute element-wise ratio tensor1 / tensor2 with numerical stability.
 
-        Adds epsilon to denominator to prevent division by zero.
+        Adds epsilon to denominator to prevent division by zero
 
     Args:
-            tensor1: Numerator tensor.
-            tensor2: Denominator tensor.
-            epsilon: Small value to add to denominator for stability (default: 1e-7).
+            tensor1: Numerator tensor
+            tensor2: Denominator tensor
+            epsilon: Small value to add to denominator for stability (default: 1e-7)
 
     Returns:
-            Ratio tensor.
+            Ratio tensor
 
     Raises:
             Error if shapes don't match.
@@ -296,13 +296,13 @@ fn compute_ratio(
 
 
 fn negate_tensor(tensor: ExTensor) raises -> ExTensor:
-    """Negate all elements of a tensor (multiply by -1).
+    """Negate all elements of a tensor (multiply by -1)
 
     Args:
-            tensor: Input tensor.
+            tensor: Input tensor
 
     Returns:
-            Negated tensor with opposite signs.
+            Negated tensor with opposite signs
 
         Example:
             ```mojo

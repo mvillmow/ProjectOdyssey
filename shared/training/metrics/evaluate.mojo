@@ -32,26 +32,26 @@ fn evaluate_with_predict(
 ) raises -> Float32:
     """Evaluate model using pre-computed predictions.
 
-    Lightweight evaluation function for models where predictions have
-    already been computed (e.g., from model.predict() in a loop).
+        Lightweight evaluation function for models where predictions have
+        already been computed (e.g., from model.predict() in a loop)
 
-Args:
-        predictions: List of predicted class indices.
-        labels: Ground truth labels [batch_size].
+    Args:
+            predictions: List of predicted class indices
+            labels: Ground truth labels [batch_size]
 
-Returns:
-        Accuracy as fraction in [0.0, 1.0].
+    Returns:
+            Accuracy as fraction in [0.0, 1.0]
 
-Raises:
-        Error: If predictions and labels have different lengths.
+    Raises:
+            Error: If predictions and labels have different lengths
 
-    Example:
-        ```mojo
-        var predictions = List[Int]()
-        for sample in test_images:
-            predictions.append(model.predict(sample))
-        var accuracy = evaluate_with_predict(predictions, test_labels)
-        ```
+        Example:
+            ```mojo
+            var predictions = List[Int]()
+            for sample in test_images:
+                predictions.append(model.predict(sample))
+            var accuracy = evaluate_with_predict(predictions, test_labels)
+            ```
     """
     if len(predictions) != labels._numel:
         raise Error(
@@ -62,10 +62,10 @@ Raises:
     var correct = 0
     for i in range(len(predictions)):
         var pred_val = predictions[i]
-        var true_label = Int(labels[i]).
+        var true_label = Int(labels[i])
 
         if pred_val == true_label:
-            correct += 1.
+            correct += 1
 
     return Float32(correct) / Float32(len(predictions))
 
@@ -73,24 +73,24 @@ Raises:
 fn evaluate_logits_batch(logits: ExTensor, labels: ExTensor) raises -> Float32:
     """Evaluate using logits (2D) by computing argmax per sample.
 
-    Evaluates a batch of logits by computing argmax for each sample
-    and comparing with true labels.
+        Evaluates a batch of logits by computing argmax for each sample
+        and comparing with true labels
 
-Args:
-        logits: Model logits of shape [batch_size, num_classes].
-        labels: Ground truth labels [batch_size].
+    Args:
+            logits: Model logits of shape [batch_size, num_classes]
+            labels: Ground truth labels [batch_size]
 
-Returns:
-        Accuracy as fraction in [0.0, 1.0].
+    Returns:
+            Accuracy as fraction in [0.0, 1.0]
 
-Raises:
-        Error: If shapes are incompatible.
+    Raises:
+            Error: If shapes are incompatible
 
-    Example:
-        ```mojo
-        var logits = model.forward(test_images, training=False)
-        var accuracy = evaluate_logits_batch(logits, test_labels)
-        ```
+        Example:
+            ```mojo
+            var logits = model.forward(test_images, training=False)
+            var accuracy = evaluate_logits_batch(logits, test_labels)
+            ```
     """
     var shape_vec = logits.shape()
     if len(shape_vec) != 2:
@@ -110,18 +110,18 @@ Raises:
     for i in range(batch_size):
         # Find argmax for this sample
         var max_idx = 0
-        var max_val = logits_data[i * num_classes].
+        var max_val = logits_data[i * num_classes]
 
         for c in range(1, num_classes):
             var idx = i * num_classes + c
             if logits_data[idx] > max_val:
                 max_val = logits_data[idx]
-                max_idx = c.
+                max_idx = c
 
         # Compare with true label
         var true_label = Int(labels[i])
         if max_idx == true_label:
-            correct += 1.
+            correct += 1
 
     return Float32(correct) / Float32(batch_size)
 
@@ -129,28 +129,28 @@ Raises:
 fn compute_accuracy_on_batch(
     predictions: ExTensor, labels: ExTensor
 ) raises -> Float32:
-    """Compute accuracy for a single batch (simple utility).
+    """Compute accuracy for a single batch (simple utility)
 
-    Lightweight function for computing accuracy on a single batch without
-    batching logic. Useful for inline accuracy computation during training.
+        Lightweight function for computing accuracy on a single batch without
+        batching logic. Useful for inline accuracy computation during training
 
-Args:
-        predictions: Model predictions/logits of shape [batch_size, num_classes].
-                    or predicted class indices [batch_size]
-        labels: Ground truth labels [batch_size].
+    Args:
+            predictions: Model predictions/logits of shape [batch_size, num_classes]
+                        or predicted class indices [batch_size]
+            labels: Ground truth labels [batch_size]
 
-Returns:
-        Accuracy as fraction in [0.0, 1.0].
+    Returns:
+            Accuracy as fraction in [0.0, 1.0]
 
-Raises:
-        Error: If batch sizes don't match.
+    Raises:
+            Error: If batch sizes don't match.
 
-    Example:
-        ```mojo
-         During training loop
-        var batch_acc = compute_accuracy_on_batch(logits, batch_labels)
-        print("Batch accuracy: ", batch_acc)
-        ```
+        Example:
+            ```mojo
+             During training loop
+            var batch_acc = compute_accuracy_on_batch(logits, batch_labels)
+            print("Batch accuracy: ", batch_acc)
+            ```
     """
     var pred_shape = predictions.shape()
     var batch_size = 0
@@ -175,18 +175,18 @@ Raises:
     if len(pred_shape) == 2:
         # Predictions are logits, compute argmax
         var num_classes = pred_shape[1]
-        var pred_data = predictions._data.bitcast[Float32]().
+        var pred_data = predictions._data.bitcast[Float32]()
 
         for i in range(batch_size):
             # Find argmax for this sample
             var max_idx = 0
-            var max_val = pred_data[i * num_classes].
+            var max_val = pred_data[i * num_classes]
 
             for c in range(1, num_classes):
                 var idx = i * num_classes + c
                 if pred_data[idx] > max_val:
                     max_val = pred_data[idx]
-                    max_idx = c.
+                    max_idx = c
 
             # Compare with true label
             var true_label = Int(labels[i])
@@ -196,9 +196,9 @@ Raises:
         # Predictions are already class indices
         for i in range(batch_size):
             var pred_val = Int(predictions[i])
-            var true_label = Int(labels[i]).
+            var true_label = Int(labels[i])
 
             if pred_val == true_label:
-                correct += 1.
+                correct += 1
 
     return Float32(correct) / Float32(batch_size)

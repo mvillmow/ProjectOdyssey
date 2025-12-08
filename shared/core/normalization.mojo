@@ -1,6 +1,6 @@
 """Functional normalization layers.
 
-This module provides pure functional implementations of normalization operations.
+This module provides pure functional implementations of normalization operations
 All operations are stateless - caller manages running statistics and parameters.
 """
 
@@ -29,66 +29,66 @@ fn batch_norm2d(
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Functional 2D batch normalization.
 
-    Normalizes activations across the batch dimension for each channel.
-    Returns updated running statistics (pure functional - caller must capture).
+        Normalizes activations across the batch dimension for each channel
+        Returns updated running statistics (pure functional - caller must capture)
 
-Args:
-        x: Input tensor of shape (batch, channels, height, width).
-        gamma: Scale parameter of shape (channels,).
-        beta: Shift parameter of shape (channels,).
-        running_mean: Running mean of shape (channels,).
-        running_var: Running variance of shape (channels,).
-        training: If True, use batch statistics and update running stats.
-                 If False, use running statistics.
-        momentum: Momentum for running statistics update (default: 0.1).
-        epsilon: Small constant for numerical stability (default: 1e-5).
+    Args:
+            x: Input tensor of shape (batch, channels, height, width)
+            gamma: Scale parameter of shape (channels,)
+            beta: Shift parameter of shape (channels,)
+            running_mean: Running mean of shape (channels,)
+            running_var: Running variance of shape (channels,)
+            training: If True, use batch statistics and update running stats
+                     If False, use running statistics
+            momentum: Momentum for running statistics update (default: 0.1)
+            epsilon: Small constant for numerical stability (default: 1e-5)
 
-Returns:
-        Tuple of (output, new_running_mean, new_running_var):
-            - output: Normalized tensor, shape (batch, channels, height, width)
-            - new_running_mean: Updated running mean, shape (channels,)
-            - new_running_var: Updated running variance, shape (channels,)
+    Returns:
+            Tuple of (output, new_running_mean, new_running_var):
+                - output: Normalized tensor, shape (batch, channels, height, width)
+                - new_running_mean: Updated running mean, shape (channels,)
+                - new_running_var: Updated running variance, shape (channels,)
 
-    Example:
-        ```mojo
-        from shared.core import batch_norm2d, zeros, ones.
+        Example:
+            ```mojo
+            from shared.core import batch_norm2d, zeros, ones
 
-        var gamma = ones([channels])
-        var beta = zeros([channels])
-        var running_mean = zeros([channels])
-        var running_var = ones([channels]).
+            var gamma = ones([channels])
+            var beta = zeros([channels])
+            var running_mean = zeros([channels])
+            var running_var = ones([channels])
 
-        # Training mode
-        var (output, new_mean, new_var) = batch_norm2d(
-            x, gamma, beta, running_mean, running_var,
-            training=True, momentum=0.1
-        )
-        # Update running stats
-        running_mean = new_mean
-        running_var = new_var.
+            # Training mode
+            var (output, new_mean, new_var) = batch_norm2d(
+                x, gamma, beta, running_mean, running_var,
+                training=True, momentum=0.1
+            )
+            # Update running stats
+            running_mean = new_mean
+            running_var = new_var
 
-        # Inference mode
-        var (output, _, _) = batch_norm2d(
-            x, gamma, beta, running_mean, running_var,
-            training=False
-        )
-        ```
+            # Inference mode
+            var (output, _, _) = batch_norm2d(
+                x, gamma, beta, running_mean, running_var,
+                training=False
+            )
+            ```
 
-    Formula (training):
-        mean = mean(x, axis=(0, 2, 3))  # Per channel
-        var = var(x, axis=(0, 2, 3))
-        x_norm = (x - mean) / sqrt(var + epsilon)
-        output = gamma * x_norm + beta
-        running_mean = (1 - momentum) * running_mean + momentum * mean
-        running_var = (1 - momentum) * running_var + momentum * var.
+        Formula (training):
+            mean = mean(x, axis=(0, 2, 3))  # Per channel
+            var = var(x, axis=(0, 2, 3))
+            x_norm = (x - mean) / sqrt(var + epsilon)
+            output = gamma * x_norm + beta
+            running_mean = (1 - momentum) * running_mean + momentum * mean
+            running_var = (1 - momentum) * running_var + momentum * var
 
-    Formula (inference):
-        x_norm = (x - running_mean) / sqrt(running_var + epsilon)
-        output = gamma * x_norm + beta.
+        Formula (inference):
+            x_norm = (x - running_mean) / sqrt(running_var + epsilon)
+            output = gamma * x_norm + beta
 
-Note:
-        Pure functional: caller must capture and manage all three return values.
-        Running statistics are updated only during training mode.
+    Note:
+            Pure functional: caller must capture and manage all three return values
+            Running statistics are updated only during training mode
     """
     var x_shape = x.shape()
     if len(x_shape) != 4:
@@ -103,16 +103,16 @@ Note:
 
     if training:
         # Training mode: compute batch statistics
-        # Compute mean and variance per channel across (batch, height, width).
+        # Compute mean and variance per channel across (batch, height, width)
 
         var batch_mean = zeros([channels], x.dtype())
-        var batch_var = zeros([channels], x.dtype()).
+        var batch_var = zeros([channels], x.dtype())
 
         var batch_mean_ptr = batch_mean._data
         var batch_var_ptr = batch_var._data
-        var x_ptr = x._data.
+        var x_ptr = x._data
 
-        var spatial_size = Float32(batch * height * width).
+        var spatial_size = Float32(batch * height * width)
 
         # Compute mean per channel
         if x.dtype() == DType.float32:
@@ -128,7 +128,7 @@ Note:
                                 + w
                             )
                             sum_val += x_ptr.bitcast[Float32]()[idx]
-                batch_mean_ptr.bitcast[Float32]()[c] = sum_val / spatial_size.
+                batch_mean_ptr.bitcast[Float32]()[c] = sum_val / spatial_size
 
             # Compute variance per channel
             for c in range(channels):
@@ -145,7 +145,7 @@ Note:
                             )
                             var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                             sum_sq_diff += diff * diff
-                batch_var_ptr.bitcast[Float32]()[c] = sum_sq_diff / spatial_size.
+                batch_var_ptr.bitcast[Float32]()[c] = sum_sq_diff / spatial_size
 
         elif x.dtype() == DType.float64:
             for c in range(channels):
@@ -162,7 +162,7 @@ Note:
                             sum_val += x_ptr.bitcast[Float64]()[idx]
                 batch_mean_ptr.bitcast[Float64]()[c] = sum_val / Float64(
                     spatial_size
-                ).
+                )
 
             for c in range(channels):
                 var mean_val = batch_mean_ptr.bitcast[Float64]()[c]
@@ -188,7 +188,7 @@ Note:
         var output = zeros_like(x)
         var output_ptr = output._data
         var gamma_ptr = gamma._data
-        var beta_ptr = beta._data.
+        var beta_ptr = beta._data
 
         if x.dtype() == DType.float32:
             for b in range(batch):
@@ -197,7 +197,7 @@ Note:
                     var var_val = batch_var_ptr.bitcast[Float32]()[c]
                     var std = sqrt_scalar_f32(var_val + Float32(epsilon))
                     var gamma_val = gamma_ptr.bitcast[Float32]()[c]
-                    var beta_val = beta_ptr.bitcast[Float32]()[c].
+                    var beta_val = beta_ptr.bitcast[Float32]()[c]
 
                     for h in range(height):
                         for w in range(width):
@@ -211,7 +211,7 @@ Note:
                             var x_norm = (x_val - mean_val) / std
                             output_ptr.bitcast[Float32]()[idx] = (
                                 gamma_val * x_norm + beta_val
-                            ).
+                            )
 
         elif x.dtype() == DType.float64:
             for b in range(batch):
@@ -220,7 +220,7 @@ Note:
                     var var_val = batch_var_ptr.bitcast[Float64]()[c]
                     var std = sqrt_scalar_f64(var_val + epsilon)
                     var gamma_val = gamma_ptr.bitcast[Float64]()[c]
-                    var beta_val = beta_ptr.bitcast[Float64]()[c].
+                    var beta_val = beta_ptr.bitcast[Float64]()[c]
 
                     for h in range(height):
                         for w in range(width):
@@ -234,7 +234,7 @@ Note:
                             var x_norm = (x_val - mean_val) / std
                             output_ptr.bitcast[Float64]()[idx] = (
                                 gamma_val * x_norm + beta_val
-                            ).
+                            )
 
         # Update running statistics
         var new_running_mean = zeros_like(running_mean)
@@ -242,14 +242,14 @@ Note:
         var rm_ptr = running_mean._data
         var rv_ptr = running_var._data
         var nrm_ptr = new_running_mean._data
-        var nrv_ptr = new_running_var._data.
+        var nrv_ptr = new_running_var._data
 
         if x.dtype() == DType.float32:
             for c in range(channels):
                 var rm_val = rm_ptr.bitcast[Float32]()[c]
                 var rv_val = rv_ptr.bitcast[Float32]()[c]
                 var bm_val = batch_mean_ptr.bitcast[Float32]()[c]
-                var bv_val = batch_var_ptr.bitcast[Float32]()[c].
+                var bv_val = batch_var_ptr.bitcast[Float32]()[c]
 
                 nrm_ptr.bitcast[Float32]()[c] = (
                     Float32(1.0 - momentum) * rm_val
@@ -258,23 +258,23 @@ Note:
                 nrv_ptr.bitcast[Float32]()[c] = (
                     Float32(1.0 - momentum) * rv_val
                     + Float32(momentum) * bv_val
-                ).
+                )
 
         elif x.dtype() == DType.float64:
             for c in range(channels):
                 var rm_val = rm_ptr.bitcast[Float64]()[c]
                 var rv_val = rv_ptr.bitcast[Float64]()[c]
                 var bm_val = batch_mean_ptr.bitcast[Float64]()[c]
-                var bv_val = batch_var_ptr.bitcast[Float64]()[c].
+                var bv_val = batch_var_ptr.bitcast[Float64]()[c]
 
                 nrm_ptr.bitcast[Float64]()[c] = (
                     1.0 - momentum
                 ) * rm_val + momentum * bm_val
                 nrv_ptr.bitcast[Float64]()[c] = (
                     1.0 - momentum
-                ) * rv_val + momentum * bv_val.
+                ) * rv_val + momentum * bv_val
 
-        return (output, new_running_mean, new_running_var).
+        return (output, new_running_mean, new_running_var)
 
     else:
         # Inference mode: use running statistics
@@ -284,7 +284,7 @@ Note:
         var gamma_ptr = gamma._data
         var beta_ptr = beta._data
         var rm_ptr = running_mean._data
-        var rv_ptr = running_var._data.
+        var rv_ptr = running_var._data
 
         if x.dtype() == DType.float32:
             for b in range(batch):
@@ -293,7 +293,7 @@ Note:
                     var var_val = rv_ptr.bitcast[Float32]()[c]
                     var std = sqrt_scalar_f32(var_val + Float32(epsilon))
                     var gamma_val = gamma_ptr.bitcast[Float32]()[c]
-                    var beta_val = beta_ptr.bitcast[Float32]()[c].
+                    var beta_val = beta_ptr.bitcast[Float32]()[c]
 
                     for h in range(height):
                         for w in range(width):
@@ -307,7 +307,7 @@ Note:
                             var x_norm = (x_val - mean_val) / std
                             output_ptr.bitcast[Float32]()[idx] = (
                                 gamma_val * x_norm + beta_val
-                            ).
+                            )
 
         elif x.dtype() == DType.float64:
             for b in range(batch):
@@ -316,7 +316,7 @@ Note:
                     var var_val = rv_ptr.bitcast[Float64]()[c]
                     var std = sqrt_scalar_f64(var_val + epsilon)
                     var gamma_val = gamma_ptr.bitcast[Float64]()[c]
-                    var beta_val = beta_ptr.bitcast[Float64]()[c].
+                    var beta_val = beta_ptr.bitcast[Float64]()[c]
 
                     for h in range(height):
                         for w in range(width):
@@ -330,10 +330,10 @@ Note:
                             var x_norm = (x_val - mean_val) / std
                             output_ptr.bitcast[Float64]()[idx] = (
                                 gamma_val * x_norm + beta_val
-                            ).
+                            )
 
         # Running stats unchanged in inference mode
-        return (output, running_mean, running_var).
+        return (output, running_mean, running_var)
 
 
 fn batch_norm2d_backward(
@@ -347,86 +347,86 @@ fn batch_norm2d_backward(
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Backward pass for 2D batch normalization.
 
-    Computes gradients with respect to input, gamma, and beta parameters.
+        Computes gradients with respect to input, gamma, and beta parameters
 
-Args:
-        grad_output: Gradient w.r.t. output (batch, channels, height, width).
-        x: Original input tensor (batch, channels, height, width).
-        gamma: Scale parameter (channels,).
-        running_mean: Running mean (channels,) - used in inference mode.
-        running_var: Running variance (channels,) - used in inference mode.
-        training: Whether in training mode (affects gradient computation).
-        epsilon: Small constant for numerical stability (default: 1e-5).
+    Args:
+            grad_output: Gradient w.r.t. output (batch, channels, height, width)
+            x: Original input tensor (batch, channels, height, width)
+            gamma: Scale parameter (channels,)
+            running_mean: Running mean (channels,) - used in inference mode
+            running_var: Running variance (channels,) - used in inference mode
+            training: Whether in training mode (affects gradient computation)
+            epsilon: Small constant for numerical stability (default: 1e-5)
 
-Returns:
-        Tuple of (grad_input, grad_gamma, grad_beta):
-            - grad_input: Gradient w.r.t. input (batch, channels, height, width)
-            - grad_gamma: Gradient w.r.t. gamma (channels,)
-            - grad_beta: Gradient w.r.t. beta (channels,)
+    Returns:
+            Tuple of (grad_input, grad_gamma, grad_beta):
+                - grad_input: Gradient w.r.t. input (batch, channels, height, width)
+                - grad_gamma: Gradient w.r.t. gamma (channels,)
+                - grad_beta: Gradient w.r.t. beta (channels,)
 
-    Example:
-        ```mojo
-        from shared.core import batch_norm2d_backward.
+        Example:
+            ```mojo
+            from shared.core import batch_norm2d_backward
 
-        # Forward pass (save x for backward)
-        var (output, new_mean, new_var) = batch_norm2d(
-            x, gamma, beta, running_mean, running_var, training=True
-        )
+            # Forward pass (save x for backward)
+            var (output, new_mean, new_var) = batch_norm2d(
+                x, gamma, beta, running_mean, running_var, training=True
+            )
 
-        # ... compute loss and grad_output ...
+            # ... compute loss and grad_output ...
 
-        # Backward pass
-        var (grad_x, grad_gamma, grad_beta) = batch_norm2d_backward(
-            grad_output, x, gamma, running_mean, running_var, training=True
-        )
-        ```
+            # Backward pass
+            var (grad_x, grad_gamma, grad_beta) = batch_norm2d_backward(
+                grad_output, x, gamma, running_mean, running_var, training=True
+            )
+            ```
 
-    Mathematical Formulation (Training Mode):
+        Mathematical Formulation (Training Mode):
 
-        Forward pass computes:
-            mean = E[x] over (batch, height, width) per channel
-            var = Var[x] over (batch, height, width) per channel
-            x_norm = (x - mean) / sqrt(var + eps)
-            y = gamma * x_norm + beta.
+            Forward pass computes:
+                mean = E[x] over (batch, height, width) per channel
+                var = Var[x] over (batch, height, width) per channel
+                x_norm = (x - mean) / sqrt(var + eps)
+                y = gamma * x_norm + beta
 
-        Backward pass (chain rule):
-            grad_beta = sum(grad_output) over (batch, height, width) per channel
-            grad_gamma = sum(grad_output * x_norm) over (batch, height, width) per channel.
+            Backward pass (chain rule):
+                grad_beta = sum(grad_output) over (batch, height, width) per channel
+                grad_gamma = sum(grad_output * x_norm) over (batch, height, width) per channel
 
-            grad_x_norm = grad_output * gamma
-            grad_var = sum(grad_x_norm * (x - mean) * -0.5 * (var + eps)^(-3/2))
-            grad_mean = sum(grad_x_norm * -1/sqrt(var + eps)) +
-                        grad_var * mean(-2(x - mean)).
+                grad_x_norm = grad_output * gamma
+                grad_var = sum(grad_x_norm * (x - mean) * -0.5 * (var + eps)^(-3/2))
+                grad_mean = sum(grad_x_norm * -1/sqrt(var + eps)) +
+                            grad_var * mean(-2(x - mean))
 
-            grad_input = grad_x_norm / sqrt(var + eps) +
-                         grad_var * 2(x - mean) / N +
-                         grad_mean / N.
+                grad_input = grad_x_norm / sqrt(var + eps) +
+                             grad_var * 2(x - mean) / N +
+                             grad_mean / N
 
-        where N = batch * height * width (spatial size).
+            where N = batch * height * width (spatial size)
 
-    Mathematical Formulation (Inference Mode):
+        Mathematical Formulation (Inference Mode):
 
-        Forward pass uses fixed running statistics:
-            x_norm = (x - running_mean) / sqrt(running_var + eps)
-            y = gamma * x_norm + beta.
+            Forward pass uses fixed running statistics:
+                x_norm = (x - running_mean) / sqrt(running_var + eps)
+                y = gamma * x_norm + beta
 
-        Backward pass (simpler):
-            grad_beta = sum(grad_output)
-            grad_gamma = sum(grad_output * x_norm)
-            grad_input = grad_output * gamma / sqrt(running_var + eps).
+            Backward pass (simpler):
+                grad_beta = sum(grad_output)
+                grad_gamma = sum(grad_output * x_norm)
+                grad_input = grad_output * gamma / sqrt(running_var + eps)
 
-    References:
-        - Ioffe & Szegedy (2015). Batch Normalization: Accelerating Deep Network
-          Training by Reducing Internal Covariate Shift. ICML 2015.
-          https://arxiv.org/abs/1502.03167
+        References:
+            - Ioffe & Szegedy (2015). Batch Normalization: Accelerating Deep Network
+              Training by Reducing Internal Covariate Shift. ICML 2015
+              https://arxiv.org/abs/1502.03167
 
-        - Gradient derivation:
-          https://kratzert.github.io/2016/02/12/understanding-the-gradient-flow-through-the-batch-normalization-layer.html
+            - Gradient derivation:
+              https://kratzert.github.io/2016/02/12/understanding-the-gradient-flow-through-the-batch-normalization-layer.html
 
-Note:
-        Pure functional: returns new tensors, does not modify inputs.
-        Training mode requires computing batch statistics from x.
-        Inference mode uses precomputed running statistics.
+    Note:
+            Pure functional: returns new tensors, does not modify inputs
+            Training mode requires computing batch statistics from x
+            Inference mode uses precomputed running statistics
     """
     var x_shape = x.shape()
     var grad_shape = grad_output.shape()
@@ -463,10 +463,10 @@ Note:
         var batch_mean = zeros([channels], x.dtype())
         var batch_var = zeros([channels], x.dtype())
         var batch_mean_ptr = batch_mean._data
-        var batch_var_ptr = batch_var._data.
+        var batch_var_ptr = batch_var._data
 
         if x.dtype() == DType.float32:
-            var N = Float32(spatial_size).
+            var N = Float32(spatial_size)
 
             # Compute mean per channel
             for c in range(channels):
@@ -481,7 +481,7 @@ Note:
                                 + w
                             )
                             sum_val += x_ptr.bitcast[Float32]()[idx]
-                batch_mean_ptr.bitcast[Float32]()[c] = sum_val / N.
+                batch_mean_ptr.bitcast[Float32]()[c] = sum_val / N
 
             # Compute variance per channel
             for c in range(channels):
@@ -498,16 +498,16 @@ Note:
                             )
                             var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                             sum_sq_diff += diff * diff
-                batch_var_ptr.bitcast[Float32]()[c] = sum_sq_diff / N.
+                batch_var_ptr.bitcast[Float32]()[c] = sum_sq_diff / N
 
             # Step 2: Compute grad_beta and grad_gamma
             for c in range(channels):
                 var mean_val = batch_mean_ptr.bitcast[Float32]()[c]
                 var var_val = batch_var_ptr.bitcast[Float32]()[c]
-                var std = sqrt_scalar_f32(var_val + Float32(epsilon)).
+                var std = sqrt_scalar_f32(var_val + Float32(epsilon))
 
                 var sum_grad_output = Float32(0.0)
-                var sum_grad_output_x_norm = Float32(0.0).
+                var sum_grad_output_x_norm = Float32(0.0)
 
                 for b in range(batch):
                     for h in range(height):
@@ -522,13 +522,13 @@ Note:
                                 idx
                             ]
                             var x_val = x_ptr.bitcast[Float32]()[idx]
-                            var x_norm = (x_val - mean_val) / std.
+                            var x_norm = (x_val - mean_val) / std
 
                             sum_grad_output += grad_out
-                            sum_grad_output_x_norm += grad_out * x_norm.
+                            sum_grad_output_x_norm += grad_out * x_norm
 
                 grad_beta_ptr.bitcast[Float32]()[c] = sum_grad_output
-                grad_gamma_ptr.bitcast[Float32]()[c] = sum_grad_output_x_norm.
+                grad_gamma_ptr.bitcast[Float32]()[c] = sum_grad_output_x_norm
 
             # Step 3: Compute grad_input using optimized batch norm backward formula
             # Follows: https://kratzert.github.io/2016/02/12/understanding-the-gradient-flow-through-the-batch-normalization-layer.html
@@ -536,11 +536,11 @@ Note:
                 var mean_val = batch_mean_ptr.bitcast[Float32]()[c]
                 var var_val = batch_var_ptr.bitcast[Float32]()[c]
                 var std = sqrt_scalar_f32(var_val + Float32(epsilon))
-                var gamma_val = gamma_ptr.bitcast[Float32]()[c].
+                var gamma_val = gamma_ptr.bitcast[Float32]()[c]
 
                 # Accumulate gradient through variance and mean
                 var grad_var = Float32(0.0)
-                var grad_mean = Float32(0.0).
+                var grad_mean = Float32(0.0)
 
                 for b in range(batch):
                     for h in range(height):
@@ -555,9 +555,9 @@ Note:
                                 idx
                             ]
                             var x_val = x_ptr.bitcast[Float32]()[idx]
-                            var x_minus_mean = x_val - mean_val.
+                            var x_minus_mean = x_val - mean_val
 
-                            var grad_x_norm = grad_out * gamma_val.
+                            var grad_x_norm = grad_out * gamma_val
 
                             # Accumulate for grad_var
                             grad_var += (
@@ -567,10 +567,10 @@ Note:
                                 * pow_scalar_f32(
                                     var_val + Float32(epsilon), Float32(-1.5)
                                 )
-                            ).
+                            )
 
                             # Accumulate for grad_mean (direct contribution)
-                            grad_mean += grad_x_norm * Float32(-1.0) / std.
+                            grad_mean += grad_x_norm * Float32(-1.0) / std
 
                 # Now compute grad_input for each element
                 for b in range(batch):
@@ -586,27 +586,27 @@ Note:
                                 idx
                             ]
                             var x_val = x_ptr.bitcast[Float32]()[idx]
-                            var x_minus_mean = x_val - mean_val.
+                            var x_minus_mean = x_val - mean_val
 
                             # Three terms in batch norm backward:
                             # 1) Direct effect through normalized value
                             var grad_x_norm = grad_out * gamma_val
-                            var term1 = grad_x_norm / std.
+                            var term1 = grad_x_norm / std
 
                             # 2) Effect through variance term: grad_var * d(var)/d(x_i) / (var+eps)^(3/2)
                             var term2 = (
                                 grad_var * Float32(2.0) * x_minus_mean / N
-                            ).
+                            )
 
                             # 3) Effect through mean term
-                            var term3 = grad_mean / N.
+                            var term3 = grad_mean / N
 
                             grad_input_ptr.bitcast[Float32]()[idx] = (
                                 term1 + term2 + term3
-                            ).
+                            )
 
         elif x.dtype() == DType.float64:
-            var N = Float64(spatial_size).
+            var N = Float64(spatial_size)
 
             # Compute mean per channel
             for c in range(channels):
@@ -621,7 +621,7 @@ Note:
                                 + w
                             )
                             sum_val += x_ptr.bitcast[Float64]()[idx]
-                batch_mean_ptr.bitcast[Float64]()[c] = sum_val / N.
+                batch_mean_ptr.bitcast[Float64]()[c] = sum_val / N
 
             # Compute variance per channel
             for c in range(channels):
@@ -638,16 +638,16 @@ Note:
                             )
                             var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                             sum_sq_diff += diff * diff
-                batch_var_ptr.bitcast[Float64]()[c] = sum_sq_diff / N.
+                batch_var_ptr.bitcast[Float64]()[c] = sum_sq_diff / N
 
             # Step 2: Compute grad_beta and grad_gamma
             for c in range(channels):
                 var mean_val = batch_mean_ptr.bitcast[Float64]()[c]
                 var var_val = batch_var_ptr.bitcast[Float64]()[c]
-                var std = sqrt_scalar_f64(var_val + epsilon).
+                var std = sqrt_scalar_f64(var_val + epsilon)
 
                 var sum_grad_output = Float64(0.0)
-                var sum_grad_output_x_norm = Float64(0.0).
+                var sum_grad_output_x_norm = Float64(0.0)
 
                 for b in range(batch):
                     for h in range(height):
@@ -662,13 +662,13 @@ Note:
                                 idx
                             ]
                             var x_val = x_ptr.bitcast[Float64]()[idx]
-                            var x_norm = (x_val - mean_val) / std.
+                            var x_norm = (x_val - mean_val) / std
 
                             sum_grad_output += grad_out
-                            sum_grad_output_x_norm += grad_out * x_norm.
+                            sum_grad_output_x_norm += grad_out * x_norm
 
                 grad_beta_ptr.bitcast[Float64]()[c] = sum_grad_output
-                grad_gamma_ptr.bitcast[Float64]()[c] = sum_grad_output_x_norm.
+                grad_gamma_ptr.bitcast[Float64]()[c] = sum_grad_output_x_norm
 
             # Step 3: Compute grad_input using optimized batch norm backward formula
             # Follows: https://kratzert.github.io/2016/02/12/understanding-the-gradient-flow-through-the-batch-normalization-layer.html
@@ -676,11 +676,11 @@ Note:
                 var mean_val = batch_mean_ptr.bitcast[Float64]()[c]
                 var var_val = batch_var_ptr.bitcast[Float64]()[c]
                 var std = sqrt_scalar_f64(var_val + epsilon)
-                var gamma_val = gamma_ptr.bitcast[Float64]()[c].
+                var gamma_val = gamma_ptr.bitcast[Float64]()[c]
 
                 # Accumulate gradient through variance and mean
                 var grad_var = Float64(0.0)
-                var grad_mean = Float64(0.0).
+                var grad_mean = Float64(0.0)
 
                 for b in range(batch):
                     for h in range(height):
@@ -695,9 +695,9 @@ Note:
                                 idx
                             ]
                             var x_val = x_ptr.bitcast[Float64]()[idx]
-                            var x_minus_mean = x_val - mean_val.
+                            var x_minus_mean = x_val - mean_val
 
-                            var grad_x_norm = grad_out * gamma_val.
+                            var grad_x_norm = grad_out * gamma_val
 
                             # Accumulate for grad_var
                             grad_var += (
@@ -707,10 +707,10 @@ Note:
                                 * pow_scalar_f64(
                                     var_val + epsilon, Float64(-1.5)
                                 )
-                            ).
+                            )
 
                             # Accumulate for grad_mean (direct contribution)
-                            grad_mean += grad_x_norm * Float64(-1.0) / std.
+                            grad_mean += grad_x_norm * Float64(-1.0) / std
 
                 # Now compute grad_input for each element
                 for b in range(batch):
@@ -726,45 +726,45 @@ Note:
                                 idx
                             ]
                             var x_val = x_ptr.bitcast[Float64]()[idx]
-                            var x_minus_mean = x_val - mean_val.
+                            var x_minus_mean = x_val - mean_val
 
                             # Three terms in batch norm backward:
                             # 1) Direct effect through normalized value
                             var grad_x_norm = grad_out * gamma_val
-                            var term1 = grad_x_norm / std.
+                            var term1 = grad_x_norm / std
 
                             # 2) Effect through variance term: grad_var * d(var)/d(x_i) / (var+eps)^(3/2)
                             var term2 = (
                                 grad_var * Float64(2.0) * x_minus_mean / N
-                            ).
+                            )
 
                             # 3) Effect through mean term
-                            var term3 = grad_mean / N.
+                            var term3 = grad_mean / N
 
                             grad_input_ptr.bitcast[Float64]()[idx] = (
                                 term1 + term2 + term3
-                            ).
+                            )
 
         else:
             raise Error(
                 "batch_norm2d_backward: only float32/64 dtypes supported"
-            ).
+            )
 
     else:
         # ========== INFERENCE MODE: Simpler gradients using running statistics ==========
 
         var rm_ptr = running_mean._data
-        var rv_ptr = running_var._data.
+        var rv_ptr = running_var._data
 
         if x.dtype() == DType.float32:
             # Compute grad_beta and grad_gamma
             for c in range(channels):
                 var mean_val = rm_ptr.bitcast[Float32]()[c]
                 var var_val = rv_ptr.bitcast[Float32]()[c]
-                var std = sqrt_scalar_f32(var_val + Float32(epsilon)).
+                var std = sqrt_scalar_f32(var_val + Float32(epsilon))
 
                 var sum_grad_output = Float32(0.0)
-                var sum_grad_output_x_norm = Float32(0.0).
+                var sum_grad_output_x_norm = Float32(0.0)
 
                 for b in range(batch):
                     for h in range(height):
@@ -779,20 +779,20 @@ Note:
                                 idx
                             ]
                             var x_val = x_ptr.bitcast[Float32]()[idx]
-                            var x_norm = (x_val - mean_val) / std.
+                            var x_norm = (x_val - mean_val) / std
 
                             sum_grad_output += grad_out
-                            sum_grad_output_x_norm += grad_out * x_norm.
+                            sum_grad_output_x_norm += grad_out * x_norm
 
                 grad_beta_ptr.bitcast[Float32]()[c] = sum_grad_output
-                grad_gamma_ptr.bitcast[Float32]()[c] = sum_grad_output_x_norm.
+                grad_gamma_ptr.bitcast[Float32]()[c] = sum_grad_output_x_norm
 
             # Compute grad_input (simple rescaling)
             for b in range(batch):
                 for c in range(channels):
                     var var_val = rv_ptr.bitcast[Float32]()[c]
                     var std = sqrt_scalar_f32(var_val + Float32(epsilon))
-                    var gamma_val = gamma_ptr.bitcast[Float32]()[c].
+                    var gamma_val = gamma_ptr.bitcast[Float32]()[c]
 
                     for h in range(height):
                         for w in range(width):
@@ -807,17 +807,17 @@ Note:
                             ]
                             grad_input_ptr.bitcast[Float32]()[idx] = (
                                 grad_out * gamma_val / std
-                            ).
+                            )
 
         elif x.dtype() == DType.float64:
             # Compute grad_beta and grad_gamma
             for c in range(channels):
                 var mean_val = rm_ptr.bitcast[Float64]()[c]
                 var var_val = rv_ptr.bitcast[Float64]()[c]
-                var std = sqrt_scalar_f64(var_val + epsilon).
+                var std = sqrt_scalar_f64(var_val + epsilon)
 
                 var sum_grad_output = Float64(0.0)
-                var sum_grad_output_x_norm = Float64(0.0).
+                var sum_grad_output_x_norm = Float64(0.0)
 
                 for b in range(batch):
                     for h in range(height):
@@ -832,20 +832,20 @@ Note:
                                 idx
                             ]
                             var x_val = x_ptr.bitcast[Float64]()[idx]
-                            var x_norm = (x_val - mean_val) / std.
+                            var x_norm = (x_val - mean_val) / std
 
                             sum_grad_output += grad_out
-                            sum_grad_output_x_norm += grad_out * x_norm.
+                            sum_grad_output_x_norm += grad_out * x_norm
 
                 grad_beta_ptr.bitcast[Float64]()[c] = sum_grad_output
-                grad_gamma_ptr.bitcast[Float64]()[c] = sum_grad_output_x_norm.
+                grad_gamma_ptr.bitcast[Float64]()[c] = sum_grad_output_x_norm
 
             # Compute grad_input (simple rescaling)
             for b in range(batch):
                 for c in range(channels):
                     var var_val = rv_ptr.bitcast[Float64]()[c]
                     var std = sqrt_scalar_f64(var_val + epsilon)
-                    var gamma_val = gamma_ptr.bitcast[Float64]()[c].
+                    var gamma_val = gamma_ptr.bitcast[Float64]()[c]
 
                     for h in range(height):
                         for w in range(width):
@@ -860,12 +860,12 @@ Note:
                             ]
                             grad_input_ptr.bitcast[Float64]()[idx] = (
                                 grad_out * gamma_val / std
-                            ).
+                            )
 
         else:
             raise Error(
                 "batch_norm2d_backward: only float32/64 dtypes supported"
-            ).
+            )
 
     return (grad_input, grad_gamma, grad_beta)
 
@@ -875,57 +875,57 @@ fn layer_norm(
 ) raises -> ExTensor:
     """Functional layer normalization.
 
-    Normalizes activations across the feature dimension for each sample.
-    Unlike batch norm, this doesn't require running statistics.
+        Normalizes activations across the feature dimension for each sample
+        Unlike batch norm, this doesn't require running statistics.
 
-Args:
-        x: Input tensor of shape (batch, features) or (batch, channels, height, width).
-        gamma: Scale parameter of shape matching last dim(s).
-        beta: Shift parameter of shape matching last dim(s).
-        epsilon: Small constant for numerical stability (default: 1e-5).
+    Args:
+            x: Input tensor of shape (batch, features) or (batch, channels, height, width)
+            gamma: Scale parameter of shape matching last dim(s)
+            beta: Shift parameter of shape matching last dim(s)
+            epsilon: Small constant for numerical stability (default: 1e-5)
 
-Returns:
-        Normalized tensor, same shape as input.
+    Returns:
+            Normalized tensor, same shape as input
 
-    Example:
-        ```mojo
-        from shared.core import layer_norm, zeros, ones.
+        Example:
+            ```mojo
+            from shared.core import layer_norm, zeros, ones
 
-        # For 2D input (batch, features)
-        var gamma = ones([features])
-        var beta = zeros([features])
-        var output = layer_norm(x, gamma, beta).
+            # For 2D input (batch, features)
+            var gamma = ones([features])
+            var beta = zeros([features])
+            var output = layer_norm(x, gamma, beta)
 
-        # For 4D input (batch, channels, height, width)
-        var gamma = ones([channels, height, width])
-        var beta = zeros([channels, height, width])
-        var output = layer_norm(x, gamma, beta)
-        ```
+            # For 4D input (batch, channels, height, width)
+            var gamma = ones([channels, height, width])
+            var beta = zeros([channels, height, width])
+            var output = layer_norm(x, gamma, beta)
+            ```
 
-    Formula:
-        For each sample:
-            mean = mean(x[i])  # Over all features
-            var = var(x[i])
-            x_norm[i] = (x[i] - mean) / sqrt(var + epsilon)
-            output[i] = gamma * x_norm[i] + beta.
+        Formula:
+            For each sample:
+                mean = mean(x[i])  # Over all features
+                var = var(x[i])
+                x_norm[i] = (x[i] - mean) / sqrt(var + epsilon)
+                output[i] = gamma * x_norm[i] + beta
 
-Note:
-        - No running statistics needed (stateless)
-        - Normalizes each sample independently
-        - Commonly used in transformers and RNNs.
+    Note:
+            - No running statistics needed (stateless)
+            - Normalizes each sample independently
+            - Commonly used in transformers and RNNs
     """
     var x_shape = x.shape()
 
     if len(x_shape) == 2:
         # 2D input: (batch, features)
         var batch = x_shape[0]
-        var features = x_shape[1].
+        var features = x_shape[1]
 
         var output = zeros_like(x)
         var x_ptr = x._data
         var output_ptr = output._data
         var gamma_ptr = gamma._data
-        var beta_ptr = beta._data.
+        var beta_ptr = beta._data
 
         if x.dtype() == DType.float32:
             for b in range(batch):
@@ -934,7 +934,7 @@ Note:
                 for f in range(features):
                     var idx = b * features + f
                     sum_val += x_ptr.bitcast[Float32]()[idx]
-                var mean_val = sum_val / Float32(features).
+                var mean_val = sum_val / Float32(features)
 
                 # Compute variance
                 var sum_sq_diff = Float32(0.0)
@@ -943,7 +943,7 @@ Note:
                     var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                     sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / Float32(features)
-                var std = sqrt_scalar_f32(var_val + Float32(epsilon)).
+                var std = sqrt_scalar_f32(var_val + Float32(epsilon))
 
                 # Normalize and scale
                 for f in range(features):
@@ -954,7 +954,7 @@ Note:
                     var beta_val = beta_ptr.bitcast[Float32]()[f]
                     output_ptr.bitcast[Float32]()[idx] = (
                         gamma_val * x_norm + beta_val
-                    ).
+                    )
 
         elif x.dtype() == DType.float64:
             for b in range(batch):
@@ -962,7 +962,7 @@ Note:
                 for f in range(features):
                     var idx = b * features + f
                     sum_val += x_ptr.bitcast[Float64]()[idx]
-                var mean_val = sum_val / Float64(features).
+                var mean_val = sum_val / Float64(features)
 
                 var sum_sq_diff = Float64(0.0)
                 for f in range(features):
@@ -970,7 +970,7 @@ Note:
                     var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                     sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / Float64(features)
-                var std = sqrt_scalar_f64(var_val + epsilon).
+                var std = sqrt_scalar_f64(var_val + epsilon)
 
                 for f in range(features):
                     var idx = b * features + f
@@ -984,7 +984,7 @@ Note:
         else:
             raise Error("layer_norm: only float32/64 dtypes supported")
 
-        return output.
+        return output
 
     elif len(x_shape) == 4:
         # 4D input: (batch, channels, height, width)
@@ -993,13 +993,13 @@ Note:
         var channels = x_shape[1]
         var height = x_shape[2]
         var width = x_shape[3]
-        var feature_size = channels * height * width.
+        var feature_size = channels * height * width
 
         var output = zeros_like(x)
         var x_ptr = x._data
         var output_ptr = output._data
         var gamma_ptr = gamma._data
-        var beta_ptr = beta._data.
+        var beta_ptr = beta._data
 
         if x.dtype() == DType.float32:
             for b in range(batch):
@@ -1015,7 +1015,7 @@ Note:
                                 + w
                             )
                             sum_val += x_ptr.bitcast[Float32]()[idx]
-                var mean_val = sum_val / Float32(feature_size).
+                var mean_val = sum_val / Float32(feature_size)
 
                 # Compute variance
                 var sum_sq_diff = Float32(0.0)
@@ -1031,7 +1031,7 @@ Note:
                             var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / Float32(feature_size)
-                var std = sqrt_scalar_f32(var_val + Float32(epsilon)).
+                var std = sqrt_scalar_f32(var_val + Float32(epsilon))
 
                 # Normalize and scale
                 for c in range(channels):
@@ -1054,7 +1054,7 @@ Note:
                             ]
                             output_ptr.bitcast[Float32]()[idx] = (
                                 gamma_val * x_norm + beta_val
-                            ).
+                            )
 
         elif x.dtype() == DType.float64:
             for b in range(batch):
@@ -1069,7 +1069,7 @@ Note:
                                 + w
                             )
                             sum_val += x_ptr.bitcast[Float64]()[idx]
-                var mean_val = sum_val / Float64(feature_size).
+                var mean_val = sum_val / Float64(feature_size)
 
                 var sum_sq_diff = Float64(0.0)
                 for c in range(channels):
@@ -1084,7 +1084,7 @@ Note:
                             var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / Float64(feature_size)
-                var std = sqrt_scalar_f64(var_val + epsilon).
+                var std = sqrt_scalar_f64(var_val + epsilon)
 
                 for c in range(channels):
                     for h in range(height):
@@ -1110,10 +1110,10 @@ Note:
         else:
             raise Error("layer_norm: only float32/64 dtypes supported")
 
-        return output.
+        return output
 
     else:
-        raise Error("layer_norm supports 2D or 4D inputs only").
+        raise Error("layer_norm supports 2D or 4D inputs only")
 
 
 fn layer_norm_backward(
@@ -1121,66 +1121,66 @@ fn layer_norm_backward(
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Backward pass for layer normalization.
 
-    Computes gradients with respect to input, gamma, and beta parameters.
+        Computes gradients with respect to input, gamma, and beta parameters
 
-Args:
-        grad_output: Gradient w.r.t. output, same shape as input.
-        x: Original input tensor (batch, features) or (batch, channels, height, width).
-        gamma: Scale parameter matching normalized dimensions.
-        epsilon: Small constant for numerical stability (default: 1e-5).
+    Args:
+            grad_output: Gradient w.r.t. output, same shape as input
+            x: Original input tensor (batch, features) or (batch, channels, height, width)
+            gamma: Scale parameter matching normalized dimensions
+            epsilon: Small constant for numerical stability (default: 1e-5)
 
-Returns:
-        Tuple of (grad_input, grad_gamma, grad_beta):
-            - grad_input: Gradient w.r.t. input (same shape as input)
-            - grad_gamma: Gradient w.r.t. gamma (same shape as gamma)
-            - grad_beta: Gradient w.r.t. beta (same shape as gamma)
+    Returns:
+            Tuple of (grad_input, grad_gamma, grad_beta):
+                - grad_input: Gradient w.r.t. input (same shape as input)
+                - grad_gamma: Gradient w.r.t. gamma (same shape as gamma)
+                - grad_beta: Gradient w.r.t. beta (same shape as gamma)
 
-    Example:
-        ```mojo
-        from shared.core import layer_norm, layer_norm_backward.
+        Example:
+            ```mojo
+            from shared.core import layer_norm, layer_norm_backward
 
-        # Forward pass
-        var output = layer_norm(x, gamma, beta).
+            # Forward pass
+            var output = layer_norm(x, gamma, beta)
 
-        # ... compute loss and grad_output ...
+            # ... compute loss and grad_output ...
 
-        # Backward pass
-        var (grad_x, grad_gamma, grad_beta) = layer_norm_backward(
-            grad_output, x, gamma
-        )
-        ```
+            # Backward pass
+            var (grad_x, grad_gamma, grad_beta) = layer_norm_backward(
+                grad_output, x, gamma
+            )
+            ```
 
-    Mathematical Formulation:
+        Mathematical Formulation:
 
-        Forward pass computes (per sample):
-            mean = E[x] over features
-            var = Var[x] over features
-            x_norm = (x - mean) / sqrt(var + eps)
-            y = gamma * x_norm + beta.
+            Forward pass computes (per sample):
+                mean = E[x] over features
+                var = Var[x] over features
+                x_norm = (x - mean) / sqrt(var + eps)
+                y = gamma * x_norm + beta
 
-        Backward pass (chain rule):
-            grad_beta = sum(grad_output) over batch dimension
-            grad_gamma = sum(grad_output * x_norm) over batch dimension.
+            Backward pass (chain rule):
+                grad_beta = sum(grad_output) over batch dimension
+                grad_gamma = sum(grad_output * x_norm) over batch dimension
 
-            grad_x_norm = grad_output * gamma
-            grad_var = sum(grad_x_norm * (x - mean) * -0.5 * (var + eps)^(-3/2))
-            grad_mean = sum(grad_x_norm * -1/sqrt(var + eps)) +
-                        grad_var * mean(-2(x - mean)).
+                grad_x_norm = grad_output * gamma
+                grad_var = sum(grad_x_norm * (x - mean) * -0.5 * (var + eps)^(-3/2))
+                grad_mean = sum(grad_x_norm * -1/sqrt(var + eps)) +
+                            grad_var * mean(-2(x - mean))
 
-            grad_input = grad_x_norm / sqrt(var + eps) +
-                         grad_var * 2(x - mean) / N +
-                         grad_mean / N.
+                grad_input = grad_x_norm / sqrt(var + eps) +
+                             grad_var * 2(x - mean) / N +
+                             grad_mean / N
 
-        where N = number of features being normalized.
+            where N = number of features being normalized
 
-    References:
-        - Ba et al. (2016). Layer Normalization.
-          https://arxiv.org/abs/1607.06450
+        References:
+            - Ba et al. (2016). Layer Normalization
+              https://arxiv.org/abs/1607.06450
 
-Note:
-        Pure functional: returns new tensors, does not modify inputs.
-        Unlike batch_norm, there are no running statistics - normalization is
-        computed independently for each sample.
+    Note:
+            Pure functional: returns new tensors, does not modify inputs
+            Unlike batch_norm, there are no running statistics - normalization is
+            computed independently for each sample
     """
     var x_shape = x.shape()
     var grad_shape = grad_output.shape()
@@ -1189,19 +1189,19 @@ Note:
         # ========== 2D Input: (batch, features) ==========
         var batch = x_shape[0]
         var features = x_shape[1]
-        var N = Float32(features).
+        var N = Float32(features)
 
         # Initialize output gradients
         var grad_input = zeros_like(x)
         var grad_gamma = zeros_like(gamma)
-        var grad_beta = zeros_like(gamma).
+        var grad_beta = zeros_like(gamma)
 
         var grad_output_ptr = grad_output._data
         var x_ptr = x._data
         var gamma_ptr = gamma._data
         var grad_input_ptr = grad_input._data
         var grad_gamma_ptr = grad_gamma._data
-        var grad_beta_ptr = grad_beta._data.
+        var grad_beta_ptr = grad_beta._data
 
         if x.dtype() == DType.float32:
             # First pass: compute grad_gamma and grad_beta by accumulating over batch
@@ -1211,7 +1211,7 @@ Note:
                 for f in range(features):
                     var idx = b * features + f
                     sum_val += x_ptr.bitcast[Float32]()[idx]
-                var mean_val = sum_val / N.
+                var mean_val = sum_val / N
 
                 var sum_sq_diff = Float32(0.0)
                 for f in range(features):
@@ -1219,17 +1219,17 @@ Note:
                     var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                     sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
-                var std = sqrt_scalar_f32(var_val + Float32(epsilon)).
+                var std = sqrt_scalar_f32(var_val + Float32(epsilon))
 
                 # Accumulate grad_gamma and grad_beta
                 for f in range(features):
                     var idx = b * features + f
                     var grad_out = grad_output_ptr.bitcast[Float32]()[idx]
                     var x_val = x_ptr.bitcast[Float32]()[idx]
-                    var x_norm = (x_val - mean_val) / std.
+                    var x_norm = (x_val - mean_val) / std
 
                     grad_beta_ptr.bitcast[Float32]()[f] += grad_out
-                    grad_gamma_ptr.bitcast[Float32]()[f] += grad_out * x_norm.
+                    grad_gamma_ptr.bitcast[Float32]()[f] += grad_out * x_norm
 
             # Second pass: compute grad_input for each sample
             for b in range(batch):
@@ -1238,7 +1238,7 @@ Note:
                 for f in range(features):
                     var idx = b * features + f
                     sum_val += x_ptr.bitcast[Float32]()[idx]
-                var mean_val = sum_val / N.
+                var mean_val = sum_val / N
 
                 var sum_sq_diff = Float32(0.0)
                 for f in range(features):
@@ -1246,20 +1246,20 @@ Note:
                     var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                     sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
-                var std = sqrt_scalar_f32(var_val + Float32(epsilon)).
+                var std = sqrt_scalar_f32(var_val + Float32(epsilon))
 
                 # Compute gradient through variance and mean
                 var grad_var = Float32(0.0)
-                var grad_mean = Float32(0.0).
+                var grad_mean = Float32(0.0)
 
                 for f in range(features):
                     var idx = b * features + f
                     var grad_out = grad_output_ptr.bitcast[Float32]()[idx]
                     var x_val = x_ptr.bitcast[Float32]()[idx]
                     var x_minus_mean = x_val - mean_val
-                    var gamma_val = gamma_ptr.bitcast[Float32]()[f].
+                    var gamma_val = gamma_ptr.bitcast[Float32]()[f]
 
-                    var grad_x_norm = grad_out * gamma_val.
+                    var grad_x_norm = grad_out * gamma_val
 
                     # Accumulate for grad_var
                     grad_var += (
@@ -1269,10 +1269,10 @@ Note:
                         * pow_scalar_f32(
                             var_val + Float32(epsilon), Float32(-1.5)
                         )
-                    ).
+                    )
 
                     # Accumulate for grad_mean
-                    grad_mean += grad_x_norm * Float32(-1.0) / std.
+                    grad_mean += grad_x_norm * Float32(-1.0) / std
 
                 # Compute grad_input for each feature
                 for f in range(features):
@@ -1280,27 +1280,27 @@ Note:
                     var grad_out = grad_output_ptr.bitcast[Float32]()[idx]
                     var x_val = x_ptr.bitcast[Float32]()[idx]
                     var x_minus_mean = x_val - mean_val
-                    var gamma_val = gamma_ptr.bitcast[Float32]()[f].
+                    var gamma_val = gamma_ptr.bitcast[Float32]()[f]
 
                     # Three terms in layer norm backward:
                     var grad_x_norm = grad_out * gamma_val
                     var term1 = grad_x_norm / std
                     var term2 = grad_var * Float32(2.0) * x_minus_mean / N
-                    var term3 = grad_mean / N.
+                    var term3 = grad_mean / N
 
                     grad_input_ptr.bitcast[Float32]()[idx] = (
                         term1 + term2 + term3
-                    ).
+                    )
 
         elif x.dtype() == DType.float64:
-            var N64 = Float64(features).
+            var N64 = Float64(features)
 
             for b in range(batch):
                 var sum_val = Float64(0.0)
                 for f in range(features):
                     var idx = b * features + f
                     sum_val += x_ptr.bitcast[Float64]()[idx]
-                var mean_val = sum_val / N64.
+                var mean_val = sum_val / N64
 
                 var sum_sq_diff = Float64(0.0)
                 for f in range(features):
@@ -1308,23 +1308,23 @@ Note:
                     var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                     sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N64
-                var std = sqrt_scalar_f64(var_val + epsilon).
+                var std = sqrt_scalar_f64(var_val + epsilon)
 
                 for f in range(features):
                     var idx = b * features + f
                     var grad_out = grad_output_ptr.bitcast[Float64]()[idx]
                     var x_val = x_ptr.bitcast[Float64]()[idx]
-                    var x_norm = (x_val - mean_val) / std.
+                    var x_norm = (x_val - mean_val) / std
 
                     grad_beta_ptr.bitcast[Float64]()[f] += grad_out
-                    grad_gamma_ptr.bitcast[Float64]()[f] += grad_out * x_norm.
+                    grad_gamma_ptr.bitcast[Float64]()[f] += grad_out * x_norm
 
             for b in range(batch):
                 var sum_val = Float64(0.0)
                 for f in range(features):
                     var idx = b * features + f
                     sum_val += x_ptr.bitcast[Float64]()[idx]
-                var mean_val = sum_val / N64.
+                var mean_val = sum_val / N64
 
                 var sum_sq_diff = Float64(0.0)
                 for f in range(features):
@@ -1332,17 +1332,17 @@ Note:
                     var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                     sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N64
-                var std = sqrt_scalar_f64(var_val + epsilon).
+                var std = sqrt_scalar_f64(var_val + epsilon)
 
                 var grad_var = Float64(0.0)
-                var grad_mean = Float64(0.0).
+                var grad_mean = Float64(0.0)
 
                 for f in range(features):
                     var idx = b * features + f
                     var grad_out = grad_output_ptr.bitcast[Float64]()[idx]
                     var x_val = x_ptr.bitcast[Float64]()[idx]
                     var x_minus_mean = x_val - mean_val
-                    var gamma_val = gamma_ptr.bitcast[Float64]()[f].
+                    var gamma_val = gamma_ptr.bitcast[Float64]()[f]
 
                     var grad_x_norm = grad_out * gamma_val
                     grad_var += (
@@ -1351,28 +1351,28 @@ Note:
                         * Float64(-0.5)
                         * pow_scalar_f64(var_val + epsilon, Float64(-1.5))
                     )
-                    grad_mean += grad_x_norm * Float64(-1.0) / std.
+                    grad_mean += grad_x_norm * Float64(-1.0) / std
 
                 for f in range(features):
                     var idx = b * features + f
                     var grad_out = grad_output_ptr.bitcast[Float64]()[idx]
                     var x_val = x_ptr.bitcast[Float64]()[idx]
                     var x_minus_mean = x_val - mean_val
-                    var gamma_val = gamma_ptr.bitcast[Float64]()[f].
+                    var gamma_val = gamma_ptr.bitcast[Float64]()[f]
 
                     var grad_x_norm = grad_out * gamma_val
                     var term1 = grad_x_norm / std
                     var term2 = grad_var * Float64(2.0) * x_minus_mean / N64
-                    var term3 = grad_mean / N64.
+                    var term3 = grad_mean / N64
 
                     grad_input_ptr.bitcast[Float64]()[idx] = (
                         term1 + term2 + term3
-                    ).
+                    )
 
         else:
             raise Error("layer_norm_backward: only float32/64 dtypes supported")
 
-        return (grad_input, grad_gamma, grad_beta).
+        return (grad_input, grad_gamma, grad_beta)
 
     elif len(x_shape) == 4:
         # ========== 4D Input: (batch, channels, height, width) ==========
@@ -1382,19 +1382,19 @@ Note:
         var height = x_shape[2]
         var width = x_shape[3]
         var feature_size = channels * height * width
-        var N = Float32(feature_size).
+        var N = Float32(feature_size)
 
         # Initialize output gradients
         var grad_input = zeros_like(x)
         var grad_gamma = zeros_like(gamma)
-        var grad_beta = zeros_like(gamma).
+        var grad_beta = zeros_like(gamma)
 
         var grad_output_ptr = grad_output._data
         var x_ptr = x._data
         var gamma_ptr = gamma._data
         var grad_input_ptr = grad_input._data
         var grad_gamma_ptr = grad_gamma._data
-        var grad_beta_ptr = grad_beta._data.
+        var grad_beta_ptr = grad_beta._data
 
         if x.dtype() == DType.float32:
             # First pass: compute grad_gamma and grad_beta by accumulating over batch
@@ -1411,7 +1411,7 @@ Note:
                                 + w
                             )
                             sum_val += x_ptr.bitcast[Float32]()[idx]
-                var mean_val = sum_val / N.
+                var mean_val = sum_val / N
 
                 var sum_sq_diff = Float32(0.0)
                 for c in range(channels):
@@ -1426,7 +1426,7 @@ Note:
                             var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
-                var std = sqrt_scalar_f32(var_val + Float32(epsilon)).
+                var std = sqrt_scalar_f32(var_val + Float32(epsilon))
 
                 # Accumulate grad_gamma and grad_beta
                 for c in range(channels):
@@ -1443,14 +1443,14 @@ Note:
                                 idx
                             ]
                             var x_val = x_ptr.bitcast[Float32]()[idx]
-                            var x_norm = (x_val - mean_val) / std.
+                            var x_norm = (x_val - mean_val) / std
 
                             grad_beta_ptr.bitcast[Float32]()[
                                 gamma_idx
                             ] += grad_out
                             grad_gamma_ptr.bitcast[Float32]()[gamma_idx] += (
                                 grad_out * x_norm
-                            ).
+                            )
 
             # Second pass: compute grad_input for each sample
             for b in range(batch):
@@ -1466,7 +1466,7 @@ Note:
                                 + w
                             )
                             sum_val += x_ptr.bitcast[Float32]()[idx]
-                var mean_val = sum_val / N.
+                var mean_val = sum_val / N
 
                 var sum_sq_diff = Float32(0.0)
                 for c in range(channels):
@@ -1481,11 +1481,11 @@ Note:
                             var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
-                var std = sqrt_scalar_f32(var_val + Float32(epsilon)).
+                var std = sqrt_scalar_f32(var_val + Float32(epsilon))
 
                 # Compute gradient through variance and mean
                 var grad_var = Float32(0.0)
-                var grad_mean = Float32(0.0).
+                var grad_mean = Float32(0.0)
 
                 for c in range(channels):
                     for h in range(height):
@@ -1504,7 +1504,7 @@ Note:
                             var x_minus_mean = x_val - mean_val
                             var gamma_val = gamma_ptr.bitcast[Float32]()[
                                 gamma_idx
-                            ].
+                            ]
 
                             var grad_x_norm = grad_out * gamma_val
                             grad_var += (
@@ -1515,7 +1515,7 @@ Note:
                                     var_val + Float32(epsilon), Float32(-1.5)
                                 )
                             )
-                            grad_mean += grad_x_norm * Float32(-1.0) / std.
+                            grad_mean += grad_x_norm * Float32(-1.0) / std
 
                 # Compute grad_input for each element
                 for c in range(channels):
@@ -1535,21 +1535,21 @@ Note:
                             var x_minus_mean = x_val - mean_val
                             var gamma_val = gamma_ptr.bitcast[Float32]()[
                                 gamma_idx
-                            ].
+                            ]
 
                             var grad_x_norm = grad_out * gamma_val
                             var term1 = grad_x_norm / std
                             var term2 = (
                                 grad_var * Float32(2.0) * x_minus_mean / N
                             )
-                            var term3 = grad_mean / N.
+                            var term3 = grad_mean / N
 
                             grad_input_ptr.bitcast[Float32]()[idx] = (
                                 term1 + term2 + term3
-                            ).
+                            )
 
         elif x.dtype() == DType.float64:
-            var N64 = Float64(feature_size).
+            var N64 = Float64(feature_size)
 
             for b in range(batch):
                 var sum_val = Float64(0.0)
@@ -1563,7 +1563,7 @@ Note:
                                 + w
                             )
                             sum_val += x_ptr.bitcast[Float64]()[idx]
-                var mean_val = sum_val / N64.
+                var mean_val = sum_val / N64
 
                 var sum_sq_diff = Float64(0.0)
                 for c in range(channels):
@@ -1578,7 +1578,7 @@ Note:
                             var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N64
-                var std = sqrt_scalar_f64(var_val + epsilon).
+                var std = sqrt_scalar_f64(var_val + epsilon)
 
                 for c in range(channels):
                     for h in range(height):
@@ -1594,14 +1594,14 @@ Note:
                                 idx
                             ]
                             var x_val = x_ptr.bitcast[Float64]()[idx]
-                            var x_norm = (x_val - mean_val) / std.
+                            var x_norm = (x_val - mean_val) / std
 
                             grad_beta_ptr.bitcast[Float64]()[
                                 gamma_idx
                             ] += grad_out
                             grad_gamma_ptr.bitcast[Float64]()[gamma_idx] += (
                                 grad_out * x_norm
-                            ).
+                            )
 
             for b in range(batch):
                 var sum_val = Float64(0.0)
@@ -1615,7 +1615,7 @@ Note:
                                 + w
                             )
                             sum_val += x_ptr.bitcast[Float64]()[idx]
-                var mean_val = sum_val / N64.
+                var mean_val = sum_val / N64
 
                 var sum_sq_diff = Float64(0.0)
                 for c in range(channels):
@@ -1630,10 +1630,10 @@ Note:
                             var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N64
-                var std = sqrt_scalar_f64(var_val + epsilon).
+                var std = sqrt_scalar_f64(var_val + epsilon)
 
                 var grad_var = Float64(0.0)
-                var grad_mean = Float64(0.0).
+                var grad_mean = Float64(0.0)
 
                 for c in range(channels):
                     for h in range(height):
@@ -1652,7 +1652,7 @@ Note:
                             var x_minus_mean = x_val - mean_val
                             var gamma_val = gamma_ptr.bitcast[Float64]()[
                                 gamma_idx
-                            ].
+                            ]
 
                             var grad_x_norm = grad_out * gamma_val
                             grad_var += (
@@ -1663,7 +1663,7 @@ Note:
                                     var_val + epsilon, Float64(-1.5)
                                 )
                             )
-                            grad_mean += grad_x_norm * Float64(-1.0) / std.
+                            grad_mean += grad_x_norm * Float64(-1.0) / std
 
                 for c in range(channels):
                     for h in range(height):
@@ -1682,26 +1682,26 @@ Note:
                             var x_minus_mean = x_val - mean_val
                             var gamma_val = gamma_ptr.bitcast[Float64]()[
                                 gamma_idx
-                            ].
+                            ]
 
                             var grad_x_norm = grad_out * gamma_val
                             var term1 = grad_x_norm / std
                             var term2 = (
                                 grad_var * Float64(2.0) * x_minus_mean / N64
                             )
-                            var term3 = grad_mean / N64.
+                            var term3 = grad_mean / N64
 
                             grad_input_ptr.bitcast[Float64]()[idx] = (
                                 term1 + term2 + term3
-                            ).
+                            )
 
         else:
             raise Error("layer_norm_backward: only float32/64 dtypes supported")
 
-        return (grad_input, grad_gamma, grad_beta).
+        return (grad_input, grad_gamma, grad_beta)
 
     else:
-        raise Error("layer_norm_backward supports 2D or 4D inputs only").
+        raise Error("layer_norm_backward supports 2D or 4D inputs only")
 
 
 fn group_norm(
@@ -1713,40 +1713,40 @@ fn group_norm(
 ) raises -> ExTensor:
     """Functional group normalization.
 
-    Normalizes activations by dividing channels into groups and normalizing
-    within each group. Works well with small batch sizes where batch norm fails.
+        Normalizes activations by dividing channels into groups and normalizing
+        within each group. Works well with small batch sizes where batch norm fails
 
-Args:
-        x: Input tensor of shape (batch, channels, height, width).
-        num_groups: Number of groups to divide channels into.
-        gamma: Scale parameter of shape (channels,).
-        beta: Shift parameter of shape (channels,).
-        epsilon: Small constant for numerical stability (default: 1e-5).
+    Args:
+            x: Input tensor of shape (batch, channels, height, width)
+            num_groups: Number of groups to divide channels into
+            gamma: Scale parameter of shape (channels,)
+            beta: Shift parameter of shape (channels,)
+            epsilon: Small constant for numerical stability (default: 1e-5)
 
-Returns:
-        Normalized tensor, same shape as input.
+    Returns:
+            Normalized tensor, same shape as input
 
-    Example:
-        ```mojo
-        from shared.core import group_norm, zeros, ones.
+        Example:
+            ```mojo
+            from shared.core import group_norm, zeros, ones
 
-        # Divide 32 channels into 8 groups of 4 channels each
-        var gamma = ones([32])
-        var beta = zeros([32])
-        var output = group_norm(x, num_groups=8, gamma=gamma, beta=beta)
-        ```
+            # Divide 32 channels into 8 groups of 4 channels each
+            var gamma = ones([32])
+            var beta = zeros([32])
+            var output = group_norm(x, num_groups=8, gamma=gamma, beta=beta)
+            ```
 
-    Formula:
-        For each sample and each group:
-            mean = mean(x[group]) over spatial and channel dims within group
-            var = var(x[group])
-            x_norm = (x - mean) / sqrt(var + epsilon)
-            output = gamma * x_norm + beta.
+        Formula:
+            For each sample and each group:
+                mean = mean(x[group]) over spatial and channel dims within group
+                var = var(x[group])
+                x_norm = (x - mean) / sqrt(var + epsilon)
+                output = gamma * x_norm + beta
 
-Note:
-        - Channels must be divisible by num_groups
-        - No running statistics needed (stateless)
-        - Commonly used in detection and segmentation models.
+    Note:
+            - Channels must be divisible by num_groups
+            - No running statistics needed (stateless)
+            - Commonly used in detection and segmentation models
     """
     var x_shape = x.shape()
     if len(x_shape) != 4:
@@ -1772,12 +1772,12 @@ Note:
     var beta_ptr = beta._data
 
     if x.dtype() == DType.float32:
-        var N = Float32(group_size).
+        var N = Float32(group_size)
 
         for b in range(batch):
             for g in range(num_groups):
                 var c_start = g * channels_per_group
-                var c_end = c_start + channels_per_group.
+                var c_end = c_start + channels_per_group
 
                 # Compute mean for this group
                 var sum_val = Float32(0.0)
@@ -1791,7 +1791,7 @@ Note:
                                 + w
                             )
                             sum_val += x_ptr.bitcast[Float32]()[idx]
-                var mean_val = sum_val / N.
+                var mean_val = sum_val / N
 
                 # Compute variance for this group
                 var sum_sq_diff = Float32(0.0)
@@ -1807,7 +1807,7 @@ Note:
                             var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
-                var std = sqrt_scalar_f32(var_val + Float32(epsilon)).
+                var std = sqrt_scalar_f32(var_val + Float32(epsilon))
 
                 # Normalize and scale
                 for c in range(c_start, c_end):
@@ -1825,15 +1825,15 @@ Note:
                             var x_norm = (x_val - mean_val) / std
                             output_ptr.bitcast[Float32]()[idx] = (
                                 gamma_val * x_norm + beta_val
-                            ).
+                            )
 
     elif x.dtype() == DType.float64:
-        var N = Float64(group_size).
+        var N = Float64(group_size)
 
         for b in range(batch):
             for g in range(num_groups):
                 var c_start = g * channels_per_group
-                var c_end = c_start + channels_per_group.
+                var c_end = c_start + channels_per_group
 
                 var sum_val = Float64(0.0)
                 for c in range(c_start, c_end):
@@ -1846,7 +1846,7 @@ Note:
                                 + w
                             )
                             sum_val += x_ptr.bitcast[Float64]()[idx]
-                var mean_val = sum_val / N.
+                var mean_val = sum_val / N
 
                 var sum_sq_diff = Float64(0.0)
                 for c in range(c_start, c_end):
@@ -1861,7 +1861,7 @@ Note:
                             var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
-                var std = sqrt_scalar_f64(var_val + epsilon).
+                var std = sqrt_scalar_f64(var_val + epsilon)
 
                 for c in range(c_start, c_end):
                     var gamma_val = gamma_ptr.bitcast[Float64]()[c]
@@ -1894,38 +1894,38 @@ fn group_norm_backward(
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Backward pass for group normalization.
 
-    Computes gradients with respect to input, gamma, and beta parameters.
+        Computes gradients with respect to input, gamma, and beta parameters
 
-Args:
-        grad_output: Gradient w.r.t. output (batch, channels, height, width).
-        x: Original input tensor (batch, channels, height, width).
-        num_groups: Number of groups channels were divided into.
-        gamma: Scale parameter (channels,).
-        epsilon: Small constant for numerical stability (default: 1e-5).
+    Args:
+            grad_output: Gradient w.r.t. output (batch, channels, height, width)
+            x: Original input tensor (batch, channels, height, width)
+            num_groups: Number of groups channels were divided into
+            gamma: Scale parameter (channels,)
+            epsilon: Small constant for numerical stability (default: 1e-5)
 
-Returns:
-        Tuple of (grad_input, grad_gamma, grad_beta):
-            - grad_input: Gradient w.r.t. input (batch, channels, height, width)
-            - grad_gamma: Gradient w.r.t. gamma (channels,)
-            - grad_beta: Gradient w.r.t. beta (channels,)
+    Returns:
+            Tuple of (grad_input, grad_gamma, grad_beta):
+                - grad_input: Gradient w.r.t. input (batch, channels, height, width)
+                - grad_gamma: Gradient w.r.t. gamma (channels,)
+                - grad_beta: Gradient w.r.t. beta (channels,)
 
-    Example:
-        ```mojo
-        from shared.core import group_norm, group_norm_backward.
+        Example:
+            ```mojo
+            from shared.core import group_norm, group_norm_backward
 
-        # Forward pass
-        var output = group_norm(x, num_groups=8, gamma=gamma, beta=beta).
+            # Forward pass
+            var output = group_norm(x, num_groups=8, gamma=gamma, beta=beta)
 
-        # ... compute loss and grad_output ...
+            # ... compute loss and grad_output ...
 
-        # Backward pass
-        var (grad_x, grad_gamma, grad_beta) = group_norm_backward(
-            grad_output, x, num_groups=8, gamma=gamma
-        )
-        ```
+            # Backward pass
+            var (grad_x, grad_gamma, grad_beta) = group_norm_backward(
+                grad_output, x, num_groups=8, gamma=gamma
+            )
+            ```
 
-Note:
-        Pure functional: returns new tensors, does not modify inputs.
+    Note:
+            Pure functional: returns new tensors, does not modify inputs
     """
     var x_shape = x.shape()
     if len(x_shape) != 4:
@@ -1960,13 +1960,13 @@ Note:
     var grad_beta_ptr = grad_beta._data
 
     if x.dtype() == DType.float32:
-        var N = Float32(group_size).
+        var N = Float32(group_size)
 
         # First pass: compute grad_gamma and grad_beta
         for b in range(batch):
             for g in range(num_groups):
                 var c_start = g * channels_per_group
-                var c_end = c_start + channels_per_group.
+                var c_end = c_start + channels_per_group
 
                 # Compute mean and variance for this group
                 var sum_val = Float32(0.0)
@@ -1980,7 +1980,7 @@ Note:
                                 + w
                             )
                             sum_val += x_ptr.bitcast[Float32]()[idx]
-                var mean_val = sum_val / N.
+                var mean_val = sum_val / N
 
                 var sum_sq_diff = Float32(0.0)
                 for c in range(c_start, c_end):
@@ -1995,7 +1995,7 @@ Note:
                             var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
-                var std = sqrt_scalar_f32(var_val + Float32(epsilon)).
+                var std = sqrt_scalar_f32(var_val + Float32(epsilon))
 
                 # Accumulate grad_gamma and grad_beta
                 for c in range(c_start, c_end):
@@ -2011,18 +2011,18 @@ Note:
                                 idx
                             ]
                             var x_val = x_ptr.bitcast[Float32]()[idx]
-                            var x_norm = (x_val - mean_val) / std.
+                            var x_norm = (x_val - mean_val) / std
 
                             grad_beta_ptr.bitcast[Float32]()[c] += grad_out
                             grad_gamma_ptr.bitcast[Float32]()[c] += (
                                 grad_out * x_norm
-                            ).
+                            )
 
         # Second pass: compute grad_input
         for b in range(batch):
             for g in range(num_groups):
                 var c_start = g * channels_per_group
-                var c_end = c_start + channels_per_group.
+                var c_end = c_start + channels_per_group
 
                 # Recompute mean and variance
                 var sum_val = Float32(0.0)
@@ -2036,7 +2036,7 @@ Note:
                                 + w
                             )
                             sum_val += x_ptr.bitcast[Float32]()[idx]
-                var mean_val = sum_val / N.
+                var mean_val = sum_val / N
 
                 var sum_sq_diff = Float32(0.0)
                 for c in range(c_start, c_end):
@@ -2051,11 +2051,11 @@ Note:
                             var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
-                var std = sqrt_scalar_f32(var_val + Float32(epsilon)).
+                var std = sqrt_scalar_f32(var_val + Float32(epsilon))
 
                 # Compute gradient accumulations
                 var grad_var = Float32(0.0)
-                var grad_mean = Float32(0.0).
+                var grad_mean = Float32(0.0)
 
                 for c in range(c_start, c_end):
                     var gamma_val = gamma_ptr.bitcast[Float32]()[c]
@@ -2071,7 +2071,7 @@ Note:
                                 idx
                             ]
                             var x_val = x_ptr.bitcast[Float32]()[idx]
-                            var x_minus_mean = x_val - mean_val.
+                            var x_minus_mean = x_val - mean_val
 
                             var grad_x_norm = grad_out * gamma_val
                             grad_var += (
@@ -2082,7 +2082,7 @@ Note:
                                     var_val + Float32(epsilon), Float32(-1.5)
                                 )
                             )
-                            grad_mean += grad_x_norm * Float32(-1.0) / std.
+                            grad_mean += grad_x_norm * Float32(-1.0) / std
 
                 # Compute grad_input
                 for c in range(c_start, c_end):
@@ -2099,26 +2099,26 @@ Note:
                                 idx
                             ]
                             var x_val = x_ptr.bitcast[Float32]()[idx]
-                            var x_minus_mean = x_val - mean_val.
+                            var x_minus_mean = x_val - mean_val
 
                             var grad_x_norm = grad_out * gamma_val
                             var term1 = grad_x_norm / std
                             var term2 = (
                                 grad_var * Float32(2.0) * x_minus_mean / N
                             )
-                            var term3 = grad_mean / N.
+                            var term3 = grad_mean / N
 
                             grad_input_ptr.bitcast[Float32]()[idx] = (
                                 term1 + term2 + term3
-                            ).
+                            )
 
     elif x.dtype() == DType.float64:
-        var N = Float64(group_size).
+        var N = Float64(group_size)
 
         for b in range(batch):
             for g in range(num_groups):
                 var c_start = g * channels_per_group
-                var c_end = c_start + channels_per_group.
+                var c_end = c_start + channels_per_group
 
                 var sum_val = Float64(0.0)
                 for c in range(c_start, c_end):
@@ -2131,7 +2131,7 @@ Note:
                                 + w
                             )
                             sum_val += x_ptr.bitcast[Float64]()[idx]
-                var mean_val = sum_val / N.
+                var mean_val = sum_val / N
 
                 var sum_sq_diff = Float64(0.0)
                 for c in range(c_start, c_end):
@@ -2146,7 +2146,7 @@ Note:
                             var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
-                var std = sqrt_scalar_f64(var_val + epsilon).
+                var std = sqrt_scalar_f64(var_val + epsilon)
 
                 for c in range(c_start, c_end):
                     for h in range(height):
@@ -2161,17 +2161,17 @@ Note:
                                 idx
                             ]
                             var x_val = x_ptr.bitcast[Float64]()[idx]
-                            var x_norm = (x_val - mean_val) / std.
+                            var x_norm = (x_val - mean_val) / std
 
                             grad_beta_ptr.bitcast[Float64]()[c] += grad_out
                             grad_gamma_ptr.bitcast[Float64]()[c] += (
                                 grad_out * x_norm
-                            ).
+                            )
 
         for b in range(batch):
             for g in range(num_groups):
                 var c_start = g * channels_per_group
-                var c_end = c_start + channels_per_group.
+                var c_end = c_start + channels_per_group
 
                 var sum_val = Float64(0.0)
                 for c in range(c_start, c_end):
@@ -2184,7 +2184,7 @@ Note:
                                 + w
                             )
                             sum_val += x_ptr.bitcast[Float64]()[idx]
-                var mean_val = sum_val / N.
+                var mean_val = sum_val / N
 
                 var sum_sq_diff = Float64(0.0)
                 for c in range(c_start, c_end):
@@ -2199,10 +2199,10 @@ Note:
                             var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
-                var std = sqrt_scalar_f64(var_val + epsilon).
+                var std = sqrt_scalar_f64(var_val + epsilon)
 
                 var grad_var = Float64(0.0)
-                var grad_mean = Float64(0.0).
+                var grad_mean = Float64(0.0)
 
                 for c in range(c_start, c_end):
                     var gamma_val = gamma_ptr.bitcast[Float64]()[c]
@@ -2218,7 +2218,7 @@ Note:
                                 idx
                             ]
                             var x_val = x_ptr.bitcast[Float64]()[idx]
-                            var x_minus_mean = x_val - mean_val.
+                            var x_minus_mean = x_val - mean_val
 
                             var grad_x_norm = grad_out * gamma_val
                             grad_var += (
@@ -2229,7 +2229,7 @@ Note:
                                     var_val + epsilon, Float64(-1.5)
                                 )
                             )
-                            grad_mean += grad_x_norm * Float64(-1.0) / std.
+                            grad_mean += grad_x_norm * Float64(-1.0) / std
 
                 for c in range(c_start, c_end):
                     var gamma_val = gamma_ptr.bitcast[Float64]()[c]
@@ -2245,18 +2245,18 @@ Note:
                                 idx
                             ]
                             var x_val = x_ptr.bitcast[Float64]()[idx]
-                            var x_minus_mean = x_val - mean_val.
+                            var x_minus_mean = x_val - mean_val
 
                             var grad_x_norm = grad_out * gamma_val
                             var term1 = grad_x_norm / std
                             var term2 = (
                                 grad_var * Float64(2.0) * x_minus_mean / N
                             )
-                            var term3 = grad_mean / N.
+                            var term3 = grad_mean / N
 
                             grad_input_ptr.bitcast[Float64]()[idx] = (
                                 term1 + term2 + term3
-                            ).
+                            )
 
     else:
         raise Error("group_norm_backward: only float32/64 dtypes supported")
@@ -2272,38 +2272,38 @@ fn instance_norm(
 ) raises -> ExTensor:
     """Functional instance normalization.
 
-    Normalizes each sample independently across spatial dimensions for each channel.
-    Used in style transfer and image generation models.
+        Normalizes each sample independently across spatial dimensions for each channel
+        Used in style transfer and image generation models
 
-Args:
-        x: Input tensor of shape (batch, channels, height, width).
-        gamma: Scale parameter of shape (channels,).
-        beta: Shift parameter of shape (channels,).
-        epsilon: Small constant for numerical stability (default: 1e-5).
+    Args:
+            x: Input tensor of shape (batch, channels, height, width)
+            gamma: Scale parameter of shape (channels,)
+            beta: Shift parameter of shape (channels,)
+            epsilon: Small constant for numerical stability (default: 1e-5)
 
-Returns:
-        Normalized tensor, same shape as input.
+    Returns:
+            Normalized tensor, same shape as input
 
-    Example:
-        ```mojo
-        from shared.core import instance_norm, zeros, ones.
+        Example:
+            ```mojo
+            from shared.core import instance_norm, zeros, ones
 
-        var gamma = ones([channels])
-        var beta = zeros([channels])
-        var output = instance_norm(x, gamma=gamma, beta=beta)
-        ```
+            var gamma = ones([channels])
+            var beta = zeros([channels])
+            var output = instance_norm(x, gamma=gamma, beta=beta)
+            ```
 
-    Formula:
-        For each sample b and channel c:
-            mean = mean(x[b, c, :, :]) over spatial dims (H, W)
-            var = var(x[b, c, :, :])
-            x_norm = (x - mean) / sqrt(var + epsilon)
-            output = gamma * x_norm + beta.
+        Formula:
+            For each sample b and channel c:
+                mean = mean(x[b, c, :, :]) over spatial dims (H, W)
+                var = var(x[b, c, :, :])
+                x_norm = (x - mean) / sqrt(var + epsilon)
+                output = gamma * x_norm + beta
 
-Note:
-        - No batch statistics needed (each sample normalized independently)
-        - No running statistics (stateless)
-        - Commonly used in style transfer, GANs, and image generation.
+    Note:
+            - No batch statistics needed (each sample normalized independently)
+            - No running statistics (stateless)
+            - Commonly used in style transfer, GANs, and image generation
     """
     var x_shape = x.shape()
     if len(x_shape) != 4:
@@ -2324,7 +2324,7 @@ Note:
     var beta_ptr = beta._data
 
     if x.dtype() == DType.float32:
-        var N = Float32(spatial_size).
+        var N = Float32(spatial_size)
 
         for b in range(batch):
             for c in range(channels):
@@ -2339,7 +2339,7 @@ Note:
                             + w
                         )
                         sum_val += x_ptr.bitcast[Float32]()[idx]
-                var mean_val = sum_val / N.
+                var mean_val = sum_val / N
 
                 # Compute variance
                 var sum_sq_diff = Float32(0.0)
@@ -2354,7 +2354,7 @@ Note:
                         var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                         sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
-                var std = sqrt_scalar_f32(var_val + Float32(epsilon)).
+                var std = sqrt_scalar_f32(var_val + Float32(epsilon))
 
                 # Normalize and scale
                 var gamma_val = gamma_ptr.bitcast[Float32]()[c]
@@ -2371,10 +2371,10 @@ Note:
                         var x_norm = (x_val - mean_val) / std
                         output_ptr.bitcast[Float32]()[idx] = (
                             gamma_val * x_norm + beta_val
-                        ).
+                        )
 
     elif x.dtype() == DType.float64:
-        var N = Float64(spatial_size).
+        var N = Float64(spatial_size)
 
         for b in range(batch):
             for c in range(channels):
@@ -2388,7 +2388,7 @@ Note:
                             + w
                         )
                         sum_val += x_ptr.bitcast[Float64]()[idx]
-                var mean_val = sum_val / N.
+                var mean_val = sum_val / N
 
                 var sum_sq_diff = Float64(0.0)
                 for h in range(height):
@@ -2402,7 +2402,7 @@ Note:
                         var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                         sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
-                var std = sqrt_scalar_f64(var_val + epsilon).
+                var std = sqrt_scalar_f64(var_val + epsilon)
 
                 var gamma_val = gamma_ptr.bitcast[Float64]()[c]
                 var beta_val = beta_ptr.bitcast[Float64]()[c]
@@ -2433,37 +2433,37 @@ fn instance_norm_backward(
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Backward pass for instance normalization.
 
-    Computes gradients with respect to input, gamma, and beta parameters.
+        Computes gradients with respect to input, gamma, and beta parameters
 
-Args:
-        grad_output: Gradient w.r.t. output (batch, channels, height, width).
-        x: Original input tensor (batch, channels, height, width).
-        gamma: Scale parameter (channels,).
-        epsilon: Small constant for numerical stability (default: 1e-5).
+    Args:
+            grad_output: Gradient w.r.t. output (batch, channels, height, width)
+            x: Original input tensor (batch, channels, height, width)
+            gamma: Scale parameter (channels,)
+            epsilon: Small constant for numerical stability (default: 1e-5)
 
-Returns:
-        Tuple of (grad_input, grad_gamma, grad_beta):
-            - grad_input: Gradient w.r.t. input (batch, channels, height, width)
-            - grad_gamma: Gradient w.r.t. gamma (channels,)
-            - grad_beta: Gradient w.r.t. beta (channels,)
+    Returns:
+            Tuple of (grad_input, grad_gamma, grad_beta):
+                - grad_input: Gradient w.r.t. input (batch, channels, height, width)
+                - grad_gamma: Gradient w.r.t. gamma (channels,)
+                - grad_beta: Gradient w.r.t. beta (channels,)
 
-    Example:
-        ```mojo
-        from shared.core import instance_norm, instance_norm_backward.
+        Example:
+            ```mojo
+            from shared.core import instance_norm, instance_norm_backward
 
-        # Forward pass
-        var output = instance_norm(x, gamma=gamma, beta=beta).
+            # Forward pass
+            var output = instance_norm(x, gamma=gamma, beta=beta)
 
-        # ... compute loss and grad_output ...
+            # ... compute loss and grad_output ...
 
-        # Backward pass
-        var (grad_x, grad_gamma, grad_beta) = instance_norm_backward(
-            grad_output, x, gamma=gamma
-        )
-        ```
+            # Backward pass
+            var (grad_x, grad_gamma, grad_beta) = instance_norm_backward(
+                grad_output, x, gamma=gamma
+            )
+            ```
 
-Note:
-        Pure functional: returns new tensors, does not modify inputs.
+    Note:
+            Pure functional: returns new tensors, does not modify inputs
     """
     var x_shape = x.shape()
     if len(x_shape) != 4:
@@ -2491,7 +2491,7 @@ Note:
     var grad_beta_ptr = grad_beta._data
 
     if x.dtype() == DType.float32:
-        var N = Float32(spatial_size).
+        var N = Float32(spatial_size)
 
         # First pass: compute grad_gamma and grad_beta
         for b in range(batch):
@@ -2507,7 +2507,7 @@ Note:
                             + w
                         )
                         sum_val += x_ptr.bitcast[Float32]()[idx]
-                var mean_val = sum_val / N.
+                var mean_val = sum_val / N
 
                 var sum_sq_diff = Float32(0.0)
                 for h in range(height):
@@ -2521,7 +2521,7 @@ Note:
                         var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                         sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
-                var std = sqrt_scalar_f32(var_val + Float32(epsilon)).
+                var std = sqrt_scalar_f32(var_val + Float32(epsilon))
 
                 # Accumulate grad_gamma and grad_beta
                 for h in range(height):
@@ -2534,12 +2534,12 @@ Note:
                         )
                         var grad_out = grad_output_ptr.bitcast[Float32]()[idx]
                         var x_val = x_ptr.bitcast[Float32]()[idx]
-                        var x_norm = (x_val - mean_val) / std.
+                        var x_norm = (x_val - mean_val) / std
 
                         grad_beta_ptr.bitcast[Float32]()[c] += grad_out
                         grad_gamma_ptr.bitcast[Float32]()[c] += (
                             grad_out * x_norm
-                        ).
+                        )
 
         # Second pass: compute grad_input
         for b in range(batch):
@@ -2555,7 +2555,7 @@ Note:
                             + w
                         )
                         sum_val += x_ptr.bitcast[Float32]()[idx]
-                var mean_val = sum_val / N.
+                var mean_val = sum_val / N
 
                 var sum_sq_diff = Float32(0.0)
                 for h in range(height):
@@ -2569,13 +2569,13 @@ Note:
                         var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                         sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
-                var std = sqrt_scalar_f32(var_val + Float32(epsilon)).
+                var std = sqrt_scalar_f32(var_val + Float32(epsilon))
 
-                var gamma_val = gamma_ptr.bitcast[Float32]()[c].
+                var gamma_val = gamma_ptr.bitcast[Float32]()[c]
 
                 # Compute gradient accumulations
                 var grad_var = Float32(0.0)
-                var grad_mean = Float32(0.0).
+                var grad_mean = Float32(0.0)
 
                 for h in range(height):
                     for w in range(width):
@@ -2587,7 +2587,7 @@ Note:
                         )
                         var grad_out = grad_output_ptr.bitcast[Float32]()[idx]
                         var x_val = x_ptr.bitcast[Float32]()[idx]
-                        var x_minus_mean = x_val - mean_val.
+                        var x_minus_mean = x_val - mean_val
 
                         var grad_x_norm = grad_out * gamma_val
                         grad_var += (
@@ -2598,7 +2598,7 @@ Note:
                                 var_val + Float32(epsilon), Float32(-1.5)
                             )
                         )
-                        grad_mean += grad_x_norm * Float32(-1.0) / std.
+                        grad_mean += grad_x_norm * Float32(-1.0) / std
 
                 # Compute grad_input
                 for h in range(height):
@@ -2611,19 +2611,19 @@ Note:
                         )
                         var grad_out = grad_output_ptr.bitcast[Float32]()[idx]
                         var x_val = x_ptr.bitcast[Float32]()[idx]
-                        var x_minus_mean = x_val - mean_val.
+                        var x_minus_mean = x_val - mean_val
 
                         var grad_x_norm = grad_out * gamma_val
                         var term1 = grad_x_norm / std
                         var term2 = grad_var * Float32(2.0) * x_minus_mean / N
-                        var term3 = grad_mean / N.
+                        var term3 = grad_mean / N
 
                         grad_input_ptr.bitcast[Float32]()[idx] = (
                             term1 + term2 + term3
-                        ).
+                        )
 
     elif x.dtype() == DType.float64:
-        var N = Float64(spatial_size).
+        var N = Float64(spatial_size)
 
         # First pass: compute grad_gamma and grad_beta
         for b in range(batch):
@@ -2638,7 +2638,7 @@ Note:
                             + w
                         )
                         sum_val += x_ptr.bitcast[Float64]()[idx]
-                var mean_val = sum_val / N.
+                var mean_val = sum_val / N
 
                 var sum_sq_diff = Float64(0.0)
                 for h in range(height):
@@ -2652,7 +2652,7 @@ Note:
                         var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                         sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
-                var std = sqrt_scalar_f64(var_val + epsilon).
+                var std = sqrt_scalar_f64(var_val + epsilon)
 
                 for h in range(height):
                     for w in range(width):
@@ -2664,12 +2664,12 @@ Note:
                         )
                         var grad_out = grad_output_ptr.bitcast[Float64]()[idx]
                         var x_val = x_ptr.bitcast[Float64]()[idx]
-                        var x_norm = (x_val - mean_val) / std.
+                        var x_norm = (x_val - mean_val) / std
 
                         grad_beta_ptr.bitcast[Float64]()[c] += grad_out
                         grad_gamma_ptr.bitcast[Float64]()[c] += (
                             grad_out * x_norm
-                        ).
+                        )
 
         # Second pass: compute grad_input
         for b in range(batch):
@@ -2684,7 +2684,7 @@ Note:
                             + w
                         )
                         sum_val += x_ptr.bitcast[Float64]()[idx]
-                var mean_val = sum_val / N.
+                var mean_val = sum_val / N
 
                 var sum_sq_diff = Float64(0.0)
                 for h in range(height):
@@ -2698,12 +2698,12 @@ Note:
                         var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                         sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
-                var std = sqrt_scalar_f64(var_val + epsilon).
+                var std = sqrt_scalar_f64(var_val + epsilon)
 
-                var gamma_val = gamma_ptr.bitcast[Float64]()[c].
+                var gamma_val = gamma_ptr.bitcast[Float64]()[c]
 
                 var grad_var = Float64(0.0)
-                var grad_mean = Float64(0.0).
+                var grad_mean = Float64(0.0)
 
                 for h in range(height):
                     for w in range(width):
@@ -2715,7 +2715,7 @@ Note:
                         )
                         var grad_out = grad_output_ptr.bitcast[Float64]()[idx]
                         var x_val = x_ptr.bitcast[Float64]()[idx]
-                        var x_minus_mean = x_val - mean_val.
+                        var x_minus_mean = x_val - mean_val
 
                         var grad_x_norm = grad_out * gamma_val
                         grad_var += (
@@ -2724,7 +2724,7 @@ Note:
                             * Float64(-0.5)
                             * pow_scalar_f64(var_val + epsilon, Float64(-1.5))
                         )
-                        grad_mean += grad_x_norm * Float64(-1.0) / std.
+                        grad_mean += grad_x_norm * Float64(-1.0) / std
 
                 for h in range(height):
                     for w in range(width):
@@ -2736,16 +2736,16 @@ Note:
                         )
                         var grad_out = grad_output_ptr.bitcast[Float64]()[idx]
                         var x_val = x_ptr.bitcast[Float64]()[idx]
-                        var x_minus_mean = x_val - mean_val.
+                        var x_minus_mean = x_val - mean_val
 
                         var grad_x_norm = grad_out * gamma_val
                         var term1 = grad_x_norm / std
                         var term2 = grad_var * Float64(2.0) * x_minus_mean / N
-                        var term3 = grad_mean / N.
+                        var term3 = grad_mean / N
 
                         grad_input_ptr.bitcast[Float64]()[idx] = (
                             term1 + term2 + term3
-                        ).
+                        )
 
     else:
         raise Error("instance_norm_backward: only float32/64 dtypes supported")

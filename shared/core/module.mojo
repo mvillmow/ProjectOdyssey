@@ -54,28 +54,28 @@ trait Module:
     - Normalization layers (BatchNorm, LayerNorm, etc.)
     - Complete models (sequences of layers)
 
-    All modules must implement the forward pass and parameter collection.
-    Modules that need training/eval mode switching implement train() and eval().
+    All modules must implement the forward pass and parameter collection
+    Modules that need training/eval mode switching implement train() and eval()
 
     Type Parameters:
-        - No generic parameters - all modules work with ExTensor.
+        - No generic parameters - all modules work with ExTensor
     """
 
     fn forward(mut self, input: ExTensor) raises -> ExTensor:
         """Compute forward pass of the module.
 
         Args:
-            input: Input tensor to the module. Shape depends on module type.
+            input: Input tensor to the module. Shape depends on module type
 
         Returns:
-            Output tensor from the module. Shape depends on module type.
+            Output tensor from the module. Shape depends on module type
 
         Raises:
-            Error: If tensor operations fail or shapes are incompatible.
+            Error: If tensor operations fail or shapes are incompatible
 
         Note:
-            This method is required for all Module implementations.
-            It defines the core computation of the module.
+            This method is required for all Module implementations
+            It defines the core computation of the module
         """
         ...
 
@@ -84,20 +84,20 @@ trait Module:
 
         Returns a list of all learnable parameters (weights, biases, etc.)
         that this module manages. The list may be empty for modules with
-        no trainable parameters (e.g., activation functions, pooling).
+        no trainable parameters (e.g., activation functions, pooling)
 
         Returns:
-            List of ExTensor containing all trainable parameters.
-            Order should be consistent across calls.
+            List of ExTensor containing all trainable parameters
+            Order should be consistent across calls
 
         Raises:
-            Error: If parameter collection fails.
+            Error: If parameter collection fails
 
         Note:
             - Returned parameters are typically references/copies
             - Order should be deterministic for reproducibility
             - Nested modules should recursively include sub-module parameters
-            - For optimization: frameworks typically flatten this for gradient updates.
+            - For optimization: frameworks typically flatten this for gradient updates
         """
         ...
 
@@ -107,12 +107,12 @@ trait Module:
         Sets the module to training mode, enabling features like:
         - Dropout regularization
         - Batch normalization with running statistics
-        - Other training-specific behaviors.
+        - Other training-specific behaviors
 
         Note:
             - Default (no-op) if module doesn't need mode switching
             - Can be overridden by layers that need it
-            - Should be called before training loop.
+            - Should be called before training loop
 
         Example:
             ```mojo
@@ -129,12 +129,12 @@ trait Module:
         Sets the module to evaluation (inference) mode, disabling features like:
         - Dropout regularization
         - Batch normalization updates
-        - Other training-specific behaviors.
+        - Other training-specific behaviors
 
         Note:
             - Default (no-op) if module doesn't need mode switching
             - Can be overridden by layers that need it
-            - Should be called before inference.
+            - Should be called before inference
 
         Example:
             ```mojo

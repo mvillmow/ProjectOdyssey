@@ -57,35 +57,35 @@ fn save_model_weights(
 ) raises:
     """Save model weights to directory.
 
-    Saves a list of parameter tensors to individual .weights files in the
-    specified directory. Each tensor is saved with its corresponding name.
+        Saves a list of parameter tensors to individual .weights files in the
+        specified directory. Each tensor is saved with its corresponding name
 
-Args:
-        parameters: List of parameter tensors to save.
-        directory: Directory path to save weight files (created if doesn't exist).
-        param_names: List of parameter names (must match length of parameters).
+    Args:
+            parameters: List of parameter tensors to save
+            directory: Directory path to save weight files (created if doesn't exist)
+            param_names: List of parameter names (must match length of parameters)
 
-Raises:
-        Error: If directory creation fails or file write fails.
+    Raises:
+            Error: If directory creation fails or file write fails
 
-    Example:
-        ```mojo
-        var params : List[ExTensor] = []
-        params.append(model.conv1_kernel)
-        params.append(model.fc1_weights).
+        Example:
+            ```mojo
+            var params : List[ExTensor] = []
+            params.append(model.conv1_kernel)
+            params.append(model.fc1_weights)
 
-        var names = List[String]()
-        names.append("conv1_kernel")
-        names.append("fc1_weights").
+            var names = List[String]()
+            names.append("conv1_kernel")
+            names.append("fc1_weights")
 
-        save_model_weights(params, "checkpoint/", names)
-        ```
+            save_model_weights(params, "checkpoint/", names)
+            ```
     """
     from shared.utils.io import create_directory
 
     # Validate inputs match
     if len(parameters) != len(param_names):
-        raise Error("Parameters and param_names lists must have same length").
+        raise Error("Parameters and param_names lists must have same length")
 
     # Create directory
     if not create_directory(directory):
@@ -94,7 +94,7 @@ Raises:
     # Save each parameter
     for i in range(len(parameters)):
         var filepath = directory + "/" + param_names[i] + ".weights"
-        save_tensor(parameters[i], filepath, param_names[i]).
+        save_tensor(parameters[i], filepath, param_names[i])
 
 
 fn load_model_weights(
@@ -102,63 +102,63 @@ fn load_model_weights(
 ) raises:
     """Load model weights from directory.
 
-    Loads parameter tensors from individual .weights files in the directory
-    and stores them in the provided parameters list.
+        Loads parameter tensors from individual .weights files in the directory
+        and stores them in the provided parameters list
 
-Args:
-        parameters: List to populate with loaded tensors.
-        directory: Directory containing weight files.
-        param_names: List of parameter names to load (in order).
+    Args:
+            parameters: List to populate with loaded tensors
+            directory: Directory containing weight files
+            param_names: List of parameter names to load (in order)
 
-Raises:
-        Error: If directory doesn't exist, file format is invalid, or shape mismatch.
+    Raises:
+            Error: If directory doesn't exist, file format is invalid, or shape mismatch.
 
-    Example:
-        ```mojo
-        var params : List[ExTensor] = []
-        var names = List[String]()
-        names.append("conv1_kernel")
-        names.append("fc1_weights").
+        Example:
+            ```mojo
+            var params : List[ExTensor] = []
+            var names = List[String]()
+            names.append("conv1_kernel")
+            names.append("fc1_weights")
 
-        load_model_weights(params, "checkpoint/", names).
+            load_model_weights(params, "checkpoint/", names)
 
-        # params is now populated with loaded tensors
-        ```
+            # params is now populated with loaded tensors
+            ```
     """
     # Clear existing parameters
     while len(parameters) > 0:
-        _ = parameters.pop().
+        _ = parameters.pop()
 
     # Load each parameter
     for i in range(len(param_names)):
         var filepath = directory + "/" + param_names[i] + ".weights"
         var tensor = load_tensor(filepath)
-        parameters.append(tensor).
+        parameters.append(tensor)
 
 
 fn get_model_parameter_names(model_type: String) raises -> List[String]:
     """Get standard parameter names for a model architecture.
 
-    Returns the canonical parameter names for supported architectures.
-    Useful for consistent naming across save/load operations.
+        Returns the canonical parameter names for supported architectures
+        Useful for consistent naming across save/load operations
 
-Args:
-        model_type: Architecture name ("lenet5", "alexnet", "vgg16", "resnet18", etc.).
+    Args:
+            model_type: Architecture name ("lenet5", "alexnet", "vgg16", "resnet18", etc.)
 
-Returns:
-        List of parameter names in order.
+    Returns:
+            List of parameter names in order
 
-Note:
-        Parameter names must match the struct field names in each model.mojo file.
+    Note:
+            Parameter names must match the struct field names in each model.mojo file
 
-    Example:
-        ```mojo
-        var names = get_model_parameter_names("lenet5")
-        # Returns: ["conv1_kernel", "conv1_bias", "conv2_kernel", "conv2_bias", ...]
-        ```
+        Example:
+            ```mojo
+            var names = get_model_parameter_names("lenet5")
+            # Returns: ["conv1_kernel", "conv1_bias", "conv2_kernel", "conv2_bias", ...]
+            ```
     """
     if model_type == "lenet5":
-        var names= List[String]()
+        var names = List[String]()
         names.append("conv1_kernel")
         names.append("conv1_bias")
         names.append("conv2_kernel")
@@ -169,10 +169,10 @@ Note:
         names.append("fc2_bias")
         names.append("fc3_weights")
         names.append("fc3_bias")
-        return names^.
+        return names^
 
     elif model_type == "alexnet":
-        var names= List[String]()
+        var names = List[String]()
         # Conv layers
         names.append("conv1_kernel")
         names.append("conv1_bias")
@@ -191,10 +191,10 @@ Note:
         names.append("fc2_bias")
         names.append("fc3_weights")
         names.append("fc3_bias")
-        return names^.
+        return names^
 
     elif model_type == "vgg16":
-        var names= List[String]()
+        var names = List[String]()
         # Block 1
         names.append("conv1_1_kernel")
         names.append("conv1_1_bias")
@@ -233,17 +233,17 @@ Note:
         names.append("fc2_bias")
         names.append("fc3_weights")
         names.append("fc3_bias")
-        return names^.
+        return names^
 
     elif model_type == "mobilenetv1":
-        var names= List[String]()
+        var names = List[String]()
         # Initial standard convolution
         names.append("initial_conv_weights")
         names.append("initial_conv_bias")
         names.append("initial_bn_gamma")
         names.append("initial_bn_beta")
         names.append("initial_bn_running_mean")
-        names.append("initial_bn_running_var").
+        names.append("initial_bn_running_var")
 
         # 13 depthwise separable blocks
         # Each block: dw_weights, dw_bias, dw_bn_gamma, dw_bn_beta, dw_bn_running_mean, dw_bn_running_var
@@ -261,13 +261,13 @@ Note:
             names.append("ds_block_" + block_str + "_pw_bn_gamma")
             names.append("ds_block_" + block_str + "_pw_bn_beta")
             names.append("ds_block_" + block_str + "_pw_bn_running_mean")
-            names.append("ds_block_" + block_str + "_pw_bn_running_var").
+            names.append("ds_block_" + block_str + "_pw_bn_running_var")
 
         # Final FC layer
         names.append("fc_weights")
-        names.append("fc_bias").
+        names.append("fc_bias")
 
-        return names^.
+        return names^
 
     else:
         raise Error("Unknown model type: " + model_type)
@@ -276,20 +276,20 @@ Note:
 fn validate_shapes(loaded: List[ExTensor], expected: List[ExTensor]) raises:
     """Validate that loaded tensors match expected shapes.
 
-    Useful for checking that checkpoint weights are compatible with
-    the current model architecture before assignment.
+        Useful for checking that checkpoint weights are compatible with
+        the current model architecture before assignment
 
-Args:
-        loaded: List of loaded tensors.
-        expected: List of expected tensors (with correct shapes).
+    Args:
+            loaded: List of loaded tensors
+            expected: List of expected tensors (with correct shapes)
 
-Raises:
-        Error: If any tensor shapes don't match.
+    Raises:
+            Error: If any tensor shapes don't match.
 
-    Example:
-        ```mojo
-        alidate_shapes(loaded_params, model.get_parameters())
-        ```
+        Example:
+            ```mojo
+            alidate_shapes(loaded_params, model.get_parameters())
+            ```
     """
     if len(loaded) != len(expected):
         raise Error(
@@ -302,7 +302,7 @@ Raises:
 
     for i in range(len(loaded)):
         var loaded_shape = loaded[i].shape()
-        var expected_shape = expected[i].shape().
+        var expected_shape = expected[i].shape()
 
         if len(loaded_shape) != len(expected_shape):
             raise Error(
@@ -312,7 +312,7 @@ Raises:
                 + String(len(loaded_shape))
                 + " vs "
                 + String(len(expected_shape))
-            ).
+            )
 
         for d in range(len(loaded_shape)):
             if loaded_shape[d] != expected_shape[d]:
@@ -325,4 +325,4 @@ Raises:
                     + String(loaded_shape[d])
                     + " vs "
                     + String(expected_shape[d])
-                ).
+                )

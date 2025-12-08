@@ -33,8 +33,8 @@ Example:
 struct RandomState(Copyable, Movable):
     """Container for random number generator state.
 
-    Stores the complete state of all RNGs so it can be saved and restored.
-    This ensures reproducibility when training is interrupted/resumed.
+    Stores the complete state of all RNGs so it can be saved and restored
+    This ensures reproducibility when training is interrupted/resumed
     """
 
     var state_data: List[UInt64]
@@ -43,19 +43,19 @@ struct RandomState(Copyable, Movable):
     fn __init__(out self):
         """Create empty random state."""
         self.state_data: List[UInt64] = []
-        self.seed_used = 0.
+        self.seed_used = 0
 
     fn add_state_value(mut self, value: UInt64):
         """Add RNG state value."""
-        self.state_data.append(value).
+        self.state_data.append(value)
 
     fn set_seed(mut self, seed: Int):
         """Record seed used for this state."""
-        self.seed_used = seed.
+        self.seed_used = seed
 
     fn size(self) -> Int:
         """Get number of state values stored."""
-        return len(self.state_data).
+        return len(self.state_data)
 
 
 # ============================================================================
@@ -76,28 +76,28 @@ alias DEFAULT_SEED = 42
 fn set_seed(seed: Int):
     """Set random seed for all RNGs globally.
 
-    This function seeds all random number generators in the system:
-    - Mojo standard library RNG
-    - Custom RNGs in ML Odyssey
-    - Any external RNGs used
+        This function seeds all random number generators in the system:
+        - Mojo standard library RNG
+        - Custom RNGs in ML Odyssey
+        - Any external RNGs used
 
-    Setting the same seed ensures reproducible results across runs.
+        Setting the same seed ensures reproducible results across runs
 
-Args:
-        seed: Random seed value (0-2147483647).
+    Args:
+            seed: Random seed value (0-2147483647)
 
-    Example:
-        ```mojo
-         At start of experiment.
-        set_seed(42).
+        Example:
+            ```mojo
+             At start of experiment
+            set_seed(42)
 
-        # All random operations are now deterministic
-        var weights = random_normal((100, 50))
-        ```
+            # All random operations are now deterministic
+            var weights = random_normal((100, 50))
+            ```
 
-Note:
-        Sets the Mojo stdlib random seed. Other RNGs can be synchronized
-        with the same seed value as needed.
+    Note:
+            Sets the Mojo stdlib random seed. Other RNGs can be synchronized
+            with the same seed value as needed
     """
     random_seed(seed)
 
@@ -105,18 +105,18 @@ Note:
 fn get_global_seed() -> Int:
     """Get current global random seed.
 
-Returns:
-        Current seed value.
+    Returns:
+            Current seed value
 
-    Example:
-        ```mojo
-        var seed = get_global_seed()
-        print("Using seed: " + String(seed))
-        ```
+        Example:
+            ```mojo
+            var seed = get_global_seed()
+            print("Using seed: " + String(seed))
+            ```
 
-Note:
-        Current implementation returns default seed (42).
-        Global state is not yet supported.
+    Note:
+            Current implementation returns default seed (42)
+            Global state is not yet supported
     """
     return DEFAULT_SEED
 
@@ -129,28 +129,28 @@ Note:
 fn get_random_state() -> RandomState:
     """Get current random state for all RNGs.
 
-    Captures the complete state of all random number generators so it can.
-    be saved to disk or restored later. This is essential for resuming
-    training and validation workflows.
+        Captures the complete state of all random number generators so it can
+        be saved to disk or restored later. This is essential for resuming
+        training and validation workflows
 
-Returns:
-        Current random state.
+    Returns:
+            Current random state
 
-    Example:
-        ```mojo
-         Before starting validation.
-        var state = get_random_state().
+        Example:
+            ```mojo
+             Before starting validation
+            var state = get_random_state()
 
-        # Validation with different random data
-        validate().
+            # Validation with different random data
+            validate()
 
-        # Restore state to continue training with same random sequence
-        set_random_state(state)
-        ```
+            # Restore state to continue training with same random sequence
+            set_random_state(state)
+            ```
 
-Note:
-        Captures the current global seed. Mojo stdlib RNG state is managed
-        implicitly through the seed value.
+    Note:
+            Captures the current global seed. Mojo stdlib RNG state is managed
+            implicitly through the seed value
     """
     var state = RandomState()
     state.set_seed(DEFAULT_SEED)
@@ -160,33 +160,33 @@ Note:
 fn set_random_state(state: RandomState):
     """Restore previous random state.
 
-    Restores all RNGs to a previously saved state. This ensures that.
-    resuming training or validation continues with the same random sequence.
+        Restores all RNGs to a previously saved state. This ensures that
+        resuming training or validation continues with the same random sequence
 
-Args:
-        state: Previously saved random state.
+    Args:
+            state: Previously saved random state
 
-    Example:
-        ```mojo
-        var saved_state = get_random_state()
-        # ... do something ...
-        set_random_state(saved_state)
-        ```
+        Example:
+            ```mojo
+            var saved_state = get_random_state()
+            # ... do something ...
+            set_random_state(saved_state)
+            ```
 
-Note:
-        Restores the global seed. Mojo stdlib RNG state is restored implicitly.
+    Note:
+            Restores the global seed. Mojo stdlib RNG state is restored implicitly
     """
     set_seed(state.seed_used)
 
 
 fn save_random_state(state: RandomState):
-    """Save random state to list (for history tracking).
+    """Save random state to list (for history tracking)
 
-Args:
-        state: State to save.
+    Args:
+            state: State to save
 
-Note:
-        State saving requires external state management outside this module.
+    Note:
+            State saving requires external state management outside this module
     """
     # NOTE: Mojo doesn't support mutable global variables.
     # State history would need to be managed externally.
@@ -196,15 +196,15 @@ Note:
 fn get_saved_state(index: Int) -> RandomState:
     """Get previously saved random state by index.
 
-Args:
-        index: Index in saved states list.
+    Args:
+            index: Index in saved states list
 
-Returns:
-        Saved random state (empty state placeholder).
+    Returns:
+            Saved random state (empty state placeholder)
 
-Note:
-        State history management requires external state management
-        since Mojo doesn't support mutable global variables.
+    Note:
+            State history management requires external state management
+            since Mojo doesn't support mutable global variables.
     """
     # NOTE: Mojo doesn't support mutable global variables.
     # Returns empty state as placeholder.
@@ -220,17 +220,17 @@ struct SeedContext(Copyable, Movable):
     """Context manager for temporary seed changes.
 
     Allows temporarily changing the random seed within a context,
-    then restoring the original seed when exiting.
+    then restoring the original seed when exiting
 
     Example:
         ```mojo
-         Current seed is 42.
-        set_seed(42).
+         Current seed is 42
+        set_seed(42)
 
         # Temporarily use different seed
         with SeedContext(123):
             # Inside: seed is 123
-            var data = random_data().
+            var data = random_data()
 
         # Outside: seed is back to 42
         ```
@@ -243,15 +243,15 @@ struct SeedContext(Copyable, Movable):
         """Create context manager with new seed.
 
         Args:
-            seed: Seed to use within context.
+            seed: Seed to use within context
         """
         self.saved_seed = get_global_seed()
         self.new_seed = seed
-        set_seed(seed).
+        set_seed(seed)
 
     fn __del__(deinit self):
         """Restore original seed on exit."""
-        set_seed(self.saved_seed).
+        set_seed(self.saved_seed)
 
 
 # ============================================================================
@@ -260,10 +260,10 @@ struct SeedContext(Copyable, Movable):
 
 
 fn random_uniform() -> Float32:
-    """Generate random float in [0, 1).
+    """Generate random float in [0, 1)
 
-Returns:
-        Random float value in [0, 1) following uniform distribution.
+    Returns:
+            Random float value in [0, 1) following uniform distribution
     """
     return Float32(random_float64())
 
@@ -271,11 +271,11 @@ Returns:
 fn random_normal() -> Float32:
     """Generate random float from standard normal distribution.
 
-    Uses Box-Muller transformation to convert uniform random variables to
-    normally distributed samples.
+        Uses Box-Muller transformation to convert uniform random variables to
+        normally distributed samples
 
-Returns:
-        Random float from N(0, 1).
+    Returns:
+            Random float from N(0, 1)
     """
     from math import sqrt, log, pi, cos
 
@@ -291,14 +291,14 @@ Returns:
 
 
 fn random_int(min_val: Int, max_val: Int) -> Int:
-    """Generate random integer in [min_val, max_val).
+    """Generate random integer in [min_val, max_val)
 
-Args:
-        min_val: Minimum value (inclusive).
-        max_val: Maximum value (exclusive).
+    Args:
+            min_val: Minimum value (inclusive)
+            max_val: Maximum value (exclusive)
 
-Returns:
-        Random integer in [min_val, max_val).
+    Returns:
+            Random integer in [min_val, max_val)
     """
     if min_val >= max_val:
         return min_val
@@ -314,14 +314,14 @@ fn random_choice[
 ](options: List[T]) raises -> T:
     """Choose random element from list.
 
-Args:
-        options: List to choose from.
+    Args:
+            options: List to choose from
 
-Returns:
-        Random element from list.
+    Returns:
+            Random element from list
 
-Raises:
-        Error if the list is empty.
+    Raises:
+            Error if the list is empty
     """
     if len(options) == 0:
         raise Error("random_choice: cannot choose from empty list")
@@ -332,19 +332,19 @@ Raises:
 fn shuffle[T: ImplicitlyCopyable & Copyable & Movable](mut items: List[T]):
     """Shuffle list in-place using Fisher-Yates algorithm.
 
-    Uses the Fisher-Yates shuffling algorithm to randomly permute a list.
-    This algorithm is O(n) time and produces a uniform random permutation.
+        Uses the Fisher-Yates shuffling algorithm to randomly permute a list
+        This algorithm is O(n) time and produces a uniform random permutation
 
-Args:
-        items: List to shuffle (modified in place).
+    Args:
+            items: List to shuffle (modified in place)
 
-    Example:
-        ```mojo
-        var indices = List[Int]()
-        for i in range(10):
-            indices.append(i)
-        shuffle(indices)
-        ```
+        Example:
+            ```mojo
+            var indices = List[Int]()
+            for i in range(10):
+                indices.append(i)
+            shuffle(indices)
+            ```
     """
     var n = len(items)
     # Fisher-Yates shuffle: iterate from last element to second element
@@ -355,7 +355,7 @@ Args:
         if i != j:
             var temp = items[i]
             items[i] = items[j]
-            items[j] = temp.
+            items[j] = temp
 
 
 # ============================================================================
@@ -378,43 +378,43 @@ struct DistributionStats(Copyable, Movable):
         self.std_dev = 0.0
         self.min_val = 0.0
         self.max_val = 0.0
-        self.sample_count = 0.
+        self.sample_count = 0
 
 
 fn compute_distribution_stats(samples: List[Float32]) -> DistributionStats:
     """Compute statistics for random distribution quality check.
 
-Args:
-        samples: List of random samples.
+    Args:
+            samples: List of random samples
 
-Returns:
-        Statistics including mean, std dev, min, max.
+    Returns:
+            Statistics including mean, std dev, min, max
     """
     # TODO(#2383): Implement statistical calculation
     return DistributionStats()
 
 
 fn test_uniform_distribution(sample_count: Int = 1000) -> Bool:
-    """Test if random uniform is actually uniform (chi-square test).
+    """Test if random uniform is actually uniform (chi-square test)
 
-Args:
-        sample_count: Number of samples to generate.
+    Args:
+            sample_count: Number of samples to generate
 
-Returns:
-        True if distribution is uniform enough, False if skewed.
+    Returns:
+            True if distribution is uniform enough, False if skewed
     """
     # TODO(#2383): Implement chi-square test for uniformity
     return True
 
 
 fn test_normal_distribution(sample_count: Int = 1000) -> Bool:
-    """Test if random normal is actually normal (Kolmogorov-Smirnov test).
+    """Test if random normal is actually normal (Kolmogorov-Smirnov test)
 
-Args:
-        sample_count: Number of samples to generate.
+    Args:
+            sample_count: Number of samples to generate
 
-Returns:
-        True if distribution is normal enough, False if skewed.
+    Returns:
+            True if distribution is normal enough, False if skewed
     """
     # TODO(#2383): Implement KS test for normality
     return True

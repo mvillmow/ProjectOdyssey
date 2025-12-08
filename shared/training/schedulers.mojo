@@ -8,5 +8,5 @@ The scheduler implementations have been moved to the schedulers/ directory:
 All imports should use:
     from shared.training.schedulers import StepLR, CosineAnnealingLR, WarmupLR
 
-This file is kept for reference only and will be removed in a future version.
+This file is kept for reference only and will be removed in a future version
 """

@@ -1,7 +1,7 @@
 """
 Training Metrics
 
-Metric implementations for tracking training and evaluation performance.
+Metric implementations for tracking training and evaluation performance
 
 Includes:
 - Accuracy (Classification accuracy - top-1, top-k, per-class)
@@ -10,7 +10,7 @@ Includes:
 - Precision (Precision metric)
 - Recall (Recall metric)
 
-All metrics implement the Metric trait for consistent interface.
+All metrics implement the Metric trait for consistent interface
 """
 
 # Export base metric interface and utilities

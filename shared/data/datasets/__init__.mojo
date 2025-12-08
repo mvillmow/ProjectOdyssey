@@ -1,6 +1,6 @@
 """Dataset implementations and utilities.
 
-Provides high-level dataset interfaces for common ML datasets including CIFAR-10.
+Provides high-level dataset interfaces for common ML datasets including CIFAR-10
 
 Modules:
     cifar10: CIFAR-10 dataset wrapper for image classification

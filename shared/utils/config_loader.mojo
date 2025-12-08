@@ -19,20 +19,20 @@ from python import Python
 fn load_default_config(config_type: String) raises -> Config:
     """Load a default configuration file.
 
-Args:
-        config_type: Type of config to load (e.g., "training", "model", "data", "paths").
+    Args:
+            config_type: Type of config to load (e.g., "training", "model", "data", "paths")
 
-Returns:
-        Loaded default configuration.
+    Returns:
+            Loaded default configuration
 
-Raises:
-        Error if config file not found or invalid.
+    Raises:
+            Error if config file not found or invalid
 
-    Example:
-        ```mojo
-        var training_defaults = load_default_config("training")
-        var lr = training_defaults.get_float("optimizer.learning_rate")
-        ```
+        Example:
+            ```mojo
+            var training_defaults = load_default_config("training")
+            var lr = training_defaults.get_float("optimizer.learning_rate")
+            ```
     """
     var filepath = "configs/defaults/" + config_type + ".yaml"
     return load_config(filepath)
@@ -43,23 +43,23 @@ fn load_paper_config(
 ) raises -> Config:
     """Load paper configuration with defaults merged in.
 
-    Merges: defaults/{config_type}.yaml → papers/{paper_name}/{config_type}.yaml.
+        Merges: defaults/{config_type}.yaml → papers/{paper_name}/{config_type}.yaml
 
-Args:
-        paper_name: Name of the paper (e.g., "lenet5", "alexnet").
-        config_type: Type of config to load (default: "training").
+    Args:
+            paper_name: Name of the paper (e.g., "lenet5", "alexnet")
+            config_type: Type of config to load (default: "training")
 
-Returns:
-        Merged configuration with paper overrides.
+    Returns:
+            Merged configuration with paper overrides
 
-Raises:
-        Error if config files not found or invalid.
+    Raises:
+            Error if config files not found or invalid
 
-    Example:
-        ```mojo
-        var lenet5_config = load_paper_config("lenet5", "model")
-        var num_classes = lenet5_config.get_int("num_classes")
-        ```
+        Example:
+            ```mojo
+            var lenet5_config = load_paper_config("lenet5", "model")
+            var num_classes = lenet5_config.get_int("num_classes")
+            ```
     """
     # Load defaults
     var defaults = Config()
@@ -67,7 +67,7 @@ Raises:
         defaults = load_default_config(config_type)
     except:
         # If no defaults exist, start with empty config
-        pass.
+        pass
 
     # Load paper-specific config
     var paper_filepath = (
@@ -86,36 +86,36 @@ fn load_experiment_config(
 ) raises -> Config:
     """Load complete configuration for an experiment.
 
-    Implements the three-tier merge pattern:
-    1. Load defaults (training, model, data)
-    2. Load paper-specific configs
-    3. Load experiment config
-    4. Merge: defaults → paper → experiment
-    5. Substitute environment variables
+        Implements the three-tier merge pattern:
+        1. Load defaults (training, model, data)
+        2. Load paper-specific configs
+        3. Load experiment config
+        4. Merge: defaults → paper → experiment
+        5. Substitute environment variables
 
-Args:
-        paper_name: Name of the paper (e.g., "lenet5").
-        experiment_name: Name of the experiment (e.g., "baseline", "augmented").
+    Args:
+            paper_name: Name of the paper (e.g., "lenet5")
+            experiment_name: Name of the experiment (e.g., "baseline", "augmented")
 
-Returns:
-        Complete merged and validated configuration.
+    Returns:
+            Complete merged and validated configuration
 
-Raises:
-        Error if required config files not found or invalid.
+    Raises:
+            Error if required config files not found or invalid
 
-    Example:
-        ```mojo
-        var config = load_experiment_config("lenet5", "baseline")
-        var lr = config.get_float("optimizer.learning_rate")
-        var batch_size = config.get_int("training.batch_size")
-        var model_name = config.get_string("model.name")
-        ```
+        Example:
+            ```mojo
+            var config = load_experiment_config("lenet5", "baseline")
+            var lr = config.get_float("optimizer.learning_rate")
+            var batch_size = config.get_int("training.batch_size")
+            var model_name = config.get_string("model.name")
+            ```
     """
     # Step 1: Load all defaults (training, model, data)
     var config = Config()
 
     # Try to load each type of default config (graceful if missing)
-    var default_types= List[String]()
+    var default_types = List[String]()
     default_types.append("training")
     default_types.append("model")
     default_types.append("data")
@@ -128,7 +128,7 @@ Raises:
             config = merge_configs(config, default_config)
         except:
             # Skip if default doesn't exist
-            pass.
+            pass
 
     # Step 2: Load paper-specific configs
     for i in range(len(default_types)):
@@ -141,7 +141,7 @@ Raises:
             config = merge_configs(config, paper_config)
         except:
             # Skip if paper config doesn't exist
-            pass.
+            pass
 
     # Step 3: Load experiment-specific config
     var exp_filepath = (
@@ -161,27 +161,27 @@ fn load_config_with_validation(
 ) raises -> Config:
     """Load configuration with validation of required keys.
 
-Args:
-        filepath: Path to configuration file.
-        required_keys: List of required configuration keys.
+    Args:
+            filepath: Path to configuration file
+            required_keys: List of required configuration keys
 
-Returns:
-        Loaded and validated configuration.
+    Returns:
+            Loaded and validated configuration
 
-Raises:
-        Error if file not found, invalid, or missing required keys.
+    Raises:
+            Error if file not found, invalid, or missing required keys
 
-    Example:
-        ```mojo
-        var required = List[String]()
-        required.append("optimizer.learning_rate")
-        required.append("training.epochs").
+        Example:
+            ```mojo
+            var required = List[String]()
+            required.append("optimizer.learning_rate")
+            required.append("training.epochs")
 
-        var config = load_config_with_validation(
-            "configs/experiments/lenet5/baseline.yaml",
-            required
-        )
-        ```
+            var config = load_config_with_validation(
+                "configs/experiments/lenet5/baseline.yaml",
+                required
+            )
+            ```
     """
     var config = load_config(filepath)
     config.validate(required_keys)
@@ -193,25 +193,25 @@ fn create_experiment_config(
 ) raises:
     """Create a new experiment configuration with overrides.
 
-    Creates a new experiment config file that extends the paper config.
-    with specified overrides.
+        Creates a new experiment config file that extends the paper config
+        with specified overrides
 
-Args:
-        paper_name: Name of the paper.
-        experiment_name: Name of the new experiment.
-        overrides: Configuration overrides to apply.
+    Args:
+            paper_name: Name of the paper
+            experiment_name: Name of the new experiment
+            overrides: Configuration overrides to apply
 
-Raises:
-        Error if experiment already exists or file cannot be written.
+    Raises:
+            Error if experiment already exists or file cannot be written
 
-    Example:
-        ```mojo
-        var overrides = Config()
-        overrides.set("optimizer.learning_rate", 0.01)
-        overrides.set("training.batch_size", 64).
+        Example:
+            ```mojo
+            var overrides = Config()
+            overrides.set("optimizer.learning_rate", 0.01)
+            overrides.set("training.batch_size", 64)
 
-        create_experiment_config("lenet5", "high_lr", overrides)
-        ```
+            create_experiment_config("lenet5", "high_lr", overrides)
+            ```
     """
     # Create experiment config from paper config + overrides
     var paper_config = load_paper_config(paper_name, "training")
@@ -227,22 +227,22 @@ Raises:
 fn validate_experiment_config(config: Config) raises:
     """Validate that an experiment configuration has all required fields.
 
-    Checks for common required fields across training, model, and data configs.
+        Checks for common required fields across training, model, and data configs
 
-Args:
-        config: Configuration to validate.
+    Args:
+            config: Configuration to validate
 
-Raises:
-        Error if any required field is missing or invalid.
+    Raises:
+            Error if any required field is missing or invalid
 
-    Example:
-        ```mojo
-        var config = load_experiment_config("lenet5", "baseline")
-        validate_experiment_config(config)  # Raises if invalid
-        ```
+        Example:
+            ```mojo
+            var config = load_experiment_config("lenet5", "baseline")
+            validate_experiment_config(config)  # Raises if invalid
+            ```
     """
     # Define required fields
-    var required= List[String]()
+    var required = List[String]()
 
     # Training requirements
     required.append("optimizer.name")
@@ -265,7 +265,7 @@ Raises:
     config.validate_range("training.batch_size", 1.0, 10000.0)
 
     # Validate optimizer name
-    var valid_optimizers= List[String]()
+    var valid_optimizers = List[String]()
     valid_optimizers.append("sgd")
     valid_optimizers.append("adam")
     valid_optimizers.append("adamw")

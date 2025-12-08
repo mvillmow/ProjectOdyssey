@@ -62,24 +62,24 @@ from shared.autograd.tape import (
 struct Variable(Copyable, Movable):
     """Tensor wrapper with automatic differentiation support.
 
-    Variable extends ExTensor with gradient tracking capabilities. Each Variable
-    maintains:
-    - data: The actual tensor values (ExTensor)
-    - id: Unique identifier for tape tracking
-    - requires_grad: Whether to track operations for this variable
+        Variable extends ExTensor with gradient tracking capabilities. Each Variable
+        maintains:
+        - data: The actual tensor values (ExTensor)
+        - id: Unique identifier for tape tracking
+        - requires_grad: Whether to track operations for this variable
 
-    Gradients are stored in the GradientTape's registry, not in the Variable
-    itself. This allows for gradient accumulation and cleanup via the tape.
+        Gradients are stored in the GradientTape's registry, not in the Variable
+        itself. This allows for gradient accumulation and cleanup via the tape
 
-    Attributes:
-        data: The underlying ExTensor containing values.
-        id: Unique identifier for gradient tracking.
-        requires_grad: Flag indicating whether this Variable participates in autograd.
+        Attributes:
+            data: The underlying ExTensor containing values
+            id: Unique identifier for gradient tracking
+            requires_grad: Flag indicating whether this Variable participates in autograd
 
-Note:
-        Operations on Variables create new Variables. The tape records which
-        operations were performed and on which variables, enabling automatic
-        gradient computation.
+    Note:
+            Operations on Variables create new Variables. The tape records which
+            operations were performed and on which variables, enabling automatic
+            gradient computation
     """
 
     var data: ExTensor
@@ -89,7 +89,7 @@ Note:
     fn __init__(
         out self,
         var data: ExTensor,
-        requires_grad: Bool,.
+        requires_grad: Bool,
         mut tape: GradientTape,
     ) raises:
         """Initialize a Variable and register it with the tape.
@@ -101,31 +101,31 @@ Note:
 
         Examples:
             var tape = GradientTape()
-            var x = Variable(zeros(shape, dtype), True, tape).
+            var x = Variable(zeros(shape, dtype), True, tape)
         """
         self.data = data^
         self.requires_grad = requires_grad
-        self.id = tape.register_variable(requires_grad).
+        self.id = tape.register_variable(requires_grad)
 
     fn __copyinit__(out self, existing: Self):
         """Copy constructor."""
         self.data = existing.data
         self.id = existing.id
-        self.requires_grad = existing.requires_grad.
+        self.requires_grad = existing.requires_grad
 
     fn __moveinit__(out self, deinit existing: Self):
         """Move constructor."""
         self.data = existing.data^
         self.id = existing.id
-        self.requires_grad = existing.requires_grad.
+        self.requires_grad = existing.requires_grad
 
     fn __init__(
         out self,
         var data: ExTensor,
-        requires_grad: Bool,.
-        id: Int,.
+        requires_grad: Bool,
+        id: Int,
     ):
-        """Initialize a Variable with explicit ID (internal use).
+        """Initialize a Variable with explicit ID (internal use)
 
         Args:
             data: The tensor values to wrap (ownership transferred)
@@ -134,22 +134,22 @@ Note:
 
         Note:
             This constructor is primarily for internal use when creating
-            output Variables from operations.
+            output Variables from operations
         """
         self.data = data^
         self.requires_grad = requires_grad
-        self.id = id.
+        self.id = id
 
     fn backward(self, mut tape: GradientTape) raises:
         """Compute gradients via automatic differentiation.
 
         Triggers backward pass through the computation graph, computing gradients
         for all Variables with requires_grad=True that were used to compute this
-        Variable.
+        Variable
 
         The gradient of this Variable with respect to itself is initialized to
         ones (d_self/d_self = 1), then gradients are propagated backward through
-        the graph using the chain rule.
+        the graph using the chain rule
 
         Args:
             tape: The gradient tape that recorded operations
@@ -162,46 +162,46 @@ Note:
         """
         # Initialize gradient of output to ones
         var grad = ones_like(self.data)
-        tape.backward(self.id, grad^).
+        tape.backward(self.id, grad^)
 
     fn detach(self) -> ExTensor:
         """Get the underlying tensor without gradient tracking.
 
         Useful for breaking the computation graph when you want to use values
-        without tracking gradients.
+        without tracking gradients
 
         Returns:
-            The underlying ExTensor (copy).
+            The underlying ExTensor (copy)
 
         Examples:
             var x = Variable(data, True, tape)
-            var y = x.detach()  # y is just an ExTensor, no gradient tracking.
+            var y = x.detach()  # y is just an ExTensor, no gradient tracking
         """
-        return self.data.
+        return self.data
 
     fn shape(self) -> List[Int]:
         """Get the shape of the underlying tensor.
 
         Returns:
-            List of dimension sizes.
+            List of dimension sizes
         """
-        return self.data.shape().
+        return self.data.shape()
 
     fn numel(self) -> Int:
         """Get the number of elements in the tensor.
 
         Returns:
-            Total number of elements.
+            Total number of elements
         """
-        return self.data.numel().
+        return self.data.numel()
 
     fn dtype(self) -> DType:
         """Get the data type of the underlying tensor.
 
         Returns:
-            The DType of the tensor.
+            The DType of the tensor
         """
-        return self.data.dtype().
+        return self.data.dtype()
 
 
 # ============================================================================
@@ -218,28 +218,28 @@ fn variable_add(
 ) raises -> Variable:
     """Add two Variables element-wise.
 
-Args:
-        a: First input `Variable`.
-        b: Second input `Variable`.
-        tape: Gradient tape for recording..
+    Args:
+            a: First input `Variable`
+            b: Second input `Variable`
+            tape: Gradient tape for recording..
 
-Returns:
-        New `Variable` containing `a + b`.
+    Returns:
+            New `Variable` containing `a + b`
     """
     var result_data = add(a.data, b.data)
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
 
     # Record operation for backward pass
     if tape.enabled and (a.requires_grad or b.requires_grad):
-        var input_ids= List[Int]()
+        var input_ids = List[Int]()
         input_ids.append(a.id)
-        input_ids.append(b.id).
+        input_ids.append(b.id)
 
         # Save inputs for backward pass (needed for broadcast reduction)
         var saved = SavedTensors()
         saved.add_tensor(a.data)
         saved.add_tensor(b.data)
-        tape.record(OP_ADD, input_ids^, result_id, saved^).
+        tape.record(OP_ADD, input_ids^, result_id, saved^)
 
     return Variable(result_data^, a.requires_grad or b.requires_grad, result_id)
 
@@ -251,27 +251,27 @@ fn variable_subtract(
 ) raises -> Variable:
     """Subtract two Variables element-wise.
 
-Args:
-        a: First input `Variable`.
-        b: Second input `Variable`.
-        tape: Gradient tape for recording..
+    Args:
+            a: First input `Variable`
+            b: Second input `Variable`
+            tape: Gradient tape for recording..
 
-Returns:
-        New `Variable` containing `a - b`.
+    Returns:
+            New `Variable` containing `a - b`
     """
     var result_data = subtract(a.data, b.data)
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
 
     if tape.enabled and (a.requires_grad or b.requires_grad):
-        var input_ids= List[Int]()
+        var input_ids = List[Int]()
         input_ids.append(a.id)
-        input_ids.append(b.id).
+        input_ids.append(b.id)
 
         # Save inputs for backward pass (needed for broadcast reduction)
         var saved = SavedTensors()
         saved.add_tensor(a.data)
         saved.add_tensor(b.data)
-        tape.record(OP_SUBTRACT, input_ids^, result_id, saved^).
+        tape.record(OP_SUBTRACT, input_ids^, result_id, saved^)
 
     return Variable(result_data^, a.requires_grad or b.requires_grad, result_id)
 
@@ -283,27 +283,27 @@ fn variable_multiply(
 ) raises -> Variable:
     """Multiply two Variables element-wise.
 
-Args:
-        a: First input `Variable`.
-        b: Second input `Variable`.
-        tape: Gradient tape for recording..
+    Args:
+            a: First input `Variable`
+            b: Second input `Variable`
+            tape: Gradient tape for recording..
 
-Returns:
-        New `Variable` containing `a * b`.
+    Returns:
+            New `Variable` containing `a * b`
     """
     var result_data = multiply(a.data, b.data)
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
 
     if tape.enabled and (a.requires_grad or b.requires_grad):
-        var input_ids= List[Int]()
+        var input_ids = List[Int]()
         input_ids.append(a.id)
-        input_ids.append(b.id).
+        input_ids.append(b.id)
 
         # Save inputs for backward pass
         var saved = SavedTensors()
         saved.add_tensor(a.data)
         saved.add_tensor(b.data)
-        tape.record(OP_MULTIPLY, input_ids^, result_id, saved^).
+        tape.record(OP_MULTIPLY, input_ids^, result_id, saved^)
 
     return Variable(result_data^, a.requires_grad or b.requires_grad, result_id)
 
@@ -315,27 +315,27 @@ fn variable_divide(
 ) raises -> Variable:
     """Divide two Variables element-wise.
 
-Args:
-        a: Numerator `Variable`.
-        b: Denominator `Variable`.
-        tape: Gradient tape for recording..
+    Args:
+            a: Numerator `Variable`
+            b: Denominator `Variable`
+            tape: Gradient tape for recording..
 
-Returns:
-        New `Variable` containing `a / b`.
+    Returns:
+            New `Variable` containing `a / b`
     """
     var result_data = divide(a.data, b.data)
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
 
     if tape.enabled and (a.requires_grad or b.requires_grad):
-        var input_ids= List[Int]()
+        var input_ids = List[Int]()
         input_ids.append(a.id)
-        input_ids.append(b.id).
+        input_ids.append(b.id)
 
         # Save inputs for backward pass
         var saved = SavedTensors()
         saved.add_tensor(a.data)
         saved.add_tensor(b.data)
-        tape.record(OP_DIVIDE, input_ids^, result_id, saved^).
+        tape.record(OP_DIVIDE, input_ids^, result_id, saved^)
 
     return Variable(result_data^, a.requires_grad or b.requires_grad, result_id)
 
@@ -347,27 +347,27 @@ fn variable_matmul(
 ) raises -> Variable:
     """Matrix multiply two Variables.
 
-Args:
-        a: First matrix `Variable`.
-        b: Second matrix `Variable`.
-        tape: Gradient tape for recording..
+    Args:
+            a: First matrix `Variable`
+            b: Second matrix `Variable`
+            tape: Gradient tape for recording..
 
-Returns:
-        New `Variable` containing `a @ b`.
+    Returns:
+            New `Variable` containing `a @ b`
     """
     var result_data = matmul(a.data, b.data)
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
 
     if tape.enabled and (a.requires_grad or b.requires_grad):
-        var input_ids= List[Int]()
+        var input_ids = List[Int]()
         input_ids.append(a.id)
-        input_ids.append(b.id).
+        input_ids.append(b.id)
 
         # Save inputs for backward pass
         var saved = SavedTensors()
         saved.add_tensor(a.data)
         saved.add_tensor(b.data)
-        tape.record(OP_MATMUL, input_ids^, result_id, saved^).
+        tape.record(OP_MATMUL, input_ids^, result_id, saved^)
 
     return Variable(result_data^, a.requires_grad or b.requires_grad, result_id)
 
@@ -377,28 +377,28 @@ fn variable_sum(
     mut tape: GradientTape,
     axis: Int = -1,
 ) raises -> Variable:
-    """Sum a Variable along an axis (or all elements if axis=-1).
+    """Sum a Variable along an axis (or all elements if axis=-1)
 
-Args:
-        x: Input Variable..
-        tape: Gradient tape for recording..
-        axis: Axis to sum along (-1 for full reduction).
+    Args:
+            x: Input Variable..
+            tape: Gradient tape for recording..
+            axis: Axis to sum along (-1 for full reduction)
 
-Returns:
-        New Variable containing the sum.
+    Returns:
+            New Variable containing the sum
     """
     var result_data = tensor_sum(x.data, axis)
     var result_id = tape.register_variable(x.requires_grad)
 
     if tape.enabled and x.requires_grad:
-        var input_ids= List[Int]()
-        input_ids.append(x.id).
+        var input_ids = List[Int]()
+        input_ids.append(x.id)
 
         # Save input tensor and axis for backward pass
         var saved = SavedTensors()
         saved.add_tensor(x.data)
         saved.add_scalar(Float64(axis))
-        tape.record(OP_SUM, input_ids^, result_id, saved^).
+        tape.record(OP_SUM, input_ids^, result_id, saved^)
 
     return Variable(result_data^, x.requires_grad, result_id)
 
@@ -408,28 +408,28 @@ fn variable_mean(
     mut tape: GradientTape,
     axis: Int = -1,
 ) raises -> Variable:
-    """Mean of a Variable along an axis (or all elements if axis=-1).
+    """Mean of a Variable along an axis (or all elements if axis=-1)
 
-Args:
-        x: Input Variable..
-        tape: Gradient tape for recording..
-        axis: Axis to average along (-1 for full reduction).
+    Args:
+            x: Input Variable..
+            tape: Gradient tape for recording..
+            axis: Axis to average along (-1 for full reduction)
 
-Returns:
-        New Variable containing the mean.
+    Returns:
+            New Variable containing the mean
     """
     var result_data = tensor_mean(x.data, axis)
     var result_id = tape.register_variable(x.requires_grad)
 
     if tape.enabled and x.requires_grad:
-        var input_ids= List[Int]()
-        input_ids.append(x.id).
+        var input_ids = List[Int]()
+        input_ids.append(x.id)
 
         # Save input tensor and axis for backward pass
         var saved = SavedTensors()
         saved.add_tensor(x.data)
         saved.add_scalar(Float64(axis))
-        tape.record(OP_MEAN, input_ids^, result_id, saved^).
+        tape.record(OP_MEAN, input_ids^, result_id, saved^)
 
     return Variable(result_data^, x.requires_grad, result_id)
 
@@ -440,24 +440,24 @@ fn variable_relu(
 ) raises -> Variable:
     """Apply ReLU activation to a Variable.
 
-Args:
-        x: Input Variable.
-        tape: Gradient tape for recording.
+    Args:
+            x: Input Variable
+            tape: Gradient tape for recording
 
-Returns:
-        New Variable containing `ReLU(x)`.
+    Returns:
+            New Variable containing `ReLU(x)`
     """
     var result_data = relu(x.data)
     var result_id = tape.register_variable(x.requires_grad)
 
     if tape.enabled and x.requires_grad:
-        var input_ids= List[Int]()
-        input_ids.append(x.id).
+        var input_ids = List[Int]()
+        input_ids.append(x.id)
 
         # Save input for backward pass
         var saved = SavedTensors()
         saved.add_tensor(x.data)
-        tape.record(OP_RELU, input_ids^, result_id, saved^).
+        tape.record(OP_RELU, input_ids^, result_id, saved^)
 
     return Variable(result_data^, x.requires_grad, result_id)
 
@@ -468,24 +468,24 @@ fn variable_sigmoid(
 ) raises -> Variable:
     """Apply sigmoid activation to a Variable.
 
-Args:
-        x: Input Variable.
-        tape: Gradient tape for recording.
+    Args:
+            x: Input Variable
+            tape: Gradient tape for recording
 
-Returns:
-        New Variable containing `sigmoid(x)`.
+    Returns:
+            New Variable containing `sigmoid(x)`
     """
     var result_data = sigmoid(x.data)
     var result_id = tape.register_variable(x.requires_grad)
 
     if tape.enabled and x.requires_grad:
-        var input_ids= List[Int]()
-        input_ids.append(x.id).
+        var input_ids = List[Int]()
+        input_ids.append(x.id)
 
         # Save output for backward pass (sigmoid_backward uses output)
         var saved = SavedTensors()
         saved.add_tensor(result_data)
-        tape.record(OP_SIGMOID, input_ids^, result_id, saved^).
+        tape.record(OP_SIGMOID, input_ids^, result_id, saved^)
 
     return Variable(result_data^, x.requires_grad, result_id)
 
@@ -496,24 +496,24 @@ fn variable_tanh(
 ) raises -> Variable:
     """Apply tanh activation to a Variable.
 
-Args:
-        x: Input Variable.
-        tape: Gradient tape for recording.
+    Args:
+            x: Input Variable
+            tape: Gradient tape for recording
 
-Returns:
-        New Variable containing `tanh(x)`.
+    Returns:
+            New Variable containing `tanh(x)`
     """
     var result_data = tanh(x.data)
     var result_id = tape.register_variable(x.requires_grad)
 
     if tape.enabled and x.requires_grad:
-        var input_ids= List[Int]()
-        input_ids.append(x.id).
+        var input_ids = List[Int]()
+        input_ids.append(x.id)
 
         # Save output for backward pass (tanh_backward uses output)
         var saved = SavedTensors()
         saved.add_tensor(result_data)
-        tape.record(OP_TANH, input_ids^, result_id, saved^).
+        tape.record(OP_TANH, input_ids^, result_id, saved^)
 
     return Variable(result_data^, x.requires_grad, result_id)
 
@@ -524,25 +524,25 @@ fn variable_neg(
 ) raises -> Variable:
     """Negate a Variable element-wise.
 
-Args:
-        x: Input Variable.
-        tape: Gradient tape for recording.
+    Args:
+            x: Input Variable
+            tape: Gradient tape for recording
 
-Returns:
-        New Variable containing `-x`.
+    Returns:
+            New Variable containing `-x`
     """
     # Create negated tensor
     var result_data = zeros_like(x.data)
     var size = x.data.numel()
     for i in range(size):
-        result_data._data[i] = -x.data._data[i].
+        result_data._data[i] = -x.data._data[i]
 
     var result_id = tape.register_variable(x.requires_grad)
 
     if tape.enabled and x.requires_grad:
-        var input_ids= List[Int]()
+        var input_ids = List[Int]()
         input_ids.append(x.id)
         var saved = SavedTensors()
-        tape.record(OP_NEG, input_ids^, result_id, saved^).
+        tape.record(OP_NEG, input_ids^, result_id, saved^)
 
     return Variable(result_data^, x.requires_grad, result_id)

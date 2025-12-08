@@ -1,7 +1,7 @@
 """
 Types and Data Structures Module.
 
-This module contains custom types and data structures optimized for ML workloads.
+This module contains custom types and data structures optimized for ML workloads
 All types are implemented using Mojo's struct system for memory safety and performance.
 
 Components:

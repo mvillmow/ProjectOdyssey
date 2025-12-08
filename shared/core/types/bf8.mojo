@@ -5,7 +5,7 @@ This module implements BF8 E5M2 format:
 - 5 exponent bits (bias = 15)
 - 2 mantissa bits
 
-BF8 E5M2 provides a larger range than FP8 E4M3 but with less precision.
+BF8 E5M2 provides a larger range than FP8 E4M3 but with less precision
 It is used for memory-efficient training and inference in modern ML workloads.
 Supported range: approximately ±57,344 with reduced precision.
 
@@ -40,22 +40,22 @@ struct BF8(Copyable, Movable, Representable, Stringable):
         """Initialize BF8 from raw UInt8 bits.
 
         Args:
-            value: Raw 8-bit representation.
+            value: Raw 8-bit representation
         """
-        self.value = value.
+        self.value = value
 
     @staticmethod
     fn from_float32(x: Float32) -> Self:
         """Convert Float32 to BF8 E5M2 format.
 
         Args:
-            x: Float32 value to convert.
+            x: Float32 value to convert
 
         Returns:
-            BF8 representation (with potential precision loss).
+            BF8 representation (with potential precision loss)
 
         Note:
-            Values outside BF8 range are clamped to max/min representable values.
+            Values outside BF8 range are clamped to max/min representable values
         """
         # Handle special cases
         if isnan(x):
@@ -68,21 +68,21 @@ struct BF8(Copyable, Movable, Representable, Stringable):
                 return BF8(0b11111100)  # -Inf: sign=1, exp=31, mantissa=0
 
         if x == 0.0:
-            return BF8(0)  # +0.
+            return BF8(0)  # +0
 
         # Extract sign
         var sign: UInt8 = 0
         var abs_x = x
         if x < 0:
             sign = 1
-            abs_x = -x.
+            abs_x = -x
 
         # BF8 E5M2 max value is approximately 57344 (2^(31-15) * (1.75))
         # Clamp to representable range
         if abs_x >= 57344.0:
             # Return max BF8 value
             var bits = (sign << 7) | 0b01111011  # exp=30, mantissa=3
-            return BF8(bits).
+            return BF8(bits)
 
         # BF8 E5M2 min normal value is 2^-14 = 0.00006103515625
         if abs_x < 0.00006103515625:
@@ -94,53 +94,53 @@ struct BF8(Copyable, Movable, Representable, Stringable):
             if mantissa > 3:
                 mantissa = 3
             var bits = (sign << 7) | UInt8(mantissa)
-            return BF8(bits).
+            return BF8(bits)
 
         # Normal number encoding
         # Find exponent (log2 of abs_x)
         var exp_val = 0
-        var scaled = abs_x.
+        var scaled = abs_x
 
         # Scale to range [1, 2)
         while scaled >= 2.0:
             scaled /= 2.0
-            exp_val += 1.
+            exp_val += 1
 
         while scaled < 1.0:
             scaled *= 2.0
-            exp_val -= 1.
+            exp_val -= 1
 
         # Apply bias (15 for E5M2)
-        var biased_exp = exp_val + 15.
+        var biased_exp = exp_val + 15
 
         # Clamp exponent to valid range [1, 30]
         if biased_exp <= 0:
             biased_exp = 0
             # Subnormal
         elif biased_exp >= 31:
-            biased_exp = 30.
+            biased_exp = 30
 
         # Extract mantissa (2 bits)
         # scaled is in [1, 2), we want the fractional part
         var mantissa_val = scaled - 1.0  # Now in [0, 1)
         var mantissa = Int(mantissa_val * 4.0)  # Scale to 2-bit range [0, 3]
         if mantissa > 3:
-            mantissa = 3.
+            mantissa = 3
 
         # Combine: sign(1) | exponent(5) | mantissa(2)
         var bits = (sign << 7) | (UInt8(biased_exp) << 2) | UInt8(mantissa)
-        return BF8(bits).
+        return BF8(bits)
 
     fn to_float32(self) -> Float32:
         """Convert BF8 E5M2 to Float32.
 
         Returns:
-            Float32 representation of the BF8 value.
+            Float32 representation of the BF8 value
         """
         # Extract components
         var sign = (self.value >> 7) & 0x1
         var exp = (self.value >> 2) & 0x1F  # 5 bits
-        var mantissa = self.value & 0x3  # 2 bits.
+        var mantissa = self.value & 0x3  # 2 bits
 
         # Handle special cases
         if exp == 31:
@@ -157,7 +157,7 @@ struct BF8(Copyable, Movable, Representable, Stringable):
             if sign == 1:
                 return -0.0
             else:
-                return 0.0.
+                return 0.0
 
         # Compute value
         var result: Float32
@@ -173,7 +173,7 @@ struct BF8(Copyable, Movable, Representable, Stringable):
             var exponent = exp.cast[DType.int32]() - 15
             var base = Float32(1.0) + (
                 Float32(mantissa.cast[DType.float32]()) / 4.0
-            ).
+            )
 
             # Compute 2^exponent
             var scale = Float32(1.0)
@@ -182,29 +182,29 @@ struct BF8(Copyable, Movable, Representable, Stringable):
                     scale *= 2.0
             elif exponent < 0:
                 for _ in range(-exponent):
-                    scale /= 2.0.
+                    scale /= 2.0
 
-            result = base * scale.
+            result = base * scale
 
         # Apply sign
         if sign == 1:
-            result = -result.
+            result = -result
 
-        return result.
+        return result
 
     fn __str__(self) -> String:
         """String representation showing BF8 value as Float32.
 
         Returns:
-            String representation.
+            String representation
         """
-        return "BF8(" + String(self.to_float32()) + ")".
+        return "BF8(" + String(self.to_float32()) + ")"
 
     fn __repr__(self) -> String:
         """Detailed representation showing both bits and value.
 
         Returns:
-            Detailed string representation.
+            Detailed string representation
         """
         return (
             "BF8(bits=0x"
@@ -218,20 +218,20 @@ struct BF8(Copyable, Movable, Representable, Stringable):
         """Check equality by comparing raw bits.
 
         Args:
-            other: Other BF8 value.
+            other: Other BF8 value
 
         Returns:
-            True if bit patterns match.
+            True if bit patterns match
         """
-        return self.value == other.value.
+        return self.value == other.value
 
     fn __ne__(self, other: Self) -> Bool:
         """Check inequality.
 
         Args:
-            other: Other BF8 value.
+            other: Other BF8 value
 
         Returns:
-            True if bit patterns differ.
+            True if bit patterns differ
         """
-        return self.value != other.value.
+        return self.value != other.value

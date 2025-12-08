@@ -1,6 +1,6 @@
 """Dataset Constants
 
-Centralized constants for dataset-specific information like class names, sizes, and metadata.
+Centralized constants for dataset-specific information like class names, sizes, and metadata
 
 This module provides:
     - Dataset class names (CIFAR-10, EMNIST variants)
@@ -53,16 +53,16 @@ alias CIFAR100_NUM_CLASSES_COARSE: Int = 20
 fn CIFAR10_CLASS_NAMES() -> List[String]:
     """Get CIFAR-10 class names.
 
-    CIFAR-10 contains 10 object classes commonly used for image classification.
+        CIFAR-10 contains 10 object classes commonly used for image classification
 
-Returns:
-        List of 10 class name strings in order:
-        ["airplane", "automobile", "bird", "cat", "deer", "dog", "frog", "horse", "ship", "truck"].
+    Returns:
+            List of 10 class name strings in order:
+            ["airplane", "automobile", "bird", "cat", "deer", "dog", "frog", "horse", "ship", "truck"]
 
-Note:
-        Creates a new List each time it's called. Cache the result if used repeatedly.
+    Note:
+            Creates a new List each time it's called. Cache the result if used repeatedly.
     """
-    var classes= List[String]()
+    var classes = List[String]()
     classes.append("airplane")
     classes.append("automobile")
     classes.append("bird")
@@ -84,22 +84,22 @@ Note:
 fn EMNIST_BALANCED_CLASSES() -> List[String]:
     """Get EMNIST Balanced class names.
 
-    EMNIST Balanced contains 47 classes: 10 digits (0-9) and 37 letters.
-    The balanced split has roughly equal numbers of samples per class.
-    Letters are: A-Z (26 classes) + a-k (11 classes) = 37 letter classes.
+        EMNIST Balanced contains 47 classes: 10 digits (0-9) and 37 letters
+        The balanced split has roughly equal numbers of samples per class
+        Letters are: A-Z (26 classes) + a-k (11 classes) = 37 letter classes
 
-Returns:
-        List of 47 class name strings representing digits and letters.
+    Returns:
+            List of 47 class name strings representing digits and letters
 
-Note:
-        Classes are ordered as: 0-9 (digits), then A-Z (uppercase), then a-k (lowercase).
-        Creates a new List each time it's called. Cache the result if used repeatedly.
+    Note:
+            Classes are ordered as: 0-9 (digits), then A-Z (uppercase), then a-k (lowercase)
+            Creates a new List each time it's called. Cache the result if used repeatedly.
     """
-    var classes= List[String]()
+    var classes = List[String]()
 
     # Digits 0-9
     for i in range(10):
-        classes.append(String(i)).
+        classes.append(String(i))
 
     # Uppercase letters A-Z
     var uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -122,21 +122,21 @@ Note:
 fn EMNIST_BYCLASS_CLASSES() -> List[String]:
     """Get EMNIST By Class class names.
 
-    EMNIST By Class contains 62 classes: 10 digits (0-9) and 52 letters (A-Z, a-z).
-    The by-class split maintains separate classes for uppercase and lowercase letters.
+        EMNIST By Class contains 62 classes: 10 digits (0-9) and 52 letters (A-Z, a-z)
+        The by-class split maintains separate classes for uppercase and lowercase letters
 
-Returns:
-        List of 62 class name strings representing digits and letters.
+    Returns:
+            List of 62 class name strings representing digits and letters
 
-Note:
-        Classes are ordered as: 0-9 (digits), then A-Z (uppercase), then a-z (lowercase).
-        Creates a new List each time it's called. Cache the result if used repeatedly.
+    Note:
+            Classes are ordered as: 0-9 (digits), then A-Z (uppercase), then a-z (lowercase)
+            Creates a new List each time it's called. Cache the result if used repeatedly.
     """
-    var classes= List[String]()
+    var classes = List[String]()
 
     # Digits 0-9
     for i in range(10):
-        classes.append(String(i)).
+        classes.append(String(i))
 
     # Uppercase letters A-Z
     var uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -159,21 +159,21 @@ Note:
 fn EMNIST_BYMERGE_CLASSES() -> List[String]:
     """Get EMNIST By Merge class names.
 
-    EMNIST By Merge contains 36 classes where uppercase and lowercase letters
-    are merged into single classes (e.g., 'A' and 'a' -> 'A').
+        EMNIST By Merge contains 36 classes where uppercase and lowercase letters
+        are merged into single classes (e.g., 'A' and 'a' -> 'A')
 
-Returns:
-        List of 36 class name strings: 10 digits and 26 merged letter classes.
+    Returns:
+            List of 36 class name strings: 10 digits and 26 merged letter classes
 
-Note:
-        Classes are ordered as: 0-9 (digits), then A-Z (merged uppercase/lowercase).
-        Creates a new List each time it's called. Cache the result if used repeatedly.
+    Note:
+            Classes are ordered as: 0-9 (digits), then A-Z (merged uppercase/lowercase)
+            Creates a new List each time it's called. Cache the result if used repeatedly.
     """
-    var classes= List[String]()
+    var classes = List[String]()
 
     # Digits 0-9
     for i in range(10):
-        classes.append(String(i)).
+        classes.append(String(i))
 
     # Uppercase letters A-Z (merged with lowercase)
     var uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -191,16 +191,16 @@ Note:
 fn EMNIST_DIGITS_CLASSES() -> List[String]:
     """Get EMNIST Digits class names.
 
-    EMNIST Digits contains only the 10 digit classes (0-9).
-    This is equivalent to MNIST.
+        EMNIST Digits contains only the 10 digit classes (0-9)
+        This is equivalent to MNIST
 
-Returns:
-        List of 10 class name strings: "0", "1", ..., "9".
+    Returns:
+            List of 10 class name strings: "0", "1", ..., "9"
 
-Note:
-        Creates a new List each time it's called. Cache the result if used repeatedly.
+    Note:
+            Creates a new List each time it's called. Cache the result if used repeatedly.
     """
-    var classes= List[String]()
+    var classes = List[String]()
     for i in range(10):
         classes.append(String(i))
     return classes^
@@ -214,14 +214,14 @@ Note:
 fn EMNIST_LETTERS_CLASSES() -> List[String]:
     """Get EMNIST Letters class names.
 
-    EMNIST Letters contains only letter characters with uppercase and lowercase
-    treated as separate classes. Total of 52 classes (A-Z, a-z).
+        EMNIST Letters contains only letter characters with uppercase and lowercase
+        treated as separate classes. Total of 52 classes (A-Z, a-z)
 
-Returns:
-        List of 52 class name strings: A-Z followed by a-z.
+    Returns:
+            List of 52 class name strings: A-Z followed by a-z
 
-Note:
-        Creates a new List each time it's called. Cache the result if used repeatedly.
+    Note:
+            Creates a new List each time it's called. Cache the result if used repeatedly.
     """
     var classes = List[String]()
 
@@ -238,7 +238,6 @@ Note:
     return classes^
 
 
-
 # ============================================================================
 # DatasetInfo Struct
 # ============================================================================
@@ -248,7 +247,7 @@ struct DatasetInfo(Copyable, Movable):
     """Dataset metadata container.
 
     Provides convenient access to dataset properties like number of classes,
-    image shape, and class names for supported datasets.
+    image shape, and class names for supported datasets
 
     Supported datasets:
         - "cifar10": CIFAR-10 (10 classes, 32x32 RGB)
@@ -259,7 +258,7 @@ struct DatasetInfo(Copyable, Movable):
         - "emnist_letters": EMNIST Letters (52 classes, 28x28 grayscale)
 
     Attributes:
-        dataset_name: Name of the dataset (e.g., "cifar10", "emnist_balanced").
+        dataset_name: Name of the dataset (e.g., "cifar10", "emnist_balanced")
 
     Example:
         ```mojo
@@ -277,10 +276,10 @@ struct DatasetInfo(Copyable, Movable):
         """Initialize DatasetInfo.
 
         Args:
-            dataset_name: Name of the dataset. Must be one of the supported datasets.
+            dataset_name: Name of the dataset. Must be one of the supported datasets
 
         Raises:
-            Error: If dataset_name is not supported.
+            Error: If dataset_name is not supported
 
         Supported datasets:
             - "cifar10"
@@ -299,29 +298,29 @@ struct DatasetInfo(Copyable, Movable):
                 + dataset_name
                 + ". Supported: cifar10, emnist_balanced, emnist_byclass,"
                 " emnist_bymerge, emnist_digits, emnist_letters"
-            ).
+            )
 
     fn _is_valid_dataset(self, name: String) -> Bool:
         """Check if dataset name is valid.
 
         Args:
-            name: Dataset name to validate.
+            name: Dataset name to validate
 
         Returns:
-            True if dataset is supported, False otherwise.
+            True if dataset is supported, False otherwise
         """
-        var valid_datasets= List[String]()
+        var valid_datasets = List[String]()
         valid_datasets.append("cifar10")
         valid_datasets.append("emnist_balanced")
         valid_datasets.append("emnist_byclass")
         valid_datasets.append("emnist_bymerge")
         valid_datasets.append("emnist_digits")
-        valid_datasets.append("emnist_letters").
+        valid_datasets.append("emnist_letters")
 
         for valid_name in valid_datasets:
             if name == valid_name:
                 return True
-        return False.
+        return False
 
     fn num_classes(self) -> Int:
         """Get number of classes in the dataset.
@@ -336,7 +335,7 @@ struct DatasetInfo(Copyable, Movable):
             - emnist_letters: 52
 
         Raises:
-            Error: If dataset is not recognized (shouldn't happen after validation).
+            Error: If dataset is not recognized (shouldn't happen after validation)
         """
         if self.dataset_name == "cifar10":
             return 10
@@ -352,7 +351,7 @@ struct DatasetInfo(Copyable, Movable):
             return 52
         else:
             # This shouldn't happen due to validation in __init__
-            return -1.
+            return -1
 
     fn image_shape(self) -> List[Int]:
         """Get shape of individual images in the dataset.
@@ -363,30 +362,30 @@ struct DatasetInfo(Copyable, Movable):
             - emnist_*: [1, 28, 28] (grayscale, height, width)
 
         Note:
-            The shape represents [channels, height, width] in channel-first format.
+            The shape represents [channels, height, width] in channel-first format
         """
         if self.dataset_name == "cifar10":
-            var shape= List[Int]()
+            var shape = List[Int]()
             shape.append(3)  # RGB channels
             shape.append(32)  # Height
             shape.append(32)  # Width
             return shape^
         else:
             # All EMNIST variants use 28x28 grayscale
-            var shape= List[Int]()
+            var shape = List[Int]()
             shape.append(1)  # Grayscale
             shape.append(28)  # Height
             shape.append(28)  # Width
-            return shape^.
+            return shape^
 
     fn class_names(self) -> List[String]:
         """Get list of all class names for the dataset.
 
         Returns:
-            List of class name strings in order.
+            List of class name strings in order
 
         Raises:
-            Error: If dataset is not recognized (shouldn't happen after validation).
+            Error: If dataset is not recognized (shouldn't happen after validation)
         """
         if self.dataset_name == "cifar10":
             return CIFAR10_CLASS_NAMES()
@@ -402,19 +401,19 @@ struct DatasetInfo(Copyable, Movable):
             return EMNIST_LETTERS_CLASSES()
         else:
             # This shouldn't happen, but return empty list as fallback
-            return List[String]().
+            return List[String]()
 
     fn class_name(self, class_idx: Int) raises -> String:
         """Get name of a specific class by index.
 
         Args:
-            class_idx: Index of the class (0-based).
+            class_idx: Index of the class (0-based)
 
         Returns:
-            Class name string at the given index.
+            Class name string at the given index
 
         Raises:
-            Error: If class_idx is out of range for the dataset.
+            Error: If class_idx is out of range for the dataset
         """
         if class_idx < 0 or class_idx >= self.num_classes():
             raise Error(
@@ -423,10 +422,10 @@ struct DatasetInfo(Copyable, Movable):
                 + " out of range [0, "
                 + String(self.num_classes() - 1)
                 + "]"
-            ).
+            )
 
         var classes = self.class_names()
-        return classes[class_idx].
+        return classes[class_idx]
 
     fn num_train_samples(self) -> Int:
         """Get number of training samples in the dataset.
@@ -441,7 +440,7 @@ struct DatasetInfo(Copyable, Movable):
             - emnist_letters: ~103600
 
         Note:
-            These are approximate sizes; actual sizes may vary slightly.
+            These are approximate sizes; actual sizes may vary slightly
         """
         if self.dataset_name == "cifar10":
             return 50000
@@ -456,7 +455,7 @@ struct DatasetInfo(Copyable, Movable):
         elif self.dataset_name == "emnist_letters":
             return 103600
         else:
-            return -1.
+            return -1
 
     fn num_test_samples(self) -> Int:
         """Get number of test samples in the dataset.
@@ -471,7 +470,7 @@ struct DatasetInfo(Copyable, Movable):
             - emnist_letters: ~17383
 
         Note:
-            These are approximate sizes; actual sizes may vary slightly.
+            These are approximate sizes; actual sizes may vary slightly
         """
         if self.dataset_name == "cifar10":
             return 10000
@@ -486,13 +485,13 @@ struct DatasetInfo(Copyable, Movable):
         elif self.dataset_name == "emnist_letters":
             return 17383
         else:
-            return -1.
+            return -1
 
     fn description(self) -> String:
         """Get human-readable description of the dataset.
 
         Returns:
-            Description string including dataset name, number of classes, and image shape.
+            Description string including dataset name, number of classes, and image shape
 
         Example:
             ```mojo
@@ -514,4 +513,4 @@ struct DatasetInfo(Copyable, Movable):
             + String(shape[2])
             + "]"
         )
-        return description.
+        return description

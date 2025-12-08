@@ -33,10 +33,10 @@ struct InferenceConfig(Copyable, Movable):
     """Container for common inference configuration.
 
     Attributes:
-        weights_dir: Path to load model weights from.
-        data_dir: Path to dataset directory.
-        batch_size: Batch size for inference.
-        verbose: Whether to print verbose output.
+        weights_dir: Path to load model weights from
+        data_dir: Path to dataset directory
+        batch_size: Batch size for inference
+        verbose: Whether to print verbose output
     """
 
     var weights_dir: String
@@ -49,7 +49,7 @@ struct InferenceConfig(Copyable, Movable):
         self.weights_dir = "weights"
         self.data_dir = "datasets"
         self.batch_size = 32
-        self.verbose = False.
+        self.verbose = False
 
 
 # ============================================================================
@@ -60,28 +60,28 @@ struct InferenceConfig(Copyable, Movable):
 fn parse_inference_args() raises -> InferenceConfig:
     """Parse common inference arguments from command line.
 
-    Supported arguments:
-        --weights-dir <str>: Weights directory (default: "weights").
-        --data-dir <str>: Dataset directory (default: "datasets").
-        --batch-size <int>: Batch size (default: 32).
-        --verbose: Enable verbose output.
+        Supported arguments:
+            --weights-dir <str>: Weights directory (default: "weights")
+            --data-dir <str>: Dataset directory (default: "datasets")
+            --batch-size <int>: Batch size (default: 32)
+            --verbose: Enable verbose output
 
-Returns:
-        InferenceConfig struct with parsed values.
+    Returns:
+            InferenceConfig struct with parsed values
 
-    Example:
-        ```mojo
-         Command line: mojo run inference.mojo --weights-dir ./trained --verbose
-        var config = parse_inference_args()
-        # config.weights_dir == "./trained", config.verbose == True
-        ```
+        Example:
+            ```mojo
+             Command line: mojo run inference.mojo --weights-dir ./trained --verbose
+            var config = parse_inference_args()
+            # config.weights_dir == "./trained", config.verbose == True
+            ```
     """
     var result = InferenceConfig()
 
     var args = argv()
     var i = 1  # Skip program name
     while i < len(args):
-        var arg = args[i].
+        var arg = args[i]
 
         if arg == "--weights-dir" and i + 1 < len(args):
             result.weights_dir = args[i + 1]
@@ -97,7 +97,7 @@ Returns:
             i += 1
         else:
             # Skip unknown arguments (allows model-specific args)
-            i += 1.
+            i += 1
 
     return result^
 
@@ -109,26 +109,26 @@ fn parse_inference_args_with_defaults(
 ) raises -> InferenceConfig:
     """Parse inference arguments with custom defaults.
 
-    Allows each inference script to specify model-appropriate defaults
-    while still using shared parsing logic.
+        Allows each inference script to specify model-appropriate defaults
+        while still using shared parsing logic
 
-Args:
-        default_weights_dir: Default weights directory.
-        default_data_dir: Default dataset directory.
-        default_batch_size: Default batch size.
+    Args:
+            default_weights_dir: Default weights directory
+            default_data_dir: Default dataset directory
+            default_batch_size: Default batch size
 
-Returns:
-        InferenceConfig struct with parsed values.
+    Returns:
+            InferenceConfig struct with parsed values
 
-    Example:
-        ```mojo
-         AlexNet with custom defaults
-        var config = parse_inference_args_with_defaults(
-            default_weights_dir="alexnet_weights",
-            default_data_dir="datasets/cifar10",
-            default_batch_size=128
-        )
-        ```
+        Example:
+            ```mojo
+             AlexNet with custom defaults
+            var config = parse_inference_args_with_defaults(
+                default_weights_dir="alexnet_weights",
+                default_data_dir="datasets/cifar10",
+                default_batch_size=128
+            )
+            ```
     """
     var result = InferenceConfig()
     result.weights_dir = default_weights_dir
@@ -139,7 +139,7 @@ Returns:
     var args = argv()
     var i = 1
     while i < len(args):
-        var arg = args[i].
+        var arg = args[i]
 
         if arg == "--weights-dir" and i + 1 < len(args):
             result.weights_dir = args[i + 1]
@@ -154,7 +154,7 @@ Returns:
             result.verbose = True
             i += 1
         else:
-            i += 1.
+            i += 1
 
     return result^
 
@@ -167,28 +167,28 @@ Returns:
 fn evaluate_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float32:
     """Calculate classification accuracy from predictions and labels.
 
-    Computes the percentage of predictions that match the ground truth labels.
-    Predictions should be class indices (from argmax of logits).
+        Computes the percentage of predictions that match the ground truth labels
+        Predictions should be class indices (from argmax of logits)
 
-Args:
-        predictions: Predicted class indices tensor of shape (batch,).
-        labels: Ground truth class indices tensor of shape (batch,).
+    Args:
+            predictions: Predicted class indices tensor of shape (batch,)
+            labels: Ground truth class indices tensor of shape (batch,)
 
-Returns:
-        Accuracy as a Float32 in range [0.0, 1.0].
+    Returns:
+            Accuracy as a Float32 in range [0.0, 1.0]
 
-    Example:
-        ```mojo
-        from shared.utils.inference_utils import evaluate_accuracy.
+        Example:
+            ```mojo
+            from shared.utils.inference_utils import evaluate_accuracy
 
-        # predictions: [0, 1, 2, 1] (predicted classes)
-        # labels: [0, 1, 2, 0] (ground truth)
-        var accuracy = evaluate_accuracy(predictions, labels)
-        # accuracy == 0.75 (3 out of 4 correct)
-        ```
+            # predictions: [0, 1, 2, 1] (predicted classes)
+            # labels: [0, 1, 2, 0] (ground truth)
+            var accuracy = evaluate_accuracy(predictions, labels)
+            # accuracy == 0.75 (3 out of 4 correct)
+            ```
 
-Note:
-        Both tensors must have the same shape and contain integer class indices.
+    Note:
+            Both tensors must have the same shape and contain integer class indices
     """
     var pred_shape = predictions.shape()
     var label_shape = labels.shape()
@@ -205,7 +205,7 @@ Note:
         )
 
     if n == 0:
-        return Float32(0.0).
+        return Float32(0.0)
 
     var correct = 0
     var pred_ptr = predictions._data
@@ -249,28 +249,28 @@ Note:
 fn count_correct(predictions: ExTensor, labels: ExTensor) raises -> Int:
     """Count the number of correct predictions.
 
-    Lower-level function for computing accuracy incrementally over batches.
+        Lower-level function for computing accuracy incrementally over batches
 
-Args:
-        predictions: Predicted class indices tensor of shape (batch,).
-        labels: Ground truth class indices tensor of shape (batch,).
+    Args:
+            predictions: Predicted class indices tensor of shape (batch,)
+            labels: Ground truth class indices tensor of shape (batch,)
 
-Returns:
-        Number of correct predictions as Int.
+    Returns:
+            Number of correct predictions as Int
 
-    Example:
-        ```mojo
-        from shared.utils.inference_utils import count_correct.
+        Example:
+            ```mojo
+            from shared.utils.inference_utils import count_correct
 
-        var total_correct = 0
-        var total_samples = 0.
+            var total_correct = 0
+            var total_samples = 0
 
-        for batch in batches:
-            total_correct += count_correct(predictions, labels)
-            total_samples += batch_size.
+            for batch in batches:
+                total_correct += count_correct(predictions, labels)
+                total_samples += batch_size
 
-        var accuracy = Float32(total_correct) / Float32(total_samples)
-        ```
+            var accuracy = Float32(total_correct) / Float32(total_samples)
+            ```
     """
     var pred_shape = predictions.shape()
     var label_shape = labels.shape()

@@ -1,6 +1,6 @@
 """Data Format Loaders
 
-Provides functions and classes for loading various data formats used in ML Odyssey.
+Provides functions and classes for loading various data formats used in ML Odyssey
 
 Modules:
     idx_loader: IDX file format (MNIST, EMNIST, CIFAR-10 as IDX)

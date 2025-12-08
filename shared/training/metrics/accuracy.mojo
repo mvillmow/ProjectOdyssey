@@ -28,32 +28,32 @@ from .base import Metric
 fn top1_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float64:
     """Compute top-1 accuracy for a single batch.
 
-    Top-1 accuracy is the fraction of samples where the predicted class.
-    (argmax of logits) exactly matches the true label.
+        Top-1 accuracy is the fraction of samples where the predicted class
+        (argmax of logits) exactly matches the true label
 
-Args:
-        predictions: Model predictions/logits of shape [batch_size, num_classes].
-                    or predicted class indices of shape [batch_size]
-        labels: True class labels of shape [batch_size].
+    Args:
+            predictions: Model predictions/logits of shape [batch_size, num_classes]
+                        or predicted class indices of shape [batch_size]
+            labels: True class labels of shape [batch_size]
 
-Returns:
-        Accuracy as a fraction in [0, 1].
+    Returns:
+            Accuracy as a fraction in [0, 1]
 
-Raises:
-        Error: If shapes are incompatible.
-        Error: If batch sizes don't match.
+    Raises:
+            Error: If shapes are incompatible
+            Error: If batch sizes don't match.
 
-Examples:
-        # With logits (need argmax)
-        var logits = ExTensor(List[Int](), DType.float32)  # 4 samples, 3 classes
-        var labels = ExTensor(List[Int](), DType.int32)
-        var acc = top1_accuracy(logits, labels).
+    Examples:
+            # With logits (need argmax)
+            var logits = ExTensor(List[Int](), DType.float32)  # 4 samples, 3 classes
+            var labels = ExTensor(List[Int](), DType.int32)
+            var acc = top1_accuracy(logits, labels)
 
-        # With predicted class indices
-        var preds = ExTensor(List[Int](), DType.int32)  # Already argmaxed
-        var acc2 = top1_accuracy(preds, labels).
+            # With predicted class indices
+            var preds = ExTensor(List[Int](), DType.int32)  # Already argmaxed
+            var acc2 = top1_accuracy(preds, labels)
 
-    Issue: #278-282 - Accuracy metrics.
+        Issue: #278-282 - Accuracy metrics.
     """
     # Determine if predictions are logits (2D) or class indices (1D)
     var pred_classes: ExTensor
@@ -84,15 +84,15 @@ Examples:
         if pred_classes._dtype == DType.int32:
             pred_val = Int(pred_classes._data.bitcast[Int32]()[i])
         else:  # int64.
-            pred_val = Int(pred_classes._data.bitcast[Int64]()[i]).
+            pred_val = Int(pred_classes._data.bitcast[Int64]()[i])
 
         if labels._dtype == DType.int32:
             label_val = Int(labels._data.bitcast[Int32]()[i])
         else:  # int64.
-            label_val = Int(labels._data.bitcast[Int64]()[i]).
+            label_val = Int(labels._data.bitcast[Int64]()[i])
 
         if pred_val == label_val:
-            correct += 1.
+            correct += 1
 
     return Float64(correct) / Float64(pred_classes._numel)
 
@@ -100,15 +100,15 @@ Examples:
 fn argmax(var tensor: ExTensor, axis: Int) raises -> ExTensor:
     """Compute argmax along specified axis.
 
-Args:
-        tensor: Input tensor.
-        axis: Axis along which to compute argmax (typically 1 for [batch, classes]).
+    Args:
+            tensor: Input tensor
+            axis: Axis along which to compute argmax (typically 1 for [batch, classes])
 
-Returns:
-        Tensor of indices with shape reduced along specified axis.
+    Returns:
+            Tensor of indices with shape reduced along specified axis
 
-Raises:
-        Error: If axis is out of bounds.
+    Raises:
+            Error: If axis is out of bounds
     """
     var shape_vec = tensor.shape()
     if axis < 0 or axis >= len(shape_vec):
@@ -117,11 +117,11 @@ Raises:
     if axis == 1 and len(shape_vec) == 2:
         # Common case: [batch_size, num_classes] -> [batch_size]
         var batch_size = shape_vec[0]
-        var num_classes = shape_vec[1].
+        var num_classes = shape_vec[1]
 
-        var result_shape= List[Int]()
+        var result_shape = List[Int]()
         result_shape.append(batch_size)
-        var result = ExTensor(result_shape, DType.int32).
+        var result = ExTensor(result_shape, DType.int32)
 
         # For each sample in batch
         for b in range(batch_size):
@@ -134,7 +134,7 @@ Raises:
                     tensor._data.bitcast[Float32]()[b * num_classes]
                 )
             else:  # float64
-                max_val = tensor._data.bitcast[Float64]()[b * num_classes].
+                max_val = tensor._data.bitcast[Float64]()[b * num_classes]
 
             # Find max
             for c in range(1, num_classes):
@@ -144,13 +144,13 @@ Raises:
                 if tensor._dtype == DType.float32:
                     val = Float64(tensor._data.bitcast[Float32]()[idx])
                 else:
-                    val = tensor._data.bitcast[Float64]()[idx].
+                    val = tensor._data.bitcast[Float64]()[idx]
 
                 if val > max_val:
                     max_val = val
-                    max_idx = c.
+                    max_idx = c
 
-            result._data.bitcast[Int32]()[b] = Int32(max_idx).
+            result._data.bitcast[Int32]()[b] = Int32(max_idx)
 
         return result^
     else:
@@ -167,27 +167,27 @@ fn topk_accuracy(
 ) raises -> Float64:
     """Compute top-k accuracy for a single batch.
 
-    Top-k accuracy is the fraction of samples where the true label appears.
-    in the k predictions with highest logits.
+        Top-k accuracy is the fraction of samples where the true label appears
+        in the k predictions with highest logits
 
-Args:
-        predictions: Model logits of shape [batch_size, num_classes].
-        labels: True class labels of shape [batch_size].
-        k: Number of top predictions to consider (default: 5).
+    Args:
+            predictions: Model logits of shape [batch_size, num_classes]
+            labels: True class labels of shape [batch_size]
+            k: Number of top predictions to consider (default: 5)
 
-Returns:
-        Accuracy as a fraction in [0, 1].
+    Returns:
+            Accuracy as a fraction in [0, 1]
 
-Raises:
-        Error: If shapes are incompatible.
-        Error: If k <= 0 or k > num_classes.
+    Raises:
+            Error: If shapes are incompatible
+            Error: If k <= 0 or k > num_classes
 
-Examples:
-        var logits = ExTensor(List[Int](), DType.float32)  # 4 samples, 10 classes
-        var labels = ExTensor(List[Int](), DType.int32)
-        var acc = topk_accuracy(logits, labels, k=5)  # Top-5 accuracy.
+    Examples:
+            var logits = ExTensor(List[Int](), DType.float32)  # 4 samples, 10 classes
+            var labels = ExTensor(List[Int](), DType.int32)
+            var acc = topk_accuracy(logits, labels, k=5)  # Top-5 accuracy
 
-    Issue: #278-282 - Accuracy metrics.
+        Issue: #278-282 - Accuracy metrics.
     """
     # Validate shapes
     var shape_vec = predictions.shape()
@@ -212,20 +212,20 @@ Examples:
         if labels._dtype == DType.int32:
             label_val = Int(labels._data.bitcast[Int32]()[b])
         else:
-            label_val = Int(labels._data.bitcast[Int64]()[b]).
+            label_val = Int(labels._data.bitcast[Int64]()[b])
 
         # Get top-k indices for this sample
-        var top_k_indices = get_topk_indices(predictions, b, k).
+        var top_k_indices = get_topk_indices(predictions, b, k)
 
         # Check if true label is in top-k
         var found = False
         for i in range(k):
             if top_k_indices[i] == label_val:
                 found = True
-                break.
+                break
 
         if found:
-            correct += 1.
+            correct += 1
 
     return Float64(correct) / Float64(batch_size)
 
@@ -235,15 +235,15 @@ fn get_topk_indices(
 ) raises -> List[Int]:
     """Get indices of top-k predictions for a single sample.
 
-    Uses selection algorithm (not full sort) for efficiency.
+        Uses selection algorithm (not full sort) for efficiency
 
-Args:
-        predictions: Logits tensor [batch_size, num_classes].
-        batch_idx: Which sample in the batch.
-        k: Number of top indices to return.
+    Args:
+            predictions: Logits tensor [batch_size, num_classes]
+            batch_idx: Which sample in the batch
+            k: Number of top indices to return
 
-Returns:
-        Vector of k class indices with highest scores.
+    Returns:
+            Vector of k class indices with highest scores
     """
     var shape_vec = predictions.shape()
     var num_classes = shape_vec[1]
@@ -251,7 +251,7 @@ Returns:
 
     # Create list of (value, index) pairs
     var values: List[Float64] = []
-    var indices= List[Int]()
+    var indices = List[Int]()
 
     for c in range(num_classes):
         var idx = offset + c
@@ -259,20 +259,20 @@ Returns:
             values.append(Float64(predictions._data.bitcast[Float32]()[idx]))
         else:
             values.append(predictions._data.bitcast[Float64]()[idx])
-        indices.append(c).
+        indices.append(c)
 
     # Simple selection: repeatedly find max and swap to front
-    var result= List[Int]()
+    var result = List[Int]()
 
     for i in range(k):
         # Find max in remaining elements
         var max_idx = i
-        var max_val = values[i].
+        var max_val = values[i]
 
         for j in range(i + 1, num_classes):
             if values[j] > max_val:
                 max_val = values[j]
-                max_idx = j.
+                max_idx = j
 
         # Swap to front
         var temp_val = values[i]
@@ -280,9 +280,9 @@ Returns:
         values[i] = values[max_idx]
         indices[i] = indices[max_idx]
         values[max_idx] = temp_val
-        indices[max_idx] = temp_idx.
+        indices[max_idx] = temp_idx
 
-        result.append(indices[i]).
+        result.append(indices[i])
 
     return result^
 
@@ -297,27 +297,27 @@ fn per_class_accuracy(
 ) raises -> ExTensor:
     """Compute accuracy for each class separately.
 
-    Returns a tensor where each element is the accuracy for that class,
-    computed as: correct_for_class / total_samples_for_class
+        Returns a tensor where each element is the accuracy for that class,
+        computed as: correct_for_class / total_samples_for_class
 
-Args:
-        predictions: Model predictions/logits (same format as top1_accuracy).
-        labels: True class labels of shape [batch_size].
-        num_classes: Total number of classes.
+    Args:
+            predictions: Model predictions/logits (same format as top1_accuracy)
+            labels: True class labels of shape [batch_size]
+            num_classes: Total number of classes
 
-Returns:
-        Tensor of shape [num_classes] with per-class accuracies.
+    Returns:
+            Tensor of shape [num_classes] with per-class accuracies
 
-Raises:
-        Error: If shapes are incompatible.
+    Raises:
+            Error: If shapes are incompatible
 
-Examples:
-        var logits = ExTensor(List[Int](), DType.float32)
-        var labels = ExTensor(List[Int](), DType.int32)
-        var per_class_acc = per_class_accuracy(logits, labels, num_classes=10)
-        # per_class_acc[0] = accuracy for class 0, etc.
+    Examples:
+            var logits = ExTensor(List[Int](), DType.float32)
+            var labels = ExTensor(List[Int](), DType.int32)
+            var per_class_acc = per_class_accuracy(logits, labels, num_classes=10)
+            # per_class_acc[0] = accuracy for class 0, etc
 
-    Issue: #278-282 - Accuracy metrics.
+        Issue: #278-282 - Accuracy metrics.
     """
     # Get predicted classes
     var pred_classes: ExTensor
@@ -331,12 +331,12 @@ Examples:
         raise Error("per_class_accuracy: invalid predictions shape")
 
     # Count correct and total per class
-    var correct_counts= List[Int]()
-    var total_counts= List[Int]()
+    var correct_counts = List[Int]()
+    var total_counts = List[Int]()
 
     for c in range(num_classes):
         correct_counts.append(0)
-        total_counts.append(0).
+        total_counts.append(0)
 
     for i in range(labels._numel):
         var pred_val: Int
@@ -345,22 +345,22 @@ Examples:
         if pred_classes._dtype == DType.int32:
             pred_val = Int(pred_classes._data.bitcast[Int32]()[i])
         else:
-            pred_val = Int(pred_classes._data.bitcast[Int64]()[i]).
+            pred_val = Int(pred_classes._data.bitcast[Int64]()[i])
 
         if labels._dtype == DType.int32:
             label_val = Int(labels._data.bitcast[Int32]()[i])
         else:
-            label_val = Int(labels._data.bitcast[Int64]()[i]).
+            label_val = Int(labels._data.bitcast[Int64]()[i])
 
         # Increment total count for true class
-        total_counts[label_val] += 1.
+        total_counts[label_val] += 1
 
         # Increment correct count if prediction matches
         if pred_val == label_val:
-            correct_counts[label_val] += 1.
+            correct_counts[label_val] += 1
 
     # Compute per-class accuracies
-    var result_shape= List[Int]()
+    var result_shape = List[Int]()
     result_shape.append(num_classes)
     var result = ExTensor(result_shape, DType.float64)
 
@@ -369,9 +369,9 @@ Examples:
         if total_counts[c] > 0:
             acc = Float64(correct_counts[c]) / Float64(total_counts[c])
         else:
-            acc = 0.0  # No samples for this class.
+            acc = 0.0  # No samples for this class
 
-        result._data.bitcast[Float64]()[c] = acc.
+        result._data.bitcast[Float64]()[c] = acc
 
     return result^
 
@@ -386,7 +386,7 @@ struct AccuracyMetric(Metric):
 
     Maintains running count of correct predictions and total samples,
     allowing efficient computation over large datasets without storing
-    all predictions.
+    all predictions
 
     Usage:
         var metric = AccuracyMetric()
@@ -404,7 +404,7 @@ struct AccuracyMetric(Metric):
     fn __init__(out self):
         """Initialize with zero counts."""
         self.correct_count = 0
-        self.total_count = 0.
+        self.total_count = 0
 
     fn update(mut self, predictions: ExTensor, labels: ExTensor) raises:
         """Update metric with a new batch of predictions.
@@ -414,7 +414,7 @@ struct AccuracyMetric(Metric):
             labels: True class labels of shape [batch_size]
 
         Raises:
-            Error: If shapes are incompatible.
+            Error: If shapes are incompatible
         """
         # Get predicted classes
         var pred_classes: ExTensor
@@ -435,29 +435,29 @@ struct AccuracyMetric(Metric):
             if pred_classes._dtype == DType.int32:
                 pred_val = Int(pred_classes._data.bitcast[Int32]()[i])
             else:
-                pred_val = Int(pred_classes._data.bitcast[Int64]()[i]).
+                pred_val = Int(pred_classes._data.bitcast[Int64]()[i])
 
             if labels._dtype == DType.int32:
                 label_val = Int(labels._data.bitcast[Int32]()[i])
             else:
-                label_val = Int(labels._data.bitcast[Int64]()[i]).
+                label_val = Int(labels._data.bitcast[Int64]()[i])
 
             if pred_val == label_val:
-                self.correct_count += 1.
+                self.correct_count += 1
 
-            self.total_count += 1.
+            self.total_count += 1
 
     fn compute(self) -> Float64:
         """Compute final accuracy from accumulated counts.
 
         Returns:
-            Accuracy as a fraction in [0, 1], or 0.0 if no samples.
+            Accuracy as a fraction in [0, 1], or 0.0 if no samples
         """
         if self.total_count == 0:
             return 0.0
-        return Float64(self.correct_count) / Float64(self.total_count).
+        return Float64(self.correct_count) / Float64(self.total_count)
 
     fn reset(mut self):
         """Reset counts to zero for next epoch."""
         self.correct_count = 0
-        self.total_count = 0.
+        self.total_count = 0

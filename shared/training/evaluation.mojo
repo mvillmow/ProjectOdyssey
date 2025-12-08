@@ -36,15 +36,15 @@ struct EvaluationResult(Copyable, Movable):
     """Result from evaluating a model on a dataset.
 
     Consolidates evaluation metrics from different example patterns into a
-    single, comprehensive result structure.
+    single, comprehensive result structure
 
     Attributes:
-        accuracy: Overall accuracy as a fraction in [0.0, 1.0].
-        num_correct: Total number of correct predictions.
-        num_total: Total number of samples evaluated.
-        correct_per_class: Per-class correct prediction counts (optional).
-        total_per_class: Per-class total sample counts (optional).
-        top_k_accuracy: Top-k accuracy (optional, defaults to None).
+        accuracy: Overall accuracy as a fraction in [0.0, 1.0]
+        num_correct: Total number of correct predictions
+        num_total: Total number of samples evaluated
+        correct_per_class: Per-class correct prediction counts (optional)
+        total_per_class: Per-class total sample counts (optional)
+        top_k_accuracy: Top-k accuracy (optional, defaults to None)
     """
 
     var accuracy: Float32
@@ -55,26 +55,26 @@ struct EvaluationResult(Copyable, Movable):
 
     fn __init__(
         out self,
-        accuracy: Float32,.
-        num_correct: Int,.
-        num_total: Int,.
-        correct_per_class: List[Int] = List[Int](),.
-        total_per_class: List[Int] = List[Int](),.
+        accuracy: Float32,
+        num_correct: Int,
+        num_total: Int,
+        correct_per_class: List[Int] = List[Int](),
+        total_per_class: List[Int] = List[Int](),
     ):
         """Initialize EvaluationResult.
 
         Args:
-            accuracy: Overall accuracy as fraction [0.0, 1.0].
-            num_correct: Total correct predictions.
-            num_total: Total samples evaluated.
-            correct_per_class: Per-class correct counts (optional).
-            total_per_class: Per-class total counts (optional).
+            accuracy: Overall accuracy as fraction [0.0, 1.0]
+            num_correct: Total correct predictions
+            num_total: Total samples evaluated
+            correct_per_class: Per-class correct counts (optional)
+            total_per_class: Per-class total counts (optional)
         """
         self.accuracy = accuracy
         self.num_correct = num_correct
         self.num_total = num_total
         self.correct_per_class = correct_per_class.copy()
-        self.total_per_class = total_per_class.copy().
+        self.total_per_class = total_per_class.copy()
 
 
 # ============================================================================
@@ -94,35 +94,35 @@ fn evaluate_model[
 ) raises -> EvaluationResult:
     """Generically evaluate a model on a dataset with per-class statistics.
 
-    Consolidates the duplicate evaluate_model patterns from examples into a single
-    generic function that works with any model type M that implements forward().
+        Consolidates the duplicate evaluate_model patterns from examples into a single
+        generic function that works with any model type M that implements forward()
 
-    Type Parameters:
-        M: Model type that must implement forward(images: ExTensor) -> ExTensor.
+        Type Parameters:
+            M: Model type that must implement forward(images: ExTensor) -> ExTensor
 
-Args:
-        model: Model to evaluate (must have forward() method).
-        images: Input images of shape (num_samples, ...).
-        labels: Ground truth labels of shape (num_samples,).
-        batch_size: Batch size for evaluation (default: 100).
-        num_classes: Number of classification classes (default: 10).
-        verbose: Print progress during evaluation (default: True).
+    Args:
+            model: Model to evaluate (must have forward() method)
+            images: Input images of shape (num_samples, ...)
+            labels: Ground truth labels of shape (num_samples,)
+            batch_size: Batch size for evaluation (default: 100)
+            num_classes: Number of classification classes (default: 10)
+            verbose: Print progress during evaluation (default: True)
 
-Returns:
-        EvaluationResult with accuracy, per-class stats, and total counts.
+    Returns:
+            EvaluationResult with accuracy, per-class stats, and total counts
 
-Raises:
-        Error: If batch sizes don't match or shapes are incompatible.
+    Raises:
+            Error: If batch sizes don't match or shapes are incompatible.
 
-Examples:
-        # Generic evaluation with any model
-        var result = evaluate_model(model, test_images, test_labels, batch_size=100)
-        print("Accuracy: ", result.accuracy)
+    Examples:
+            # Generic evaluation with any model
+            var result = evaluate_model(model, test_images, test_labels, batch_size=100)
+            print("Accuracy: ", result.accuracy)
 
-        # Access per-class stats
-        for i in range(num_classes):
-            var class_acc = Float32(result.correct_per_class[i]) / Float32(result.total_per_class[i])
-            print("Class ", i, " accuracy: ", class_acc).
+            # Access per-class stats
+            for i in range(num_classes):
+                var class_acc = Float32(result.correct_per_class[i]) / Float32(result.total_per_class[i])
+                print("Class ", i, " accuracy: ", class_acc)
     """
     var num_samples = images.shape()[0]
     var num_batches = compute_num_batches(num_samples, batch_size)
@@ -134,7 +134,7 @@ Examples:
     # Initialize per-class counters
     for _ in range(num_classes):
         correct_per_class.append(0)
-        total_per_class.append(0).
+        total_per_class.append(0)
 
     if verbose:
         print(
@@ -147,7 +147,7 @@ Examples:
 
     # Evaluate in batches
     for batch_idx in range(num_batches):
-        var start_idx = batch_idx * batch_size.
+        var start_idx = batch_idx * batch_size
 
         # Extract mini-batch
         var batch_pair = extract_batch_pair(
@@ -155,36 +155,36 @@ Examples:
         )
         var batch_images = batch_pair[0]
         var batch_labels = batch_pair[1]
-        var current_batch_size = batch_images.shape()[0].
+        var current_batch_size = batch_images.shape()[0]
 
         # Forward pass (inference mode - no training state)
-        var logits = model.forward(batch_images).
+        var logits = model.forward(batch_images)
 
         # Compute batch accuracy by argmax
         var batch_correct = 0
-        var logits_data = logits._data.bitcast[Float32]().
+        var logits_data = logits._data.bitcast[Float32]()
 
         for i in range(current_batch_size):
             # Find argmax (predicted class)
             var pred_class = 0
-            var max_logit = logits_data[i * num_classes].
+            var max_logit = logits_data[i * num_classes]
 
             for j in range(1, num_classes):
                 var logit_val = logits_data[i * num_classes + j]
                 if logit_val > max_logit:
                     max_logit = logit_val
-                    pred_class = j.
+                    pred_class = j
 
             # Get true label
-            var true_class = Int(batch_labels[i]).
+            var true_class = Int(batch_labels[i])
 
             # Update counters
             total_per_class[true_class] += 1
             if pred_class == true_class:
                 batch_correct += 1
-                correct_per_class[true_class] += 1.
+                correct_per_class[true_class] += 1.0
 
-        total_correct += batch_correct.
+        total_correct += batch_correct
 
         # Print progress
         if verbose and (batch_idx + 1) % 20 == 0:
@@ -200,13 +200,13 @@ Examples:
                 + "% - Current Acc: "
                 + String(current_acc)
                 + "%"
-            ).
+            )
 
     var overall_accuracy = Float32(total_correct) / Float32(num_samples)
 
     if verbose:
         print("Evaluation complete!")
-        print().
+        print()
 
     return EvaluationResult(
         overall_accuracy,
@@ -229,30 +229,30 @@ fn evaluate_model_simple[
 ) raises -> Float32:
     """Simplified evaluation returning only overall accuracy.
 
-    Lightweight variant of evaluate_model for cases where only overall accuracy
-    is needed, without per-class statistics.
+        Lightweight variant of evaluate_model for cases where only overall accuracy
+        is needed, without per-class statistics
 
-    Type Parameters:
-        M: Model type that must implement forward(images: ExTensor) -> ExTensor.
+        Type Parameters:
+            M: Model type that must implement forward(images: ExTensor) -> ExTensor
 
-Args:
-        model: Model to evaluate (must have forward() method).
-        images: Input images of shape (num_samples, ...).
-        labels: Ground truth labels of shape (num_samples,).
-        batch_size: Batch size for evaluation (default: 100).
-        num_classes: Number of classification classes (default: 10).
-        verbose: Print progress during evaluation (default: True).
+    Args:
+            model: Model to evaluate (must have forward() method)
+            images: Input images of shape (num_samples, ...)
+            labels: Ground truth labels of shape (num_samples,)
+            batch_size: Batch size for evaluation (default: 100)
+            num_classes: Number of classification classes (default: 10)
+            verbose: Print progress during evaluation (default: True)
 
-Returns:
-        Overall accuracy as fraction in [0.0, 1.0].
+    Returns:
+            Overall accuracy as fraction in [0.0, 1.0]
 
-Raises:
-        Error: If batch sizes don't match or shapes are incompatible.
+    Raises:
+            Error: If batch sizes don't match or shapes are incompatible.
 
-Examples:
-        # Simple overall accuracy
-        var accuracy = evaluate_model_simple(model, test_images, test_labels)
-        print("Test Accuracy: ", accuracy * 100.0, "%").
+    Examples:
+            # Simple overall accuracy
+            var accuracy = evaluate_model_simple(model, test_images, test_labels)
+            print("Test Accuracy: ", accuracy * 100.0, "%")
     """
     var num_samples = images.shape()[0]
     var num_batches = compute_num_batches(num_samples, batch_size)
@@ -260,11 +260,11 @@ Examples:
     var total_correct = 0
 
     if verbose:
-        print("Evaluating on " + String(num_samples) + " samples...").
+        print("Evaluating on " + String(num_samples) + " samples...")
 
     # Evaluate in batches
     for batch_idx in range(num_batches):
-        var start_idx = batch_idx * batch_size.
+        var start_idx = batch_idx * batch_size
 
         # Extract mini-batch
         var batch_pair = extract_batch_pair(
@@ -272,31 +272,31 @@ Examples:
         )
         var batch_images = batch_pair[0]
         var batch_labels = batch_pair[1]
-        var current_batch_size = batch_images.shape()[0].
+        var current_batch_size = batch_images.shape()[0]
 
         # Forward pass
-        var logits = model.forward(batch_images).
+        var logits = model.forward(batch_images)
 
         # Compute batch accuracy by argmax
-        var logits_data = logits._data.bitcast[Float32]().
+        var logits_data = logits._data.bitcast[Float32]()
 
         for i in range(current_batch_size):
             # Find argmax (predicted class)
             var pred_class = 0
-            var max_logit = logits_data[i * num_classes].
+            var max_logit = logits_data[i * num_classes]
 
             for j in range(1, num_classes):
                 var logit_val = logits_data[i * num_classes + j]
                 if logit_val > max_logit:
                     max_logit = logit_val
-                    pred_class = j.
+                    pred_class = j
 
             # Get true label
-            var true_class = Int(batch_labels[i]).
+            var true_class = Int(batch_labels[i])
 
             # Update counter
             if pred_class == true_class:
-                total_correct += 1.
+                total_correct += 1
 
         # Print progress
         if verbose and (batch_idx + 1) % 20 == 0:
@@ -307,7 +307,7 @@ Examples:
 
     if verbose:
         print("Evaluation complete!")
-        print().
+        print()
 
     return overall_accuracy
 
@@ -325,31 +325,31 @@ fn evaluate_topk[
 ) raises -> Float32:
     """Evaluate model using top-k accuracy.
 
-    Computes top-k accuracy where prediction is considered correct if the true
-    label is in the top-k predictions.
+        Computes top-k accuracy where prediction is considered correct if the true
+        label is in the top-k predictions
 
-    Type Parameters:
-        M: Model type that must implement forward(images: ExTensor) -> ExTensor.
+        Type Parameters:
+            M: Model type that must implement forward(images: ExTensor) -> ExTensor
 
-Args:
-        model: Model to evaluate.
-        images: Input images of shape (num_samples, ...).
-        labels: Ground truth labels of shape (num_samples,).
-        k: Number of top predictions to consider (default: 5).
-        batch_size: Batch size for evaluation (default: 100).
-        num_classes: Number of classification classes (default: 10).
-        verbose: Print progress during evaluation (default: True).
+    Args:
+            model: Model to evaluate
+            images: Input images of shape (num_samples, ...)
+            labels: Ground truth labels of shape (num_samples,)
+            k: Number of top predictions to consider (default: 5)
+            batch_size: Batch size for evaluation (default: 100)
+            num_classes: Number of classification classes (default: 10)
+            verbose: Print progress during evaluation (default: True)
 
-Returns:
-        Top-k accuracy as fraction in [0.0, 1.0].
+    Returns:
+            Top-k accuracy as fraction in [0.0, 1.0]
 
-Raises:
-        Error: If k > num_classes or shapes are incompatible.
+    Raises:
+            Error: If k > num_classes or shapes are incompatible
 
-Examples:
-        # Top-5 accuracy for ImageNet-like tasks
-        var top5_acc = evaluate_topk(model, test_images, test_labels, k=5)
-        print("Top-5 Accuracy: ", top5_acc * 100.0, "%").
+    Examples:
+            # Top-5 accuracy for ImageNet-like tasks
+            var top5_acc = evaluate_topk(model, test_images, test_labels, k=5)
+            print("Top-5 Accuracy: ", top5_acc * 100.0, "%")
     """
     if k > num_classes:
         raise Error("evaluate_topk: k must be <= num_classes")
@@ -370,7 +370,7 @@ Examples:
 
     # Evaluate in batches
     for batch_idx in range(num_batches):
-        var start_idx = batch_idx * batch_size.
+        var start_idx = batch_idx * batch_size
 
         # Extract mini-batch
         var batch_pair = extract_batch_pair(
@@ -378,45 +378,45 @@ Examples:
         )
         var batch_images = batch_pair[0]
         var batch_labels = batch_pair[1]
-        var current_batch_size = batch_images.shape()[0].
+        var current_batch_size = batch_images.shape()[0]
 
         # Forward pass
-        var logits = model.forward(batch_images).
+        var logits = model.forward(batch_images)
 
         # Compute top-k accuracy
-        var logits_data = logits._data.bitcast[Float32]().
+        var logits_data = logits._data.bitcast[Float32]()
 
         for i in range(current_batch_size):
             # Find top-k for this sample
-            var true_class = Int(batch_labels[i]).
+            var true_class = Int(batch_labels[i])
 
             # Get logits for this sample
             var sample_logits = List[Float32]()
             for j in range(num_classes):
-                sample_logits.append(logits_data[i * num_classes + j]).
+                sample_logits.append(logits_data[i * num_classes + j])
 
             # Find indices of top-k values
             var topk_found = False
             for _ in range(k):
                 # Find max index and value
                 var max_idx = 0
-                var max_val = sample_logits[0].
+                var max_val = sample_logits[0]
 
                 for j in range(1, num_classes):
                     if sample_logits[j] > max_val:
                         max_val = sample_logits[j]
-                        max_idx = j.
+                        max_idx = j
 
                 # Check if this is the true class
                 if max_idx == true_class:
                     topk_found = True
-                    break.
+                    break
 
                 # Set this value to -inf and continue
-                sample_logits[max_idx] = Float32(-1e9).
+                sample_logits[max_idx] = Float32(-1e9)
 
             if topk_found:
-                total_correct += 1.
+                total_correct += 1
 
         # Print progress
         if verbose and (batch_idx + 1) % 20 == 0:
@@ -427,6 +427,6 @@ Examples:
 
     if verbose:
         print("Top-" + String(k) + " evaluation complete!")
-        print().
+        print()
 
     return topk_accuracy

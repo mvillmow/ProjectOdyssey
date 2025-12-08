@@ -39,25 +39,25 @@ fn create_test_cnn(
 ) -> SimpleCNN:
     """Factory function to create test CNN models.
 
-    Useful for consistent model initialization across tests.
+        Useful for consistent model initialization across tests
 
-Args:
-        in_channels: Number of input channels (default: 1 for MNIST).
-        out_channels: Number of output channels (default: 8).
-        num_classes: Number of output classes (default: 10).
+    Args:
+            in_channels: Number of input channels (default: 1 for MNIST)
+            out_channels: Number of output channels (default: 8)
+            num_classes: Number of output classes (default: 10)
 
-Returns:
-        Test CNN instance.
+    Returns:
+            Test CNN instance
 
-    Example:
-        ```mojo
-        var model = create_test_cnn(1, 8, 10)
-        assert_equal(model.num_classes, 10).
+        Example:
+            ```mojo
+            var model = create_test_cnn(1, 8, 10)
+            assert_equal(model.num_classes, 10)
 
-        # Create custom channel configuration
-        var custom_model = create_test_cnn(3, 32, 1000)
-        assert_equal(custom_model.in_channels, 3)
-        ```
+            # Create custom channel configuration
+            var custom_model = create_test_cnn(3, 32, 1000)
+            assert_equal(custom_model.in_channels, 3)
+            ```
     """
     return SimpleCNN(in_channels, out_channels, num_classes)
 
@@ -67,24 +67,24 @@ fn create_linear_model(
 ) -> LinearModel:
     """Create a simple linear test model.
 
-    Useful for testing linear layers, loss functions, and optimization.
+        Useful for testing linear layers, loss functions, and optimization
 
-Args:
-        in_features: Input dimension (default: 784 for MNIST flattened).
-        out_features: Output dimension (default: 10 for MNIST classes).
+    Args:
+            in_features: Input dimension (default: 784 for MNIST flattened)
+            out_features: Output dimension (default: 10 for MNIST classes)
 
-Returns:
-        Linear model instance.
+    Returns:
+            Linear model instance
 
-    Example:
-        ```mojo
-        var model = create_linear_model(784, 10)
-        assert_equal(model.out_features, 10).
+        Example:
+            ```mojo
+            var model = create_linear_model(784, 10)
+            assert_equal(model.out_features, 10)
 
-        # Create custom dimensions
-        var large_model = create_linear_model(2048, 1024)
-        assert_equal(large_model.in_features, 2048)
-        ```
+            # Create custom dimensions
+            var large_model = create_linear_model(2048, 1024)
+            assert_equal(large_model.in_features, 2048)
+            ```
     """
     return LinearModel(in_features, out_features)
 
@@ -94,24 +94,24 @@ fn create_test_input(
 ) raises -> ExTensor:
     """Create a test input tensor for linear models.
 
-    Creates a simple tensor filled with ones for testing.
+        Creates a simple tensor filled with ones for testing
 
-Args:
-        batch_size: Number of samples.
-        in_features: Input dimension.
-        dtype: Data type (default: float32).
+    Args:
+            batch_size: Number of samples
+            in_features: Input dimension
+            dtype: Data type (default: float32)
 
-Returns:
-        Input tensor (batch_size, in_features) filled with 1.0.
+    Returns:
+            Input tensor (batch_size, in_features) filled with 1.0
 
-    Example:
-        ```mojo
-        var input = create_test_input(32, 784)
-        assert_equal(input._shape[0], 32)
-        assert_equal(input._shape[1], 784)
-        ```
+        Example:
+            ```mojo
+            var input = create_test_input(32, 784)
+            assert_equal(input._shape[0], 32)
+            assert_equal(input._shape[1], 784)
+            ```
     """
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(batch_size)
     shape.append(in_features)
     return ones(shape, dtype)
@@ -122,23 +122,23 @@ fn create_test_targets(
 ) raises -> ExTensor:
     """Create a test target tensor for classification.
 
-    Creates a tensor filled with zeros for testing.
+        Creates a tensor filled with zeros for testing
 
-Args:
-        batch_size: Number of samples.
-        num_classes: Number of classes.
-        dtype: Data type (default: int32).
+    Args:
+            batch_size: Number of samples
+            num_classes: Number of classes
+            dtype: Data type (default: int32)
 
-Returns:
-        Target tensor (batch_size,) filled with 0.
+    Returns:
+            Target tensor (batch_size,) filled with 0
 
-    Example:
-        ```mojo
-        var targets = create_test_targets(32, 10)
-        assert_equal(targets._shape[0], 32)
-        ```
+        Example:
+            ```mojo
+            var targets = create_test_targets(32, 10)
+            assert_equal(targets._shape[0], 32)
+            ```
     """
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(batch_size)
     return zeros(shape, dtype)
 
@@ -146,25 +146,25 @@ Returns:
 fn assert_tensor_shape(tensor: ExTensor, expected_shape: List[Int]) -> Bool:
     """Validate tensor has expected shape.
 
-Args:
-        tensor: Tensor to check.
-        expected_shape: Expected shape dimensions.
+    Args:
+            tensor: Tensor to check
+            expected_shape: Expected shape dimensions
 
-Returns:
-        True if shapes match, False otherwise.
+    Returns:
+            True if shapes match, False otherwise
 
-    Example:
-        ```mojo
-        var tensor = ones(List[Int](32, 10), DType.float32)
-        assert_true(assert_tensor_shape(tensor, List[Int](32, 10)))
-        ```
+        Example:
+            ```mojo
+            var tensor = ones(List[Int](32, 10), DType.float32)
+            assert_true(assert_tensor_shape(tensor, List[Int](32, 10)))
+            ```
     """
     if len(tensor._shape) != len(expected_shape):
-        return False.
+        return False
 
     for i in range(len(expected_shape)):
         if tensor._shape[i] != expected_shape[i]:
-            return False.
+            return False
 
     return True
 
@@ -172,36 +172,36 @@ Returns:
 fn assert_tensor_dtype(tensor: ExTensor, expected_dtype: DType) -> Bool:
     """Validate tensor has expected data type.
 
-Args:
-        tensor: Tensor to check.
-        expected_dtype: Expected DType.
+    Args:
+            tensor: Tensor to check
+            expected_dtype: Expected DType
 
-Returns:
-        True if dtypes match, False otherwise.
+    Returns:
+            True if dtypes match, False otherwise
 
-    Example:
-        ```mojo
-        var tensor = ones(List[Int](32, 10), DType.float32)
-        assert_true(assert_tensor_dtype(tensor, DType.float32))
-        ```
+        Example:
+            ```mojo
+            var tensor = ones(List[Int](32, 10), DType.float32)
+            assert_true(assert_tensor_dtype(tensor, DType.float32))
+            ```
     """
     return tensor._dtype == expected_dtype
 
 
 fn assert_tensor_all_finite(tensor: ExTensor) -> Bool:
-    """Check if all tensor values are finite (no NaN or Inf).
+    """Check if all tensor values are finite (no NaN or Inf)
 
-Args:
-        tensor: Tensor to check.
+    Args:
+            tensor: Tensor to check
 
-Returns:
-        True if all values are finite, False if any NaN/Inf found.
+    Returns:
+            True if all values are finite, False if any NaN/Inf found
 
-    Example:
-        ```mojo
-        var tensor = ones(List[Int](32, 10), DType.float32)
-        assert_true(assert_tensor_all_finite(tensor))
-        ```
+        Example:
+            ```mojo
+            var tensor = ones(List[Int](32, 10), DType.float32)
+            assert_true(assert_tensor_all_finite(tensor))
+            ```
     """
     for i in range(tensor.numel()):
         var val = tensor._get_float64(i)
@@ -210,7 +210,7 @@ Returns:
             return False
         # Check for Inf
         if val > 1e308 or val < -1e308:
-            return False.
+            return False
 
     return True
 
@@ -218,22 +218,22 @@ Returns:
 fn assert_tensor_not_all_zeros(tensor: ExTensor) -> Bool:
     """Check if tensor contains at least one non-zero value.
 
-    Useful for verifying weights are initialized and gradients are flowing.
+        Useful for verifying weights are initialized and gradients are flowing
 
-Args:
-        tensor: Tensor to check.
+    Args:
+            tensor: Tensor to check
 
-Returns:
-        True if at least one non-zero value exists, False if all zeros.
+    Returns:
+            True if at least one non-zero value exists, False if all zeros
 
-    Example:
-        ```mojo
-        var tensor = ones(List[Int](32, 10), DType.float32)
-        assert_true(assert_tensor_not_all_zeros(tensor))
-        ```
+        Example:
+            ```mojo
+            var tensor = ones(List[Int](32, 10), DType.float32)
+            assert_true(assert_tensor_not_all_zeros(tensor))
+            ```
     """
     for i in range(tensor.numel()):
         if tensor._get_float64(i) != 0.0:
-            return True.
+            return True
 
     return False

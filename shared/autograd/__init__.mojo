@@ -1,6 +1,6 @@
 """Autograd - Automatic Differentiation for ML Odyssey.
 
-This module provides gradient computation capabilities for training neural networks.
+This module provides gradient computation capabilities for training neural networks
 
 Core Components:
 - Variable: Tensor wrapper with gradient tracking

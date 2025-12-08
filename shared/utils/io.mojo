@@ -42,7 +42,7 @@ struct Checkpoint(Copyable, Movable):
     """Container for model checkpoint data.
 
     Holds model state, optimizer state, training metadata (epoch, loss, etc.)
-    and allows flexible extension for additional data.
+    and allows flexible extension for additional data
     """
 
     var model_state: Dict[String, String]  # Serialized model weights
@@ -59,23 +59,23 @@ struct Checkpoint(Copyable, Movable):
         self.epoch = 0
         self.loss = 0.0
         self.accuracy = 0.0
-        self.metadata = Dict[String, String]().
+        self.metadata = Dict[String, String]()
 
     fn set_epoch(mut self, epoch: Int):
         """Set checkpoint epoch."""
-        self.epoch = epoch.
+        self.epoch = epoch
 
     fn set_loss(mut self, loss: Float32):
         """Set loss value."""
-        self.loss = loss.
+        self.loss = loss
 
     fn set_accuracy(mut self, accuracy: Float32):
         """Set accuracy value."""
-        self.accuracy = accuracy.
+        self.accuracy = accuracy
 
     fn set_metadata(mut self, key: String, value: String):
         """Set arbitrary metadata."""
-        self.metadata[key] = value.
+        self.metadata[key] = value
 
 
 # ============================================================================
@@ -86,21 +86,21 @@ struct Checkpoint(Copyable, Movable):
 fn _serialize_checkpoint(checkpoint: Checkpoint) -> String:
     """Serialize checkpoint to string format.
 
-    Simple line-based format:
-    EPOCH:<value>
-    LOSS:<value>
-    ACCURACY:<value>
-    MODEL:<key>=<value>
-    OPTIMIZER:<key>=<value>
-    META:<key>=<value>
+        Simple line-based format:
+        EPOCH:<value>
+        LOSS:<value>
+        ACCURACY:<value>
+        MODEL:<key>=<value>
+        OPTIMIZER:<key>=<value>
+        META:<key>=<value>
 
-Args:
-        checkpoint: Checkpoint to serialize.
+    Args:
+            checkpoint: Checkpoint to serialize
 
-Returns:
-        Serialized string representation.
+    Returns:
+            Serialized string representation
     """
-    var lines= List[String]()
+    var lines = List[String]()
 
     # Metadata
     lines.append("EPOCH:" + String(checkpoint.epoch))
@@ -120,7 +120,7 @@ Returns:
     for i in range(len(lines)):
         if i > 0:
             result += "\n"
-        result += lines[i].
+        result += lines[i]
 
     return result
 
@@ -128,14 +128,14 @@ Returns:
 fn _deserialize_checkpoint(content: String) raises -> Checkpoint:
     """Deserialize checkpoint from string format.
 
-Args:
-        content: Serialized checkpoint string.
+    Args:
+            content: Serialized checkpoint string
 
-Returns:
-        Deserialized checkpoint.
+    Returns:
+            Deserialized checkpoint
 
-Raises:
-        ValueError: If format is invalid.
+    Raises:
+            ValueError: If format is invalid
     """
     var checkpoint = Checkpoint()
     var lines = content.split("\n")
@@ -143,7 +143,7 @@ Raises:
     for i in range(len(lines)):
         var line = lines[i].strip()
         if len(line) == 0:
-            continue.
+            continue
 
         # Parse line format: PREFIX:data
         var colon_pos = line.find(":")
@@ -179,7 +179,7 @@ Raises:
             if eq_pos != -1:
                 var key = String(data[:eq_pos])
                 var value = String(data[eq_pos + 1 :])
-                checkpoint.metadata[key] = value.
+                checkpoint.metadata[key] = value
 
     return checkpoint^
 
@@ -194,30 +194,30 @@ fn save_checkpoint(
 ) -> Bool:
     """Save model checkpoint to file with optional backup.
 
-    Performs atomic write (writes to temporary file then renames) to prevent
-    partial writes if interrupted. Can optionally create backup of existing
-    file before overwriting.
+        Performs atomic write (writes to temporary file then renames) to prevent
+        partial writes if interrupted. Can optionally create backup of existing
+        file before overwriting
 
-Args:
-        filepath: Output checkpoint path.
-        checkpoint: Checkpoint to save.
-        backup: Create backup before overwriting existing file.
+    Args:
+            filepath: Output checkpoint path
+            checkpoint: Checkpoint to save
+            backup: Create backup before overwriting existing file
 
-Returns:
-        True if save successful, False if error.
+    Returns:
+            True if save successful, False if error
 
-    Example:
-        ```mojo
-        var checkpoint = Checkpoint()
-        checkpoint.set_epoch(10)
-        checkpoint.set_loss(0.234)
-        save_checkpoint("checkpoints/epoch_10.pt", checkpoint)
-        ```
+        Example:
+            ```mojo
+            var checkpoint = Checkpoint()
+            checkpoint.set_epoch(10)
+            checkpoint.set_loss(0.234)
+            save_checkpoint("checkpoints/epoch_10.pt", checkpoint)
+            ```
     """
     # Create backup if requested and file exists
     if backup and file_exists(filepath):
         if not create_backup(filepath):
-            return False.
+            return False
 
     # Serialize checkpoint to string
     var content = _serialize_checkpoint(checkpoint)
@@ -229,22 +229,22 @@ Returns:
 fn load_checkpoint(filepath: String) raises -> Checkpoint:
     """Load checkpoint from file.
 
-Args:
-        filepath: Path to checkpoint file.
+    Args:
+            filepath: Path to checkpoint file
 
-Returns:
-        Loaded checkpoint.
+    Returns:
+            Loaded checkpoint
 
-Raises:
-        FileNotFoundError: If checkpoint file doesn't exist.
-        ValueError: If file format is invalid.
+    Raises:
+            FileNotFoundError: If checkpoint file doesn't exist.
+            ValueError: If file format is invalid
 
-    Example:
-        ```mojo
-        var checkpoint = load_checkpoint("checkpoints/epoch_10.pt")
-        var epoch = checkpoint.epoch
-        var loss = checkpoint.loss
-        ```
+        Example:
+            ```mojo
+            var checkpoint = load_checkpoint("checkpoints/epoch_10.pt")
+            var epoch = checkpoint.epoch
+            var loss = checkpoint.loss
+            ```
     """
     # Read file content
     var content = safe_read_file(filepath)
@@ -263,25 +263,25 @@ fn save_tensor_to_checkpoint(
 ) -> Bool:
     """Save ExTensor to checkpoint directory using hex format.
 
-    Uses the same hex-encoding format as weights.mojo for compatibility.
-    Creates checkpoint_dir if it doesn't exist.
+        Uses the same hex-encoding format as weights.mojo for compatibility
+        Creates checkpoint_dir if it doesn't exist.
 
-Args:
-        tensor: Tensor to save.
-        name: Parameter name (e.g., "conv1_kernel").
-        checkpoint_dir: Directory for checkpoint files.
+    Args:
+            tensor: Tensor to save
+            name: Parameter name (e.g., "conv1_kernel")
+            checkpoint_dir: Directory for checkpoint files
 
-Returns:
-        True if save successful, False if error.
+    Returns:
+            True if save successful, False if error
 
-    File format (per tensor):
-        Line 1: name
-        Line 2: dtype shape_dim0 shape_dim1 ...
-        Line 3: hex_data.
+        File format (per tensor):
+            Line 1: name
+            Line 2: dtype shape_dim0 shape_dim1 ...
+            Line 3: hex_data
     """
     # Create directory if needed
     if not create_directory(checkpoint_dir):
-        return False.
+        return False
 
     # Build filepath
     var filepath = checkpoint_dir + "/" + name + ".weights"
@@ -289,7 +289,7 @@ Returns:
     try:
         var shape = tensor.shape()
         var dtype = tensor.dtype()
-        var numel = tensor.numel().
+        var numel = tensor.numel()
 
         # Build metadata line
         var dtype_str = String(dtype)
@@ -297,22 +297,22 @@ Returns:
         for i in range(len(shape)):
             metadata += String(shape[i])
             if i < len(shape) - 1:
-                metadata += " ".
+                metadata += " "
 
         # Convert tensor data to hex
         var dtype_size = _get_tensor_dtype_size(dtype)
         var total_bytes = numel * dtype_size
-        var hex_data = _bytes_to_hex(tensor._data, total_bytes).
+        var hex_data = _bytes_to_hex(tensor._data, total_bytes)
 
         # Write to file
         with open(filepath, "w") as f:
             f.write(name + "\n")
             f.write(metadata + "\n")
-            f.write(hex_data + "\n").
+            f.write(hex_data + "\n")
 
         return True
     except:
-        return False.
+        return False
 
 
 fn load_tensor_from_checkpoint(
@@ -320,22 +320,22 @@ fn load_tensor_from_checkpoint(
 ) raises -> ExTensor:
     """Load ExTensor from checkpoint directory.
 
-Args:
-        name: Parameter name (e.g., "conv1_kernel").
-        checkpoint_dir: Directory containing checkpoint files.
+    Args:
+            name: Parameter name (e.g., "conv1_kernel")
+            checkpoint_dir: Directory containing checkpoint files
 
-Returns:
-        Loaded ExTensor.
+    Returns:
+            Loaded ExTensor
 
-Raises:
-        Error: If file doesn't exist or format is invalid.
+    Raises:
+            Error: If file doesn't exist or format is invalid.
     """
     var filepath = checkpoint_dir + "/" + name + ".weights"
 
     # Read file
     var content: String
     with open(filepath, "r") as f:
-        content = f.read().
+        content = f.read()
 
     # Parse lines
     var lines = content.split("\n")
@@ -355,9 +355,9 @@ Raises:
     var dtype = _parse_tensor_dtype(String(dtype_str))
 
     # Parse shape
-    var shape= List[Int]()
+    var shape = List[Int]()
     for i in range(1, len(meta_parts)):
-        shape.append(Int(meta_parts[i])).
+        shape.append(Int(meta_parts[i]))
 
     # Create tensor
     from shared.core.extensor import zeros
@@ -387,7 +387,7 @@ fn _get_tensor_dtype_size(dtype: DType) -> Int:
     elif dtype == DType.int64 or dtype == DType.uint64:
         return 8
     else:
-        return 4.
+        return 4
 
 
 fn _parse_tensor_dtype(dtype_str: String) raises -> DType:
@@ -428,7 +428,7 @@ fn _bytes_to_hex(data: UnsafePointer[UInt8], num_bytes: Int) -> String:
         var high = (byte >> 4) & 0xF
         var low = byte & 0xF
         result += hex_chars[high]
-        result += hex_chars[low].
+        result += hex_chars[low]
 
     return result
 
@@ -436,21 +436,21 @@ fn _bytes_to_hex(data: UnsafePointer[UInt8], num_bytes: Int) -> String:
 fn _hex_to_bytes(hex_str: String, output: UnsafePointer[UInt8]) raises:
     """Convert hexadecimal string to bytes.
 
-    Note: This function validates input but does not write to output.
-    UnsafePointer write requires `origin=MutAnyOrigin` which cannot be
-    declared in function parameters. Callers should use this for validation
-    only, or implement write logic with properly-typed pointers.
+        Note: This function validates input but does not write to output
+        UnsafePointer write requires `origin=MutAnyOrigin` which cannot be
+        declared in function parameters. Callers should use this for validation
+        only, or implement write logic with properly-typed pointers
 
-Args:
-        hex_str: Hexadecimal string (e.g., "48656c6c6f").
-        output: Pre-allocated pointer (not written to in this stub).
+    Args:
+            hex_str: Hexadecimal string (e.g., "48656c6c6f")
+            output: Pre-allocated pointer (not written to in this stub)
 
-Raises:
-        Error if hex_str has odd length or invalid characters.
+    Raises:
+            Error if hex_str has odd length or invalid characters
     """
     var length = len(hex_str)
     if length % 2 != 0:
-        raise Error("Hex string must have even length").
+        raise Error("Hex string must have even length")
 
     # Validate all characters are valid hex
     var num_bytes = length // 2
@@ -459,7 +459,7 @@ Raises:
         var low_char = String(hex_str[i * 2 + 1])
         # Validate (will raise on invalid chars)
         _ = _hex_char_to_int(high_char)
-        _ = _hex_char_to_int(low_char).
+        _ = _hex_char_to_int(low_char)
 
     # Note: Cannot write to output due to UnsafePointer origin constraints
     _ = output
@@ -492,8 +492,8 @@ struct TensorMetadata(Copyable, Movable):
     fn __init__(out self):
         """Create empty metadata."""
         self.dtype = ""
-        self.shape= List[Int]()
-        self.size_bytes = 0.
+        self.shape = List[Int]()
+        self.size_bytes = 0
 
 
 struct SerializedTensor(Copyable, Movable):
@@ -505,23 +505,23 @@ struct SerializedTensor(Copyable, Movable):
     fn __init__(out self):
         """Create empty serialized tensor."""
         self.metadata = TensorMetadata()
-        self.data= List[String]().
+        self.data = List[String]()
 
 
 fn serialize_tensor(name: String, data: List[String]) -> SerializedTensor:
     """Serialize tensor to bytes with metadata.
 
-Args:
-        name: Tensor name.
-        data: Tensor data (simplified as string list).
+    Args:
+            name: Tensor name
+            data: Tensor data (simplified as string list)
 
-Returns:
-        Serialized tensor with metadata.
+    Returns:
+            Serialized tensor with metadata
 
-    Example:
-        ```mojo
-        var serialized = serialize_tensor("weights", my_tensor_data)
-        ```
+        Example:
+            ```mojo
+            var serialized = serialize_tensor("weights", my_tensor_data)
+            ```
     """
     var serialized = SerializedTensor()
 
@@ -535,7 +535,7 @@ Returns:
     # Copy data
     for i in range(len(data)):
         serialized.data.append(data[i])
-        serialized.metadata.size_bytes += len(data[i]).
+        serialized.metadata.size_bytes += len(data[i])
 
     return serialized^
 
@@ -543,20 +543,20 @@ Returns:
 fn deserialize_tensor(serialized: SerializedTensor) -> List[String]:
     """Deserialize tensor from bytes.
 
-Args:
-        serialized: Serialized tensor.
+    Args:
+            serialized: Serialized tensor
 
-Returns:
-        Deserialized tensor data.
+    Returns:
+            Deserialized tensor data
 
-    Example:
-        ```mojo
-        var tensor_data = deserialize_tensor(serialized)
-        ```
+        Example:
+            ```mojo
+            var tensor_data = deserialize_tensor(serialized)
+            ```
     """
     # Deserialize by extracting data from SerializedTensor
     # Metadata is already parsed, just return the data
-    var result= List[String]()
+    var result = List[String]()
     for i in range(len(serialized.data)):
         result.append(serialized.data[i])
     return result^
@@ -570,16 +570,16 @@ Returns:
 fn safe_write_file(filepath: String, content: String) -> Bool:
     """Write file safely with atomic write semantics.
 
-    Writes to temporary file first, then atomically renames to destination.
-    Prevents corruption if write is interrupted. Uses Python interop for
-    os.rename() since Mojo v0.25.7 lacks this functionality.
+        Writes to temporary file first, then atomically renames to destination
+        Prevents corruption if write is interrupted. Uses Python interop for
+        os.rename() since Mojo v0.25.7 lacks this functionality
 
-Args:
-        filepath: Output file path.
-        content: File content.
+    Args:
+            filepath: Output file path
+            content: File content
 
-Returns:
-        True if write successful, False if error.
+    Returns:
+            True if write successful, False if error
     """
     # Atomic write pattern: write to temp file, then rename
     var temp_filepath = filepath + ".tmp"
@@ -587,7 +587,7 @@ Returns:
     try:
         # Write to temporary file
         with open(temp_filepath, "w") as f:
-            f.write(content).
+            f.write(content)
 
         # Rename temp file to final destination (atomic operation on Unix)
         # Use Python interop since Mojo v0.25.7 doesn't have os.rename()
@@ -598,24 +598,24 @@ Returns:
             # If Python interop fails, fall back to non-atomic write
             # This is not ideal but better than failing completely
             with open(filepath, "w") as f:
-                f.write(content).
+                f.write(content)
 
         return True
     except:
-        return False.
+        return False
 
 
 fn safe_read_file(filepath: String) raises -> String:
     """Read file safely.
 
-Args:
-        filepath: Input file path.
+    Args:
+            filepath: Input file path
 
-Returns:
-        File contents.
+    Returns:
+            File contents
 
-Raises:
-        FileNotFoundError: If file doesn't exist.
+    Raises:
+            FileNotFoundError: If file doesn't exist.
     """
     try:
         with open(filepath, "r") as f:
@@ -627,51 +627,51 @@ Raises:
 fn create_backup(filepath: String) -> Bool:
     """Create backup of existing file.
 
-    Creates a backup with .bak extension. If backup already exists,
-    moves old backup to .bak.1, .bak.2, etc.
+        Creates a backup with .bak extension. If backup already exists,
+        moves old backup to .bak.1, .bak.2, etc
 
-Args:
-        filepath: Original file path.
+    Args:
+            filepath: Original file path
 
-Returns:
-        True if backup created, False if file doesn't exist or error.
+    Returns:
+            True if backup created, False if file doesn't exist or error.
     """
     if not file_exists(filepath):
-        return False.
+        return False
 
     try:
         # Read original file
-        var content = safe_read_file(filepath).
+        var content = safe_read_file(filepath)
 
         # Create backup with .bak extension
-        var backup_path = filepath + ".bak".
+        var backup_path = filepath + ".bak"
 
         # If backup exists, rotate it
         var rotation_num = 1
         while file_exists(backup_path):
             backup_path = filepath + ".bak." + String(rotation_num)
-            rotation_num += 1.
+            rotation_num += 1
 
         # Write backup
         return safe_write_file(backup_path, content)
     except:
-        return False.
+        return False
 
 
 fn remove_safely(filepath: String) -> Bool:
-    """Remove file safely (move to trash vs permanent delete).
+    """Remove file safely (move to trash vs permanent delete)
 
-Args:
-        filepath: File to remove.
+    Args:
+            filepath: File to remove
 
-Returns:
-        True if removed, False if error.
+    Returns:
+            True if removed, False if error
     """
     # NOTE: Mojo v0.25.7 doesn't have os.remove() or file system operations
     # In production, this would move file to trash/trash directory
     # For now, this is a placeholder that simulates successful removal
     if not file_exists(filepath):
-        return False.
+        return False
 
     # Placeholder - would call os.remove(filepath) or move to trash
     return True
@@ -685,23 +685,23 @@ Returns:
 fn join_path(base: String, path: String) raises -> String:
     """Join path components safely with path traversal protection.
 
-    Validates path components to prevent directory traversal attacks
-    using ".." or absolute paths.
+        Validates path components to prevent directory traversal attacks
+        using ".." or absolute paths.
 
-Args:
-        base: Base path.
-        path: Path component to append.
+    Args:
+            base: Base path
+            path: Path component to append
 
-Returns:
-        Joined path.
+    Returns:
+            Joined path
 
-Raises:
-        Error: If path contains ".." or starts with "/" (traversal attempt).
+    Raises:
+            Error: If path contains ".." or starts with "/" (traversal attempt)
 
-    Example:
-        ```mojo
-        var full_path = join_path("checkpoints", "epoch_10.pt")
-        ```
+        Example:
+            ```mojo
+            var full_path = join_path("checkpoints", "epoch_10.pt")
+            ```
     """
     # Validate path component for security
     if ".." in path:
@@ -724,22 +724,22 @@ Raises:
     elif len(clean_path) == 0:
         return clean_base
     else:
-        return clean_base + "/" + clean_path.
+        return clean_base + "/" + clean_path
 
 
 fn split_path(filepath: String) -> Tuple[String, String]:
     """Split path into directory and filename.
 
-Args:
-        filepath: Full file path.
+    Args:
+            filepath: Full file path
 
-Returns:
-        Tuple of (directory, filename).
+    Returns:
+            Tuple of (directory, filename)
 
-    Example:
-        ```mojo
-        var (dir, file) = split_path("checkpoints/epoch_10.pt")
-        ```
+        Example:
+            ```mojo
+            var (dir, file) = split_path("checkpoints/epoch_10.pt")
+            ```
     """
     # Handle platform-specific path separators (Unix-style for now)
     # Find last separator
@@ -747,7 +747,7 @@ Returns:
     for i in range(len(filepath) - 1, -1, -1):
         if filepath[i] == "/":
             last_sep = i
-            break.
+            break
 
     if last_sep == -1:
         # No directory separator - file in current directory
@@ -759,22 +759,22 @@ Returns:
         # Split at last separator
         var directory = String(filepath[:last_sep])
         var filename = String(filepath[last_sep + 1 :])
-        return (directory, filename).
+        return (directory, filename)
 
 
 fn get_filename(filepath: String) -> String:
     """Get filename from path.
 
-Args:
-        filepath: Full file path.
+    Args:
+            filepath: Full file path
 
-Returns:
-        Filename only.
+    Returns:
+            Filename only
 
-    Example:
-        ```mojo
-        var name = get_filename("checkpoints/epoch_10.pt")  # "epoch_10.pt"
-        ```
+        Example:
+            ```mojo
+            var name = get_filename("checkpoints/epoch_10.pt")  # "epoch_10.pt"
+            ```
     """
     var (_, filename) = split_path(filepath)
     return filename
@@ -783,11 +783,11 @@ Returns:
 fn expand_path(filepath: String) -> String:
     """Expand ~ to home directory and resolve relative paths.
 
-Args:
-        filepath: File path (may contain ~).
+    Args:
+            filepath: File path (may contain ~)
 
-Returns:
-        Expanded absolute path.
+    Returns:
+            Expanded absolute path
     """
     # Use Python os.path.expanduser() for proper ~ expansion
     try:
@@ -796,7 +796,7 @@ Returns:
         return String(expanded)
     except:
         # Fall back to returning original path if Python interop fails
-        return filepath.
+        return filepath
 
 
 # ============================================================================
@@ -807,11 +807,11 @@ Returns:
 fn file_exists(filepath: String) -> Bool:
     """Check if file exists.
 
-Args:
-        filepath: Path to check.
+    Args:
+            filepath: Path to check
 
-Returns:
-        True if file exists, False otherwise.
+    Returns:
+            True if file exists, False otherwise
     """
     # Check if file exists by trying to open it
     try:
@@ -819,17 +819,17 @@ Returns:
             _ = f.read()  # Attempt to read (confirms it's a file)
         return True
     except:
-        return False.
+        return False
 
 
 fn directory_exists(dirpath: String) -> Bool:
     """Check if directory exists.
 
-Args:
-        dirpath: Path to check.
+    Args:
+            dirpath: Path to check
 
-Returns:
-        True if directory exists, False otherwise.
+    Returns:
+            True if directory exists, False otherwise
     """
     # Use Python os.path.isdir() to check if directory exists
     try:
@@ -838,19 +838,19 @@ Returns:
         return Bool(result)
     except:
         # Fall back to False if Python interop fails
-        return False.
+        return False
 
 
 fn create_directory(dirpath: String) -> Bool:
     """Create directory if it doesn't exist.
 
-    Creates parent directories as needed (equivalent to mkdir -p).
+        Creates parent directories as needed (equivalent to mkdir -p)
 
-Args:
-        dirpath: Directory path.
+    Args:
+            dirpath: Directory path
 
-Returns:
-        True if created or already exists, False if error.
+    Returns:
+            True if created or already exists, False if error
     """
     # Use Python os.makedirs() to create directory with parents
     try:
@@ -859,24 +859,24 @@ Returns:
         return True
     except:
         # Return False if directory creation fails
-        return False.
+        return False
 
 
 fn get_file_size(filepath: String) -> Int:
     """Get file size in bytes.
 
-Args:
-        filepath: File path.
+    Args:
+            filepath: File path
 
-Returns:
-        File size in bytes, or -1 if file doesn't exist.
+    Returns:
+            File size in bytes, or -1 if file doesn't exist.
     """
     if not file_exists(filepath):
-        return -1.
+        return -1
 
     try:
         # Read file and count bytes
         var content = safe_read_file(filepath)
         return len(content)
     except:
-        return -1.
+        return -1

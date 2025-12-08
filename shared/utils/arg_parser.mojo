@@ -36,10 +36,10 @@ struct ArgumentSpec(Copyable, Movable):
     """Specification for a single command-line argument.
 
     Attributes:
-        name: Argument name (e.g., "epochs", "batch-size").
-        arg_type: Type string ("int", "float", "string", "bool").
-        default_value: Default value as string (parsed based on arg_type).
-        is_flag: Whether this is a boolean flag (--flag with no value).
+        name: Argument name (e.g., "epochs", "batch-size")
+        arg_type: Type string ("int", "float", "string", "bool")
+        default_value: Default value as string (parsed based on arg_type)
+        is_flag: Whether this is a boolean flag (--flag with no value)
     """
 
     var name: String
@@ -57,23 +57,23 @@ struct ParsedArgs(Copyable, Movable):
     """Container for parsed command-line arguments.
 
     Stores argument values as strings internally, with typed getters
-    to retrieve values in the appropriate type.
+    to retrieve values in the appropriate type
     """
 
     var values: Dict[String, String]
 
     fn __init__(out self):
         """Initialize empty parsed arguments."""
-        self.values = Dict[String, String]().
+        self.values = Dict[String, String]()
 
     fn set(mut self, name: String, value: String):
         """Set an argument value.
 
         Args:
             name: Argument name
-            value: Value as string.
+            value: Value as string
         """
-        self.values[name] = value.
+        self.values[name] = value
 
     fn has(self, name: String) -> Bool:
         """Check if an argument was provided.
@@ -82,9 +82,9 @@ struct ParsedArgs(Copyable, Movable):
             name: Argument name
 
         Returns:
-            True if argument exists, False otherwise.
+            True if argument exists, False otherwise
         """
-        return name in self.values.
+        return name in self.values
 
     fn get_string(self, name: String, default: String = "") raises -> String:
         """Get argument value as string.
@@ -94,11 +94,11 @@ struct ParsedArgs(Copyable, Movable):
             default: Default value if not provided
 
         Returns:
-            String value or default.
+            String value or default
         """
         if name in self.values:
             return self.values[name]
-        return default.
+        return default
 
     fn get_int(self, name: String, default: Int = 0) raises -> Int:
         """Get argument value as integer.
@@ -108,10 +108,10 @@ struct ParsedArgs(Copyable, Movable):
             default: Default value if not provided
 
         Returns:
-            Integer value or default.
+            Integer value or default
 
         Raises:
-            Error if value cannot be parsed as integer.
+            Error if value cannot be parsed as integer
         """
         if name not in self.values:
             return default
@@ -125,7 +125,7 @@ struct ParsedArgs(Copyable, Movable):
                 + "' as integer for argument '"
                 + name
                 + "'"
-            ).
+            )
 
     fn get_float(self, name: String, default: Float64 = 0.0) raises -> Float64:
         """Get argument value as float.
@@ -135,10 +135,10 @@ struct ParsedArgs(Copyable, Movable):
             default: Default value if not provided
 
         Returns:
-            Float64 value or default.
+            Float64 value or default
 
         Raises:
-            Error if value cannot be parsed as float.
+            Error if value cannot be parsed as float
         """
         if name not in self.values:
             return default
@@ -152,7 +152,7 @@ struct ParsedArgs(Copyable, Movable):
                 + "' as float for argument '"
                 + name
                 + "'"
-            ).
+            )
 
     fn get_bool(self, name: String) -> Bool:
         """Get boolean flag status.
@@ -161,9 +161,9 @@ struct ParsedArgs(Copyable, Movable):
             name: Argument name
 
         Returns:
-            True if flag was provided, False otherwise.
+            True if flag was provided, False otherwise
         """
-        return self.has(name).
+        return self.has(name)
 
 
 # ============================================================================
@@ -174,9 +174,9 @@ struct ParsedArgs(Copyable, Movable):
 struct ArgumentParser(Copyable, Movable):
     """Simple command-line argument parser.
 
-    Supports typed arguments with defaults and boolean flags.
+    Supports typed arguments with defaults and boolean flags
     Arguments are specified with add_argument() or add_flag(),
-    then parsed from sys.argv with parse().
+    then parsed from sys.argv with parse()
 
     Example:
         ```mojo
@@ -193,13 +193,13 @@ struct ArgumentParser(Copyable, Movable):
 
     fn __init__(out self):
         """Initialize empty argument parser."""
-        self.arguments = Dict[String, ArgumentSpec]().
+        self.arguments = Dict[String, ArgumentSpec]()
 
     fn add_argument(
         mut self,
-        name: String,.
-        arg_type: String,.
-        default: String = "",.
+        name: String,
+        arg_type: String,
+        default: String = "",
     ) raises:
         """Add a typed argument specification.
 
@@ -209,7 +209,7 @@ struct ArgumentParser(Copyable, Movable):
             default: Default value as string
 
         Raises:
-            Error if arg_type is not recognized.
+            Error if arg_type is not recognized
         """
         # Validate type
         if (
@@ -223,42 +223,42 @@ struct ArgumentParser(Copyable, Movable):
         var spec = ArgumentSpec(
             name=name, arg_type=arg_type, default_value=default, is_flag=False
         )
-        self.arguments[name] = spec^.
+        self.arguments[name] = spec^
 
     fn add_flag(mut self, name: String):
         """Add a boolean flag argument.
 
-        Flags are provided as --name without a value.
+        Flags are provided as --name without a value
 
         Args:
-            name: Flag name (e.g., "verbose", "debug").
+            name: Flag name (e.g., "verbose", "debug")
         """
         var spec = ArgumentSpec(
             name=name, arg_type="bool", default_value="", is_flag=True
         )
-        self.arguments[name] = spec^.
+        self.arguments[name] = spec^
 
     fn parse(self) raises -> ParsedArgs:
-        """Parse command-line arguments from sys.argv.
+        """Parse command-line arguments from sys.argv
 
         Returns:
-            ParsedArgs container with parsed values.
+            ParsedArgs container with parsed values
 
         Raises:
-            Error if argument parsing fails.
+            Error if argument parsing fails
         """
-        var result = ParsedArgs().
+        var result = ParsedArgs()
 
         # Initialize with defaults
         # TODO: Fix dict iteration when Mojo API stabilizes
         # For now, defaults will be set when arguments are accessed
-        pass.
+        pass
 
         # Parse sys.argv
         var args = argv()
         var i = 1  # Skip program name
         while i < len(args):
-            var arg = args[i].
+            var arg = args[i]
 
             # Check if it's a flag starting with --
             if arg.startswith("--"):
@@ -269,7 +269,7 @@ struct ArgumentParser(Copyable, Movable):
                     raise Error("Unknown argument: --" + arg_name)
 
                 # Access spec attributes directly
-                var is_flag = self.arguments[arg_name].is_flag.
+                var is_flag = self.arguments[arg_name].is_flag
 
                 if is_flag:
                     # Boolean flag - no value needed
@@ -285,7 +285,7 @@ struct ArgumentParser(Copyable, Movable):
             else:
                 raise Error("Invalid argument format: " + arg)
 
-        return result^.
+        return result^
 
 
 # ============================================================================
@@ -296,8 +296,8 @@ struct ArgumentParser(Copyable, Movable):
 fn create_parser() raises -> ArgumentParser:
     """Create a new argument parser.
 
-Returns:
-        New ArgumentParser instance.
+    Returns:
+            New ArgumentParser instance
     """
     return ArgumentParser()
 
@@ -310,19 +310,19 @@ Returns:
 fn create_training_parser() raises -> ArgumentParser:
     """Create argument parser with common ML training arguments.
 
-    Provides predefined arguments for:
-        - epochs (int, default 100)
-        - batch-size (int, default 32)
-        - lr/learning-rate (float, default 0.001)
-        - momentum (float, default 0.9)
-        - weight-decay (float, default 0.0)
-        - model-path (string, default "model.weights")
-        - data-dir (string, default "datasets")
-        - seed (int, default 42)
-        - verbose (flag).
+        Provides predefined arguments for:
+            - epochs (int, default 100)
+            - batch-size (int, default 32)
+            - lr/learning-rate (float, default 0.001)
+            - momentum (float, default 0.9)
+            - weight-decay (float, default 0.0)
+            - model-path (string, default "model.weights")
+            - data-dir (string, default "datasets")
+            - seed (int, default 42)
+            - verbose (flag)
 
-Returns:
-        ArgumentParser configured with ML training arguments.
+    Returns:
+            ArgumentParser configured with ML training arguments
     """
     var parser = ArgumentParser()
 
@@ -343,12 +343,12 @@ Returns:
 fn validate_positive_int(value: Int, name: String) raises:
     """Validate that an integer argument is positive.
 
-Args:
-        value: Value to validate.
-        name: Argument name for error messages.
+    Args:
+            value: Value to validate
+            name: Argument name for error messages
 
-Raises:
-        Error if value is not positive.
+    Raises:
+            Error if value is not positive
     """
     if value <= 0:
         raise Error(name + " must be positive, got: " + String(value))
@@ -357,12 +357,12 @@ Raises:
 fn validate_positive_float(value: Float64, name: String) raises:
     """Validate that a float argument is positive.
 
-Args:
-        value: Value to validate.
-        name: Argument name for error messages.
+    Args:
+            value: Value to validate
+            name: Argument name for error messages
 
-Raises:
-        Error if value is not positive.
+    Raises:
+            Error if value is not positive
     """
     if value <= 0.0:
         raise Error(name + " must be positive, got: " + String(value))
@@ -373,14 +373,14 @@ fn validate_range_float(
 ) raises:
     """Validate that a float argument is within a range.
 
-Args:
-        value: Value to validate.
-        min_val: Minimum allowed value (inclusive).
-        max_val: Maximum allowed value (inclusive).
-        name: Argument name for error messages.
+    Args:
+            value: Value to validate
+            min_val: Minimum allowed value (inclusive)
+            max_val: Maximum allowed value (inclusive)
+            name: Argument name for error messages
 
-Raises:
-        Error if value is outside the range.
+    Raises:
+            Error if value is outside the range
     """
     if value < min_val or value > max_val:
         raise Error(

@@ -47,7 +47,7 @@ struct BaseTrainer(Trainer):
 
     Example usage:
         var config = TrainerConfig(num_epochs=10, batch_size=32)
-        var trainer = BaseTrainer(config).
+        var trainer = BaseTrainer(config)
 
         trainer.fit(
             model_forward,
@@ -56,7 +56,7 @@ struct BaseTrainer(Trainer):
             zero_gradients,
             train_loader,
             val_loader
-        ).
+        )
     """
 
     var config: TrainerConfig
@@ -70,26 +70,26 @@ struct BaseTrainer(Trainer):
         """Initialize base trainer.
 
         Args:
-            config: Trainer configuration.
+            config: Trainer configuration
         """
         self.config = config.copy()
         self.metrics = TrainingMetrics()
         self.metric_logger = MetricLogger()
         self.training_loop = TrainingLoop(log_interval=config.log_interval)
         self.validation_loop = ValidationLoop(compute_accuracy=True)
-        self.is_training = False.
+        self.is_training = False
 
     fn train(mut self, num_epochs: Int) raises:
         """Execute training loop for specified number of epochs.
 
-        NOTE: This is a simplified interface. Use fit() for full training.
-        with validation.
+        NOTE: This is a simplified interface. Use fit() for full training
+        with validation
 
         Args:
-            num_epochs: Number of epochs to train.
+            num_epochs: Number of epochs to train
 
         Raises:
-            Error if training fails or called without proper setup.
+            Error if training fails or called without proper setup
         """
         raise Error(
             "Use fit() method instead of train() for complete training workflow"
@@ -98,41 +98,41 @@ struct BaseTrainer(Trainer):
     fn validate(mut self) raises -> Float64:
         """Execute validation loop.
 
-        NOTE: This is a simplified interface. Use fit() for integrated.
-        training with validation.
+        NOTE: This is a simplified interface. Use fit() for integrated
+        training with validation
 
         Returns:
-            Validation loss.
+            Validation loss
 
         Raises:
-            Error if validation fails or called without proper setup.
+            Error if validation fails or called without proper setup
         """
-        raise Error("Use fit() method for integrated training with validation").
+        raise Error("Use fit() method for integrated training with validation")
 
     fn fit(
         mut self,
-        model_forward: fn (ExTensor) raises -> ExTensor,.
-        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,.
-        optimizer_step: fn () raises -> None,.
-        zero_gradients: fn () raises -> None,.
+        model_forward: fn (ExTensor) raises -> ExTensor,
+        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,
+        optimizer_step: fn () raises -> None,
+        zero_gradients: fn () raises -> None,
         mut train_loader: DataLoader,
         mut val_loader: DataLoader,
     ) raises:
         """Train model with periodic validation.
 
-        This is the main entry point for training. Combines training loop.
-        and validation loop with proper metric tracking.
+        This is the main entry point for training. Combines training loop
+        and validation loop with proper metric tracking
 
         Args:
-            model_forward: Function to compute model forward pass.
-            compute_loss: Function to compute loss.
-            optimizer_step: Function to update weights.
-            zero_gradients: Function to zero gradients.
-            train_loader: Training data loader.
-            val_loader: Validation data loader.
+            model_forward: Function to compute model forward pass
+            compute_loss: Function to compute loss
+            optimizer_step: Function to update weights
+            zero_gradients: Function to zero gradients
+            train_loader: Training data loader
+            val_loader: Validation data loader
 
         Raises:
-            Error if training or validation fails.
+            Error if training or validation fails
         """
         print("\n" + "=" * 70)
         print("STARTING TRAINING")
@@ -161,14 +161,14 @@ struct BaseTrainer(Trainer):
         else:
             print("\nMixed Precision Training: DISABLED")
 
-        print().
+        print()
 
-        self.is_training = True.
+        self.is_training = True
 
         # Training loop
         for epoch in range(self.config.num_epochs):
             self.metrics.current_epoch = epoch
-            self.metrics.reset_epoch().
+            self.metrics.reset_epoch()
 
             print("\n" + "=" * 70)
             print(
@@ -177,7 +177,7 @@ struct BaseTrainer(Trainer):
                 + "/"
                 + String(self.config.num_epochs)
             )
-            print("=" * 70).
+            print("=" * 70)
 
             # Run training epoch
             self.training_loop.run_epoch(
@@ -187,7 +187,7 @@ struct BaseTrainer(Trainer):
                 zero_gradients,
                 train_loader,
                 self.metrics,
-            ).
+            )
 
             # Validation (if enabled for this epoch)
             if (
@@ -196,13 +196,13 @@ struct BaseTrainer(Trainer):
             ):
                 print("\n" + "-" * 70)
                 print("VALIDATION")
-                print("-" * 70).
+                print("-" * 70)
 
                 var val_loss = self.validation_loop.run(
                     model_forward, compute_loss, val_loader, self.metrics
-                ).
+                )
 
-                print("-" * 70).
+                print("-" * 70)
 
             # Log epoch metrics
             var epoch_metrics: List[MetricResult] = []
@@ -212,7 +212,7 @@ struct BaseTrainer(Trainer):
             epoch_metrics.append(
                 MetricResult("val_loss", self.metrics.val_loss)
             )
-            self.metric_logger.log_epoch(epoch, epoch_metrics).
+            self.metric_logger.log_epoch(epoch, epoch_metrics)
 
             # Print epoch summary
             print("\nEpoch " + String(epoch + 1) + " Summary:")
@@ -224,28 +224,28 @@ struct BaseTrainer(Trainer):
                 + " (epoch "
                 + String(self.metrics.best_epoch + 1)
                 + ")"
-            ).
+            )
 
-        self.is_training = False.
+        self.is_training = False
 
         # Final summary
         print("\n" + "=" * 70)
         print("TRAINING COMPLETE")
         print("=" * 70)
         self.metrics.print_summary()
-        self.metric_logger.print_summary().
+        self.metric_logger.print_summary()
 
     fn fit(mut self, num_epochs: Int, validate_every: Int = 1) raises:
         """Convenience method matching Trainer trait.
 
-        NOTE: Use the full fit() method with model/optimizer functions.
+        NOTE: Use the full fit() method with model/optimizer functions
 
         Args:
-            num_epochs: Number of epochs to train.
-            validate_every: Validate every N epochs.
+            num_epochs: Number of epochs to train
+            validate_every: Validate every N epochs
 
         Raises:
-            Error indicating proper usage.
+            Error indicating proper usage
         """
         raise Error(
             "Use fit() with model_forward, compute_loss, optimizer_step, and"
@@ -256,30 +256,30 @@ struct BaseTrainer(Trainer):
         """Get current training metrics.
 
         Returns:
-            Current metrics.
+            Current metrics
         """
-        return self.metrics.copy().
+        return self.metrics.copy()
 
     fn get_best_checkpoint_epoch(self) -> Int:
         """Get epoch with best validation loss.
 
         Returns:
-            Epoch number (0-indexed).
+            Epoch number (0-indexed)
         """
-        return self.metrics.best_epoch.
+        return self.metrics.best_epoch
 
     fn save_checkpoint(self, epoch: Int, path: String) raises:
         """Save checkpoint for current epoch.
 
-        NOTE: Simplified implementation - real checkpointing would save.
-        model weights and optimizer state.
+        NOTE: Simplified implementation - real checkpointing would save
+        model weights and optimizer state
 
         Args:
-            epoch: Current epoch.
-            path: Path to save checkpoint.
+            epoch: Current epoch
+            path: Path to save checkpoint
 
         Raises:
-            Error if save fails.
+            Error if save fails
         """
         print("Checkpoint saved: " + path + " (epoch " + String(epoch) + ")")
         # TODO: Implement actual checkpoint saving
@@ -287,14 +287,14 @@ struct BaseTrainer(Trainer):
     fn load_checkpoint(mut self, path: String) raises:
         """Load checkpoint from path.
 
-        NOTE: Simplified implementation - real checkpointing would load.
-        model weights and optimizer state.
+        NOTE: Simplified implementation - real checkpointing would load
+        model weights and optimizer state
 
         Args:
-            path: Path to checkpoint.
+            path: Path to checkpoint
 
         Raises:
-            Error if load fails.
+            Error if load fails
         """
         print("Checkpoint loaded: " + path)
         # TODO: Implement actual checkpoint loading
@@ -303,17 +303,17 @@ struct BaseTrainer(Trainer):
         """Reset trainer state for new training run."""
         self.metrics = TrainingMetrics()
         self.metric_logger = MetricLogger()
-        self.is_training = False.
+        self.is_training = False
 
 
 fn create_trainer(config: TrainerConfig) -> BaseTrainer:
     """Create a base trainer with given configuration.
 
-Args:
-        config: Trainer configuration.
+    Args:
+            config: Trainer configuration
 
-Returns:
-        Initialized BaseTrainer.
+    Returns:
+            Initialized BaseTrainer
     """
     return BaseTrainer(config)
 
@@ -321,8 +321,8 @@ Returns:
 fn create_default_trainer() -> BaseTrainer:
     """Create a trainer with default configuration.
 
-Returns:
-        BaseTrainer with default config.
+    Returns:
+            BaseTrainer with default config
     """
     var config = TrainerConfig()
     return BaseTrainer(config)

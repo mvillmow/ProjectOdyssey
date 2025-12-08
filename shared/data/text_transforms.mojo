@@ -1,10 +1,10 @@
 """Text transformation and augmentation utilities.
 
-This module provides transformations for augmenting text data for NLP tasks.
+This module provides transformations for augmenting text data for NLP tasks
 Implements basic word-level augmentations including synonym replacement,
 random insertion, random swap, and random deletion.
 
-All Random* text transforms use RandomTransformBase for probability handling.
+All Random* text transforms use RandomTransformBase for probability handling
 
 Limitations:
 - Basic word-level operations (split on spaces)
@@ -26,21 +26,21 @@ from .random_transform_base import RandomTransformBase, random_float
 trait TextTransform:
     """Base interface for text transforms.
 
-    Text transforms modify string data and return transformed copies.
-    Unlike the Transform trait which works with ExTensor, this works with String.
+    Text transforms modify string data and return transformed copies
+    Unlike the Transform trait which works with ExTensor, this works with String
     """
 
     fn __call__(self, text: String) raises -> String:
         """Apply the transform to text.
 
         Args:
-            text: Input text string.
+            text: Input text string
 
         Returns:
-            Transformed text string.
+            Transformed text string
 
         Raises:
-            Error if transform cannot be applied.
+            Error if transform cannot be applied
         """
         ...
 
@@ -53,22 +53,22 @@ trait TextTransform:
 fn split_words(text: String) raises -> List[String]:
     """Split text into words by spaces.
 
-    Simple space-based tokenization. Does not handle punctuation specially.
+        Simple space-based tokenization. Does not handle punctuation specially
 
-Args:
-        text: Input text to split.
+    Args:
+            text: Input text to split
 
-Returns:
-        List of words (space-separated tokens).
+    Returns:
+            List of words (space-separated tokens)
     """
     # Use built-in split method
     var parts = text.split(" ")
 
     # Filter out empty strings that may result from multiple spaces
-    var words= List[String]()
+    var words = List[String]()
     for i in range(len(parts)):
         if len(String(parts[i])) > 0:
-            words.append(String(parts[i])).
+            words.append(String(parts[i]))
 
     return words^
 
@@ -76,18 +76,18 @@ Returns:
 fn join_words(words: List[String]) raises -> String:
     """Join words into text with spaces.
 
-Args:
-        words: List of words to join.
+    Args:
+            words: List of words to join
 
-Returns:
-        Joined text with spaces between words.
+    Returns:
+            Joined text with spaces between words
     """
     if len(words) == 0:
-        return String("").
+        return String("")
 
     var result = words[0]
     for i in range(1, len(words)):
-        result += " " + words[i].
+        result += " " + words[i]
 
     return result
 
@@ -100,10 +100,10 @@ Returns:
 struct RandomSwap(Copyable, Movable, TextTransform):
     """Randomly swap positions of word pairs.
 
-    Swaps adjacent or nearby word positions with configurable probability.
-    Helps create variations while preserving overall meaning.
+    Swaps adjacent or nearby word positions with configurable probability
+    Helps create variations while preserving overall meaning
 
-    Uses RandomTransformBase for probability handling.
+    Uses RandomTransformBase for probability handling
 
     Example:
         ```mojo
@@ -118,59 +118,59 @@ struct RandomSwap(Copyable, Movable, TextTransform):
         """Create random swap transform.
 
         Args:
-            p: Probability of performing each swap (0.0 to 1.0).
-            n: Number of swap operations to attempt.
+            p: Probability of performing each swap (0.0 to 1.0)
+            n: Number of swap operations to attempt
         """
         self.base = RandomTransformBase(p)
-        self.n = n.
+        self.n = n
 
     fn __call__(self, text: String) raises -> String:
         """Randomly swap word pairs in text.
 
         Args:
-            text: Input text.
+            text: Input text
 
         Returns:
-            Text with randomly swapped words.
+            Text with randomly swapped words
 
         Raises:
-            Error if operation fails.
+            Error if operation fails
         """
         # Handle empty or single-word text
         if len(text) == 0:
-            return text.
+            return text
 
         var words = split_words(text)
         if len(words) <= 1:
-            return text.
+            return text
 
         # Perform n swap operations
         for _ in range(self.n):
             # Check probability - skip if should_apply returns False
             if not self.base.should_apply():
-                continue.
+                continue
 
             # Pick two random positions
             var idx1 = Int(random_si64(0, len(words) - 1))
-            var idx2 = Int(random_si64(0, len(words) - 1)).
+            var idx2 = Int(random_si64(0, len(words) - 1))
 
             # Ensure different positions
             if idx1 != idx2:
                 # Swap
                 var temp = words[idx1]
                 words[idx1] = words[idx2]
-                words[idx2] = temp.
+                words[idx2] = temp
 
-        return join_words(words).
+        return join_words(words)
 
 
 struct RandomDeletion(Copyable, Movable, TextTransform):
     """Randomly delete words from text.
 
     Deletes words with specified probability while ensuring at least
-    one word remains. Helps create shorter variations.
+    one word remains. Helps create shorter variations
 
-    Uses RandomTransformBase for probability handling.
+    Uses RandomTransformBase for probability handling
 
     Example:
         ```mojo
@@ -184,59 +184,59 @@ struct RandomDeletion(Copyable, Movable, TextTransform):
         """Create random deletion transform.
 
         Args:
-            p: Probability of deleting each word (0.0 to 1.0).
+            p: Probability of deleting each word (0.0 to 1.0)
         """
-        self.base = RandomTransformBase(p).
+        self.base = RandomTransformBase(p)
 
     fn __call__(self, text: String) raises -> String:
         """Randomly delete words from text.
 
-        Ensures at least one word remains even if all would be deleted.
+        Ensures at least one word remains even if all would be deleted
 
         Args:
-            text: Input text.
+            text: Input text
 
         Returns:
-            Text with some words randomly deleted.
+            Text with some words randomly deleted
 
         Raises:
-            Error if operation fails.
+            Error if operation fails
         """
         # Handle empty text
         if len(text) == 0:
-            return text.
+            return text
 
         var words = split_words(text)
         if len(words) == 0:
-            return text.
+            return text
 
         # If only one word, don't delete
         if len(words) == 1:
-            return text.
+            return text
 
         # Decide which words to keep
-        var kept_words= List[String]()
+        var kept_words = List[String]()
         for i in range(len(words)):
             if not self.base.should_apply():
                 # Keep this word if should_apply returns False
-                kept_words.append(words[i]).
+                kept_words.append(words[i])
 
         # Ensure at least one word remains
         if len(kept_words) == 0:
             # Keep a random word
             var idx = Int(random_si64(0, len(words) - 1))
-            kept_words.append(words[idx]).
+            kept_words.append(words[idx])
 
-        return join_words(kept_words).
+        return join_words(kept_words)
 
 
 struct RandomInsertion(Copyable, Movable, TextTransform):
     """Insert random words from vocabulary into text.
 
-    Inserts words from a predefined vocabulary at random positions.
-    Helps increase lexical diversity.
+    Inserts words from a predefined vocabulary at random positions
+    Helps increase lexical diversity
 
-    Uses RandomTransformBase for probability handling.
+    Uses RandomTransformBase for probability handling
 
     Example:
         ```mojo
@@ -254,70 +254,70 @@ struct RandomInsertion(Copyable, Movable, TextTransform):
         """Create random insertion transform.
 
         Args:
-            vocabulary: List of words to choose from for insertion.
-            p: Probability of performing insertion (0.0 to 1.0).
-            n: Number of words to insert.
+            vocabulary: List of words to choose from for insertion
+            p: Probability of performing insertion (0.0 to 1.0)
+            n: Number of words to insert
         """
         self.base = RandomTransformBase(p)
         self.vocabulary = vocabulary^
-        self.n = n.
+        self.n = n
 
     fn __call__(self, text: String) raises -> String:
         """Insert random words from vocabulary into text.
 
         Args:
-            text: Input text.
+            text: Input text
 
         Returns:
-            Text with randomly inserted words.
+            Text with randomly inserted words
 
         Raises:
-            Error if operation fails.
+            Error if operation fails
         """
         # Handle empty text or empty vocabulary
         if len(text) == 0 or len(self.vocabulary) == 0:
-            return text.
+            return text
 
         var words = split_words(text)
         if len(words) == 0:
-            return text.
+            return text
 
         # Perform n insertion operations
         for _ in range(self.n):
             # Check probability - skip if should_apply returns False
             if not self.base.should_apply():
-                continue.
+                continue
 
             # Pick random word from vocabulary
             var vocab_idx = Int(random_si64(0, len(self.vocabulary) - 1))
-            var word_to_insert = self.vocabulary[vocab_idx].
+            var word_to_insert = self.vocabulary[vocab_idx]
 
             # Pick random position to insert (0 to len(words) inclusive)
-            var insert_pos = Int(random_si64(0, len(words) + 1)).
+            var insert_pos = Int(random_si64(0, len(words) + 1))
 
             # Insert word at position
-            var new_words= List[String]()
+            var new_words = List[String]()
             for i in range(len(words)):
                 if i == insert_pos:
                     new_words.append(word_to_insert)
-                new_words.append(words[i]).
+                new_words.append(words[i])
 
             # Handle case where insert_pos == len(words)
             if insert_pos == len(words):
-                new_words.append(word_to_insert).
+                new_words.append(word_to_insert)
 
-            words = new_words^.
+            words = new_words^
 
-        return join_words(words).
+        return join_words(words)
 
 
 struct RandomSynonymReplacement(Copyable, Movable, TextTransform):
     """Replace random words with synonyms from dictionary.
 
-    Uses a simple synonym dictionary to replace words with alternatives.
-    This is a conservative augmentation that preserves meaning well.
+    Uses a simple synonym dictionary to replace words with alternatives
+    This is a conservative augmentation that preserves meaning well
 
-    Uses RandomTransformBase for probability handling.
+    Uses RandomTransformBase for probability handling
 
     Example:
         ```mojo
@@ -334,36 +334,36 @@ struct RandomSynonymReplacement(Copyable, Movable, TextTransform):
         """Create random synonym replacement transform.
 
         Args:
-            synonyms: Dictionary mapping words to lists of synonyms.
-            p: Probability of replacing each word (0.0 to 1.0).
+            synonyms: Dictionary mapping words to lists of synonyms
+            p: Probability of replacing each word (0.0 to 1.0)
         """
         self.base = RandomTransformBase(p)
-        self.synonyms = synonyms^.
+        self.synonyms = synonyms^
 
     fn __call__(self, text: String) raises -> String:
         """Replace random words with synonyms.
 
         Args:
-            text: Input text.
+            text: Input text
 
         Returns:
-            Text with some words replaced by synonyms.
+            Text with some words replaced by synonyms
 
         Raises:
-            Error if operation fails.
+            Error if operation fails
         """
         # Handle empty text
         if len(text) == 0:
-            return text.
+            return text
 
         var words = split_words(text)
         if len(words) == 0:
-            return text.
+            return text
 
         # Process each word
-        var result_words= List[String]()
+        var result_words = List[String]()
         for i in range(len(words)):
-            var word = words[i].
+            var word = words[i]
 
             # Check if should replace (if should_apply returns True and word has synonyms)
             if self.base.should_apply() and word in self.synonyms:
@@ -378,9 +378,9 @@ struct RandomSynonymReplacement(Copyable, Movable, TextTransform):
                     result_words.append(word)
             else:
                 # Don't replace
-                result_words.append(word).
+                result_words.append(word)
 
-        return join_words(result_words).
+        return join_words(result_words)
 
 
 # ============================================================================

@@ -1,7 +1,7 @@
 """
 Optimizers
 
-Optimizer implementations for training neural networks.
+Optimizer implementations for training neural networks
 
 Includes:
 - SGD (Stochastic Gradient Descent) with momentum
@@ -10,7 +10,7 @@ Includes:
 - RMSprop (Root Mean Square Propagation)
 - LARS (Layer-wise Adaptive Rate Scaling)
 
-All optimizers follow pure functional design - caller manages state.
+All optimizers follow pure functional design - caller manages state
 """
 
 # Export optimizer implementations

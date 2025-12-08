@@ -1,14 +1,14 @@
 """Utility functions for reduction operations.
 
-This module provides helper functions used by reduction operations (sum, mean, max, min).
+This module provides helper functions used by reduction operations (sum, mean, max, min)
 These utilities handle common tasks like coordinate/stride computation and index conversion.
 
 Functions:
-    compute_strides: Compute memory strides from tensor shape.
-    linear_to_coords: Convert linear index to multi-dimensional coordinates.
-    coords_to_linear: Convert multi-dimensional coordinates to linear index.
-    map_result_to_input_coords: Map output coordinates to input coordinates accounting for reduction axis.
-    create_result_coords: Create and initialize coordinate list.
+    compute_strides: Compute memory strides from tensor shape
+    linear_to_coords: Convert linear index to multi-dimensional coordinates
+    coords_to_linear: Convert multi-dimensional coordinates to linear index
+    map_result_to_input_coords: Map output coordinates to input coordinates accounting for reduction axis
+    create_result_coords: Create and initialize coordinate list
 
 Example:
     from shared.core.reduction_utils import compute_strides, linear_to_coords, coords_to_linear
@@ -26,31 +26,31 @@ from collections import List
 fn compute_strides(shape: List[Int]) -> List[Int]:
     """Compute memory strides from tensor shape.
 
-    Strides represent the number of elements to skip to move one position along each axis.
-    This is computed in row-major (C-contiguous) order.
+        Strides represent the number of elements to skip to move one position along each axis
+        This is computed in row-major (C-contiguous) order
 
-Args:
-        shape: Tensor shape (list of dimension sizes).
+    Args:
+            shape: Tensor shape (list of dimension sizes)
 
-Returns:
-        List of strides for each dimension.
+    Returns:
+            List of strides for each dimension
 
-Examples:
-        var shape : List[Int] = [3, 4, 5]
-        var strides = compute_strides(shape)  # [20, 5, 1]
-        # Moving 1 position along axis 0 skips 20 elements
-        # Moving 1 position along axis 1 skips 5 elements
-        # Moving 1 position along axis 2 skips 1 element.
+    Examples:
+            var shape : List[Int] = [3, 4, 5]
+            var strides = compute_strides(shape)  # [20, 5, 1]
+            # Moving 1 position along axis 0 skips 20 elements
+            # Moving 1 position along axis 1 skips 5 elements
+            # Moving 1 position along axis 2 skips 1 element.
     """
     var ndim = len(shape)
-    var strides= List[Int]()
+    var strides = List[Int]()
     for _ in range(ndim):
-        strides.append(0).
+        strides.append(0)
 
     var stride = 1
     for i in range(ndim - 1, -1, -1):
         strides[i] = stride
-        stride *= shape[i].
+        stride *= shape[i]
 
     return strides^
 
@@ -58,30 +58,30 @@ Examples:
 fn linear_to_coords(linear_idx: Int, shape: List[Int]) -> List[Int]:
     """Convert linear index to multi-dimensional coordinates.
 
-    Given a flat index into a row-major (C-contiguous) tensor, computes the
-    corresponding multi-dimensional coordinates.
+        Given a flat index into a row-major (C-contiguous) tensor, computes the
+        corresponding multi-dimensional coordinates
 
-Args:
-        linear_idx: Flat index into tensor.
-        shape: Tensor shape.
+    Args:
+            linear_idx: Flat index into tensor
+            shape: Tensor shape
 
-Returns:
-        Coordinates in each dimension.
+    Returns:
+            Coordinates in each dimension
 
-Examples:
-        var shape : List[Int] = [3, 4, 5]
-        var coords = linear_to_coords(27, shape)  # [1, 2, 2]
-        # Index 27 corresponds to position [1, 2, 2].
+    Examples:
+            var shape : List[Int] = [3, 4, 5]
+            var coords = linear_to_coords(27, shape)  # [1, 2, 2]
+            # Index 27 corresponds to position [1, 2, 2]
     """
     var ndim = len(shape)
-    var coords= List[Int]()
+    var coords = List[Int]()
     for _ in range(ndim):
-        coords.append(0).
+        coords.append(0)
 
     var temp_idx = linear_idx
     for i in range(ndim - 1, -1, -1):
         coords[i] = temp_idx % shape[i]
-        temp_idx //= shape[i].
+        temp_idx //= shape[i]
 
     return coords^
 
@@ -89,19 +89,19 @@ Examples:
 fn coords_to_linear(coords: List[Int], strides: List[Int]) -> Int:
     """Convert multi-dimensional coordinates to linear index.
 
-    Converts multi-dimensional coordinates to a flat index using pre-computed strides.
+        Converts multi-dimensional coordinates to a flat index using pre-computed strides
 
-Args:
-        coords: Multi-dimensional coordinates.
-        strides: Strides for each dimension.
+    Args:
+            coords: Multi-dimensional coordinates
+            strides: Strides for each dimension
 
-Returns:
-        Linear index.
+    Returns:
+            Linear index
 
-Examples:
-        var coords : List[Int] = [1, 2, 2]
-        var strides : List[Int] = [20, 5, 1]
-        var linear = coords_to_linear(coords, strides)  # 27.
+    Examples:
+            var coords : List[Int] = [1, 2, 2]
+            var strides : List[Int] = [20, 5, 1]
+            var linear = coords_to_linear(coords, strides)  # 27
     """
     var linear_idx = 0
     for i in range(len(coords)):
@@ -114,26 +114,26 @@ fn map_result_to_input_coords(
 ) -> List[Int]:
     """Map output coordinates to input coordinates accounting for reduction axis.
 
-    When reducing along an axis, the output tensor has fewer dimensions than the input.
-    This function maps coordinates in the output space to coordinates in the input space
-    by inserting the reduction axis dimension (which will be iterated over separately).
+        When reducing along an axis, the output tensor has fewer dimensions than the input
+        This function maps coordinates in the output space to coordinates in the input space
+        by inserting the reduction axis dimension (which will be iterated over separately)
 
-Args:
-        result_coords: Coordinates in the output (reduced) tensor.
-        axis: The axis along which reduction occurred.
-        ndim: Number of dimensions in the original input tensor.
+    Args:
+            result_coords: Coordinates in the output (reduced) tensor
+            axis: The axis along which reduction occurred
+            ndim: Number of dimensions in the original input tensor
 
-Returns:
-        Coordinates in the input tensor (with axis dimension set to 0).
+    Returns:
+            Coordinates in the input tensor (with axis dimension set to 0)
 
-Examples:
-        var result_coords : List[Int] = [1, 2]  # Output from reducing along axis 1
-        var input_coords = map_result_to_input_coords(result_coords, 1, 3)
-        # Returns [1, 0, 2] - axis 1 is inserted with value 0.
+    Examples:
+            var result_coords : List[Int] = [1, 2]  # Output from reducing along axis 1
+            var input_coords = map_result_to_input_coords(result_coords, 1, 3)
+            # Returns [1, 0, 2] - axis 1 is inserted with value 0.
     """
-    var input_coords= List[Int]()
+    var input_coords = List[Int]()
     for _ in range(ndim):
-        input_coords.append(0).
+        input_coords.append(0)
 
     var result_coord_idx = 0
     for i in range(ndim):
@@ -148,21 +148,21 @@ Examples:
 fn create_result_coords(result_idx: Int, shape: List[Int]) -> List[Int]:
     """Create and initialize coordinates from linear index using shape.
 
-Args:
-        result_idx: Linear index.
-        shape: Shape to use for coordinate conversion.
+    Args:
+            result_idx: Linear index
+            shape: Shape to use for coordinate conversion
 
-Returns:
-        Coordinates corresponding to result_idx.
+    Returns:
+            Coordinates corresponding to result_idx
     """
     var ndim = len(shape)
-    var coords= List[Int]()
+    var coords = List[Int]()
     for _ in range(ndim):
-        coords.append(0).
+        coords.append(0)
 
     var temp_idx = result_idx
     for i in range(ndim - 1, -1, -1):
         coords[i] = temp_idx % shape[i]
-        temp_idx //= shape[i].
+        temp_idx //= shape[i]
 
     return coords^

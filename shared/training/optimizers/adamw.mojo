@@ -19,8 +19,8 @@ Key difference from Adam:
     In AdamW: weight_decay is applied directly to params after update (decoupled)
 
 Reference:
-    Loshchilov, I., & Hutter, F. (2019). Decoupled weight decay regularization.
-    arXiv preprint arXiv:1711.05101.
+    Loshchilov, I., & Hutter, F. (2019). Decoupled weight decay regularization
+    arXiv preprint arXiv:1711.05101
 """
 
 from shared.core.extensor import ExTensor
@@ -49,55 +49,55 @@ fn adamw_step(
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Perform a single AdamW optimization step - pure functional.
 
-    Returns new parameters, new first moment (m), and new second moment (v).
-    Caller manages all state including timestep tracking.
+        Returns new parameters, new first moment (m), and new second moment (v)
+        Caller manages all state including timestep tracking
 
-    The key difference from Adam is that weight decay is decoupled from the
-    gradient-based update and applied directly to the parameters.
+        The key difference from Adam is that weight decay is decoupled from the
+        gradient-based update and applied directly to the parameters
 
-Args:
-        params: Model parameters to update.
-        gradients: Gradients of loss with respect to params.
-        m: First moment estimates (exponential moving average of gradients).
-        v: Second moment estimates (exponential moving average of squared gradients).
-        t: Current timestep (starts at 1, increments each step).
-        learning_rate: Step size for parameter updates.
-        beta1: Exponential decay rate for first moment (default: 0.9).
-        beta2: Exponential decay rate for second moment (default: 0.999).
-        epsilon: Small constant for numerical stability (default: 1e-8).
-        weight_decay: Decoupled weight decay factor (default: 0.01).
+    Args:
+            params: Model parameters to update
+            gradients: Gradients of loss with respect to params
+            m: First moment estimates (exponential moving average of gradients)
+            v: Second moment estimates (exponential moving average of squared gradients)
+            t: Current timestep (starts at 1, increments each step)
+            learning_rate: Step size for parameter updates
+            beta1: Exponential decay rate for first moment (default: 0.9)
+            beta2: Exponential decay rate for second moment (default: 0.999)
+            epsilon: Small constant for numerical stability (default: 1e-8)
+            weight_decay: Decoupled weight decay factor (default: 0.01)
 
-Returns:
-        Tuple of (new_params, new_m, new_v).
+    Returns:
+            Tuple of (new_params, new_m, new_v)
 
-    Example (basic AdamW):
-        ```mojo
-        from shared.core import ExTensor, zeros_like
-        from shared.training.optimizers import adamw_step.
+        Example (basic AdamW):
+            ```mojo
+            from shared.core import ExTensor, zeros_like
+            from shared.training.optimizers import adamw_step
 
-        var W = xavier_uniform(784, 128, DType.float32)
-        var m = zeros_like(W)
-        var v = zeros_like(W)
-        var t = 1.
+            var W = xavier_uniform(784, 128, DType.float32)
+            var m = zeros_like(W)
+            var v = zeros_like(W)
+            var t = 1
 
-        # Training loop
-        for epoch in range(100):
-            var grad_W = ...  # Compute gradients
-            (W, m, v) = adamw_step(W, grad_W, m, v, t, lr=0.001, weight_decay=0.01)
-            t += 1
-        ```
+            # Training loop
+            for epoch in range(100):
+                var grad_W = ...  # Compute gradients
+                (W, m, v) = adamw_step(W, grad_W, m, v, t, lr=0.001, weight_decay=0.01)
+                t += 1
+            ```
 
-Note:
-        This is a pure function - it returns new state rather than mutating.
-        Caller must capture all three return values and update their variables.
-        Timestep t must be tracked by caller and incremented after each step.
-        Weight decay is applied directly to params (decoupled), not through gradients.
+    Note:
+            This is a pure function - it returns new state rather than mutating
+            Caller must capture all three return values and update their variables
+            Timestep t must be tracked by caller and incremented after each step
+            Weight decay is applied directly to params (decoupled), not through gradients
     """
     if params.shape() != gradients.shape():
-        raise Error("Parameters and gradients must have the same shape").
+        raise Error("Parameters and gradients must have the same shape")
 
     if params.dtype() != gradients.dtype():
-        raise Error("Parameters and gradients must have the same dtype").
+        raise Error("Parameters and gradients must have the same dtype")
 
     if m.numel() == 0 or v.numel() == 0:
         raise Error(
@@ -106,7 +106,7 @@ Note:
         )
 
     if t <= 0:
-        raise Error("Timestep t must be positive (starts at 1)").
+        raise Error("Timestep t must be positive (starts at 1)")
 
     # Note: Unlike Adam, AdamW does NOT apply weight decay to gradients
     # Weight decay is applied directly to parameters after the update
@@ -160,7 +160,7 @@ Note:
     if weight_decay > 0.0:
         var wd_tensor = full_like(new_params, weight_decay)
         var decay_term = multiply_simd(wd_tensor, params_after_grad_update)
-        new_params = subtract_simd(params_after_grad_update, decay_term).
+        new_params = subtract_simd(params_after_grad_update, decay_term)
 
     # Return new state (pure functional)
     return (new_params, new_m, new_v)
@@ -176,40 +176,40 @@ fn adamw_step_simple(
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Simplified AdamW step with default hyperparameters.
 
-    This is a convenience function for basic AdamW optimization with
-    commonly-used default parameters.
+        This is a convenience function for basic AdamW optimization with
+        commonly-used default parameters
 
-    Formula:
-        m = 0.9 * m + 0.1 * grad
-        v = 0.999 * v + 0.001 * grad^2
-        m_hat = m / (1 - 0.9^t)
-        v_hat = v / (1 - 0.999^t)
-        params = params - lr * m_hat / (sqrt(v_hat) + 1e-8)
-        params = params - 0.01 * params  # Decoupled weight decay.
+        Formula:
+            m = 0.9 * m + 0.1 * grad
+            v = 0.999 * v + 0.001 * grad^2
+            m_hat = m / (1 - 0.9^t)
+            v_hat = v / (1 - 0.999^t)
+            params = params - lr * m_hat / (sqrt(v_hat) + 1e-8)
+            params = params - 0.01 * params  # Decoupled weight decay
 
-Args:
-        params: Model parameters to update.
-        gradients: Gradients of loss with respect to params.
-        m: First moment estimate.
-        v: Second moment estimate.
-        t: Current timestep (starts at 1).
-        learning_rate: Step size for parameter updates.
+    Args:
+            params: Model parameters to update
+            gradients: Gradients of loss with respect to params
+            m: First moment estimate
+            v: Second moment estimate
+            t: Current timestep (starts at 1)
+            learning_rate: Step size for parameter updates
 
-Returns:
-        Tuple of (new_params, new_m, new_v).
+    Returns:
+            Tuple of (new_params, new_m, new_v)
 
-    Example:
-        ```mojo
-        var W = xavier_uniform(784, 128, DType.float32)
-        var m = zeros_like(W)
-        var v = zeros_like(W)
-        var t = 1.
+        Example:
+            ```mojo
+            var W = xavier_uniform(784, 128, DType.float32)
+            var m = zeros_like(W)
+            var v = zeros_like(W)
+            var t = 1
 
-        for epoch in range(100):
-            var grad_W = ... # Computed gradients
-            (W, m, v) = adamw_step_simple(W, grad_W, m, v, t, 0.001)
-            t += 1
-        ```
+            for epoch in range(100):
+                var grad_W = ... # Computed gradients
+                (W, m, v) = adamw_step_simple(W, grad_W, m, v, t, 0.001)
+                t += 1
+            ```
     """
     return adamw_step(
         params,

@@ -36,24 +36,24 @@ from shared.core.extensor import ExTensor, zeros
 fn random_tensor(
     shape: List[Int], dtype: DType = DType.float32
 ) raises -> ExTensor:
-    """Generate tensor with random values from uniform distribution [0, 1).
+    """Generate tensor with random values from uniform distribution [0, 1)
 
-Args:
-        shape: Shape of the output tensor as a list of dimensions.
-        dtype: Data type of tensor elements (default: float32).
+    Args:
+            shape: Shape of the output tensor as a list of dimensions
+            dtype: Data type of tensor elements (default: float32)
 
-Returns:
-        ExTensor with random values uniformly distributed in [0, 1).
+    Returns:
+            ExTensor with random values uniformly distributed in [0, 1)
 
-    Example:
-        ```mojo
-        var weights = random_tensor(List[Int](10, 5), DType.float32)
-        # Creates 10x5 tensor with random values in [0, 1)
-        ```
+        Example:
+            ```mojo
+            var weights = random_tensor(List[Int](10, 5), DType.float32)
+            # Creates 10x5 tensor with random values in [0, 1)
+            ```
 
-Note:
-        Values are uniformly distributed in [0, 1) regardless of dtype.
-        For integer dtypes, values are truncated to Int.
+    Note:
+            Values are uniformly distributed in [0, 1) regardless of dtype
+            For integer dtypes, values are truncated to Int
     """
     # Create empty tensor with the specified shape
     var tensor = zeros(shape, dtype)
@@ -61,11 +61,11 @@ Note:
     # Calculate total number of elements
     var numel = 1
     for dim in shape:
-        numel *= dim.
+        numel *= dim
 
     # Fill with random values
     for i in range(numel):
-        var rand_val = random_float64().
+        var rand_val = random_float64()
 
         # Convert to appropriate dtype
         if (
@@ -87,7 +87,7 @@ Note:
             or dtype == DType.uint32
             or dtype == DType.uint64
         ):
-            tensor._set_int64(i, Int(rand_val)).
+            tensor._set_int64(i, Int(rand_val))
 
     return tensor^
 
@@ -98,26 +98,26 @@ fn random_uniform(
     high: Float64 = 1.0,
     dtype: DType = DType.float32,
 ) raises -> ExTensor:
-    """Generate tensor with random values from uniform distribution [low, high).
+    """Generate tensor with random values from uniform distribution [low, high)
 
-Args:
-        shape: Shape of the output tensor as a list of dimensions.
-        low: Lower bound of uniform distribution (inclusive, default: 0.0).
-        high: Upper bound of uniform distribution (exclusive, default: 1.0).
-        dtype: Data type of tensor elements (default: float32).
+    Args:
+            shape: Shape of the output tensor as a list of dimensions
+            low: Lower bound of uniform distribution (inclusive, default: 0.0)
+            high: Upper bound of uniform distribution (exclusive, default: 1.0)
+            dtype: Data type of tensor elements (default: float32)
 
-Returns:
-        ExTensor with random values uniformly distributed in [low, high).
+    Returns:
+            ExTensor with random values uniformly distributed in [low, high)
 
-    Example:
-        ```mojo
-        var data = random_uniform(List[Int](100, 20), low=-1.0, high=1.0)
-        # Creates 100x20 tensor with random values in [-1.0, 1.0)
-        ```
+        Example:
+            ```mojo
+            var data = random_uniform(List[Int](100, 20), low=-1.0, high=1.0)
+            # Creates 100x20 tensor with random values in [-1.0, 1.0)
+            ```
 
-Note:
-        The range [low, high) is linearly scaled from [0, 1).
-        For integer dtypes, values are truncated to Int.
+    Note:
+            The range [low, high) is linearly scaled from [0, 1)
+            For integer dtypes, values are truncated to Int
     """
     # Create empty tensor with the specified shape
     var tensor = zeros(shape, dtype)
@@ -125,7 +125,7 @@ Note:
     # Calculate total number of elements
     var numel = 1
     for dim in shape:
-        numel *= dim.
+        numel *= dim
 
     # Calculate value range
     var value_range = high - low
@@ -133,7 +133,7 @@ Note:
     # Fill with random values
     for i in range(numel):
         var rand_val = random_float64()
-        var scaled_val = low + rand_val * value_range.
+        var scaled_val = low + rand_val * value_range
 
         # Convert to appropriate dtype
         if (
@@ -155,7 +155,7 @@ Note:
             or dtype == DType.uint32
             or dtype == DType.uint64
         ):
-            tensor._set_int64(i, Int(scaled_val)).
+            tensor._set_int64(i, Int(scaled_val))
 
     return tensor^
 
@@ -166,28 +166,28 @@ fn random_normal(
     std: Float64 = 1.0,
     dtype: DType = DType.float32,
 ) raises -> ExTensor:
-    """Generate tensor with random values from normal distribution N(mean, std^2).
+    """Generate tensor with random values from normal distribution N(mean, std^2)
 
-    Uses Box-Muller transform to convert uniform random values to normal distribution.
+        Uses Box-Muller transform to convert uniform random values to normal distribution
 
-Args:
-        shape: Shape of the output tensor as a list of dimensions.
-        mean: Mean of the normal distribution (default: 0.0).
-        std: Standard deviation of the normal distribution (default: 1.0).
-        dtype: Data type of tensor elements (default: float32).
+    Args:
+            shape: Shape of the output tensor as a list of dimensions
+            mean: Mean of the normal distribution (default: 0.0)
+            std: Standard deviation of the normal distribution (default: 1.0)
+            dtype: Data type of tensor elements (default: float32)
 
-Returns:
-        ExTensor with random values from normal distribution N(mean, std^2).
+    Returns:
+            ExTensor with random values from normal distribution N(mean, std^2)
 
-    Example:
-        ```mojo
-        var weights = random_normal(List[Int](784, 256), mean=0.0, std=0.01)
-        # Creates 784x256 tensor with normally distributed values
-        ```
+        Example:
+            ```mojo
+            var weights = random_normal(List[Int](784, 256), mean=0.0, std=0.01)
+            # Creates 784x256 tensor with normally distributed values
+            ```
 
-Note:
-        Uses Box-Muller transform for efficiency.
-        For integer dtypes, values are truncated to Int after sampling.
+    Note:
+            Uses Box-Muller transform for efficiency
+            For integer dtypes, values are truncated to Int after sampling
     """
     # Create empty tensor with the specified shape
     var tensor = zeros(shape, dtype)
@@ -195,22 +195,22 @@ Note:
     # Calculate total number of elements
     var numel = 1
     for dim in shape:
-        numel *= dim.
+        numel *= dim
 
     # Generate pairs of normal values using Box-Muller transform
     var i = 0
     while i < numel:
         # Generate two uniform random values
         var u1 = random_float64()
-        var u2 = random_float64().
+        var u2 = random_float64()
 
         # Avoid log(0)
         if u1 < 1e-10:
-            u1 = 1e-10.
+            u1 = 1e-10
 
         # Box-Muller transform
         var r = sqrt(-2.0 * log(u1))
-        var theta = 2.0 * pi * u2.
+        var theta = 2.0 * pi * u2
 
         # Convert to appropriate dtype
         if (
@@ -221,7 +221,7 @@ Note:
             # First value
             var z1 = r * cos(theta)
             tensor._set_float64(i, mean + z1 * std)
-            i += 1.
+            i += 1
 
             # Second value (if there's room)
             if i < numel:
@@ -232,12 +232,12 @@ Note:
             # For integer dtypes, still use Box-Muller but truncate
             var z1 = r * cos(theta)
             tensor._set_int64(i, Int(mean + z1 * std))
-            i += 1.
+            i += 1
 
             if i < numel:
                 var z2 = r * sin(theta)
                 tensor._set_int64(i, Int(mean + z2 * std))
-                i += 1.
+                i += 1
 
     return tensor^
 
@@ -255,51 +255,51 @@ fn synthetic_classification_data(
 ) raises -> Tuple[ExTensor, ExTensor]:
     """Generate synthetic classification dataset.
 
-    Creates a random dataset with linearly separable classes by generating
-    class centers and adding noise around each center.
+        Creates a random dataset with linearly separable classes by generating
+        class centers and adding noise around each center
 
-Args:
-        num_samples: Total number of samples to generate.
-        num_features: Number of features per sample.
-        num_classes: Number of classes.
-        dtype: Data type for features (labels are always int32).
+    Args:
+            num_samples: Total number of samples to generate
+            num_features: Number of features per sample
+            num_classes: Number of classes
+            dtype: Data type for features (labels are always int32)
 
-Returns:
-        Tuple of (features, labels) where:
-        - features: ExTensor of shape [num_samples, num_features]
-        - labels: ExTensor of shape [num_samples] with values in [0, num_classes)
+    Returns:
+            Tuple of (features, labels) where:
+            - features: ExTensor of shape [num_samples, num_features]
+            - labels: ExTensor of shape [num_samples] with values in [0, num_classes)
 
-    Example:
-        ```mojo
-        var (X, y) = synthetic_classification_data(100, 20, 3)
-        # X shape: [100, 20], Y shape: [100]
-        # Y contains values in {0, 1, 2}
-        ```
+        Example:
+            ```mojo
+            var (X, y) = synthetic_classification_data(100, 20, 3)
+            # X shape: [100, 20], Y shape: [100]
+            # Y contains values in {0, 1, 2}
+            ```
 
-    Algorithm:
-        1. Generate random class centers in [-5, 5]^num_features
-        2. For each sample, assign to random class
-        3. Add Gaussian noise around class center
-        4. Normalize features to zero mean and unit variance.
+        Algorithm:
+            1. Generate random class centers in [-5, 5]^num_features
+            2. For each sample, assign to random class
+            3. Add Gaussian noise around class center
+            4. Normalize features to zero mean and unit variance
     """
     # Validate inputs
     if num_samples <= 0 or num_features <= 0 or num_classes <= 0:
-        raise Error("All parameters must be positive").
+        raise Error("All parameters must be positive")
 
     # Create class centers: [num_classes, num_features]
-    var centers_shape= List[Int]()
+    var centers_shape = List[Int]()
     centers_shape.append(num_classes)
     centers_shape.append(num_features)
     var centers = random_uniform(centers_shape, low=-5.0, high=5.0, dtype=dtype)
 
     # Create features tensor: [num_samples, num_features]
-    var features_shape= List[Int]()
+    var features_shape = List[Int]()
     features_shape.append(num_samples)
     features_shape.append(num_features)
     var features = zeros(features_shape, dtype)
 
     # Create labels tensor: [num_samples]
-    var labels_shape= List[Int]()
+    var labels_shape = List[Int]()
     labels_shape.append(num_samples)
     var labels = zeros(labels_shape, DType.int32)
 
@@ -308,24 +308,22 @@ Returns:
         # Randomly select a class for this sample
         var class_idx = Int(random_float64() * Float64(num_classes))
         if class_idx >= num_classes:
-            class_idx = num_classes - 1.
+            class_idx = num_classes - 1
 
         # Set label
-        labels._set_int64(sample_idx, class_idx).
+        labels._set_int64(sample_idx, class_idx)
 
         # Copy center for this class and add noise
         for feat_idx in range(num_features):
             var center_idx = class_idx * num_features + feat_idx
-            var center_val = centers._get_float64(center_idx).
+            var center_val = centers._get_float64(center_idx)
 
             # Add Gaussian noise (mean=0, std=0.5)
-            var noise = random_normal(
-                [1], mean=0.0, std=0.5, dtype=dtype
-            )
-            var noise_val = noise._get_float64(0).
+            var noise = random_normal([1], mean=0.0, std=0.5, dtype=dtype)
+            var noise_val = noise._get_float64(0)
 
             var feature_val = center_val + noise_val
             var features_idx = sample_idx * num_features + feat_idx
-            features._set_float64(features_idx, feature_val).
+            features._set_float64(features_idx, feature_val)
 
     return Tuple[ExTensor, ExTensor](features^, labels^)

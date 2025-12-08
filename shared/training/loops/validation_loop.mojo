@@ -1,6 +1,6 @@
 """Validation loop implementation.
 
-Gradient-free model evaluation for validation and testing.
+Gradient-free model evaluation for validation and testing
 
 Validation Loop (#313-317):
 - #314: Gradient-free evaluation
@@ -30,19 +30,19 @@ fn validation_step(
     data: ExTensor,
     labels: ExTensor,
 ) raises -> Float64:
-    """Execute single validation step (forward pass only, no gradients).
+    """Execute single validation step (forward pass only, no gradients)
 
-Args:
-        model_forward: Function to compute model forward pass.
-        compute_loss: Function to compute loss.
-        data: Input batch data.
-        labels: Target labels.
+    Args:
+            model_forward: Function to compute model forward pass
+            compute_loss: Function to compute loss
+            data: Input batch data
+            labels: Target labels
 
-Returns:
-        Loss value for this batch.
+    Returns:
+            Loss value for this batch
 
-Raises:
-        Error if evaluation fails.
+    Raises:
+            Error if evaluation fails
     """
     # Forward pass (no gradient tracking)
     var predictions = model_forward(data)
@@ -66,19 +66,19 @@ fn validate(
 ) raises -> Float64:
     """Run validation loop.
 
-Args:
-        model_forward: Forward pass function.
-        compute_loss: Loss computation function.
-        val_loader: Validation data loader.
-        compute_accuracy: Whether to compute accuracy.
-        compute_confusion: Whether to compute confusion matrix.
-        num_classes: Number of classes (for confusion matrix).
+    Args:
+            model_forward: Forward pass function
+            compute_loss: Loss computation function
+            val_loader: Validation data loader
+            compute_accuracy: Whether to compute accuracy
+            compute_confusion: Whether to compute confusion matrix
+            num_classes: Number of classes (for confusion matrix)
 
-Returns:
-        Average validation loss.
+    Returns:
+            Average validation loss
 
-Raises:
-        Error if validation fails.
+    Raises:
+            Error if validation fails
     """
     print("\nRunning validation...")
 
@@ -95,7 +95,7 @@ Raises:
 
     # Iterate over validation batches
     while val_loader.has_next():
-        var batch = val_loader.next().
+        var batch = val_loader.next()
 
         # Validation step (no gradients)
         var batch_loss = validation_step(
@@ -105,17 +105,17 @@ Raises:
         # Update metrics
         loss_tracker.update(Float32(batch_loss))
         total_loss += batch_loss
-        num_batches += 1.
+        num_batches += 1
 
         # Compute predictions for accuracy/confusion
         if compute_accuracy or compute_confusion:
-            var predictions = model_forward(batch.data).
+            var predictions = model_forward(batch.data)
 
             if compute_accuracy:
-                accuracy_metric.update(predictions, batch.labels).
+                accuracy_metric.update(predictions, batch.labels)
 
             if compute_confusion:
-                confusion_matrix.update(predictions, batch.labels).
+                confusion_matrix.update(predictions, batch.labels)
 
     # Compute aggregated metrics
     var avg_loss = total_loss / Float64(num_batches)
@@ -145,7 +145,7 @@ Raises:
                 + String(r)
                 + ", F1="
                 + String(f)
-            ).
+            )
 
     return avg_loss
 
@@ -157,7 +157,7 @@ struct ValidationLoop:
     - Gradient-free forward passes
     - Metric aggregation
     - Subset validation support
-    - Memory-efficient evaluation.
+    - Memory-efficient evaluation
     """
 
     var compute_accuracy: Bool
@@ -166,41 +166,41 @@ struct ValidationLoop:
 
     fn __init__(
         out self,
-        compute_accuracy: Bool = True,.
-        compute_confusion: Bool = False,.
-        num_classes: Int = 10,.
+        compute_accuracy: Bool = True,
+        compute_confusion: Bool = False,
+        num_classes: Int = 10,
     ):
         """Initialize validation loop.
 
         Args:
-            compute_accuracy: Whether to compute accuracy.
-            compute_confusion: Whether to compute confusion matrix.
-            num_classes: Number of classes (for confusion matrix).
+            compute_accuracy: Whether to compute accuracy
+            compute_confusion: Whether to compute confusion matrix
+            num_classes: Number of classes (for confusion matrix)
         """
         self.compute_accuracy = compute_accuracy
         self.compute_confusion = compute_confusion
-        self.num_classes = num_classes.
+        self.num_classes = num_classes
 
     fn run(
         self,
-        model_forward: fn (ExTensor) raises -> ExTensor,.
-        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,.
+        model_forward: fn (ExTensor) raises -> ExTensor,
+        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,
         mut val_loader: DataLoader,
         mut metrics: TrainingMetrics,
     ) raises -> Float64:
         """Run validation loop.
 
         Args:
-            model_forward: Forward pass function.
-            compute_loss: Loss computation function.
-            val_loader: Validation data loader.
-            metrics: Training metrics to update.
+            model_forward: Forward pass function
+            compute_loss: Loss computation function
+            val_loader: Validation data loader
+            metrics: Training metrics to update
 
         Returns:
-            Validation loss.
+            Validation loss
 
         Raises:
-            Error if validation fails.
+            Error if validation fails
         """
         var val_loss = validate(
             model_forward,
@@ -214,32 +214,32 @@ struct ValidationLoop:
         # Update metrics
         metrics.update_val_metrics(val_loss, 0.0)  # Accuracy placeholder.
 
-        return val_loss.
+        return val_loss
 
     fn run_subset(
         self,
-        model_forward: fn (ExTensor) raises -> ExTensor,.
-        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,.
+        model_forward: fn (ExTensor) raises -> ExTensor,
+        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,
         mut val_loader: DataLoader,
-        max_batches: Int,.
+        max_batches: Int,
         mut metrics: TrainingMetrics,
     ) raises -> Float64:
         """Run validation on subset of data.
 
-        Useful for quick validation checks during training.
+        Useful for quick validation checks during training
 
         Args:
-            model_forward: Forward pass function.
-            compute_loss: Loss computation function.
-            val_loader: Validation data loader (mutable for iteration).
-            max_batches: Maximum number of batches to evaluate.
-            metrics: Training metrics to update.
+            model_forward: Forward pass function
+            compute_loss: Loss computation function
+            val_loader: Validation data loader (mutable for iteration)
+            max_batches: Maximum number of batches to evaluate
+            metrics: Training metrics to update
 
         Returns:
-            Validation loss.
+            Validation loss
 
         Raises:
-            Error if validation fails.
+            Error if validation fails
         """
         print(
             "\nRunning subset validation (max "
@@ -248,27 +248,27 @@ struct ValidationLoop:
         )
 
         var total_loss = Float64(0.0)
-        var num_batches = 0.
+        var num_batches = 0
 
-        var loss_tracker = LossTracker(window_size=max_batches).
+        var loss_tracker = LossTracker(window_size=max_batches)
 
-        val_loader.reset().
+        val_loader.reset()
 
         while val_loader.has_next() and num_batches < max_batches:
-            var batch = val_loader.next().
+            var batch = val_loader.next()
 
             var batch_loss = validation_step(
                 model_forward, compute_loss, batch.data, batch.labels
-            ).
+            )
 
             loss_tracker.update(Float32(batch_loss))
             total_loss += batch_loss
-            num_batches += 1.
+            num_batches += 1
 
-        var avg_loss = total_loss / Float64(num_batches).
+        var avg_loss = total_loss / Float64(num_batches)
 
         print("  Subset Validation Loss: " + String(avg_loss))
 
-        metrics.update_val_metrics(avg_loss, 0.0).
+        metrics.update_val_metrics(avg_loss, 0.0)
 
-        return avg_loss.
+        return avg_loss
