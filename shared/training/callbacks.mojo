@@ -148,7 +148,7 @@ struct EarlyStopping(Callback, Copyable, Movable):
             self.best_value = current_value
             self.wait_count = 0
         else:
-            self.wait_count += 1.0
+            self.wait_count += 1
 
         if self.wait_count >= self.patience:
             self.stopped = True
@@ -313,7 +313,7 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
                 should_save = True
 
         if should_save:
-            self.save_count += 1.0
+            self.save_count += 1
 
             # Build checkpoint path from template and epoch number
             var checkpoint_path = self.filepath
@@ -421,7 +421,7 @@ struct LoggingCallback(Callback, Copyable, Movable):
             CONTINUE always
         """
         if state.epoch % self.log_interval == 0:
-            self.log_count += 1.0
+            self.log_count += 1
 
             # Log epoch and metrics
             # Format: [Epoch N] metric1: value1 | metric2: value2 | lr: learning_rate

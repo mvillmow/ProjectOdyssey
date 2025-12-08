@@ -172,7 +172,7 @@ struct GradientScaler(Copyable, Movable):
         ```
         """
         self._num_steps += 1
-        self._steps_since_growth += 1.0
+        self._steps_since_growth += 1
 
         # Increase scale if growth interval reached
         if self._steps_since_growth >= self.growth_interval:

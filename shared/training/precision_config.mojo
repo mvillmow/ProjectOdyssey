@@ -389,7 +389,7 @@ struct PrecisionConfig(Copyable, Movable):
             self.scaler.step()
         else:
             self.scaler.backoff()
-            self._overflow_count += 1.0
+            self._overflow_count += 1
 
     fn get_scale(self) -> Float32:
         """Get current gradient scale factor.

@@ -264,7 +264,7 @@ fn compute_confusion_matrix(
             and pred_label >= 0
             and pred_label < n_classes
         ):
-            matrix[true_label][pred_label] += 1.0
+            matrix[true_label][pred_label] += 1
 
     return matrix^
 

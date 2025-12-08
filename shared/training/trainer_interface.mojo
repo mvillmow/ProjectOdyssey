@@ -335,7 +335,7 @@ struct DataLoader(Copyable, Movable):
         # For now, we'll just create placeholders
         # TODO: Implement proper tensor slicing in ExTensor
 
-        self.current_batch += 1.0
+        self.current_batch += 1
 
         return DataBatch(batch_data, batch_labels)
 
