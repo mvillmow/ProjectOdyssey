@@ -441,7 +441,10 @@ fn test_confusion_matrix_with_logits() raises:
     var cm = ConfusionMatrix(num_classes=3)
 
     # Create logits [batch_size=4, num_classes=3]
-    var logits = ExTensor(List[Int](4, 3), DType.float32)
+    var logits_shape = List[Int]()
+    logits_shape.append(4)
+    logits_shape.append(3)
+    var logits = ExTensor(logits_shape, DType.float32)
     var labels_shape = List[Int]()
     labels_shape.append(4)  # 4 samples
     var labels = ExTensor(labels_shape, DType.int32)

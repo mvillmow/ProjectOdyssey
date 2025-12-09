@@ -85,7 +85,9 @@ fn test_simple_cnn_forward_pass() raises:
     assert_equal(output._shape[1], 10)
 
     # Check dtype preserved
-    assert_true(output._dtype == DType.float32, "Output dtype should be float32")
+    assert_true(
+        output._dtype == DType.float32, "Output dtype should be float32"
+    )
 
     # Check non-zero output
     var has_nonzero = False
@@ -153,7 +155,9 @@ fn test_linear_model_forward_pass() raises:
     assert_equal(output._shape[1], 10)
 
     # Check dtype preserved
-    assert_true(output._dtype == DType.float32, "Output dtype should be float32")
+    assert_true(
+        output._dtype == DType.float32, "Output dtype should be float32"
+    )
 
     # LinearModel forward produces zeros
     for i in range(output.numel()):
@@ -250,7 +254,9 @@ fn test_simple_mlp_forward_extensor_1_hidden() raises:
     assert_equal(output._shape[0], 5)
 
     # Check dtype preserved
-    assert_true(output._dtype == DType.float32, "Output dtype should be float32")
+    assert_true(
+        output._dtype == DType.float32, "Output dtype should be float32"
+    )
 
 
 fn test_simple_mlp_forward_extensor_2_hidden() raises:
@@ -291,7 +297,7 @@ fn test_simple_mlp_get_weights() raises:
     var weights = mlp.get_weights()
 
     # Should contain all weights and biases
-    var expected_size = 10*20 + 20 + 20*5 + 5
+    var expected_size = 10 * 20 + 20 + 20 * 5 + 5
     assert_equal(weights.numel(), expected_size)
 
 
@@ -304,10 +310,10 @@ fn test_simple_mlp_parameters() raises:
     assert_equal(len(params), 4)
 
     # Check shapes
-    assert_equal(params[0].numel(), 10*20)  # w1
-    assert_equal(params[1].numel(), 20)     # b1
-    assert_equal(params[2].numel(), 20*5)   # w2
-    assert_equal(params[3].numel(), 5)      # b2
+    assert_equal(params[0].numel(), 10 * 20)  # w1
+    assert_equal(params[1].numel(), 20)  # b1
+    assert_equal(params[2].numel(), 20 * 5)  # w2
+    assert_equal(params[3].numel(), 5)  # b2
 
 
 fn test_simple_mlp_state_dict_1_hidden() raises:
@@ -586,16 +592,16 @@ fn test_mlp_with_different_configs() raises:
     """Test MLP with various configurations."""
     # Small MLP
     var mlp_small = SimpleMLP(5, 10, 2, num_hidden_layers=1)
-    assert_equal(mlp_small.num_parameters(), 5*10 + 10 + 10*2 + 2)
+    assert_equal(mlp_small.num_parameters(), 5 * 10 + 10 + 10 * 2 + 2)
 
     # Large MLP
     var mlp_large = SimpleMLP(100, 200, 50, num_hidden_layers=2)
-    expected_params = 100*200 + 200 + 200*200 + 200 + 200*50 + 50
+    expected_params = 100 * 200 + 200 + 200 * 200 + 200 + 200 * 50 + 50
     assert_equal(mlp_large.num_parameters(), expected_params)
 
     # Single hidden unit
     var mlp_minimal = SimpleMLP(1, 1, 1, num_hidden_layers=1)
-    assert_equal(mlp_minimal.num_parameters(), 1*1 + 1 + 1*1 + 1)
+    assert_equal(mlp_minimal.num_parameters(), 1 * 1 + 1 + 1 * 1 + 1)
 
 
 fn main() raises:
