@@ -104,7 +104,7 @@ fn test_measure_memory_usage() raises:
     # Basic test that memory_usage function works
     from shared.utils.profiling import memory_usage
 
-    var mem = memory_usage()
+    var _ = memory_usage()
     # Verify that we get a MemoryStats object
     assert_true(True, "memory_usage() executed successfully")
 

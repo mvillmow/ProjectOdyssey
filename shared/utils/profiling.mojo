@@ -645,7 +645,7 @@ fn measure_profiling_overhead(num_measurements: Int = 100) raises -> Float32:
     for _ in range(num_measurements):
         var start = perf_counter_ns()
         # Simulate a very light operation
-        var x = 1 + 1
+        var _ = 1 + 1
         var end = perf_counter_ns()
         var elapsed_ms = Float32(end - start) / Float32(1_000_000)
         overhead_times.append(elapsed_ms)

@@ -616,10 +616,14 @@ fn _softmax_impl[
             for inner_idx in range(axis_stride):
                 # Find max along axis
                 var max_val = Float32(
-                    in_ptr[(outer_idx * axis_size + 0) * axis_stride + inner_idx]
+                    in_ptr[
+                        (outer_idx * axis_size + 0) * axis_stride + inner_idx
+                    ]
                 )
                 for k in range(1, axis_size):
-                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var idx = (
+                        outer_idx * axis_size + k
+                    ) * axis_stride + inner_idx
                     var val = Float32(in_ptr[idx])
                     if val > max_val:
                         max_val = val
@@ -627,7 +631,9 @@ fn _softmax_impl[
                 # Compute exp(x - max) and sum
                 var sum_exp: Float32 = 0.0
                 for k in range(axis_size):
-                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var idx = (
+                        outer_idx * axis_size + k
+                    ) * axis_stride + inner_idx
                     var val = Float32(in_ptr[idx])
                     var exp_val = exp(val - max_val)
                     out_ptr[idx] = Scalar[dtype](exp_val)
@@ -635,7 +641,9 @@ fn _softmax_impl[
 
                 # Normalize
                 for k in range(axis_size):
-                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var idx = (
+                        outer_idx * axis_size + k
+                    ) * axis_stride + inner_idx
                     var current = Float32(out_ptr[idx])
                     out_ptr[idx] = Scalar[dtype](current / sum_exp)
     else:
@@ -646,7 +654,9 @@ fn _softmax_impl[
                     (outer_idx * axis_size + 0) * axis_stride + inner_idx
                 ]
                 for k in range(1, axis_size):
-                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var idx = (
+                        outer_idx * axis_size + k
+                    ) * axis_stride + inner_idx
                     var val = in_ptr[idx]
                     if val > max_val:
                         max_val = val
@@ -654,7 +664,9 @@ fn _softmax_impl[
                 # Compute exp(x - max) and sum
                 var sum_exp = Scalar[dtype](0.0)
                 for k in range(axis_size):
-                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var idx = (
+                        outer_idx * axis_size + k
+                    ) * axis_stride + inner_idx
                     var val = in_ptr[idx]
                     var exp_val = exp(val - max_val)
                     out_ptr[idx] = exp_val
@@ -662,7 +674,9 @@ fn _softmax_impl[
 
                 # Normalize
                 for k in range(axis_size):
-                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var idx = (
+                        outer_idx * axis_size + k
+                    ) * axis_stride + inner_idx
                     out_ptr[idx] /= sum_exp
 
 
@@ -750,7 +764,9 @@ fn _softmax_backward_impl[
                     var idx = (outer * axis_size + k) * axis_stride + inner
                     var grad_val = Float32(grad_ptr[idx])
                     var out_val = Float32(out_ptr[idx])
-                    result_ptr[idx] = Scalar[dtype](out_val * (grad_val - dot_sum))
+                    result_ptr[idx] = Scalar[dtype](
+                        out_val * (grad_val - dot_sum)
+                    )
     else:
         for outer in range(outer_size):
             for inner in range(axis_stride):
@@ -812,7 +828,9 @@ fn dispatch_softmax_backward(
     return result^
 
 
-fn _gelu_impl[dtype: DType](result: ExTensor, tensor: ExTensor, approximate: Bool) raises:
+fn _gelu_impl[
+    dtype: DType
+](result: ExTensor, tensor: ExTensor, approximate: Bool) raises:
     """Compile-time specialized GELU implementation.
 
     GELU(x) = x * Phi(x) where Phi is the CDF of standard normal.
@@ -840,7 +858,9 @@ fn _gelu_impl[dtype: DType](result: ExTensor, tensor: ExTensor, approximate: Boo
             for i in range(tensor._numel):
                 var x = Float32(in_ptr[i])
                 var x_cubed = x * x * x
-                var inner = Float32(SQRT_2_OVER_PI) * (x + Float32(GELU_COEFF) * x_cubed)
+                var inner = Float32(SQRT_2_OVER_PI) * (
+                    x + Float32(GELU_COEFF) * x_cubed
+                )
                 var tanh_val = math_tanh(inner)
                 out_ptr[i] = Scalar[dtype](0.5 * x * (1.0 + tanh_val))
         else:
@@ -899,14 +919,18 @@ fn dispatch_gelu(tensor: ExTensor, approximate: Bool) raises -> ExTensor:
         _gelu_impl[DType.float64](result, tensor, approximate)
     else:
         var dtype_name = _format_dtype_name(tensor._dtype)
-        raise Error("dispatch_gelu: only supports float16/32/64. Got " + dtype_name)
+        raise Error(
+            "dispatch_gelu: only supports float16/32/64. Got " + dtype_name
+        )
 
     return result^
 
 
 fn _gelu_backward_impl[
     dtype: DType
-](result: ExTensor, grad_output: ExTensor, x: ExTensor, approximate: Bool) raises:
+](
+    result: ExTensor, grad_output: ExTensor, x: ExTensor, approximate: Bool
+) raises:
     """Compile-time specialized GELU backward implementation.
 
     Args:
@@ -983,7 +1007,9 @@ fn _gelu_backward_impl[
                 var inner = SQRT_2_OVER_PI * (x_val + GELU_COEFF * x_cubed)
                 var tanh_val = math_tanh(inner)
                 var sech2 = 1.0 - tanh_val * tanh_val
-                var dtanh = SQRT_2_OVER_PI * (1.0 + 3.0 * GELU_COEFF * x_val * x_val)
+                var dtanh = SQRT_2_OVER_PI * (
+                    1.0 + 3.0 * GELU_COEFF * x_val * x_val
+                )
                 var dgelu = 0.5 * (1.0 + tanh_val) + 0.5 * x_val * sech2 * dtanh
                 result_ptr[i] = grad * dgelu
         else:
@@ -1023,7 +1049,8 @@ fn dispatch_gelu_backward(
     else:
         var dtype_name = _format_dtype_name(x._dtype)
         raise Error(
-            "dispatch_gelu_backward: only supports float16/32/64. Got " + dtype_name
+            "dispatch_gelu_backward: only supports float16/32/64. Got "
+            + dtype_name
         )
 
     return result^
@@ -1083,7 +1110,8 @@ fn dispatch_hard_sigmoid(tensor: ExTensor) raises -> ExTensor:
     else:
         var dtype_name = _format_dtype_name(tensor._dtype)
         raise Error(
-            "dispatch_hard_sigmoid: only supports float16/32/64. Got " + dtype_name
+            "dispatch_hard_sigmoid: only supports float16/32/64. Got "
+            + dtype_name
         )
 
     return result^
@@ -1226,7 +1254,8 @@ fn dispatch_hard_swish(tensor: ExTensor) raises -> ExTensor:
     else:
         var dtype_name = _format_dtype_name(tensor._dtype)
         raise Error(
-            "dispatch_hard_swish: only supports float16/32/64. Got " + dtype_name
+            "dispatch_hard_swish: only supports float16/32/64. Got "
+            + dtype_name
         )
 
     return result^
@@ -1312,7 +1341,9 @@ fn dispatch_hard_swish_backward(
 
 fn _hard_tanh_impl[
     dtype: DType
-](result: ExTensor, tensor: ExTensor, min_val: Float64, max_val: Float64) raises:
+](
+    result: ExTensor, tensor: ExTensor, min_val: Float64, max_val: Float64
+) raises:
     """Compile-time specialized hard_tanh implementation.
 
     hard_tanh(x) = clip(x, min_val, max_val)
