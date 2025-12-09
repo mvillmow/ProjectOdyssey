@@ -251,7 +251,7 @@ struct SGD:
     var nesterov: Bool
 
     fn __init__(
-        inout self,
+        out self,
         learning_rate: Float32 = 0.01,
         momentum: Float32 = 0.0,
         dampening: Float32 = 0.0,
@@ -265,17 +265,17 @@ struct SGD:
         self.nesterov = nesterov
 
     @always_inline
-    fn step(self, inout params: Tensor, grads: Tensor):
+    fn step(self, mut params: Tensor, grads: Tensor):
         """Perform single optimization step."""
         # Inline for performance in training loop
 
 # Use trait for base interfaces
 trait Optimizer:
     """Base interface for all optimizers."""
-    fn step(self, inout params: Tensor, grads: Tensor)
+    fn step(self, mut params: Tensor, grads: Tensor)
     fn zero_grad(self)
     fn get_lr(self) -> Float32
-    fn set_lr(inout self, lr: Float32)
+    fn set_lr(mut self, lr: Float32)
 ```text
 
 ### Performance Considerations
@@ -318,12 +318,12 @@ struct Accuracy:
     var correct: Int
     var total: Int
 
-    fn __init__(inout self):
+    fn __init__(out self):
         self.correct = 0
         self.total = 0
 
     @always_inline
-    fn update(inout self, predictions: Tensor, targets: Tensor):
+    fn update(mut self, predictions: Tensor, targets: Tensor):
         """Update accuracy in-place."""
         # Vectorized comparison and counting
         self.correct += count_matches_simd(predictions, targets)

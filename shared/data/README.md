@@ -70,7 +70,7 @@ struct TensorDataset(Dataset):
     var targets: Tensor
     var transform: Optional[Transform]
 
-    fn __init__(inout self, data: Tensor, targets: Tensor, transform: Optional[Transform] = None):
+    fn __init__(out self, data: Tensor, targets: Tensor, transform: Optional[Transform] = None):
         """Create dataset from tensors."""
         self.data = data
         self.targets = targets
@@ -104,7 +104,7 @@ struct ImageDataset(Dataset):
     var labels: List[Int]
     var transform: Optional[Transform]
 
-    fn __init__(inout self, image_paths: List[String], labels: List[Int], transform: Optional[Transform] = None):
+    fn __init__(out self, image_paths: List[String], labels: List[Int], transform: Optional[Transform] = None):
         """Create image dataset from file paths."""
         self.image_paths = image_paths
         self.labels = labels
@@ -136,7 +136,7 @@ struct CSVDataset(Dataset):
     var data: Tensor
     var targets: Tensor
 
-    fn __init__(inout self, filepath: String, target_column: Int):
+    fn __init__(out self, filepath: String, target_column: Int):
         """Load CSV file and split features from targets."""
         # Load CSV and convert to tensors
         pass
@@ -162,7 +162,7 @@ struct DataLoader:
     var num_workers: Int
 
     fn __init__(
-        inout self,
+        out self,
         dataset: Dataset,
         batch_size: Int = 1,
         shuffle: Bool = False,
@@ -202,7 +202,7 @@ struct Batch:
     var targets: Tensor
     var indices: List[Int]
 
-    fn __init__(inout self, inputs: Tensor, targets: Tensor, indices: List[Int]):
+    fn __init__(out self, inputs: Tensor, targets: Tensor, indices: List[Int]):
         """Create batch container."""
         self.inputs = inputs
         self.targets = targets
@@ -266,7 +266,7 @@ struct Normalize(Transform):
     var mean: Float32
     var std: Float32
 
-    fn __init__(inout self, mean: Float32, std: Float32):
+    fn __init__(out self, mean: Float32, std: Float32):
         self.mean = mean
         self.std = std
 
@@ -282,7 +282,7 @@ struct Compose(Transform):
     """Compose multiple transforms."""
     var transforms: List[Transform]
 
-    fn __init__(inout self, transforms: List[Transform]):
+    fn __init__(out self, transforms: List[Transform]):
         self.transforms = transforms
 
     fn __call__(self, x: Tensor) -> Tensor:

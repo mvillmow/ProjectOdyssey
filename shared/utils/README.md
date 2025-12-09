@@ -64,13 +64,13 @@ struct Logger:
     var level: LogLevel
     var handlers: List[Handler]
 
-    fn __init__(inout self, name: String, level: LogLevel = LogLevel.INFO):
+    fn __init__(out self, name: String, level: LogLevel = LogLevel.INFO):
         """Create logger with name and level."""
         self.name = name
         self.level = level
         self.handlers = List[Handler]()
 
-    fn add_handler(inout self, handler: Handler):
+    fn add_handler(mut self, handler: Handler):
         """Add output handler."""
         self.handlers.append(handler)
 
@@ -104,8 +104,8 @@ struct Logger:
 #### Log Levels
 
 ```mojo
-@value
-struct LogLevel:
+@fieldwise_init
+struct LogLevel(Copyable, Movable):
     """Log level enumeration."""
     alias DEBUG = 10
     alias INFO = 20
@@ -311,7 +311,7 @@ struct Config:
     """Configuration container with nested access."""
     var data: Dict[String, ConfigValue]
 
-    fn __init__(inout self):
+    fn __init__(out self):
         """Create empty config."""
         self.data = Dict[String, ConfigValue]()
 
@@ -319,7 +319,7 @@ struct Config:
         """Get config value by key."""
         return self.data[key].as[T]()
 
-    fn set[T: ConfigValue](inout self, key: String, value: T):
+    fn set[T: ConfigValue](mut self, key: String, value: T):
         """Set config value."""
         self.data[key] = ConfigValue(value)
 
@@ -497,16 +497,16 @@ struct Timer:
     var name: String
     var start_time: Float64
 
-    fn __init__(inout self, name: String = ""):
+    fn __init__(out self, name: String = ""):
         """Create timer with optional name."""
         self.name = name
         self.start_time = 0.0
 
-    fn __enter__(inout self):
+    fn __enter__(mut self):
         """Start timing."""
         self.start_time = now()
 
-    fn __exit__(inout self):
+    fn __exit__(mut self):
         """Stop timing and print result."""
         var elapsed = now() - self.start_time
         var msg = f"{self.name}: " if self.name else ""

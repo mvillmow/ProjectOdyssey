@@ -170,7 +170,7 @@ from shared.core import Conv2D, ReLU, MaxPool2D, Linear, Flatten, Sequential
 struct LeNet5:
     var model: Sequential
 
-    fn __init__(inout self):
+    fn __init__(out self):
         self.model = Sequential([
             Conv2D(1, 6, kernel_size=5),
             ReLU(),
@@ -332,7 +332,7 @@ struct ResidualBlock(Module):
     var shortcut: Optional[Conv2D]
 
     fn __init__(
-        inout self,
+        out self,
         in_channels: Int,
         out_channels: Int,
         stride: Int = 1

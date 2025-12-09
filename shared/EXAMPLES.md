@@ -918,7 +918,7 @@ struct ResidualBlock(Module):
     var use_projection: Bool
     var projection: Optional[Conv2D]
 
-    fn __init__(inout self, in_channels: Int, out_channels: Int, stride: Int = 1):
+    fn __init__(out self, in_channels: Int, out_channels: Int, stride: Int = 1):
         """Initialize residual block."""
         self.conv1 = Conv2D(in_channels, out_channels, kernel_size=3, stride=stride, padding=1)
         self.conv2 = Conv2D(out_channels, out_channels, kernel_size=3, padding=1)
@@ -967,12 +967,12 @@ struct CustomOptimizer(Optimizer):
     var learning_rate: Float32
     var state: Dict[String, Tensor]
 
-    fn __init__(inout self, learning_rate: Float32 = 0.01):
+    fn __init__(out self, learning_rate: Float32 = 0.01):
         """Initialize optimizer."""
         self.learning_rate = learning_rate
         self.state = Dict[String, Tensor]()
 
-    fn step(inout self, inout params: List[Tensor], grads: List[Tensor]):
+    fn step(mut self, mut params: List[Tensor], grads: List[Tensor]):
         """Custom optimization step."""
         for i in range(len(params)):
             var param = params[i]
@@ -1065,7 +1065,7 @@ struct MixUp(Transform):
     """MixUp data augmentation for better generalization."""
     var alpha: Float32
 
-    fn __init__(inout self, alpha: Float32 = 1.0):
+    fn __init__(out self, alpha: Float32 = 1.0):
         """Initialize MixUp with mixing parameter."""
         self.alpha = alpha
 
@@ -1089,7 +1089,7 @@ struct CutOut(Transform):
     """CutOut augmentation - randomly mask regions."""
     var mask_size: Int
 
-    fn __init__(inout self, mask_size: Int = 16):
+    fn __init__(out self, mask_size: Int = 16):
         """Initialize CutOut with mask size."""
         self.mask_size = mask_size
 
@@ -1124,7 +1124,7 @@ struct ModelEnsemble:
     var models: List[Module]
     var weights: List[Float32]
 
-    fn __init__(inout self, models: List[Module], weights: Optional[List[Float32]] = None):
+    fn __init__(out self, models: List[Module], weights: Optional[List[Float32]] = None):
         """Initialize ensemble with models and optional weights."""
         self.models = models
 
@@ -1232,7 +1232,7 @@ struct MixedPrecisionTrainer:
     var use_fp16: Bool
 
     fn __init__(
-        inout self,
+        out self,
         model: Module,
         optimizer: Optimizer,
         use_fp16: Bool = True
@@ -1243,7 +1243,7 @@ struct MixedPrecisionTrainer:
         self.use_fp16 = use_fp16
         self.scaler = GradScaler() if use_fp16 else None
 
-    fn train_step(inout self, batch: Batch) -> Float32:
+    fn train_step(mut self, batch: Batch) -> Float32:
         """Single training step with mixed precision."""
         # Convert inputs to FP16 if needed
         var inputs = batch.inputs.to(DType.float16) if self.use_fp16 else batch.inputs
@@ -1287,7 +1287,7 @@ struct TrainingDebugger:
     var log_activations: Bool
 
     fn __init__(
-        inout self,
+        out self,
         log_file: String = "debug.log",
         log_gradients: Bool = True,
         log_activations: Bool = False
