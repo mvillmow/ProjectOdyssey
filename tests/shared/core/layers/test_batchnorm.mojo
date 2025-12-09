@@ -274,7 +274,7 @@ fn test_batchnorm_parameters_list() raises:
     var params = layer.parameters()
 
     # Should return [gamma, beta]
-    assert_equal(params.size(), 2)
+    assert_equal(len(params), 2)
 
     # First parameter is gamma
     var gamma = params[0]
@@ -296,7 +296,9 @@ fn test_batchnorm_get_running_stats() raises:
     """Test BatchNorm2dLayer.get_running_stats() returns current statistics."""
     var layer = BatchNorm2dLayer(16)
 
-    let(mean, variance) = layer.get_running_stats()
+    var stats = layer.get_running_stats()
+    var mean = stats[0]
+    var variance = stats[1]
 
     # Should return copies of running_mean and running_var
     var mean_shape = mean.shape()

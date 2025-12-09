@@ -350,7 +350,7 @@ fn test_conv2d_parameters_list() raises:
     var params = layer.parameters()
 
     # Should return [weight, bias]
-    assert_equal(params.size(), 2)
+    assert_equal(len(params), 2)
 
     # First parameter is weight
     var weight = params[0]
