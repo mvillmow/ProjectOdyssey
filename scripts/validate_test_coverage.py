@@ -10,12 +10,16 @@ Exit codes:
   1 - Uncovered tests found or validation errors
 
 Usage:
-    python scripts/validate_test_coverage.py
+    python scripts/validate_test_coverage.py [--post-pr]
+
+Arguments:
+    --post-pr   Post validation report to GitHub PR if tests are missing
 """
 
 import os
 import re
 import sys
+import subprocess
 from pathlib import Path
 from typing import List, Dict, Set, Tuple
 import yaml
@@ -131,96 +135,195 @@ def check_coverage(
     return uncovered, coverage_by_group
 
 
+def generate_report(uncovered: Set[Path], test_files: List[Path],
+                    coverage_by_group: Dict[str, Set[Path]]) -> str:
+    """Generate a detailed validation report."""
+    report_lines = []
+    report_lines.append("## Test Coverage Validation Report")
+    report_lines.append("")
+
+    if not uncovered:
+        report_lines.append("✅ All test files are covered by CI!")
+        report_lines.append("")
+        report_lines.append(f"- Total test files: {len(test_files)}")
+        report_lines.append(f"- Covered by {len(coverage_by_group)} test groups")
+        report_lines.append("")
+        report_lines.append("### Coverage by Test Group")
+        report_lines.append("")
+        for group_name in sorted(coverage_by_group.keys()):
+            count = len(coverage_by_group[group_name])
+            report_lines.append(f"- {group_name}: {count} test(s)")
+    else:
+        report_lines.append(f"❌ Found {len(uncovered)} uncovered test file(s)")
+        report_lines.append("")
+        report_lines.append("### Uncovered Tests")
+        report_lines.append("")
+        for test_file in sorted(uncovered):
+            report_lines.append(f"- {test_file}")
+        report_lines.append("")
+        report_lines.append("### Recommendations")
+        report_lines.append("")
+        report_lines.append("Add missing test files to `.github/workflows/comprehensive-tests.yml`")
+        report_lines.append("by updating the appropriate test group or creating a new one.")
+        report_lines.append("")
+        report_lines.append("#### Example Test Groups to Consider")
+        report_lines.append("")
+
+        # Suggest groups based on uncovered paths
+        suggestions = {}
+        for test_file in sorted(uncovered):
+            parts = test_file.parts
+            if len(parts) >= 2:
+                suggested_group = parts[1]
+                if suggested_group not in suggestions:
+                    suggestions[suggested_group] = []
+                suggestions[suggested_group].append(test_file)
+
+        report_lines.append("```yaml")
+        for group, files in sorted(suggestions.items()):
+            report_lines.append(f'- name: "{group.title()}"')
+            report_lines.append(f'  path: "{files[0].parent}"')
+            report_lines.append(f'  pattern: "test_*.mojo"')
+        report_lines.append("```")
+
+    return "\n".join(report_lines)
+
+
+def post_to_pr(report: str) -> bool:
+    """Post validation report to GitHub PR if running in CI."""
+    try:
+        # Check if we're in GitHub Actions
+        github_ref = os.environ.get("GITHUB_REF", "")
+        pr_number = None
+
+        # Extract PR number from GitHub Actions context
+        # In PR events, GITHUB_REF is refs/pull/{pr_number}/merge
+        if "/pull/" in github_ref:
+            match = re.search(r"refs/pull/(\d+)/", github_ref)
+            if match:
+                pr_number = match.group(1)
+
+        if not pr_number:
+            print("ℹ️  Not a PR context. Skipping PR comment.", file=sys.stderr)
+            return False
+
+        # Use gh CLI to post comment
+        comment_body = f"{report}\n\n---\n*This check runs automatically on pull requests.*"
+
+        result = subprocess.run(
+            [
+                "gh",
+                "issue",
+                "comment",
+                pr_number,
+                "--body",
+                comment_body,
+            ],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+
+        if result.returncode == 0:
+            print("✅ Posted validation report to PR", file=sys.stderr)
+            return True
+        else:
+            print(
+                f"⚠️  Failed to post comment to PR: {result.stderr}",
+                file=sys.stderr
+            )
+            return False
+
+    except subprocess.TimeoutExpired:
+        print(
+            "⚠️  Timeout posting comment to PR",
+            file=sys.stderr
+        )
+        return False
+    except Exception as e:
+        print(
+            f"⚠️  Error posting comment to PR: {e}",
+            file=sys.stderr
+        )
+        return False
+
+
 def main():
     """Main validation logic."""
+    # Parse arguments
+    post_pr = "--post-pr" in sys.argv
+
     # Determine repository root (script is in scripts/)
     script_dir = Path(__file__).parent
     repo_root = script_dir.parent
 
-    print("=" * 70)
-    print("Test Coverage Validation")
-    print("=" * 70)
-    print()
-
-    # Find all test files
-    print("🔍 Finding all test_*.mojo files...")
+    # Find all test files (quietly)
     test_files = find_test_files(repo_root)
-    print(f"   Found {len(test_files)} test files")
-    print()
 
     # Parse CI workflow
     workflow_file = repo_root / ".github" / "workflows" / "comprehensive-tests.yml"
-    print(f"📋 Parsing CI workflow: {workflow_file.relative_to(repo_root)}")
-
     if not workflow_file.exists():
         print(f"❌ Workflow file not found: {workflow_file}", file=sys.stderr)
         sys.exit(1)
 
     ci_groups = parse_ci_matrix(workflow_file)
-    print(f"   Found {len(ci_groups)} test groups in CI matrix")
-    print()
 
     # Check coverage
-    print("🔬 Analyzing coverage...")
     uncovered, coverage_by_group = check_coverage(test_files, ci_groups, repo_root)
 
-    # Report results
-    print()
-    print("=" * 70)
-    print("Coverage Report")
-    print("=" * 70)
-    print()
-
-    if not uncovered:
-        print("✅ All test files are covered by CI!")
+    # Only print detailed report if tests are missing
+    if uncovered:
+        print("=" * 70)
+        print("Test Coverage Validation")
+        print("=" * 70)
         print()
-        print(f"   Total test files: {len(test_files)}")
-        print(f"   Covered by {len(ci_groups)} test groups")
+        print(f"❌ Found {len(uncovered)} uncovered test file(s):")
         print()
 
-        # Show coverage breakdown
-        print("Coverage by test group:")
-        for group_name in sorted(coverage_by_group.keys()):
-            count = len(coverage_by_group[group_name])
-            print(f"   • {group_name}: {count} test(s)")
+        for test_file in sorted(uncovered):
+            print(f"   • {test_file}")
 
-        return 0
-
-    # Report uncovered files
-    print(f"❌ Found {len(uncovered)} uncovered test file(s):")
-    print()
-
-    for test_file in sorted(uncovered):
-        print(f"   • {test_file}")
-
-    print()
-    print("=" * 70)
-    print("Recommendations")
-    print("=" * 70)
-    print()
-    print("Add missing test files to .github/workflows/comprehensive-tests.yml")
-    print("by updating the appropriate test group or creating a new one.")
-    print()
-    print("Example test groups to consider:")
-    print()
-
-    # Suggest groups based on uncovered paths
-    suggestions = {}
-    for test_file in sorted(uncovered):
-        parts = test_file.parts
-        if len(parts) >= 2:
-            suggested_group = parts[1]  # e.g., "shared", "configs", etc.
-            if suggested_group not in suggestions:
-                suggestions[suggested_group] = []
-            suggestions[suggested_group].append(test_file)
-
-    for group, files in sorted(suggestions.items()):
-        print(f'  - name: "{group.title()}"')
-        print(f'    path: "{files[0].parent}"')
-        print(f'    pattern: "test_*.mojo"')
+        print()
+        print("=" * 70)
+        print("Recommendations")
+        print("=" * 70)
+        print()
+        print("Add missing test files to .github/workflows/comprehensive-tests.yml")
+        print("by updating the appropriate test group or creating a new one.")
+        print()
+        print("Example test groups to consider:")
         print()
 
-    return 1
+        # Suggest groups based on uncovered paths
+        suggestions = {}
+        for test_file in sorted(uncovered):
+            parts = test_file.parts
+            if len(parts) >= 2:
+                suggested_group = parts[1]  # e.g., "shared", "configs", etc.
+                if suggested_group not in suggestions:
+                    suggestions[suggested_group] = []
+                suggestions[suggested_group].append(test_file)
+
+        for group, files in sorted(suggestions.items()):
+            print(f'  - name: "{group.title()}"')
+            print(f'    path: "{files[0].parent}"')
+            print(f'    pattern: "test_*.mojo"')
+            print()
+
+        print()
+
+        # Generate report for PR
+        report = generate_report(uncovered, test_files, coverage_by_group)
+
+        # Post to PR if requested
+        if post_pr:
+            post_to_pr(report)
+
+        # Exit with error code
+        return 1
+
+    # All tests are covered - exit quietly with success
+    return 0
 
 
 if __name__ == "__main__":

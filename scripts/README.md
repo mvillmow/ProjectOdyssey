@@ -98,6 +98,87 @@ scripts/
 
 ### Main Scripts
 
+#### `validate_test_coverage.py`
+
+**Purpose**: Ensure all test_*.mojo files are discovered and included in the CI test matrix.
+
+**Features**
+
+- Finds all test_*.mojo files in the repository (excluding build artifacts and examples)
+- Validates they are included in `.github/workflows/comprehensive-tests.yml`
+- Quiet success (no output when all tests are covered)
+- Detailed report only when tests are missing
+- Optional GitHub PR comment posting with `--post-pr` flag
+
+**Usage**
+
+```bash
+# Validate test coverage (quiet on success)
+python scripts/validate_test_coverage.py
+
+# Validate and post report to PR if tests are missing
+python scripts/validate_test_coverage.py --post-pr
+```
+
+**Command-line Options**
+
+- `--post-pr`: Post validation report to GitHub PR if tests are missing (only in PR context)
+
+**Exit Codes**
+
+- 0 = All test files are covered by CI matrix
+- 1 = Uncovered test files found
+
+**Output Behavior**
+
+- **Success (exit 0)**: No output (quiet mode)
+- **Failure (exit 1)**: Prints detailed report with:
+  - List of uncovered test files
+  - Recommended test groups to add to CI workflow
+  - Example YAML configuration
+
+**CI Integration**
+
+The workflow posts a PR comment only when tests are missing:
+
+1. Runs validation (collect exit code)
+2. If tests missing AND PR context: Posts detailed report to PR
+3. Always fails CI if tests are missing (exit code 1)
+
+**Example Report**
+
+When tests are missing, the script outputs:
+
+```text
+======================================================================
+Test Coverage Validation
+======================================================================
+
+Found 2 uncovered test file(s):
+
+  - tests/new_module/test_feature.mojo
+  - tests/another/test_utils.mojo
+
+======================================================================
+Recommendations
+======================================================================
+
+Add missing test files to .github/workflows/comprehensive-tests.yml
+by updating the appropriate test group or creating a new one.
+
+Example test groups to consider:
+
+  - name: "Another"
+    path: "tests/another"
+    pattern: "test_*.mojo"
+
+  - name: "New Module"
+    path: "tests/new_module"
+    pattern: "test_*.mojo"
+```
+
+---
+
 #### `regenerate_github_issues.py`
 
 **Purpose**: Regenerate all github_issue.md files dynamically from their corresponding plan.md files.

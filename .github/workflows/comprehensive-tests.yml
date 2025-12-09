@@ -159,16 +159,22 @@ jobs:
           pip install pyyaml
 
       - name: Validate test coverage
+        id: validation
+        continue-on-error: true
         run: |
           python scripts/validate_test_coverage.py
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
 
-      - name: Upload validation report
-        if: always()
-        uses: actions/upload-artifact@v5
-        with:
-          name: test-coverage-validation
-          path: coverage-validation.txt
-          retention-days: 7
+      - name: Post validation report to PR
+        if: github.event_name == 'pull_request' && steps.validation.outputs.exit_code != '0'
+        run: |
+          python scripts/validate_test_coverage.py --post-pr
+
+      - name: Fail if validation failed
+        if: steps.validation.outputs.exit_code != '0'
+        run: |
+          echo "Test coverage validation failed. See PR comment for details."
+          exit 1
 
   # ============================================================================
   # Comprehensive Mojo Test Suite - Parallelized by Test Group
