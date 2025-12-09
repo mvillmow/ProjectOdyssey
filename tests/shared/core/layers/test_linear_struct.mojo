@@ -163,7 +163,7 @@ fn test_linear_struct_parameters() raises:
     var params = layer.parameters()
 
     # Should have 2 parameters: weight and bias
-    assert_equal(params.size(), 2)
+    assert_equal(len(params), 2)
 
     # First parameter should have weight shape
     var weight_shape = params[0].shape()
