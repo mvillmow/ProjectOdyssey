@@ -162,21 +162,21 @@ fn test_create_test_targets() raises:
 fn test_assert_tensor_shape_valid() raises:
     """Test assert_tensor_shape with matching shapes."""
     var tensor = ones(List[Int](32, 10), DType.float32)
-    var expected: List[Int] = [32, 10]
+    var expected = List[Int](32, 10)
     assert_true(assert_tensor_shape(tensor, expected))
 
 
 fn test_assert_tensor_shape_invalid_dimensions() raises:
     """Test assert_tensor_shape with wrong number of dimensions."""
     var tensor = ones(List[Int](32, 10), DType.float32)
-    var expected: List[Int] = [32, 10, 5]
+    var expected = List[Int](32, 10, 5)
     assert_true(not assert_tensor_shape(tensor, expected))
 
 
 fn test_assert_tensor_shape_invalid_size() raises:
     """Test assert_tensor_shape with wrong dimension sizes."""
     var tensor = ones(List[Int](32, 10), DType.float32)
-    var expected: List[Int] = [64, 10]
+    var expected = List[Int](64, 10)
     assert_true(not assert_tensor_shape(tensor, expected))
 
 

@@ -367,15 +367,15 @@ fn test_assert_less_or_equal_float32_fails() raises:
 
 fn test_assert_shape_equal_passes() raises:
     """Test assert_shape_equal with matching shapes."""
-    var shape1: List[Int] = [2, 3, 4]
-    var shape2: List[Int] = [2, 3, 4]
+    var shape1 = List[Int](2, 3, 4)
+    var shape2 = List[Int](2, 3, 4)
     assert_shape_equal(shape1, shape2)
 
 
 fn test_assert_shape_equal_fails_dimension() raises:
     """Test assert_shape_equal with different dimension count."""
-    var shape1: List[Int] = [2, 3, 4]
-    var shape2: List[Int] = [2, 3]
+    var shape1 = List[Int](2, 3, 4)
+    var shape2 = List[Int](2, 3)
     var failed = False
     try:
         assert_shape_equal(shape1, shape2)
@@ -388,8 +388,8 @@ fn test_assert_shape_equal_fails_dimension() raises:
 
 fn test_assert_shape_equal_fails_size() raises:
     """Test assert_shape_equal with different dimension sizes."""
-    var shape1: List[Int] = [2, 3, 4]
-    var shape2: List[Int] = [2, 5, 4]
+    var shape1 = List[Int](2, 3, 4)
+    var shape2 = List[Int](2, 5, 4)
     var failed = False
     try:
         assert_shape_equal(shape1, shape2)
@@ -408,14 +408,14 @@ fn test_assert_shape_equal_fails_size() raises:
 fn test_assert_shape_tensor_passes() raises:
     """Test assert_shape with matching tensor shape."""
     var tensor = ones(List[Int](3, 4), DType.float32)
-    var expected: List[Int] = [3, 4]
+    var expected = List[Int](3, 4)
     assert_shape(tensor, expected)
 
 
 fn test_assert_shape_tensor_fails() raises:
     """Test assert_shape with mismatched tensor shape."""
     var tensor = ones(List[Int](3, 4), DType.float32)
-    var expected: List[Int] = [4, 5]
+    var expected = List[Int](4, 5)
     var failed = False
     try:
         assert_shape(tensor, expected)
