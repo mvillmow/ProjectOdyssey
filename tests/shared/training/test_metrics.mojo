@@ -281,7 +281,9 @@ fn test_metric_result_tensor() raises:
     """Test MetricResult with tensor value."""
     print("Testing MetricResult tensor...")
 
-    var tensor = ones(List[Int](3), DType.float32)
+    var tensor_shape = List[Int]()
+    tensor_shape.append(3)
+    var tensor = ones(tensor_shape, DType.float32)
     var result = MetricResult(name="per_class_acc", value=tensor)
 
     assert_false(result.is_scalar, "Should not be scalar")

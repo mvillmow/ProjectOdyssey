@@ -362,7 +362,7 @@ fn test_print_confusion_matrix_normalized() raises:
     matrix._data.bitcast[Float32]()[2] = 0.03  # 3%
     matrix._data.bitcast[Float32]()[3] = 0.97  # 97%
 
-    print_confusion_matrix(matrix, normalized=True)
+    print_confusion_matrix(matrix)
 
     print("   Confusion matrix normalized test passed")
 

@@ -225,8 +225,13 @@ fn test_apply_bias_correction() raises:
 fn test_validate_optimizer_state_valid() raises:
     """Test validation of valid optimizer state."""
     var params: List[ExTensor] = []
-    params.append(ones(List[Int](2, 3), DType.float32))
-    params.append(ones(List[Int](3), DType.float32))
+    var shape1 = List[Int]()
+    shape1.append(2)
+    shape1.append(3)
+    params.append(ones(shape1, DType.float32))
+    var shape2 = List[Int]()
+    shape2.append(3)
+    params.append(ones(shape2, DType.float32))
 
     var states = List[List[ExTensor]]()
     states.append(List[ExTensor]())

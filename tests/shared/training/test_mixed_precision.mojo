@@ -275,8 +275,12 @@ fn test_fp16_operations() raises:
     print("Testing FP16 operations...")
 
     # Create FP16 tensors (10 elements each)
-    var a = full(List[Int](10), 2.0, DType.float16)
-    var b = full(List[Int](10), 3.0, DType.float16)
+    var a_shape = List[Int]()
+    a_shape.append(10)
+    var a = full(a_shape, 2.0, DType.float16)
+    var b_shape = List[Int]()
+    b_shape.append(10)
+    var b = full(b_shape, 3.0, DType.float16)
 
     # Test addition
     var c = a + b

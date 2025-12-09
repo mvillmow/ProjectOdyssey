@@ -102,8 +102,13 @@ fn test_evaluate_model_perfect_predictions() raises:
     var model = SimpleMLP(input_dim=4, hidden_dim=8, output_dim=3)
 
     # Create test data: 10 samples, 4 features (input), 3 classes (output)
-    var images = ones(List[Int](10, 4), DType.float32)
-    var labels = zeros(List[Int](10), DType.int32)
+    var images_shape = List[Int]()
+    images_shape.append(10)
+    images_shape.append(4)
+    var images = ones(images_shape, DType.float32)
+    var labels_shape = List[Int]()
+    labels_shape.append(10)
+    var labels = zeros(labels_shape, DType.int32)
 
     # Set labels to match expected argmax (for ones input, should go to class 0)
     var labels_data = labels._data.bitcast[Int32]()
@@ -130,8 +135,13 @@ fn test_evaluate_model_batch_sizes() raises:
     var model = SimpleMLP(input_dim=4, hidden_dim=8, output_dim=3)
 
     # Create test data
-    var images = ones(List[Int](10, 4), DType.float32)
-    var labels = zeros(List[Int](10), DType.int32)
+    var images_shape = List[Int]()
+    images_shape.append(10)
+    images_shape.append(4)
+    var images = ones(images_shape, DType.float32)
+    var labels_shape = List[Int]()
+    labels_shape.append(10)
+    var labels = zeros(labels_shape, DType.int32)
 
     # Test with different batch sizes
     for batch_size in [1, 2, 5, 10]:
@@ -164,8 +174,13 @@ fn test_evaluate_model_per_class_statistics() raises:
     var model = SimpleMLP(input_dim=4, hidden_dim=8, output_dim=2)
 
     # Create test data: 4 samples, 2 classes
-    var images = ones(List[Int](4, 4), DType.float32)
-    var labels = zeros(List[Int](4), DType.int32)
+    var images_shape = List[Int]()
+    images_shape.append(4)
+    images_shape.append(4)
+    var images = ones(images_shape, DType.float32)
+    var labels_shape = List[Int]()
+    labels_shape.append(4)
+    var labels = zeros(labels_shape, DType.int32)
 
     # Set labels: [0, 1, 0, 1]
     var labels_data = labels._data.bitcast[Int32]()
@@ -203,8 +218,13 @@ fn test_evaluate_model_simple_basic() raises:
     var model = SimpleMLP(input_dim=4, hidden_dim=8, output_dim=3)
 
     # Create test data
-    var images = ones(List[Int](10, 4), DType.float32)
-    var labels = zeros(List[Int](10), DType.int32)
+    var images_shape = List[Int]()
+    images_shape.append(10)
+    images_shape.append(4)
+    var images = ones(images_shape, DType.float32)
+    var labels_shape = List[Int]()
+    labels_shape.append(10)
+    var labels = zeros(labels_shape, DType.int32)
 
     # Evaluate
     var accuracy = evaluate_model_simple(
@@ -225,10 +245,13 @@ fn test_evaluate_model_simple_batch_processing() raises:
     var model = SimpleMLP(input_dim=4, hidden_dim=8, output_dim=3)
 
     # Create test data
-    var images = ones(
-        List[Int](7, 4), DType.float32
-    )  # 7 samples with batch_size=3
-    var labels = zeros(List[Int](7), DType.int32)
+    var images_shape = List[Int]()
+    images_shape.append(7)
+    images_shape.append(4)
+    var images = ones(images_shape, DType.float32)
+    var labels_shape = List[Int]()
+    labels_shape.append(7)
+    var labels = zeros(labels_shape, DType.int32)
 
     # Evaluate
     var accuracy = evaluate_model_simple(
@@ -254,8 +277,13 @@ fn test_evaluate_topk_basic() raises:
     var model = SimpleMLP(input_dim=4, hidden_dim=8, output_dim=5)
 
     # Create test data
-    var images = ones(List[Int](10, 4), DType.float32)
-    var labels = zeros(List[Int](10), DType.int32)
+    var images_shape = List[Int]()
+    images_shape.append(10)
+    images_shape.append(4)
+    var images = ones(images_shape, DType.float32)
+    var labels_shape = List[Int]()
+    labels_shape.append(10)
+    var labels = zeros(labels_shape, DType.int32)
 
     # Evaluate top-1
     var top1_acc = evaluate_topk(
@@ -284,8 +312,13 @@ fn test_evaluate_topk_k_greater_than_classes() raises:
     print("Testing evaluate_topk with invalid k...")
 
     var model = SimpleMLP(input_dim=4, hidden_dim=8, output_dim=3)
-    var images = ones(List[Int](5, 4), DType.float32)
-    var labels = zeros(List[Int](5), DType.int32)
+    var images_shape = List[Int]()
+    images_shape.append(5)
+    images_shape.append(4)
+    var images = ones(images_shape, DType.float32)
+    var labels_shape = List[Int]()
+    labels_shape.append(5)
+    var labels = zeros(labels_shape, DType.int32)
 
     # Try with k > num_classes (should raise error)
     try:
@@ -309,8 +342,13 @@ fn test_evaluate_topk_edge_case_k_equals_num_classes() raises:
     print("Testing evaluate_topk with k == num_classes...")
 
     var model = SimpleMLP(input_dim=4, hidden_dim=8, output_dim=3)
-    var images = ones(List[Int](10, 4), DType.float32)
-    var labels = zeros(List[Int](10), DType.int32)
+    var images_shape = List[Int]()
+    images_shape.append(10)
+    images_shape.append(4)
+    var images = ones(images_shape, DType.float32)
+    var labels_shape = List[Int]()
+    labels_shape.append(10)
+    var labels = zeros(labels_shape, DType.int32)
 
     # With k == num_classes, should always find the correct class
     var accuracy = evaluate_topk(
@@ -343,8 +381,13 @@ fn test_evaluation_consistency() raises:
     var model1 = SimpleMLP(input_dim=4, hidden_dim=8, output_dim=3)
     var model2 = SimpleMLP(input_dim=4, hidden_dim=8, output_dim=3)
 
-    var images = ones(List[Int](10, 4), DType.float32)
-    var labels = zeros(List[Int](10), DType.int32)
+    var images_shape = List[Int]()
+    images_shape.append(10)
+    images_shape.append(4)
+    var images = ones(images_shape, DType.float32)
+    var labels_shape = List[Int]()
+    labels_shape.append(10)
+    var labels = zeros(labels_shape, DType.int32)
 
     # Both functions should work with same data
     var simple_acc = evaluate_model_simple(
@@ -375,8 +418,13 @@ fn test_single_sample_evaluation() raises:
     var model = SimpleMLP(input_dim=4, hidden_dim=8, output_dim=3)
 
     # Create single sample
-    var images = ones(List[Int](1, 4), DType.float32)
-    var labels = zeros(List[Int](1), DType.int32)
+    var images_shape = List[Int]()
+    images_shape.append(1)
+    images_shape.append(4)
+    var images = ones(images_shape, DType.float32)
+    var labels_shape = List[Int]()
+    labels_shape.append(1)
+    var labels = zeros(labels_shape, DType.int32)
 
     # Evaluate
     var result = evaluate_model(
@@ -399,8 +447,13 @@ fn test_evaluation_matches_sample_counts() raises:
     var model = SimpleMLP(input_dim=4, hidden_dim=8, output_dim=4)
 
     # Create test data with known class distribution
-    var images = ones(List[Int](8, 4), DType.float32)
-    var labels = zeros(List[Int](8), DType.int32)
+    var images_shape = List[Int]()
+    images_shape.append(8)
+    images_shape.append(4)
+    var images = ones(images_shape, DType.float32)
+    var labels_shape = List[Int]()
+    labels_shape.append(8)
+    var labels = zeros(labels_shape, DType.int32)
 
     # Set labels: 2 samples each for classes 0,1,2,3
     var labels_data = labels._data.bitcast[Int32]()
