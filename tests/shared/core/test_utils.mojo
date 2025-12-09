@@ -127,7 +127,10 @@ fn test_argmax_axis_3d() raises:
     t._data.bitcast[Float32]()[5] = 50.0
 
     var result = argmax(t, axis=2)
-    assert_shape(result, List[Int](2, 3))
+    var shape = List[Int]()
+    shape.append(2)
+    shape.append(3)
+    assert_shape(result, shape)
 
 
 # ============================================================================
