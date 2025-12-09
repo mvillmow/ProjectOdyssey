@@ -18,7 +18,8 @@ Prevent accidental or malicious deletion of critical files and directories, incl
 
 ## How It Works
 
-The `pre-bash-exec.sh` hook is configured in `.claude/settings.local.json` to run before every Bash command execution. It validates `rm` commands against a set of dangerous patterns and blocks them if they match.
+The `pre-bash-exec.sh` hook is configured in `.claude/settings.local.json` to run before every Bash command
+execution. It validates `rm` commands against a set of dangerous patterns and blocks them if they match.
 
 ### Blocked Patterns
 
