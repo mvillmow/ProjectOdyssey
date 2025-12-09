@@ -853,13 +853,13 @@ fn _gelu_impl[dtype: DType](result: ExTensor, tensor: ExTensor, approximate: Boo
             for i in range(tensor._numel):
                 var x = in_ptr[i]
                 var x_cubed = x * x * x
-                var inner = Float32(SQRT_2_OVER_PI) * (x + Float32(GELU_COEFF) * x_cubed)
+                var inner = SQRT_2_OVER_PI * (x + GELU_COEFF * x_cubed)
                 var tanh_val = math_tanh(inner)
                 out_ptr[i] = 0.5 * x * (1.0 + tanh_val)
         else:
             for i in range(tensor._numel):
                 var x = in_ptr[i]
-                var erf_val = erf(x / Float32(SQRT_2))
+                var erf_val = erf(x / SQRT_2)
                 out_ptr[i] = x * 0.5 * (1.0 + erf_val)
     else:  # float64
         if approximate:
@@ -958,13 +958,11 @@ fn _gelu_backward_impl[
                 var x_val = x_ptr[i]
                 var grad = grad_ptr[i]
                 var x_cubed = x_val * x_val * x_val
-                var inner = Float32(SQRT_2_OVER_PI) * (
-                    x_val + Float32(GELU_COEFF) * x_cubed
-                )
+                var inner = SQRT_2_OVER_PI * (x_val + GELU_COEFF * x_cubed)
                 var tanh_val = math_tanh(inner)
                 var sech2 = 1.0 - tanh_val * tanh_val
-                var dtanh = Float32(SQRT_2_OVER_PI) * (
-                    1.0 + 3.0 * Float32(GELU_COEFF) * x_val * x_val
+                var dtanh = SQRT_2_OVER_PI * (
+                    1.0 + 3.0 * GELU_COEFF * x_val * x_val
                 )
                 var dgelu = 0.5 * (1.0 + tanh_val) + 0.5 * x_val * sech2 * dtanh
                 result_ptr[i] = grad * dgelu
@@ -972,8 +970,8 @@ fn _gelu_backward_impl[
             for i in range(x._numel):
                 var x_val = x_ptr[i]
                 var grad = grad_ptr[i]
-                var erf_val = erf(x_val / Float32(SQRT_2))
-                var pdf = Float32(INV_SQRT_2PI) * exp(-0.5 * x_val * x_val)
+                var erf_val = erf(x_val / SQRT_2)
+                var pdf = INV_SQRT_2PI * exp(-0.5 * x_val * x_val)
                 var dgelu = 0.5 * (1.0 + erf_val) + x_val * pdf
                 result_ptr[i] = grad * dgelu
     else:  # float64
