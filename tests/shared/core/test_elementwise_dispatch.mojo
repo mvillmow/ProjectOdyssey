@@ -58,6 +58,9 @@ from shared.core.elementwise_dispatch import (
 struct DoubleOp(ElementwiseUnaryOp):
     """Custom operation: 2 * x."""
 
+    fn __init__(out self):
+        pass
+
     fn apply(self, value: Float64) -> Float64:
         return value * 2.0
 
@@ -65,12 +68,18 @@ struct DoubleOp(ElementwiseUnaryOp):
 struct IncrementOp(ElementwiseUnaryOp):
     """Custom operation: x + 1."""
 
+    fn __init__(out self):
+        pass
+
     fn apply(self, value: Float64) -> Float64:
         return value + 1.0
 
 
 struct AverageOp(ElementwiseBinaryOp):
     """Custom operation: (a + b) / 2."""
+
+    fn __init__(out self):
+        pass
 
     fn apply(self, a: Float64, b: Float64) -> Float64:
         return (a + b) / 2.0

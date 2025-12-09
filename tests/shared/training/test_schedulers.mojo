@@ -406,7 +406,7 @@ fn test_reduce_lr_on_plateau_realistic_training_scenario() raises:
 
     # Simulate validation loss decreasing then plateauing
     # Note: "no improvement" means value >= best, not just similar
-    var val_losses = List[Float64](
+    var val_losses: List[Float64] = [
         0.5,  # Epoch 0: improvement (best=0.5)
         0.4,  # Epoch 1: improvement (best=0.4)
         0.35,  # Epoch 2: improvement (best=0.35)
@@ -417,7 +417,7 @@ fn test_reduce_lr_on_plateau_realistic_training_scenario() raises:
         0.35,  # Epoch 7: no improvement, counter=1
         0.36,  # Epoch 8: no improvement, counter=2
         0.37,  # Epoch 9: no improvement, counter=3 >= patience(3), reduce again
-    )
+    ]
 
     for loss in val_losses:
         _ = scheduler.step(loss)

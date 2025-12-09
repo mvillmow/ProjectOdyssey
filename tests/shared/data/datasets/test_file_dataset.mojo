@@ -97,8 +97,8 @@ fn test_file_dataset_lazy_loading() raises:
     with actual loading deferred until __getitem__ is called.
     """
     # Create dataset with many file paths - should be instant
-    var file_paths: List[String](capacity=10000)
-    var labels = List[Int](capacity=10000)
+    var file_paths = List[String]()
+    var labels = List[Int]()
 
     for i in range(10000):
         file_paths.append("/path/to/image_" + String(i) + ".jpg")
@@ -152,8 +152,8 @@ fn test_file_dataset_memory_efficiency() raises:
     only storing file paths not loaded data.
     """
     # Create dataset with many files - shouldn't load them all
-    var file_paths: List[String](capacity=10000)
-    var labels = List[Int](capacity=10000)
+    var file_paths = List[String]()
+    var labels = List[Int]()
 
     for i in range(10000):
         file_paths.append("/images/img" + String(i) + ".jpg")

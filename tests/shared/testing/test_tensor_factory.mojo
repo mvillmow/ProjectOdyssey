@@ -326,7 +326,9 @@ fn test_random_normal_tensor_int32() raises:
         if val < 0.0:
             has_negative = True
 
-    custom_assert_true(has_positive or has_negative, "Should have some non-zero values")
+    custom_assert_true(
+        has_positive or has_negative, "Should have some non-zero values"
+    )
 
 
 fn test_random_normal_tensor_1d() raises:

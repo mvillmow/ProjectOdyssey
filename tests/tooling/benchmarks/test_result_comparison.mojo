@@ -255,11 +255,11 @@ fn test_missing_baseline_benchmark() raises:
     - Comparison skipped for that benchmark.
     """
     # Test handling of missing baseline benchmarks
-    var baseline_list: List[String](capacity=2)
+    var baseline_list = List[String]()
     baseline_list.append("bench_1")
     baseline_list.append("bench_2")
 
-    var current_list: List[String](capacity=3)
+    var current_list = List[String]()
     current_list.append("bench_1")
     current_list.append("bench_2")
     current_list.append("bench_3")  # Missing in baseline
@@ -317,7 +317,7 @@ fn test_comparison_report_generation() raises:
     var improvements_count = 1
 
     # Create report content
-    var report: List[String](capacity=5)
+    var report = List[String]()
     report.append("Comparison Report")
     report.append("Total benchmarks: " + String(benchmarks_total))
     report.append("Regressions: " + String(regressions_count))

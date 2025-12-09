@@ -91,8 +91,8 @@ fn test_tensor_dataset_with_matching_sizes() raises:
     The number of samples in data must match the number of labels,
     otherwise training would fail with mismatched batch sizes.
     """
-    var data = List[Float32](capacity=100)
-    var labels = List[Int](capacity=100)
+    var data = List[Float32]()
+    var labels = List[Int]()
     for i in range(100):
         data.append(Float32(i))
         labels.append(i)
@@ -107,8 +107,8 @@ fn test_tensor_dataset_size_mismatch_error() raises:
     Creating dataset with 100 data samples and 50 labels should fail
     immediately rather than causing silent errors during training.
     """
-    var data = List[Float32](capacity=100)
-    var labels = List[Int](capacity=50)
+    var data = List[Float32]()
+    var labels = List[Int]()
 
     for i in range(100):
         data.append(Float32(i))
@@ -259,8 +259,8 @@ fn test_tensor_dataset_memory_efficiency() raises:
     just store references to save memory.
     """
     # Create dataset with larger data to verify no memory issues
-    var data = List[Float32](capacity=1000)
-    var labels = List[Int](capacity=1000)
+    var data = List[Float32]()
+    var labels = List[Int]()
 
     for i in range(1000):
         data.append(Float32(i))

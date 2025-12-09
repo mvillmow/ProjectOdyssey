@@ -135,7 +135,7 @@ fn test_random_sampler_yields_all_indices() raises:
     assert_equal(len(indices), 100)
 
     # Check all indices 0-99 are present (sort to verify)
-    var sorted_indices = List[Int](capacity=100)
+    var sorted_indices = List[Int]()
     for i in range(100):
         sorted_indices.append(indices[i])
 
@@ -164,7 +164,7 @@ fn test_random_sampler_no_duplicates() raises:
     var indices = sampler.__iter__()
 
     # Check for duplicates by counting occurrences
-    var seen: List[Bool](capacity=50)
+    var seen = List[Bool]()
     for _ in range(50):
         seen.append(False)
 

@@ -36,7 +36,7 @@ fn test_random_augmentation_deterministic() raises:
     critical for debugging and reproducible experiments.
     """
     # Create a 28x28x3 tensor (2352 elements total)
-    var data_list = List[Float32](capacity=28 * 28 * 3)
+    var data_list = List[Float32]()
     for _ in range(28 * 28 * 3):
         data_list.append(1.0)
     var data_shape = List[Int]()
@@ -66,7 +66,7 @@ fn test_random_augmentation_varies() raises:
     not always the same transformation.
     """
     # Create a 28x28x3 tensor
-    var data_list = List[Float32](capacity=28 * 28 * 3)
+    var data_list = List[Float32]()
     for _ in range(28 * 28 * 3):
         data_list.append(1.0)
     var data_shape = List[Int]()
@@ -77,7 +77,7 @@ fn test_random_augmentation_varies() raises:
 
     var aug = RandomRotation((15.0, 15.0))
 
-    var results: List[Tensor](capacity=10)
+    var results = List[Tensor]()
     for _ in range(10):
         results.append(aug(data))
 
@@ -194,7 +194,7 @@ fn test_random_crop_varies_location() raises:
 
     var crop = RandomCrop((50, 50))
 
-    var crops: List[Tensor](capacity=10)
+    var crops = List[Tensor]()
     for _ in range(10):
         crops.append(crop(data))
 

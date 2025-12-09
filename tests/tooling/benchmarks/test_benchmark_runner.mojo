@@ -77,7 +77,7 @@ fn test_multiple_iterations() raises:
     - Handles iteration count parameter.
     """
     # Test that we can collect multiple results
-    var results = List[BenchmarkResult](capacity=5)
+    var results = List[BenchmarkResult]()
 
     # Create 5 iteration results with varying durations
     var base_duration: Float64 = 10.0
@@ -145,13 +145,13 @@ fn test_deterministic_execution() raises:
     TestFixtures.set_seed()
 
     # Create first run of results
-    var results1 = List[Float64](capacity=3)
+    var results1 = List[Float64]()
     for _ in range(3):
         results1.append(10.5)
 
     # Reset seed and create second run
     TestFixtures.set_seed()
-    var results2 = List[Float64](capacity=3)
+    var results2 = List[Float64]()
     for _ in range(3):
         results2.append(10.5)
 
@@ -268,7 +268,7 @@ fn test_json_output_format() raises:
     - Parseable by comparison tool.
     """
     # Create benchmark results that should be JSON serializable
-    var results = List[BenchmarkResult](capacity=3)
+    var results = List[BenchmarkResult]()
     results.append(BenchmarkResult("bench_1", 10.5, 100.0, 10.0))
     results.append(BenchmarkResult("bench_2", 20.3, 200.0, 20.5))
     results.append(BenchmarkResult("bench_3", 15.7, 150.0, 15.0))

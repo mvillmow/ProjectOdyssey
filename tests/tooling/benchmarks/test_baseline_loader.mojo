@@ -41,7 +41,7 @@ fn test_load_valid_baseline() raises:
     - Metadata extracted properly.
     """
     # Create a collection of baseline benchmarks (simulating loaded baseline)
-    var baseline_benchmarks: List[String](capacity=3)
+    var baseline_benchmarks = List[String]()
     baseline_benchmarks.append("matrix_multiply_1000")
     baseline_benchmarks.append("tensor_add_1000")
     baseline_benchmarks.append("conv2d_16x16")
@@ -223,7 +223,7 @@ fn test_baseline_lookup_by_name() raises:
     - Case-sensitive matching.
     """
     # Create a baseline with named benchmarks
-    var baseline: List[BenchmarkResult](capacity=2)
+    var baseline = List[BenchmarkResult]()
     baseline.append(BenchmarkResult("matrix_multiply", 50.0, 200.0))
     baseline.append(BenchmarkResult("tensor_add", 25.0, 400.0))
 

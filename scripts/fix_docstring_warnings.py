@@ -110,8 +110,6 @@ def fix_file(file_path: Path, dry_run: bool = False) -> Tuple[int, int, int, int
     content, multiline_fixes = fix_multiline_parameter_descriptions(content)
     content, deprecated_fixes = fix_deprecated_owned(content)
 
-    total_fixes = indent_fixes + period_fixes + section_body_fixes + summary_fixes + multiline_fixes + deprecated_fixes
-
     if content != original:
         if not dry_run:
             file_path.write_text(content)

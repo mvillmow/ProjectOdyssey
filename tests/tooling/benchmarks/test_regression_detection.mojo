@@ -70,7 +70,7 @@ fn test_multiple_regressions_detection() raises:
     """
     # Test multiple regression detection
     var regression_threshold = 10.0
-    var regressions = List[Float64](capacity=3)
+    var regressions = List[Float64]()
     regressions.append(15.0)  # 15% slowdown
     regressions.append(20.0)  # 20% slowdown
     regressions.append(12.0)  # 12% slowdown
@@ -99,7 +99,7 @@ fn test_no_false_positives() raises:
     """
     # Test no false positives
     var regression_threshold = 10.0
-    var changes = List[Float64](capacity=3)
+    var changes = List[Float64]()
     changes.append(5.0)  # 5% slower
     changes.append(10.0)  # exactly 10%
     changes.append(-5.0)  # 5% faster
@@ -127,7 +127,7 @@ fn test_exit_code_success() raises:
     """
     # Test exit code 0 on success
     var regression_threshold = 10.0
-    var scenarios = List[Float64](capacity=4)
+    var scenarios = List[Float64]()
     scenarios.append(-5.0)  # Improvement
     scenarios.append(5.0)  # Normal variance
     scenarios.append(10.0)  # At threshold
@@ -154,7 +154,7 @@ fn test_exit_code_failure() raises:
     """
     # Test exit code 1 on failure
     var regression_threshold = 10.0
-    var scenarios = List[Float64](capacity=3)
+    var scenarios = List[Float64]()
     scenarios.append(-5.0)  # Improvement (but...)
     scenarios.append(15.0)  # Regression (should trigger exit 1)
     scenarios.append(5.0)  # Normal variance
@@ -180,7 +180,7 @@ fn test_regression_report_format() raises:
     - Report includes summary statistics.
     """
     # Test regression report format
-    var report: List[String](capacity=5)
+    var report = List[String]()
     report.append("REGRESSION DETECTED")
     report.append("Benchmark: matrix_op")
     report.append("Change: +15%")
@@ -246,7 +246,7 @@ fn test_improvement_reporting() raises:
     """
     # Test improvement reporting
     var regression_threshold = 10.0
-    var improvements = List[Float64](capacity=2)
+    var improvements = List[Float64]()
     improvements.append(-10.0)  # 10% faster
     improvements.append(-5.0)  # 5% faster
 
@@ -277,7 +277,7 @@ fn test_ci_integration_output() raises:
     var exit_code_failure = 1
 
     # Create CI-friendly output
-    var ci_output: List[String](capacity=3)
+    var ci_output = List[String]()
     ci_output.append("Benchmark test result: PASS")
     ci_output.append("Exit code: 0")
     ci_output.append("Summary: All benchmarks within threshold")

@@ -221,7 +221,7 @@ fn test_weighted_sampler_class_balancing() raises:
     weights can balance classes to 50/50 sampling.
     """
     # Simulated dataset: 90 samples of class 0, 10 of class 1
-    var weights = List[Float64](capacity=100)
+    var weights = List[Float64]()
     for _ in range(90):
         weights.append(1.0 / 90.0)  # Low weight for majority class
     for _ in range(10):
@@ -250,7 +250,7 @@ fn test_weighted_sampler_inverse_frequency() raises:
     e.g., class with 100 samples gets weight 1/100.
     """
     # Class frequencies: [100, 50, 10]
-    var weights = List[Float64](capacity=160)
+    var weights = List[Float64]()
     for _ in range(100):
         weights.append(1.0 / 100.0)
     for _ in range(50):

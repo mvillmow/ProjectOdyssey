@@ -127,20 +127,14 @@ fn print_evaluation_summary(
 # ============================================================================
 
 
-fn print_per_class_accuracy(
-    per_class_accuracies: ExTensor,
-    class_names: List[String],
-    column_width: Int = 15,
-) raises:
-    """Print per-class accuracy metrics in formatted table.
+fn print_per_class_accuracy(per_class_accuracies: ExTensor) raises:
+    """Print per-class accuracy metrics with default numeric class labels.
 
-        Displays accuracy for each class in a table format, with optional
-        class names for improved interpretability
+        Displays accuracy for each class in a table format using numeric indices
+        as class labels
 
     Args:
             per_class_accuracies: Tensor of shape [num_classes] with per-class accuracy
-            class_names: Optional list of class name strings (default: empty)
-            column_width: Width of each column in characters (default: 15)
 
         Example:
             ```mojo
@@ -157,6 +151,52 @@ fn print_per_class_accuracy(
             0          0.920000
             1          0.945000
             ...
+            ```
+
+        Issue: #2353
+    """
+    var default_names = List[String]()
+    var shape = per_class_accuracies.shape()
+    var num_classes = shape[0]
+    for i in range(num_classes):
+        default_names.append("Class " + String(i))
+    print_per_class_accuracy(per_class_accuracies, default_names)
+
+
+fn print_per_class_accuracy(
+    per_class_accuracies: ExTensor,
+    class_names: List[String],
+    column_width: Int = 15,
+) raises:
+    """Print per-class accuracy metrics in formatted table.
+
+        Displays accuracy for each class in a table format, with optional
+        class names for improved interpretability
+
+    Args:
+            per_class_accuracies: Tensor of shape [num_classes] with per-class accuracy
+            class_names: List of class name strings
+            column_width: Width of each column in characters (default: 15)
+
+        Example:
+            ```mojo
+            var per_class = ExTensor(List[Int](3), DType.float64)
+            # ... populate with per-class accuracies ...
+            var names = List[String]()
+            names.append("Cat")
+            names.append("Dog")
+            names.append("Bird")
+            print_per_class_accuracy(per_class, names)
+
+            Output:
+            ============================================================
+            Per-Class Accuracy
+            ============================================================
+            Class      Accuracy
+            ============================================================
+            Cat        0.920000
+            Dog        0.945000
+            Bird       0.980000
             ```
 
     Note:
@@ -207,6 +247,50 @@ fn print_per_class_accuracy(
 # ============================================================================
 
 
+fn print_confusion_matrix(matrix: ExTensor) raises:
+    """Print confusion matrix with default numeric class labels.
+
+        Displays confusion matrix with proper alignment using numeric indices
+        as class labels
+
+    Args:
+            matrix: Confusion matrix tensor of shape [num_classes, num_classes]
+
+        Example:
+            ```mojo
+            var cm_shape = List[Int](3, 3)
+            var matrix = ExTensor(cm_shape, DType.int32)
+            # ... populate matrix ...
+            print_confusion_matrix(matrix)
+
+            Output:
+            ============================================================
+            Confusion Matrix (Raw Counts)
+            ============================================================
+                  Predicted
+                    0    1    2
+            True 0 90    5    5
+                 1  3   92    5
+                 2  2    4   94
+            ============================================================
+            ```
+
+    Note:
+            - Rows represent true labels
+            - Columns represent predicted labels
+            - Values are right-aligned within columns
+            - Classes displayed as numeric indices
+
+        Issue: #2353
+    """
+    var default_names = List[String]()
+    var shape = matrix.shape()
+    var num_classes = shape[0]
+    for i in range(num_classes):
+        default_names.append(String(i))
+    print_confusion_matrix(matrix, default_names)
+
+
 fn print_confusion_matrix(
     matrix: ExTensor,
     class_names: List[String],
@@ -220,26 +304,30 @@ fn print_confusion_matrix(
 
     Args:
             matrix: Confusion matrix tensor of shape [num_classes, num_classes]
-            class_names: Optional list of class name strings (default: empty)
+            class_names: List of class name strings
             normalized: If True, display as percentages (default: False)
             column_width: Width of each column in characters (default: 10)
 
         Example:
             ```mojo
-            var cm = ConfusionMatrix(num_classes=3)
+            var cm_shape = List[Int](3, 3)
+            var matrix = ExTensor(cm_shape, DType.int32)
             # ... populate matrix ...
-            var matrix = cm.normalize(mode="none")
-            print_confusion_matrix(matrix)
+            var names = List[String]()
+            names.append("Cat")
+            names.append("Dog")
+            names.append("Bird")
+            print_confusion_matrix(matrix, names)
 
             Output:
             ============================================================
             Confusion Matrix (Raw Counts)
             ============================================================
                   Predicted
-                    0    1    2
-            True 0 90    5    5
-                 1  3   92    5
-                 2  2    4   94
+                 Cat Dog Bird
+            True Cat 90    5    5
+                 Dog  3   92    5
+                Bird  2    4   94
             ============================================================
             ```
 

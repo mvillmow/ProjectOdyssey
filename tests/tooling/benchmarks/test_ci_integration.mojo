@@ -211,7 +211,7 @@ fn test_historical_tracking() raises:
     var __ = True
 
     # Create historical data structure
-    var historical_data = List[Float64](capacity=5)
+    var historical_data = List[Float64]()
     historical_data.append(100.0)  # Day 1
     historical_data.append(98.0)  # Day 2
     historical_data.append(102.0)  # Day 3
@@ -264,7 +264,7 @@ fn test_manual_benchmark_trigger() raises:
     var ___ = True
 
     # Test example with options
-    var trigger_options = List[String](capacity=2)
+    var trigger_options = List[String]()
     trigger_options.append("baseline")
     trigger_options.append("subset")
 
