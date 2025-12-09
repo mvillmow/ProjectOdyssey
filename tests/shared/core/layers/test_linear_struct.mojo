@@ -142,7 +142,7 @@ fn test_linear_struct_with_bias() raises:
     bias_data[1] = 10.0
 
     # Create input [1, 1]
-    var input = ones(List[Int](1, 2), DType.float32)
+    var input = ones([1, 2], DType.float32)
 
     # Forward pass
     var output = layer.forward(input)
@@ -183,7 +183,7 @@ fn test_linear_struct_large_batch() raises:
     var layer = Linear(784, 128)
 
     # Create batch
-    var input = ones(List[Int](32, 784), DType.float32)
+    var input = ones([32, 784], DType.float32)
 
     # Forward pass
     var output = layer.forward(input)

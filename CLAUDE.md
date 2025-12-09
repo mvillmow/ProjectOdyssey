@@ -703,19 +703,22 @@ assert_almost_equal(Float64(tensor._data.bitcast[Float32]()[0]), 0.99, tolerance
 # - Use rtol=1e-3, atol=5e-4 for softmax operations
 ```
 
-#### 11. List Initialization Shorthand
+#### 11. List Initialization
 
-**✅ PREFER**: Use List constructor with initial values
+**Per [Mojo Manual - List](https://docs.modular.com/mojo/manual/types#list)**: Use list literals for initialization.
 
 ```mojo
-# PREFERRED - Concise initialization
-var shape = List[Int](3, 4, 5)  # 3D tensor shape
+# CORRECT - List literal (type inference)
+var shape = [3, 4, 5]  # Inferred as List[Int]
 
-# ALSO VALID - Explicit append (more verbose)
-var shape = List[Int]()
-shape.append(3)
-shape.append(4)
-shape.append(5)
+# CORRECT - Explicit type annotation
+var shape: List[Int] = [3, 4, 5]
+
+# CORRECT - Empty list requires explicit type
+var empty = List[Int]()
+
+# ❌ WRONG - Variadic constructor does not exist
+var shape = List[Int](3, 4, 5)  # Compiler error: no matching function
 ```
 
 ### Critical Pre-Flight Checklist

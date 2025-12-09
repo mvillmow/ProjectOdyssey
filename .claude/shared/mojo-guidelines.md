@@ -69,6 +69,22 @@ struct Tensor(Copyable, Movable):
         # ... initialization logic
 ```
 
+### List Initialization
+
+**Per [Mojo Manual](https://docs.modular.com/mojo/manual/types#list)**: Use list literals.
+
+```mojo
+# CORRECT - List literal
+var shape = [3, 4, 5]  # Type inferred as List[Int]
+var shape: List[Int] = [3, 4, 5]  # Explicit type
+
+# CORRECT - Empty list
+var empty = List[Int]()
+
+# ❌ WRONG - Variadic constructor does not exist
+var shape = List[Int](3, 4, 5)  # Compiler error
+```
+
 ## Pre-Commit Checklist
 
 - [ ] All `__init__` use `out self` (not `mut self`)
@@ -76,6 +92,7 @@ struct Tensor(Copyable, Movable):
 - [ ] No `@value` decorator (use `@fieldwise_init` + traits)
 - [ ] All List/Dict returns use `^` transfer operator
 - [ ] Space after `var` keyword: `var a` not `vara`
+- [ ] List initialization uses literals: `[1, 2, 3]` not `List[Int](1, 2, 3)`
 
 See [mojo-anti-patterns.md](mojo-anti-patterns.md) for common mistakes.
 See [CLAUDE.md](../../CLAUDE.md#mojo-syntax-standards-v0257) for complete reference.

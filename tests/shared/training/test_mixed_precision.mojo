@@ -45,7 +45,7 @@ fn test_loss_scaling() raises:
     var scaler = GradientScaler(initial_scale=1024.0)
 
     # Create a simple loss tensor (scalar)
-    var loss = full(List[Int](1), 0.5, DType.float32)
+    var loss = full([1], 0.5, DType.float32)
 
     # Scale the loss
     var scaled_loss = scaler.scale_loss(loss)
@@ -64,7 +64,7 @@ fn test_gradient_unscaling() raises:
     var scaler = GradientScaler(initial_scale=1024.0)
 
     # Create scaled gradients
-    var scaled_grads = full(List[Int](1), 2048.0, DType.float32)
+    var scaled_grads = full([1], 2048.0, DType.float32)
 
     # Unscale the gradients (2048 / 1024 = 2.0)
     var unscaled_grads = scaler.unscale_gradients(scaled_grads)
@@ -161,7 +161,7 @@ fn test_fp32_master_conversion() raises:
     print("Testing FP32 master conversion...")
 
     # Create FP16 parameters (100 elements)
-    var fp16_params = full(List[Int](100), 0.5, DType.float16)
+    var fp16_params = full([100], 0.5, DType.float16)
 
     # Convert to FP32 master weights
     var master_params = convert_to_fp32_master(fp16_params)
@@ -184,8 +184,8 @@ fn test_update_model_from_master() raises:
     print("Testing model update from master...")
 
     # Create FP16 model params and FP32 master weights (100 elements)
-    var fp16_params = full(List[Int](100), 1.0, DType.float16)
-    var master_params = full(List[Int](100), 2.0, DType.float32)
+    var fp16_params = full([100], 1.0, DType.float16)
+    var master_params = full([100], 2.0, DType.float32)
 
     # Update model from master
     update_model_from_master(fp16_params, master_params)
@@ -202,7 +202,7 @@ fn test_check_gradients_finite() raises:
     print("Testing gradient finite check...")
 
     # Create finite gradients (10 elements)
-    var finite_grads = full(List[Int](10), 1.0, DType.float32)
+    var finite_grads = full([10], 1.0, DType.float32)
     assert_true(
         check_gradients_finite(finite_grads),
         "Finite gradients should return True",

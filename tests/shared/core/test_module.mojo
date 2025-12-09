@@ -63,10 +63,7 @@ fn test_module_interface() raises:
     var module = DummyModule(10)
 
     # Test forward pass
-    var shape = List[Int]()
-    shape.append(1)
-    shape.append(5)
-    var input = zeros(shape, DType.float32)
+    var input = zeros([1, 5], DType.float32)
     var output = module.forward(input)
     assert_true(len(output.shape()) == 2, "Output should be 2D")
     assert_equal_int(output.shape()[1], 10, "Output size should match")

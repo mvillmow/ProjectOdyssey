@@ -150,10 +150,10 @@ fn xavier_uniform(
 
     Examples:
             # Fully connected layer: 784 inputs -> 128 outputs
-            var weights = xavier_uniform(784, 128, List[Int](784, 128))
+            var weights = xavier_uniform(784, 128, [784, 128])
 
             # With fixed seed for reproducibility
-            var w = xavier_uniform(100, 50, List[Int](100, 50), seed_val=42)
+            var w = xavier_uniform(100, 50, [100, 50], seed_val=42)
 
         References:
             Glorot & Bengio (2010): "Understanding the difficulty of training.
@@ -227,10 +227,10 @@ fn xavier_normal(
 
     Examples:
             # Fully connected layer: 784 inputs -> 128 outputs
-            var weights = xavier_normal(784, 128, List[Int](784, 128))
+            var weights = xavier_normal(784, 128, [784, 128])
 
             # With fixed seed for reproducibility
-            var w = xavier_normal(100, 50, List[Int](100, 50), seed_val=42)
+            var w = xavier_normal(100, 50, [100, 50], seed_val=42)
 
         References:
             Glorot & Bengio (2010): "Understanding the difficulty of training.
@@ -315,13 +315,13 @@ fn kaiming_uniform(
 
     Examples:
             # Fully connected layer: 784 inputs -> 128 outputs (using fan_in)
-            var weights = kaiming_uniform(784, 128, List[Int](784, 128))
+            var weights = kaiming_uniform(784, 128, [784, 128])
 
             # Using fan_out mode
-            var w = kaiming_uniform(784, 128, List[Int](784, 128), fan_mode="fan_out")
+            var w = kaiming_uniform(784, 128, [784, 128], fan_mode="fan_out")
 
             # With fixed seed for reproducibility
-            var w_repro = kaiming_uniform(100, 50, List[Int](100, 50), seed_val=42)
+            var w_repro = kaiming_uniform(100, 50, [100, 50], seed_val=42)
 
         References:
             He et al. (2015): "Delving Deep into Rectifiers: Surpassing Human-Level.
@@ -409,13 +409,13 @@ fn kaiming_normal(
 
     Examples:
             # Fully connected layer: 784 inputs -> 128 outputs
-            var weights = kaiming_normal(784, 128, List[Int](784, 128))
+            var weights = kaiming_normal(784, 128, [784, 128])
 
             # Using fan_out mode
-            var w = kaiming_normal(784, 128, List[Int](784, 128), fan_mode="fan_out")
+            var w = kaiming_normal(784, 128, [784, 128], fan_mode="fan_out")
 
             # With fixed seed for reproducibility
-            var w_repro = kaiming_normal(100, 50, List[Int](100, 50), seed_val=42)
+            var w_repro = kaiming_normal(100, 50, [100, 50], seed_val=42)
 
         References:
             He et al. (2015): "Delving Deep into Rectifiers: Surpassing Human-Level.
@@ -494,13 +494,13 @@ fn uniform(
 
     Examples:
             # Default range [-0.1, 0.1]
-            var weights = uniform(List[Int](100, 50))
+            var weights = uniform([100, 50])
 
             # Custom range [0, 1]
-            var w = uniform(List[Int](10, 10), low=0.0, high=1.0)
+            var w = uniform([10, 10], low=0.0, high=1.0)
 
             # With fixed seed
-            var w_repro = uniform(List[Int](50, 50), seed_val=42)
+            var w_repro = uniform([50, 50], seed_val=42)
 
         Issue: #268-272 - Uniform/Normal basic distributions.
     """
@@ -560,13 +560,13 @@ fn normal(
 
     Examples:
             # Default: N(0, 0.01)
-            var weights = normal(List[Int](100, 50))
+            var weights = normal([100, 50])
 
             # Custom: N(0.5, 0.1)
-            var w = normal(List[Int](10, 10), mean=0.5, std=0.1)
+            var w = normal([10, 10], mean=0.5, std=0.1)
 
             # With fixed seed
-            var w_repro = normal(List[Int](50, 50), seed_val=42)
+            var w_repro = normal([50, 50], seed_val=42)
 
         Issue: #268-272 - Uniform/Normal basic distributions.
     """
@@ -614,10 +614,10 @@ fn constant(
 
     Examples:
             # Initialize with ones
-            var ones = constant(List[Int](10, 10), 1.0)
+            var ones = constant([10, 10], 1.0)
 
             # Initialize with custom value
-            var custom = constant(List[Int](5, 5), 0.5)
+            var custom = constant([5, 5], 0.5)
 
             # Initialize bias with 0.01
             var bias = constant(List[Int](), 0.01)

@@ -13,10 +13,10 @@ Example:
     from shared.core import ExTensor
 
     # Create a random tensor
-    var weights = random_tensor(List[Int](10, 5), DType.float32)
+    var weights = random_tensor([10, 5], DType.float32)
 
     # Create normally distributed data
-    var features = random_normal(List[Int](100, 20), mean=0.0, std=1.0)
+    var features = random_normal([100, 20], mean=0.0, std=1.0)
 
     # Create classification data
     var (X, y) = synthetic_classification_data(100, 10, 3)
@@ -47,7 +47,7 @@ fn random_tensor(
 
         Example:
             ```mojo
-            var weights = random_tensor(List[Int](10, 5), DType.float32)
+            var weights = random_tensor([10, 5], DType.float32)
             # Creates 10x5 tensor with random values in [0, 1)
             ```
 
@@ -111,7 +111,7 @@ fn random_uniform(
 
         Example:
             ```mojo
-            var data = random_uniform(List[Int](100, 20), low=-1.0, high=1.0)
+            var data = random_uniform([100, 20], low=-1.0, high=1.0)
             # Creates 100x20 tensor with random values in [-1.0, 1.0)
             ```
 
@@ -181,7 +181,7 @@ fn random_normal(
 
         Example:
             ```mojo
-            var weights = random_normal(List[Int](784, 256), mean=0.0, std=0.01)
+            var weights = random_normal([784, 256], mean=0.0, std=0.01)
             # Creates 784x256 tensor with normally distributed values
             ```
 

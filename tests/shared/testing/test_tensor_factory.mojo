@@ -29,7 +29,7 @@ from shared.testing.assertions import (
 
 fn test_zeros_tensor_float32() raises:
     """Test zeros_tensor creates float32 tensor with all zeros."""
-    var shape = List[Int](10, 5)
+    var shape = [10, 5]
     var tensor = zeros_tensor(shape, DType.float32)
 
     # Check shape
@@ -46,7 +46,7 @@ fn test_zeros_tensor_float32() raises:
 
 fn test_zeros_tensor_int32() raises:
     """Test zeros_tensor creates int32 tensor with all zeros."""
-    var shape = List[Int](5, 4)
+    var shape = [5, 4]
     var tensor = zeros_tensor(shape, DType.int32)
 
     # Check shape
@@ -63,14 +63,14 @@ fn test_zeros_tensor_int32() raises:
 
 fn test_zeros_tensor_1d() raises:
     """Test zeros_tensor with 1D shape."""
-    var shape = List[Int](10)
+    var shape = [10]
     var tensor = zeros_tensor(shape, DType.float32)
     assert_shape_equal(tensor.shape(), shape)
 
 
 fn test_zeros_tensor_3d() raises:
     """Test zeros_tensor with 3D shape."""
-    var shape = List[Int](2, 3, 4)
+    var shape = [2, 3, 4]
     var tensor = zeros_tensor(shape, DType.float32)
     assert_shape_equal(tensor.shape(), shape)
 
@@ -82,7 +82,7 @@ fn test_zeros_tensor_3d() raises:
 
 fn test_ones_tensor_float32() raises:
     """Test ones_tensor creates float32 tensor with all ones."""
-    var shape = List[Int](10, 5)
+    var shape = [10, 5]
     var tensor = ones_tensor(shape, DType.float32)
 
     # Check shape
@@ -99,7 +99,7 @@ fn test_ones_tensor_float32() raises:
 
 fn test_ones_tensor_int32() raises:
     """Test ones_tensor creates int32 tensor with all ones."""
-    var shape = List[Int](5, 4)
+    var shape = [5, 4]
     var tensor = ones_tensor(shape, DType.int32)
 
     # Check shape
@@ -116,14 +116,14 @@ fn test_ones_tensor_int32() raises:
 
 fn test_ones_tensor_1d() raises:
     """Test ones_tensor with 1D shape."""
-    var shape = List[Int](10)
+    var shape = [10]
     var tensor = ones_tensor(shape, DType.float32)
     assert_shape_equal(tensor.shape(), shape)
 
 
 fn test_ones_tensor_3d() raises:
     """Test ones_tensor with 3D shape."""
-    var shape = List[Int](2, 3, 4)
+    var shape = [2, 3, 4]
     var tensor = ones_tensor(shape, DType.float32)
     assert_shape_equal(tensor.shape(), shape)
 
@@ -135,7 +135,7 @@ fn test_ones_tensor_3d() raises:
 
 fn test_full_tensor_float32_positive() raises:
     """Test full_tensor creates float32 tensor with specified positive value."""
-    var shape = List[Int](10, 5)
+    var shape = [10, 5]
     var fill_value = 3.14
     var tensor = full_tensor(shape, fill_value, DType.float32)
 
@@ -153,7 +153,7 @@ fn test_full_tensor_float32_positive() raises:
 
 fn test_full_tensor_float32_negative() raises:
     """Test full_tensor creates float32 tensor with specified negative value."""
-    var shape = List[Int](5, 4)
+    var shape = [5, 4]
     var fill_value = -2.71
     var tensor = full_tensor(shape, fill_value, DType.float32)
 
@@ -165,7 +165,7 @@ fn test_full_tensor_float32_negative() raises:
 
 fn test_full_tensor_int32() raises:
     """Test full_tensor creates int32 tensor with specified value."""
-    var shape = List[Int](5, 4)
+    var shape = [5, 4]
     var fill_value = 42.0
     var tensor = full_tensor(shape, fill_value, DType.int32)
 
@@ -185,7 +185,7 @@ fn test_full_tensor_int32() raises:
 
 fn test_random_tensor_uniform_bounds_float32() raises:
     """Test random_tensor generates values within specified bounds."""
-    var shape = List[Int](100, 50)
+    var shape = [100, 50]
     var low = -1.0
     var high = 1.0
     var tensor = random_tensor(shape, DType.float32, low, high)
@@ -203,7 +203,7 @@ fn test_random_tensor_uniform_bounds_float32() raises:
 
 fn test_random_tensor_default_bounds() raises:
     """Test random_tensor with default bounds [0, 1)."""
-    var shape = List[Int](50, 50)
+    var shape = [50, 50]
     var tensor = random_tensor(shape)
 
     # Check all values are in [0, 1)
@@ -215,7 +215,7 @@ fn test_random_tensor_default_bounds() raises:
 
 fn test_random_tensor_int32() raises:
     """Test random_tensor with int32 dtype."""
-    var shape = List[Int](100)
+    var shape = [100]
     var low = 0.0
     var high = 10.0
     var tensor = random_tensor(shape, DType.int32, low, high)
@@ -233,14 +233,14 @@ fn test_random_tensor_int32() raises:
 
 fn test_random_tensor_1d() raises:
     """Test random_tensor with 1D shape."""
-    var shape = List[Int](100)
+    var shape = [100]
     var tensor = random_tensor(shape, DType.float32, 0.0, 1.0)
     assert_shape_equal(tensor.shape(), shape)
 
 
 fn test_random_tensor_3d() raises:
     """Test random_tensor with 3D shape."""
-    var shape = List[Int](10, 10, 10)
+    var shape = [10, 10, 10]
     var tensor = random_tensor(shape, DType.float32, 0.0, 1.0)
     assert_shape_equal(tensor.shape(), shape)
 
@@ -252,7 +252,7 @@ fn test_random_tensor_3d() raises:
 
 fn test_random_normal_tensor_default_params() raises:
     """Test random_normal_tensor with default mean=0, std=1."""
-    var shape = List[Int](1000)
+    var shape = [1000]
     var tensor = random_normal_tensor(shape, DType.float32)
 
     # Check shape and dtype
@@ -280,7 +280,7 @@ fn test_random_normal_tensor_default_params() raises:
 
 fn test_random_normal_tensor_custom_mean_std() raises:
     """Test random_normal_tensor with custom mean and std."""
-    var shape = List[Int](500)
+    var shape = [500]
     var mean = 5.0
     var std = 2.0
     var tensor = random_normal_tensor(shape, DType.float32, mean, std)
@@ -310,7 +310,7 @@ fn test_random_normal_tensor_custom_mean_std() raises:
 
 fn test_random_normal_tensor_int32() raises:
     """Test random_normal_tensor with int32 dtype."""
-    var shape = List[Int](100)
+    var shape = [100]
     var tensor = random_normal_tensor(shape, DType.int32, mean=0.0, std=1.0)
 
     # Check dtype
@@ -333,14 +333,14 @@ fn test_random_normal_tensor_int32() raises:
 
 fn test_random_normal_tensor_1d() raises:
     """Test random_normal_tensor with 1D shape."""
-    var shape = List[Int](100)
+    var shape = [100]
     var tensor = random_normal_tensor(shape, DType.float32)
     assert_shape_equal(tensor.shape(), shape)
 
 
 fn test_random_normal_tensor_3d() raises:
     """Test random_normal_tensor with 3D shape."""
-    var shape = List[Int](5, 5, 5)
+    var shape = [5, 5, 5]
     var tensor = random_normal_tensor(shape, DType.float32)
     assert_shape_equal(tensor.shape(), shape)
 
@@ -352,7 +352,7 @@ fn test_random_normal_tensor_3d() raises:
 
 fn test_set_tensor_value_float32() raises:
     """Test set_tensor_value with float32 dtype."""
-    var shape = List[Int](10, 5)
+    var shape = [10, 5]
     var tensor = zeros_tensor(shape, DType.float32)
 
     # Set specific values
@@ -372,7 +372,7 @@ fn test_set_tensor_value_float32() raises:
 
 fn test_set_tensor_value_int32() raises:
     """Test set_tensor_value with int32 dtype."""
-    var shape = List[Int](10)
+    var shape = [10]
     var tensor = zeros_tensor(shape, DType.int32)
 
     # Set specific values
@@ -392,7 +392,7 @@ fn test_set_tensor_value_int32() raises:
 
 fn test_set_tensor_value_overwrite() raises:
     """Test set_tensor_value overwrites previous values."""
-    var shape = List[Int](5)
+    var shape = [5]
     var tensor = ones_tensor(shape, DType.float32)
 
     # Verify all ones initially
@@ -413,7 +413,7 @@ fn test_set_tensor_value_overwrite() raises:
 
 fn test_set_tensor_value_float64() raises:
     """Test set_tensor_value with float64 dtype."""
-    var shape = List[Int](5)
+    var shape = [5]
     var tensor = zeros_tensor(shape, DType.float64)
 
     set_tensor_value(tensor, 2, 6.28, DType.float64)
@@ -424,7 +424,7 @@ fn test_set_tensor_value_float64() raises:
 
 fn test_set_tensor_value_multiple_indices() raises:
     """Test setting multiple values in same tensor."""
-    var shape = List[Int](10)
+    var shape = [10]
     var tensor = zeros_tensor(shape, DType.float32)
 
     # Set multiple values
@@ -446,7 +446,7 @@ fn test_set_tensor_value_multiple_indices() raises:
 fn test_tensor_factory_workflow() raises:
     """Test typical workflow using multiple factory functions."""
     # Create tensors for a simple test scenario
-    var shape = List[Int](10, 10)
+    var shape = [10, 10]
 
     # Create various tensors
     var zeros = zeros_tensor(shape, DType.float32)
@@ -472,7 +472,7 @@ fn test_tensor_factory_workflow() raises:
 
 fn test_tensor_factory_all_dtypes() raises:
     """Test tensor factories work with multiple dtypes."""
-    var shape = List[Int](5)
+    var shape = [5]
     var dtypes = List[DType]()
     dtypes.append(DType.float32)
     dtypes.append(DType.float64)

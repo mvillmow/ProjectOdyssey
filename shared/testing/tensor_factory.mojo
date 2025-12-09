@@ -14,11 +14,11 @@ Example:
     from shared.core import ExTensor
 
     # Create tensors with unified factory
-    var zeros = tensor_factory.zeros_tensor(List[Int](10, 5), DType.float32)
-    var ones = tensor_factory.ones_tensor(List[Int](10, 5), DType.float32)
-    var random = tensor_factory.random_tensor(List[Int](10, 5), DType.float32, 0.0, 1.0)
+    var zeros = tensor_factory.zeros_tensor([10, 5], DType.float32)
+    var ones = tensor_factory.ones_tensor([10, 5], DType.float32)
+    var random = tensor_factory.random_tensor([10, 5], DType.float32, 0.0, 1.0)
     var normal = tensor_factory.random_normal_tensor(
-        List[Int](10, 5), DType.float32, mean=0.0, std=1.0
+        [10, 5], DType.float32, mean=0.0, std=1.0
     )
 
     # Set specific values with automatic dtype conversion
@@ -46,7 +46,7 @@ fn zeros_tensor(shape: List[Int], dtype: DType) raises -> ExTensor:
         ExTensor with all elements initialized to zero.
 
     Example:
-        var weights = zeros_tensor(List[Int](10, 5), DType.float32)
+        var weights = zeros_tensor([10, 5], DType.float32)
         # Creates 10x5 tensor filled with zeros
     """
     return zeros(shape, dtype)
@@ -63,7 +63,7 @@ fn ones_tensor(shape: List[Int], dtype: DType) raises -> ExTensor:
         ExTensor with all elements initialized to one.
 
     Example:
-        var weights = ones_tensor(List[Int](10, 5), DType.float32)
+        var weights = ones_tensor([10, 5], DType.float32)
         # Creates 10x5 tensor filled with ones
     """
     return ones(shape, dtype)
@@ -83,7 +83,7 @@ fn full_tensor(
         ExTensor with all elements initialized to fill_value (converted to dtype).
 
     Example:
-        var weights = full_tensor(List[Int](10, 5), 3.14, DType.float32)
+        var weights = full_tensor([10, 5], 3.14, DType.float32)
         # Creates 10x5 tensor filled with 3.14
     """
     return full(shape, fill_value, dtype)
@@ -111,7 +111,7 @@ fn random_tensor(
 
     Example:
         var weights = random_tensor(
-            List[Int](10, 5), DType.float32, low=-1.0, high=1.0
+            [10, 5], DType.float32, low=-1.0, high=1.0
         )
         # Creates 10x5 tensor with random values in [-1.0, 1.0)
 
@@ -184,7 +184,7 @@ fn random_normal_tensor(
 
     Example:
         var weights = random_normal_tensor(
-            List[Int](784, 256), DType.float32, mean=0.0, std=0.01
+            [784, 256], DType.float32, mean=0.0, std=0.01
         )
         # Creates 784x256 tensor with normally distributed values
 
@@ -268,7 +268,7 @@ fn set_tensor_value(
         Error if index is out of bounds or dtype is unsupported.
 
     Example:
-        var tensor = zeros_tensor(List[Int](10), DType.float32)
+        var tensor = zeros_tensor([10], DType.float32)
         set_tensor_value(tensor, 0, 3.14, DType.float32)
         set_tensor_value(tensor, 5, 2.71, DType.float32)
 

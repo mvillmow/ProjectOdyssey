@@ -147,15 +147,11 @@ fn test_training_loop_simulation() raises:
     var w1_shape = List[Int]()
     w1_shape.append(input_dim)
     w1_shape.append(hidden_dim)
-    var w1 = kaiming_uniform(
-        input_dim, hidden_dim, w1_shape, seed_val=1
-    )
+    var w1 = kaiming_uniform(input_dim, hidden_dim, w1_shape, seed_val=1)
     var w2_shape = List[Int]()
     w2_shape.append(hidden_dim)
     w2_shape.append(output_dim)
-    var w2 = xavier_uniform(
-        hidden_dim, output_dim, w2_shape, seed_val=2
-    )
+    var w2 = xavier_uniform(hidden_dim, output_dim, w2_shape, seed_val=2)
 
     # Setup metrics
     var accuracy = AccuracyMetric()
@@ -366,13 +362,13 @@ fn test_multi_layer_network_integration() raises:
     var layer_sizes: List[Int] = [784, 256, 128, 10]
 
     # Initialize all layers with appropriate methods
-    var w1 = kaiming_uniform(784, 256, List[Int](784, 256), seed_val=1)
+    var w1 = kaiming_uniform(784, 256, [784, 256], seed_val=1)
     var b1 = constant(List[Int](), 0.0)
 
-    var w2 = kaiming_uniform(256, 128, List[Int](256, 128), seed_val=2)
+    var w2 = kaiming_uniform(256, 128, [256, 128], seed_val=2)
     var b2 = constant(List[Int](), 0.0)
 
-    var w3 = xavier_uniform(128, 10, List[Int](128, 10), seed_val=3)
+    var w3 = xavier_uniform(128, 10, [128, 10], seed_val=3)
     var b3 = constant(List[Int](), 0.0)
 
     # Verify all weights initialized
@@ -381,7 +377,7 @@ fn test_multi_layer_network_integration() raises:
     assert_equal(w3.numel(), 128 * 10, "Layer 3 weights")
 
     # Create fake mini-batch (batch_size=4)
-    var input = normal(List[Int](4, 784), seed_val=42)
+    var input = normal([4, 784], seed_val=42)
     var labels_shape = List[Int]()
     labels_shape.append(4)
     var labels = ExTensor(labels_shape, DType.int32)

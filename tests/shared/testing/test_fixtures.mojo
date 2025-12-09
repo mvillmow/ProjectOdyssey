@@ -161,52 +161,52 @@ fn test_create_test_targets() raises:
 
 fn test_assert_tensor_shape_valid() raises:
     """Test assert_tensor_shape with matching shapes."""
-    var tensor = ones(List[Int](32, 10), DType.float32)
-    var expected = List[Int](32, 10)
+    var tensor = ones([32, 10], DType.float32)
+    var expected: List[Int] = [32, 10]
     assert_true(assert_tensor_shape(tensor, expected))
 
 
 fn test_assert_tensor_shape_invalid_dimensions() raises:
     """Test assert_tensor_shape with wrong number of dimensions."""
-    var tensor = ones(List[Int](32, 10), DType.float32)
-    var expected = List[Int](32, 10, 5)
+    var tensor = ones([32, 10], DType.float32)
+    var expected: List[Int] = [32, 10, 5]
     assert_true(not assert_tensor_shape(tensor, expected))
 
 
 fn test_assert_tensor_shape_invalid_size() raises:
     """Test assert_tensor_shape with wrong dimension sizes."""
-    var tensor = ones(List[Int](32, 10), DType.float32)
-    var expected = List[Int](64, 10)
+    var tensor = ones([32, 10], DType.float32)
+    var expected: List[Int] = [64, 10]
     assert_true(not assert_tensor_shape(tensor, expected))
 
 
 fn test_assert_tensor_dtype_valid() raises:
     """Test assert_tensor_dtype with matching dtype."""
-    var tensor = ones(List[Int](32, 10), DType.float32)
+    var tensor = ones([32, 10], DType.float32)
     assert_true(assert_tensor_dtype(tensor, DType.float32))
 
 
 fn test_assert_tensor_dtype_invalid() raises:
     """Test assert_tensor_dtype with mismatched dtype."""
-    var tensor = ones(List[Int](32, 10), DType.float32)
+    var tensor = ones([32, 10], DType.float32)
     assert_true(not assert_tensor_dtype(tensor, DType.float64))
 
 
 fn test_assert_tensor_all_finite_valid() raises:
     """Test assert_tensor_all_finite with finite values."""
-    var tensor = ones(List[Int](32, 10), DType.float32)
+    var tensor = ones([32, 10], DType.float32)
     assert_true(assert_tensor_all_finite(tensor))
 
 
 fn test_assert_tensor_not_all_zeros_valid() raises:
     """Test assert_tensor_not_all_zeros with non-zero values."""
-    var tensor = ones(List[Int](32, 10), DType.float32)
+    var tensor = ones([32, 10], DType.float32)
     assert_true(assert_tensor_not_all_zeros(tensor))
 
 
 fn test_assert_tensor_not_all_zeros_invalid() raises:
     """Test assert_tensor_not_all_zeros with all zeros."""
-    var tensor = zeros(List[Int](32, 10), DType.float32)
+    var tensor = zeros([32, 10], DType.float32)
     assert_true(not assert_tensor_not_all_zeros(tensor))
 
 

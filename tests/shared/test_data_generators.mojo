@@ -257,14 +257,14 @@ fn test_synthetic_classification_data_shape_features() raises:
     """Test synthetic_classification_data produces correct feature shape."""
     var (X, y) = synthetic_classification_data(100, 20, 3)
 
-    assert_shape(X, List[Int](100, 20), "Features should have shape [100, 20]")
+    assert_shape(X, [100, 20], "Features should have shape [100, 20]")
 
 
 fn test_synthetic_classification_data_shape_labels() raises:
     """Test synthetic_classification_data produces correct label shape."""
     var (X, y) = synthetic_classification_data(100, 20, 3)
 
-    assert_shape(y, List[Int](100), "Labels should have shape [100]")
+    assert_shape(y, [100], "Labels should have shape [100]")
 
 
 fn test_synthetic_classification_data_dtype_features() raises:
@@ -296,10 +296,8 @@ fn test_synthetic_classification_data_single_sample() raises:
     """Test synthetic_classification_data with minimal size."""
     var (X, y) = synthetic_classification_data(1, 1, 1)
 
-    assert_shape(
-        X, List[Int](1, 1), "Minimal features should have shape [1, 1]"
-    )
-    assert_shape(y, List[Int](1), "Minimal labels should have shape [1]")
+    assert_shape(X, [1, 1], "Minimal features should have shape [1, 1]")
+    assert_shape(y, [1], "Minimal labels should have shape [1]")
 
 
 fn test_synthetic_classification_data_many_classes() raises:
@@ -317,9 +315,7 @@ fn test_synthetic_classification_data_high_dimensions() raises:
     """Test synthetic_classification_data with high-dimensional features."""
     var (X, y) = synthetic_classification_data(50, 100, 5)
 
-    assert_shape(
-        X, List[Int](50, 100), "Should handle high-dimensional features"
-    )
+    assert_shape(X, [50, 100], "Should handle high-dimensional features")
 
 
 # ============================================================================

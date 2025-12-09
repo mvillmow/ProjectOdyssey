@@ -4,6 +4,6 @@
 
 ```python
 import ml_odyssey
-```text
+```
 
 More examples.

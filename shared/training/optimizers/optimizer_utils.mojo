@@ -42,8 +42,8 @@ fn initialize_optimizer_state(
             ```mojo
             # For Adam, which needs first moment (m) and second moment (v)
             var shapes = List[List[Int]]()
-            shapes.append(List[Int](784, 128))  # Weight shape
-            shapes.append(List[Int](128))       # Bias shape.
+            shapes.append([784, 128])  # Weight shape
+            shapes.append([128])       # Bias shape.
 
             var states = initialize_optimizer_state(shapes, num_states=2)
             # states[0] = [m_weight, v_weight]
@@ -134,7 +134,7 @@ fn compute_weight_decay_term(
 
         Example:
             ```mojo
-            var params = xavier_uniform(List[Int](784, 128), DType.float32)
+            var params = xavier_uniform([784, 128], DType.float32)
             var wd_term = compute_weight_decay_term(params, weight_decay=0.0001)
             # wd_term = 0.0001 * params
             ```
@@ -160,7 +160,7 @@ fn apply_weight_decay(mut params: ExTensor, weight_decay: Float64) raises:
 
         Example:
             ```mojo
-            var params = xavier_uniform(List[Int](784, 128), DType.float32)
+            var params = xavier_uniform([784, 128], DType.float32)
             apply_weight_decay(params, weight_decay=0.01)
             # params *= (1 - 0.01) = 0.99
             ```
@@ -200,7 +200,7 @@ fn scale_tensor(tensor: ExTensor, scale: Float64) raises -> ExTensor:
 
         Example:
             ```mojo
-            var grad = zeros(List[Int](100), DType.float32)
+            var grad = zeros([100], DType.float32)
             var scaled = scale_tensor(grad, scale=0.1)
             # scaled = 0.1 * grad
             ```
@@ -220,7 +220,7 @@ fn scale_tensor_inplace(mut tensor: ExTensor, scale: Float64) raises:
 
         Example:
             ```mojo
-            var grad = zeros(List[Int](100), DType.float32)
+            var grad = zeros([100], DType.float32)
             scale_tensor_inplace(grad, scale=0.5)
             # grad *= 0.5
             ```
@@ -243,7 +243,7 @@ fn compute_tensor_norm(tensor: ExTensor) raises -> Float64:
 
         Example:
             ```mojo
-            var grad = full(List[Int](100), 1.0, DType.float32)
+            var grad = full([100], 1.0, DType.float32)
             var norm = compute_tensor_norm(grad)
             # norm = sqrt(100) = 10.0
             ```
@@ -274,8 +274,8 @@ fn compute_global_norm(tensors: List[ExTensor]) raises -> Float64:
 
         Example:
             ```mojo
-            var grad1 = full(List[Int](100), 1.0, DType.float32)
-            var grad2 = full(List[Int](50), 1.0, DType.float32)
+            var grad1 = full([100], 1.0, DType.float32)
+            var grad2 = full([50], 1.0, DType.float32)
             var tensors : List[ExTensor] = [grad1, grad2]
 
             var global_norm = compute_global_norm(tensors)
@@ -311,7 +311,7 @@ fn normalize_tensor_to_unit_norm(mut tensor: ExTensor) raises:
 
         Example:
             ```mojo
-            var grad = full(List[Int](100), 2.0, DType.float32)
+            var grad = full([100], 2.0, DType.float32)
             normalize_tensor_to_unit_norm(grad)
             # grad now has L2 norm = 1.0
             ```
@@ -345,7 +345,7 @@ fn clip_tensor_norm(mut tensor: ExTensor, max_norm: Float64) raises -> Float64:
 
         Example:
             ```mojo
-            var grad = full(List[Int](100), 1.0, DType.float32)
+            var grad = full([100], 1.0, DType.float32)
             var original_norm = clip_tensor_norm(grad, max_norm=1.0)
             # original_norm ≈ 10.0
             # grad is now scaled to norm = 1.0
@@ -386,8 +386,8 @@ fn clip_global_norm(
 
         Example:
             ```mojo
-            var grad1 = full(List[Int](100), 1.0, DType.float32)
-            var grad2 = full(List[Int](50), 1.0, DType.float32)
+            var grad1 = full([100], 1.0, DType.float32)
+            var grad2 = full([50], 1.0, DType.float32)
             var grads : List[ExTensor] = [grad1, grad2]
 
             var global_norm = clip_global_norm(grads, max_norm=5.0)

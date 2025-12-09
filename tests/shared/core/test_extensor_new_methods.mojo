@@ -21,10 +21,7 @@ from math import sqrt
 
 fn test_get_float32_basic() raises:
     """Test _get_float32() returns correct values for Float32 tensor."""
-    var shape = List[Int]()
-    shape.append(3)
-    shape.append(4)
-    var tensor = zeros(shape, DType.float32)
+    var tensor = zeros([3, 4], DType.float32)
 
     # Set some test values using _set_float64
     tensor._set_float64(0, 1.5)
@@ -45,9 +42,7 @@ fn test_get_float32_basic() raises:
 fn test_get_float32_dtype_conversions() raises:
     """Test _get_float32() handles different dtypes correctly."""
     # Test Float16 -> Float32
-    var shape_f16 = List[Int]()
-    shape_f16.append(5)
-    var tensor_f16 = zeros(shape_f16, DType.float16)
+    var tensor_f16 = zeros([5], DType.float16)
     tensor_f16._set_float64(2, 1.5)
     var val_f16 = tensor_f16._get_float32(2)
     assert_almost_equal(
@@ -55,9 +50,7 @@ fn test_get_float32_dtype_conversions() raises:
     )  # Lower precision for Float16
 
     # Test Float64 -> Float32
-    var shape_f64 = List[Int]()
-    shape_f64.append(5)
-    var tensor_f64 = zeros(shape_f64, DType.float64)
+    var tensor_f64 = zeros([5], DType.float64)
     tensor_f64._set_float64(2, 1.5)
     var val_f64 = tensor_f64._get_float32(2)
     assert_almost_equal(Float64(val_f64), 1.5, tolerance=1e-6)
@@ -70,10 +63,7 @@ fn test_get_float32_dtype_conversions() raises:
 
 fn test_set_float32_basic() raises:
     """Test _set_float32() stores values correctly in Float32 tensor."""
-    var shape = List[Int]()
-    shape.append(3)
-    shape.append(4)
-    var tensor = zeros(shape, DType.float32)
+    var tensor = zeros([3, 4], DType.float32)
 
     # Set values using _set_float32
     tensor._set_float32(0, Float32(1.5))
@@ -88,9 +78,7 @@ fn test_set_float32_basic() raises:
 
 fn test_set_float32_all_elements() raises:
     """Test _set_float32() works for all elements in tensor."""
-    var shape = List[Int]()
-    shape.append(10)
-    var tensor = zeros(shape, DType.float32)
+    var tensor = zeros([10], DType.float32)
 
     # Set all elements
     for i in range(10):
@@ -106,9 +94,7 @@ fn test_set_float32_all_elements() raises:
 fn test_set_float32_dtype_conversions() raises:
     """Test _set_float32() handles different dtypes correctly."""
     # Test Float16 (downcast from Float32)
-    var shape_f16 = List[Int]()
-    shape_f16.append(5)
-    var tensor_f16 = zeros(shape_f16, DType.float16)
+    var tensor_f16 = zeros([5], DType.float16)
     tensor_f16._set_float32(2, Float32(1.5))
     var val_f16 = tensor_f16._get_float64(2)
     assert_almost_equal(
@@ -116,9 +102,7 @@ fn test_set_float32_dtype_conversions() raises:
     )  # Lower precision for Float16
 
     # Test Float64 (upcast from Float32)
-    var shape_f64 = List[Int]()
-    shape_f64.append(5)
-    var tensor_f64 = zeros(shape_f64, DType.float64)
+    var tensor_f64 = zeros([5], DType.float64)
     tensor_f64._set_float32(2, Float32(1.5))
     var val_f64 = tensor_f64._get_float64(2)
     assert_almost_equal(val_f64, 1.5, tolerance=1e-6)
@@ -126,9 +110,7 @@ fn test_set_float32_dtype_conversions() raises:
 
 fn test_set_get_float32_roundtrip() raises:
     """Test _set_float32() -> _get_float32() roundtrip preserves values."""
-    var shape = List[Int]()
-    shape.append(20)
-    var tensor = zeros(shape, DType.float32)
+    var tensor = zeros([20], DType.float32)
 
     # Set values using _set_float32
     for i in range(20):
@@ -148,15 +130,12 @@ fn test_set_get_float32_roundtrip() raises:
 
 fn test_randn_basic_creation() raises:
     """Test randn() creates tensor with correct shape and dtype."""
-    var shape = List[Int]()
-    shape.append(3)
-    shape.append(4)
-    var tensor = randn(shape, DType.float32)
+    var tensor = randn([3, 4], DType.float32)
 
     # Verify shape
-    var result_shape = tensor.shape()
-    assert_equal(result_shape[0], 3)
-    assert_equal(result_shape[1], 4)
+    var shape = tensor.shape()
+    assert_equal(shape[0], 3)
+    assert_equal(shape[1], 4)
 
     # Verify dtype
     assert_true(tensor.dtype() == DType.float32)
@@ -167,9 +146,7 @@ fn test_randn_basic_creation() raises:
 
 fn test_randn_1d_tensor() raises:
     """Test randn() works for 1D tensors."""
-    var shape = List[Int]()
-    shape.append(100)
-    var tensor = randn(shape, DType.float32)
+    var tensor = randn([100], DType.float32)
 
     assert_equal(tensor.numel(), 100)
     assert_equal(len(tensor.shape()), 1)
@@ -178,9 +155,7 @@ fn test_randn_1d_tensor() raises:
 
 fn test_randn_values_nonzero() raises:
     """Test randn() produces non-zero values (stochastic test)."""
-    var shape = List[Int]()
-    shape.append(100)
-    var tensor = randn(shape, DType.float32)
+    var tensor = randn([100], DType.float32)
 
     # Count non-zero values (should be most/all for random normal distribution)
     var nonzero_count = 0
@@ -199,9 +174,7 @@ fn test_randn_distribution_properties() raises:
     This is a stochastic test that may occasionally fail due to randomness,
     but should pass most of the time for large sample sizes.
     """
-    var shape = List[Int]()
-    shape.append(10000)
-    var tensor = randn(shape, DType.float32)
+    var tensor = randn([10000], DType.float32)
 
     # Calculate mean
     var sum = Float64(0.0)
@@ -229,63 +202,41 @@ fn test_randn_distribution_properties() raises:
 fn test_randn_different_shapes() raises:
     """Test randn() works with various tensor shapes."""
     # 2D
-    var shape_2d = List[Int]()
-    shape_2d.append(5)
-    shape_2d.append(10)
-    var tensor_2d = randn(shape_2d, DType.float32)
+    var tensor_2d = randn([5, 10], DType.float32)
     assert_equal(tensor_2d.numel(), 50)
 
     # 3D
-    var shape_3d = List[Int]()
-    shape_3d.append(2)
-    shape_3d.append(3)
-    shape_3d.append(4)
-    var tensor_3d = randn(shape_3d, DType.float32)
+    var tensor_3d = randn([2, 3, 4], DType.float32)
     assert_equal(tensor_3d.numel(), 24)
 
     # 4D (batch of images)
-    var shape_4d = List[Int]()
-    shape_4d.append(8)
-    shape_4d.append(3)
-    shape_4d.append(28)
-    shape_4d.append(28)
-    var tensor_4d = randn(shape_4d, DType.float32)
+    var tensor_4d = randn([8, 3, 28, 28], DType.float32)
     assert_equal(tensor_4d.numel(), 18816)
 
 
 fn test_randn_different_dtypes() raises:
     """Test randn() works with different floating-point dtypes."""
     # Float16
-    var shape_f16 = List[Int]()
-    shape_f16.append(10)
-    var tensor_f16 = randn(shape_f16, DType.float16)
+    var tensor_f16 = randn([10], DType.float16)
     assert_true(tensor_f16.dtype() == DType.float16)
 
     # Float32
-    var shape_f32 = List[Int]()
-    shape_f32.append(10)
-    var tensor_f32 = randn(shape_f32, DType.float32)
+    var tensor_f32 = randn([10], DType.float32)
     assert_true(tensor_f32.dtype() == DType.float32)
 
     # Float64
-    var shape_f64 = List[Int]()
-    shape_f64.append(10)
-    var tensor_f64 = randn(shape_f64, DType.float64)
+    var tensor_f64 = randn([10], DType.float64)
     assert_true(tensor_f64.dtype() == DType.float64)
 
 
 fn test_randn_small_tensor() raises:
     """Test randn() works for very small tensors (edge case)."""
     # Single element
-    var shape_1 = List[Int]()
-    shape_1.append(1)
-    var tensor_1 = randn(shape_1, DType.float32)
+    var tensor_1 = randn([1], DType.float32)
     assert_equal(tensor_1.numel(), 1)
 
     # Two elements
-    var shape_2 = List[Int]()
-    shape_2.append(2)
-    var tensor_2 = randn(shape_2, DType.float32)
+    var tensor_2 = randn([2], DType.float32)
     assert_equal(tensor_2.numel(), 2)
 
 
@@ -301,9 +252,7 @@ fn test_integration_simplemlp_get_weights() raises:
     needs to flatten weights into a tensor using _set_float32().
     """
     # Create tensor to hold flattened weights
-    var shape = List[Int]()
-    shape.append(100)
-    var weights_tensor = zeros(shape, DType.float32)
+    var weights_tensor = zeros([100], DType.float32)
 
     # Simulate setting weights using _set_float32
     for i in range(100):
@@ -323,10 +272,7 @@ fn test_integration_randn_initialization() raises:
     """
     # Initialize "layer" weights with Xavier/Glorot initialization pattern
     # (though randn() is just N(0,1), real Xavier would scale by sqrt(fan_in))
-    var shape = List[Int]()
-    shape.append(64)
-    shape.append(128)
-    var layer_weights = randn(shape, DType.float32)
+    var layer_weights = randn([64, 128], DType.float32)
 
     # Verify shape is correct
     assert_equal(layer_weights.numel(), 64 * 128)

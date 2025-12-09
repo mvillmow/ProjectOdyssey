@@ -88,7 +88,7 @@ fn test_argmax_axis_2d_axis0() raises:
     t._data.bitcast[Float32]()[11] = 100.0
 
     var result = argmax(t, axis=0)
-    assert_shape(result, List[Int](4))
+    assert_shape(result, [4])
 
     # All should be 2 (row index 2, which is linear indices 8-11)
     for i in range(4):
@@ -110,7 +110,7 @@ fn test_argmax_axis_2d_axis1() raises:
     t._data.bitcast[Float32]()[11] = 30.0
 
     var result = argmax(t, axis=1)
-    assert_shape(result, List[Int](3))
+    assert_shape(result, [3])
     assert_equal_int(Int(result._get_int64(0)), 3)
     assert_equal_int(Int(result._get_int64(1)), 3)
     assert_equal_int(Int(result._get_int64(2)), 3)
@@ -127,10 +127,7 @@ fn test_argmax_axis_3d() raises:
     t._data.bitcast[Float32]()[5] = 50.0
 
     var result = argmax(t, axis=2)
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(3)
-    assert_shape(result, shape)
+    assert_shape(result, [2, 3])
 
 
 # ============================================================================
@@ -190,7 +187,7 @@ fn test_top_k_values_and_indices() raises:
     var values = result[0]
 
     # Check shape of values
-    assert_shape(values, List[Int](3))
+    assert_shape(values, [3])
 
     # Check values are in correct order (descending)
     assert_close_float(values._get_float64(0), 9.0)
@@ -209,7 +206,7 @@ fn test_top_k_multidimensional() raises:
     var result = top_k(t, 2)
     var values = result[0]
 
-    assert_shape(values, List[Int](2))
+    assert_shape(values, [2])
     assert_close_float(values._get_float64(0), 11.0)
     assert_close_float(values._get_float64(1), 10.0)
 

@@ -70,8 +70,8 @@ fn test_training_loop_single_batch() raises:
     # var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     # #
     # # Create single batch
-    # var inputs = ones(List[Int](4, 10), DType.float32)  # batch_size=4, input_dim=10
-    # var targets = zeros(List[Int](4, 1), DType.float32)  # batch_size=4, output_dim=1
+    # var inputs = ones([4, 10], DType.float32)  # batch_size=4, input_dim=10
+    # var targets = zeros([4, 1], DType.float32)  # batch_size=4, output_dim=1
     # #
     # # Get initial weights
     # var initial_weights = model.get_weights().copy()
@@ -163,7 +163,7 @@ fn test_training_loop_forward_pass() raises:
     # var model = create_simple_model()
     # var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     # #
-    # # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros(List[Int](8, 10), DType.float32)  # batch_size=8
+    # # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros([8, 10], DType.float32)  # batch_size=8
     # #
     # # Execute forward pass
     # var outputs = training_loop.forward(inputs)
@@ -185,7 +185,7 @@ fn test_training_loop_forward_batches_independently() raises:
     # var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     # #
     # # Create batch
-    # # TODO(ExTensor): Implement randn - var batch_input = ExTensor.zeros(List[Int](4, 10), DType.float32)
+    # # TODO(ExTensor): Implement randn - var batch_input = ExTensor.zeros([4, 10], DType.float32)
     # #
     # # Forward pass on batch
     # var batch_output = training_loop.forward(batch_input)
@@ -258,8 +258,8 @@ fn test_training_loop_loss_scalar() raises:
     # TODO: Uncomment when TrainingLoop and ExTensor.randn are available
     # var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     # #
-    # # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros(List[Int](10, 5), DType.float32)
-    # # TODO(ExTensor): Implement randn - var targets = ExTensor.zeros(List[Int](10, 1), DType.float32)
+    # # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros([10, 5], DType.float32)
+    # # TODO(ExTensor): Implement randn - var targets = ExTensor.zeros([10, 1], DType.float32)
     # #
     # var loss = training_loop.step(inputs, targets)
     # #
@@ -290,8 +290,8 @@ fn test_training_loop_backward_pass() raises:
     # var model = create_simple_model()
     # var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     # #
-    # # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros(List[Int](4, 10), DType.float32)
-    # # TODO(ExTensor): Implement randn - var targets = ExTensor.zeros(List[Int](4, 1), DType.float32)
+    # # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros([4, 10], DType.float32)
+    # # TODO(ExTensor): Implement randn - var targets = ExTensor.zeros([4, 1], DType.float32)
     # #
     # # Zero gradients
     # model.zero_grad()
@@ -318,8 +318,8 @@ fn test_training_loop_gradient_accumulation() raises:
     # var model = create_simple_model()
     # var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     # #
-    # # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros(List[Int](4, 10), DType.float32)
-    # # TODO(ExTensor): Implement randn - var targets = ExTensor.zeros(List[Int](4, 1), DType.float32)
+    # # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros([4, 10], DType.float32)
+    # # TODO(ExTensor): Implement randn - var targets = ExTensor.zeros([4, 1], DType.float32)
     # #
     # # First backward (gradients zeroed initially)
     # model.zero_grad()
@@ -367,8 +367,8 @@ fn test_training_loop_updates_weights() raises:
     # var initial_weights = model.parameters()[0]._data.copy()
     # #
     # # Training step
-    # # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros(List[Int](4, 10), DType.float32)
-    # # TODO(ExTensor): Implement randn - var targets = ExTensor.zeros(List[Int](4, 1), DType.float32)
+    # # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros([4, 10], DType.float32)
+    # # TODO(ExTensor): Implement randn - var targets = ExTensor.zeros([4, 1], DType.float32)
     # var loss = training_loop.step(inputs, targets)
     # #
     # # Get updated weights
@@ -402,8 +402,8 @@ fn test_training_loop_respects_learning_rate() raises:
     # var loop2 = TrainingLoop(model2^, optimizer2^, loss_fn^)
     # #
     # # Same inputs/targets
-    # # TODO(ExTensor): Implement randn with seed=42 - var inputs = ExTensor.zeros(List[Int](4, 10), DType.float32)
-    # # TODO(ExTensor): Implement randn with seed=43 - var targets = ExTensor.zeros(List[Int](4, 1), DType.float32)
+    # # TODO(ExTensor): Implement randn with seed=42 - var inputs = ExTensor.zeros([4, 10], DType.float32)
+    # # TODO(ExTensor): Implement randn with seed=43 - var targets = ExTensor.zeros([4, 1], DType.float32)
     # #
     # # Training steps
     # loop1.step(inputs, targets)
@@ -462,8 +462,8 @@ fn test_training_loop_averages_loss_over_batch() raises:
     # var training_loop = TrainingLoop(model^, optimizer^, MSELoss(reduction="mean"))
     # #
     # # Create batch
-    # # TODO(ExTensor): Implement randn - var batch_inputs = ExTensor.zeros(List[Int](4, 10), DType.float32)
-    # # TODO(ExTensor): Implement randn - var batch_targets = ExTensor.zeros(List[Int](4, 1), DType.float32)
+    # # TODO(ExTensor): Implement randn - var batch_inputs = ExTensor.zeros([4, 10], DType.float32)
+    # # TODO(ExTensor): Implement randn - var batch_targets = ExTensor.zeros([4, 1], DType.float32)
     # #
     # # Batch loss
     # var batch_loss = training_loop.compute_loss(
@@ -504,7 +504,7 @@ fn test_training_loop_property_loss_decreases_on_simple_problem() raises:
     # var training_loop = TrainingLoop(model^, optimizer^, MSELoss())
     # #
     # # Generate simple dataset
-    # # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros(List[Int](100, 10), DType.float32)
+    # # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros([100, 10], DType.float32)
     # var targets = inputs.sum(dim=1, keepdim=True)
     # var data_loader = create_dataloader(inputs, targets, batch_size=10)
     # #

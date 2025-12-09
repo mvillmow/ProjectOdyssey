@@ -47,11 +47,11 @@ fn clip_grad_value_(mut grad: ExTensor, max_value: Float64) raises:
             Error: If max_value is negative
 
     Examples:
-            var grad = ones(List[Int](3, 4), DType.float32)
+            var grad = ones([3, 4], DType.float32)
             clip_grad_value_(grad, max_value=1.0)
             # All elements in grad now in [-1.0, 1.0]
 
-            var grad2 = full(List[Int](2, 3), 5.0, DType.float32)
+            var grad2 = full([2, 3], 5.0, DType.float32)
             clip_grad_value_(grad2, max_value=1.0)
     """
     if max_value < 0.0:
@@ -86,12 +86,12 @@ fn clip_grad_norm_(mut grad: ExTensor, max_norm: Float64) raises -> Float64:
             Error: If max_norm is negative
 
     Examples:
-            var grad = full(List[Int](100,), 1.0, DType.float32)
+            var grad = full([100,], 1.0, DType.float32)
             var norm = clip_grad_norm_(grad, max_norm=1.0)
             # norm is approximately sqrt(100) = 10
             # grad is scaled by 1.0/10 = 0.1, all elements become 0.1
 
-            var grad2 = full(List[Int](10,), 0.05, DType.float32)
+            var grad2 = full([10,], 0.05, DType.float32)
             var norm2 = clip_grad_norm_(grad2, max_norm=1.0)
             # norm2 is approximately 0.158
             # Since 0.158 < 1.0, grad2 is unchanged.
@@ -144,8 +144,8 @@ fn clip_grad_global_norm_(
             Error: If max_norm is negative or grads list is empty
 
     Examples:
-            var grad1 = full(List[Int](10,), 1.0, DType.float32)
-            var grad2 = full(List[Int](20,), 1.0, DType.float32)
+            var grad1 = full([10,], 1.0, DType.float32)
+            var grad2 = full([20,], 1.0, DType.float32)
             var grads : List[ExTensor] = [grad1, grad2]
 
             var global_norm = clip_grad_global_norm_(grads, max_norm=1.0)

@@ -29,7 +29,7 @@ fn sum(
 
     Examples:
         ```
-            var t = ones(List[Int](3, 4), DType.float32)
+            var t = ones([3, 4], DType.float32)
             var s = sum(t, axis=-1)  # Sum all elements -> scalar 12.0
             var row_sums = sum(t, axis=1)  # Sum along rows -> shape (3,)
         ```
@@ -120,7 +120,7 @@ fn mean(
 
     Examples:
         ```
-            var t = ones(List[Int](3, 4), DType.float32)
+            var t = ones([3, 4], DType.float32)
             var m = mean(t)  # Mean of all elements -> scalar 1.0
         ```
     """
@@ -375,13 +375,13 @@ fn sum_backward(
     Examples:
         ```
             # Sum all elements
-            var x = ones(List[Int](3, 4), DType.float32)
+            var x = ones([3, 4], DType.float32)
             var y = sum(x, axis=-1)  # Scalar
             var grad_y = ones(List[Int](), DType.float32)  # Scalar gradient
             var grad_x = sum_backward(grad_y, x, axis=-1)  # Shape (3, 4)
 
             # Sum along specific axis
-            var x2 = ones(List[Int](3, 4), DType.float32)
+            var x2 = ones([3, 4], DType.float32)
             var y2 = sum(x2, axis=1)  # Shape (3,)
             var grad_y2 = ones(List[Int](), DType.float32)
             var grad_x2 = sum_backward(grad_y2, x2, axis=1)  # Shape (3, 4)
@@ -456,7 +456,7 @@ fn mean_backward(
 
     Examples:
         ```
-            var x = ones(List[Int](3, 4), DType.float32)
+            var x = ones([3, 4], DType.float32)
             var y = mean(x, axis=-1)  # Scalar mean
             var grad_y = ones(List[Int](), DType.float32)
             var grad_x = mean_backward(grad_y, x, axis=-1)

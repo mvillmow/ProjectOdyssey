@@ -22,8 +22,8 @@ fn equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
             Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
-            var a = full(List[Int](3, 4), 2.0, DType.float32)
-            var b = full(List[Int](3, 4), 2.0, DType.float32)
+            var a = full([3, 4], 2.0, DType.float32)
+            var b = full([3, 4], 2.0, DType.float32)
             var c = equal(a, b)  # Shape (3, 4), all True
     """
     if a.dtype() != b.dtype():
@@ -89,8 +89,8 @@ fn not_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
             Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
-            var a = full(List[Int](3, 4), 2.0, DType.float32)
-            var b = full(List[Int](3, 4), 3.0, DType.float32)
+            var a = full([3, 4], 2.0, DType.float32)
+            var b = full([3, 4], 3.0, DType.float32)
             var c = not_equal(a, b)  # Shape (3, 4), all True
     """
     if a.dtype() != b.dtype():
@@ -156,8 +156,8 @@ fn less(a: ExTensor, b: ExTensor) raises -> ExTensor:
             Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
-            var a = full(List[Int](3, 4), 2.0, DType.float32)
-            var b = full(List[Int](3, 4), 3.0, DType.float32)
+            var a = full([3, 4], 2.0, DType.float32)
+            var b = full([3, 4], 3.0, DType.float32)
             var c = less(a, b)  # Shape (3, 4), all True
     """
     if a.dtype() != b.dtype():
@@ -223,8 +223,8 @@ fn less_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
             Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
-            var a = full(List[Int](3, 4), 2.0, DType.float32)
-            var b = full(List[Int](3, 4), 2.0, DType.float32)
+            var a = full([3, 4], 2.0, DType.float32)
+            var b = full([3, 4], 2.0, DType.float32)
             var c = less_equal(a, b)  # Shape (3, 4), all True
     """
     if a.dtype() != b.dtype():
@@ -290,8 +290,8 @@ fn greater(a: ExTensor, b: ExTensor) raises -> ExTensor:
             Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
-            var a = full(List[Int](3, 4), 3.0, DType.float32)
-            var b = full(List[Int](3, 4), 2.0, DType.float32)
+            var a = full([3, 4], 3.0, DType.float32)
+            var b = full([3, 4], 2.0, DType.float32)
             var c = greater(a, b)  # Shape (3, 4), all True
     """
     if a.dtype() != b.dtype():
@@ -357,8 +357,8 @@ fn greater_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
             Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
-            var a = full(List[Int](3, 4), 3.0, DType.float32)
-            var b = full(List[Int](3, 4), 3.0, DType.float32)
+            var a = full([3, 4], 3.0, DType.float32)
+            var b = full([3, 4], 3.0, DType.float32)
             var c = greater_equal(a, b)  # Shape (3, 4), all True
     """
     if a.dtype() != b.dtype():
