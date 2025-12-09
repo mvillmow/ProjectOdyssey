@@ -45,23 +45,21 @@ jobs:
           restore-keys: |
             pixi-${{ runner.os }}-
 
+      - name: Install Just
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
+
       - name: Build Mojo packages
         run: |
           echo "Building Mojo packages..."
 
-          # Check if Mojo source files exist
-          if [ -d "src" ] && [ -n "$(find src -name '*.mojo' -o -name '*.🔥' 2>/dev/null)" ]; then
-            echo "Found Mojo source files. Building..."
-
-            # Compile all Mojo files to check for syntax errors
-            find src -name "*.mojo" -o -name "*.🔥" | while read -r file; do
-              echo "Checking: $file"
-              pixi run mojo build -Werror -I . "$file" -o "/tmp/$(basename "$file" .mojo)" || exit 1
-            done
-
-            echo "✅ All Mojo files compiled successfully"
+          # Check if shared package exists
+          if [ -d "shared" ]; then
+            echo "Building shared package using justfile..."
+            just ci-build
+            echo "✅ Shared package built successfully"
           else
-            echo "⚠️  No Mojo source files found yet"
+            echo "⚠️  No shared package found yet"
             echo "This is expected during initial development."
           fi
 
@@ -71,8 +69,8 @@ jobs:
 
           # Check if smoke tests exist
           if [ -d "tests/smoke" ]; then
-            echo "Running smoke tests..."
-            pixi run mojo test -Werror -I . tests/smoke/ --verbose || true
+            echo "Running smoke tests using justfile..."
+            just ci-test-group "tests/smoke" "test_*.mojo" || true
           else
             echo "⚠️  No smoke tests found yet (tests/smoke/)"
           fi
