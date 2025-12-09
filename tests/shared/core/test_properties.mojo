@@ -185,7 +185,7 @@ fn test_strides_1d() raises:
     shape.append(10)
     var t = ones(shape, DType.float32)
 
-    var strides: List[Int] = [t._strides]
+    var strides = t._strides.copy()
     assert_equal_int(len(strides), 1, "1D tensor should have 1 stride")
     assert_equal_int(strides[0], 1, "1D stride should be 1")
 
@@ -197,7 +197,7 @@ fn test_strides_2d_row_major() raises:
     shape.append(4)
     var t = ones(shape, DType.float32)
 
-    var strides: List[Int] = [t._strides]
+    var strides = t._strides.copy()
     assert_equal_int(len(strides), 2, "2D tensor should have 2 strides")
     assert_equal_int(strides[0], 4, "Outer stride should be 4 (row length)")
     assert_equal_int(strides[1], 1, "Inner stride should be 1")
@@ -211,7 +211,7 @@ fn test_strides_3d_row_major() raises:
     shape.append(4)
     var t = ones(shape, DType.float32)
 
-    var strides: List[Int] = [t._strides]
+    var strides = t._strides.copy()
     assert_equal_int(len(strides), 3, "3D tensor should have 3 strides")
     assert_equal_int(strides[0], 12, "Stride 0 should be 12 (3*4)")
     assert_equal_int(strides[1], 4, "Stride 1 should be 4")

@@ -765,14 +765,20 @@ struct SimpleMLP(Copyable, Model, Movable):
             var weights = mlp.get_weights()
         ```
         """
-        # Flatten all weight lists into a single list
+        # Flatten all weight and bias lists into a single list
         var all_weights = List[Float32]()
         for i in range(len(self.layer1_weights)):
             all_weights.append(self.layer1_weights[i])
+        for i in range(len(self.layer1_bias)):
+            all_weights.append(self.layer1_bias[i])
         for i in range(len(self.layer2_weights)):
             all_weights.append(self.layer2_weights[i])
+        for i in range(len(self.layer2_bias)):
+            all_weights.append(self.layer2_bias[i])
         for i in range(len(self.layer3_weights)):
             all_weights.append(self.layer3_weights[i])
+        for i in range(len(self.layer3_bias)):
+            all_weights.append(self.layer3_bias[i])
 
         # Create ExTensor from flattened weights
         var shape: List[Int] = [len(all_weights)]

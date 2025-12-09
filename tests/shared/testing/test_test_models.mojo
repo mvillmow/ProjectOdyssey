@@ -27,6 +27,7 @@ from shared.testing import (
     assert_equal,
     assert_shape_equal,
     assert_dtype_equal,
+    assert_close_float,
 )
 from shared.core import (
     ExTensor,
@@ -465,9 +466,9 @@ fn test_simple_linear_model_forward() raises:
 
     # Each output = sum(10 weights * 1.0) + bias
     # = 10 * 0.1 + 0.1 = 1.1
-    var expected = 10 * 0.1 + 0.1
+    var expected = Float64(10 * 0.1 + 0.1)
     for i in range(5):
-        assert_equal(output[i], Float32(expected))
+        assert_close_float(Float64(output[i]), expected)
 
 
 fn test_simple_linear_model_no_bias() raises:
@@ -483,8 +484,9 @@ fn test_simple_linear_model_no_bias() raises:
     assert_equal(len(output), 5)
 
     # Each output = sum(10 weights * 1.0) = 10 * 0.1 = 1.0
+    var expected = Float64(1.0)
     for i in range(5):
-        assert_equal(output[i], 1.0)
+        assert_close_float(Float64(output[i]), expected)
 
 
 fn test_simple_linear_model_num_parameters() raises:
@@ -625,18 +627,31 @@ fn main() raises:
     test_linear_model_batch_processing()
 
     print("Testing SimpleMLP...")
+    print("  test_simple_mlp_initialization_1_hidden...")
     test_simple_mlp_initialization_1_hidden()
+    print("  test_simple_mlp_initialization_2_hidden...")
     test_simple_mlp_initialization_2_hidden()
+    print("  test_simple_mlp_forward_1_hidden...")
     test_simple_mlp_forward_1_hidden()
+    print("  test_simple_mlp_forward_2_hidden...")
     test_simple_mlp_forward_2_hidden()
+    print("  test_simple_mlp_forward_extensor_1_hidden...")
     test_simple_mlp_forward_extensor_1_hidden()
+    print("  test_simple_mlp_forward_extensor_2_hidden...")
     test_simple_mlp_forward_extensor_2_hidden()
+    print("  test_simple_mlp_num_parameters_1_hidden...")
     test_simple_mlp_num_parameters_1_hidden()
+    print("  test_simple_mlp_num_parameters_2_hidden...")
     test_simple_mlp_num_parameters_2_hidden()
+    print("  test_simple_mlp_get_weights...")
     test_simple_mlp_get_weights()
+    print("  test_simple_mlp_parameters...")
     test_simple_mlp_parameters()
+    print("  test_simple_mlp_state_dict_1_hidden...")
     test_simple_mlp_state_dict_1_hidden()
+    print("  test_simple_mlp_state_dict_2_hidden...")
     test_simple_mlp_state_dict_2_hidden()
+    print("  test_simple_mlp_zero_grad...")
     test_simple_mlp_zero_grad()
 
     print("Testing MockLayer...")
@@ -647,10 +662,15 @@ fn main() raises:
     test_mock_layer_num_parameters()
 
     print("Testing SimpleLinearModel...")
+    print("  test_simple_linear_model_initialization...")
     test_simple_linear_model_initialization()
+    print("  test_simple_linear_model_custom_init_value...")
     test_simple_linear_model_custom_init_value()
+    print("  test_simple_linear_model_forward...")
     test_simple_linear_model_forward()
+    print("  test_simple_linear_model_no_bias...")
     test_simple_linear_model_no_bias()
+    print("  test_simple_linear_model_num_parameters...")
     test_simple_linear_model_num_parameters()
 
     print("Testing Parameter...")

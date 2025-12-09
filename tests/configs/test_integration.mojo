@@ -250,7 +250,9 @@ fn test_config_with_environment_variables() raises:
     Verifies end-to-end workflow with environment variables.
     """
     var python = Python.import_module("os")
-    python.environ["EXPERIMENT_DIR"] = "/tmp/experiments"
+    _ = python.environ.__setitem__(
+        key="EXPERIMENT_DIR", value="/tmp/experiments"
+    )
 
     # Create config with env vars
     var config = Config()

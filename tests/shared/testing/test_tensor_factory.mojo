@@ -488,3 +488,48 @@ fn test_tensor_factory_all_dtypes() raises:
         assert_dtype_equal(zeros.dtype(), dtype)
         assert_dtype_equal(ones.dtype(), dtype)
         assert_dtype_equal(full.dtype(), dtype)
+
+
+fn main() raises:
+    """Run all tests."""
+    # zeros_tensor tests
+    test_zeros_tensor_float32()
+    test_zeros_tensor_int32()
+    test_zeros_tensor_1d()
+    test_zeros_tensor_3d()
+
+    # ones_tensor tests
+    test_ones_tensor_float32()
+    test_ones_tensor_int32()
+    test_ones_tensor_1d()
+    test_ones_tensor_3d()
+
+    # full_tensor tests
+    test_full_tensor_float32_positive()
+    test_full_tensor_float32_negative()
+    test_full_tensor_int32()
+
+    # random_tensor tests
+    test_random_tensor_uniform_bounds_float32()
+    test_random_tensor_default_bounds()
+    test_random_tensor_int32()
+    test_random_tensor_1d()
+    test_random_tensor_3d()
+
+    # random_normal_tensor tests
+    test_random_normal_tensor_default_params()
+    test_random_normal_tensor_custom_mean_std()
+    test_random_normal_tensor_int32()
+    test_random_normal_tensor_1d()
+    test_random_normal_tensor_3d()
+
+    # set_tensor_value tests
+    test_set_tensor_value_float32()
+    test_set_tensor_value_int32()
+    test_set_tensor_value_overwrite()
+    test_set_tensor_value_float64()
+    test_set_tensor_value_multiple_indices()
+
+    # Integration tests
+    test_tensor_factory_workflow()
+    test_tensor_factory_all_dtypes()
