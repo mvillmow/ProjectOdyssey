@@ -9,7 +9,7 @@ Run with: mojo test tests/configs/test_integration.mojo
 
 from testing import assert_true, assert_false, assert_equal
 from shared.utils.config import Config, load_config, merge_configs
-from python import Python, PythonObject
+from python import Python
 
 
 # ============================================================================
@@ -250,9 +250,7 @@ fn test_config_with_environment_variables() raises:
     Verifies end-to-end workflow with environment variables.
     """
     var python = Python.import_module("os")
-    python.environ[PythonObject("EXPERIMENT_DIR")] = PythonObject(
-        "/tmp/experiments"
-    )
+    _ = python.environ.__setitem__("EXPERIMENT_DIR", "/tmp/experiments")
 
     # Create config with env vars
     var config = Config()
