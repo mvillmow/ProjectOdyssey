@@ -322,7 +322,9 @@ fn create_simple_dataset(
     Example:
         ```mojo
         var dataset = create_simple_dataset(n_samples=50, input_dim=10, output_dim=5)
-        var (data, label) = dataset[0]
+        var item = dataset[0]
+        var data = item[0]
+        var label = item[1]
         ```
     """
     # Set seed for reproducibility

@@ -38,7 +38,7 @@ fn test_rmsprop_step_shapes() raises:
     var square_avg = zeros(shape, DType.float32)
     var buf = zeros(shape, DType.float32)
 
-    var (new_params, new_square_avg, new_buf) = rmsprop_step(
+    var result = rmsprop_step(
         params,
         gradients,
         square_avg,
@@ -50,6 +50,9 @@ fn test_rmsprop_step_shapes() raises:
         momentum=0.0,
         buf=buf,
     )
+    var new_params = result[0]
+    var new_square_avg = result[1]
+    var new_buf = result[2]
 
     # Check shapes
     assert_equal(new_params.shape()[0], 4)
@@ -68,7 +71,7 @@ fn test_rmsprop_simple_shapes() raises:
     var gradients = ones(shape, DType.float32)
     var square_avg = zeros(shape, DType.float32)
 
-    var (new_params, new_square_avg) = rmsprop_step_simple(
+    var result2 = rmsprop_step_simple(
         params,
         gradients,
         square_avg,
@@ -76,6 +79,8 @@ fn test_rmsprop_simple_shapes() raises:
         alpha=0.99,
         epsilon=1e-8,
     )
+    var new_params = result2[0]
+    var new_square_avg = result2[1]
 
     # Check shapes
     assert_equal(new_params.shape()[0], 4)

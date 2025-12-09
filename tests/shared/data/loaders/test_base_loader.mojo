@@ -139,17 +139,17 @@ fn test_loader_batch_size_consistency() raises:
 
     # First 3 batches should be size 32
     var batch0 = loader.get_batch(0)
-    assert_equal(batch0.size(), 32)
+    assert_equal(len(batch0), 32)
 
     var batch1 = loader.get_batch(1)
-    assert_equal(batch1.size(), 32)
+    assert_equal(len(batch1), 32)
 
     var batch2 = loader.get_batch(2)
-    assert_equal(batch2.size(), 32)
+    assert_equal(len(batch2), 32)
 
     # Last batch should be size 4 (100 - 3*32)
     var batch3 = loader.get_batch(3)
-    assert_equal(batch3.size(), 4)
+    assert_equal(len(batch3), 4)
 
 
 fn test_loader_empty_dataset() raises:
@@ -175,7 +175,7 @@ fn test_loader_single_sample() raises:
     assert_equal(loader.__len__(), 1)
 
     var batch = loader.get_batch(0)
-    assert_equal(batch.size(), 1)
+    assert_equal(len(batch), 1)
 
 
 # ============================================================================
@@ -213,7 +213,7 @@ fn test_loader_drop_last_option() raises:
     # All remaining batches should have exactly batch_size samples
     for i in range(loader.__len__()):
         var batch = loader.get_batch(i)
-        assert_equal(batch.size(), 32)
+        assert_equal(len(batch), 32)
 
 
 # ============================================================================

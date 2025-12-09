@@ -92,7 +92,9 @@ struct MockDataset:
         Example:
             ```mojo
             var dataset = MockDataset()
-            var (input, output) = dataset.get_item(0)
+            var item = dataset.get_item(0)
+            var input = item[0]
+            var output = item[1]
             # input has shape [input_dim]
             # output has shape [output_dim]
             ```
@@ -181,7 +183,9 @@ struct MockClassificationDataset:
         Example:
             ```mojo
             var dataset = MockClassificationDataset()
-            var (input, label) = dataset.get_item(0)
+            var item2 = dataset.get_item(0)
+            var input2 = item2[0]
+            var label = item2[1]
             # label is in range [0, num_classes)
             ```
         """
@@ -269,7 +273,9 @@ struct MockRegressionDataset:
         Example:
             ```mojo
             var dataset = MockRegressionDataset()
-            var (input, target) = dataset.get_item(0)
+            var item3 = dataset.get_item(0)
+            var input3 = item3[0]
+            var target = item3[1]
             # target is correlated with input (mean + noise)
             ```
         """
@@ -428,11 +434,13 @@ fn create_mock_batch(
 
     Example:
         ```mojo
-        var (inputs, outputs) = create_mock_batch(
+        var batch_result = create_mock_batch(
             batch_size=32,
             input_dim=10,
             output_dim=5
         )
+        var inputs = batch_result[0]
+        var outputs = batch_result[1]
         # inputs is List[List[Float32]] with 32 samples
         # outputs is List[List[Float32]] with 32 samples
         ```
@@ -472,11 +480,13 @@ fn create_mock_classification_batch(
 
     Example:
         ```mojo
-        var (inputs, labels) = create_mock_classification_batch(
+        var classification_batch = create_mock_classification_batch(
             batch_size=16,
             input_dim=784,
             num_classes=10
         )
+        var inputs2 = classification_batch[0]
+        var labels2 = classification_batch[1]
         ```
     """
     var inputs = List[List[Float32]]()
