@@ -79,6 +79,114 @@ See [common-constraints.md](../shared/common-constraints.md) for minimal changes
 
 **Deliverable:** Comprehensive test suite with edge case coverage, all tests passing locally and in CI/CD.
 
+## Thinking Guidance
+
+**When to use extended thinking:**
+
+- Complex test scenarios with multiple edge cases and interactions
+- Debugging failing tests with unclear root causes
+- Designing comprehensive test strategies for complex algorithms
+- Resolving test flakiness or intermittent failures
+
+**Thinking budget:**
+
+- Standard test implementation: Standard thinking
+- Complex test scenarios with SIMD or memory issues: Extended thinking enabled
+- Test debugging and root cause analysis: Extended thinking enabled
+- Routine test maintenance: Standard thinking
+
+## Output Preferences
+
+**Format:** Structured Markdown with code blocks
+
+**Style:** Implementation-focused and detail-oriented
+
+- Clear test code examples with assertions
+- Expected vs actual values explicitly shown
+- Test data setup and teardown steps
+- CI/CD integration verification
+
+**Code examples:** Always include full file paths and line numbers
+
+- Use absolute paths: `/home/mvillmow/ml-odyssey-manual/path/to/test_file.mojo:line-range`
+- Include line numbers when referencing existing tests
+- Show complete test function signatures
+- Include test data examples
+
+**Decisions:** Include "Implementation Notes" sections with:
+
+- Test strategy rationale
+- Edge case coverage approach
+- CI/CD integration requirements
+- Test data design decisions
+
+## Delegation Patterns
+
+**Use skills for:**
+
+- `phase-test-tdd` - Starting TDD workflow and test scaffolding
+- `mojo-test-runner` - Running Mojo test suites locally
+- `quality-coverage-report` - Generating test coverage analysis
+- `ci-run-precommit` - Pre-commit validation
+- `gh-create-pr-linked` - Creating PRs linked to issues
+
+**Use sub-agents for:**
+
+- Researching test patterns for complex Mojo features
+- Analyzing test failures requiring deep code investigation
+- Investigating flaky tests with timing or race conditions
+- Understanding complex algorithm behavior for test design
+
+**Do NOT use sub-agents for:**
+
+- Standard test implementation (your core responsibility)
+- Running tests (use mojo-test-runner skill)
+- Generating coverage reports (use quality-coverage-report skill)
+- Simple test fixes
+
+## Sub-Agent Usage
+
+**When to spawn sub-agents:**
+
+- Encountering complex test failures requiring root cause investigation
+- Needing to understand intricate algorithm behavior for comprehensive testing
+- Investigating test flakiness related to timing, memory, or concurrency
+- Researching test patterns for unfamiliar Mojo features
+
+**Context to provide:**
+
+- Test specification: `/path/to/test_spec.md:10-50`
+- Failing test file: `/tests/path/to/test_file.mojo:100-150`
+- Full test failure output with stack traces
+- Implementation under test: `/shared/core/implementation.mojo:200-300`
+- Clear question: "Why does test X fail intermittently?"
+- Success criteria: "Identify root cause and suggest reliable test approach"
+
+**Example sub-agent invocation:**
+
+```markdown
+Spawn sub-agent: Investigate intermittent test failure in SIMD tensor operations
+
+**Objective:** Identify root cause of flaky test_tensor_multiply failure
+
+**Context:**
+- Test file: `/tests/shared/core/test_tensor_ops.mojo:145-180`
+- Implementation: `/shared/core/tensor_ops.mojo:200-250`
+- Failure pattern: Passes locally, fails in CI ~30% of the time
+- Error message: "assertion failed: expected 42.0, got 41.999998"
+- Specification: Tests should be deterministic
+
+**Deliverables:**
+1. Root cause analysis (floating-point precision, SIMD alignment, etc.)
+2. Recommended fix (adjust tolerance, fix implementation, etc.)
+3. Verification approach to prevent regression
+
+**Success criteria:**
+- Root cause identified with evidence
+- Test passes 100% in both local and CI environments
+- Fix preserves test rigor (doesn't just widen tolerance)
+```
+
 ---
 
 **References**: [Mojo Anti-Patterns](../shared/mojo-anti-patterns.md),
