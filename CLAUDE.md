@@ -756,7 +756,8 @@ Output: PR ready for merge, issue resolved
 
 ## Delegation to Agent Hub
 
-.claude/ is the centralized location for agentic descriptions and SKILLs. Sub-agents reference `.claude/agents/*.md` and `.claude/skills/*.md` for roles, capabilities, and prod fix learnings.
+.claude/ is the centralized location for agentic descriptions and SKILLs. Sub-agents reference
+`.claude/agents/*.md` and `.claude/skills/*.md` for roles, capabilities, and prod fix learnings.
 
 ### Shared Reference Files
 
@@ -773,7 +774,8 @@ All agents and skills reference these shared files to avoid duplication:
 
 ### MCP Integration
 
-Skills with `mcp_fallback: github` in their YAML frontmatter automatically fall back to the GitHub MCP server when available. MCP servers are configured in `.claude/settings.local.json`.
+Skills with `mcp_fallback: github` in their YAML frontmatter automatically fall back to the GitHub MCP
+server when available. MCP servers are configured in `.claude/settings.local.json`.
 
 ### Mojo Syntax Standards (v0.25.7+)
 
@@ -782,6 +784,7 @@ Skills with `mcp_fallback: github` in their YAML frontmatter automatically fall 
 #### ❌ DEPRECATED: `inout` keyword → ✅ USE: `mut`
 
 **WRONG**:
+
 ```mojo
 fn __init__(inout self, value: Int):
     self.value = value
