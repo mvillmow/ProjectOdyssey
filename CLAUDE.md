@@ -876,6 +876,70 @@ This project uses Pixi for environment management:
 
 ## Common Commands
 
+### Justfile Build System
+
+The project uses [Just](https://just.systems/) as a unified command runner for local development and CI/CD consistency.
+
+#### Quick Reference
+
+```bash
+# Show all available recipes
+just --list
+
+# Get help
+just help
+
+# Development commands
+just build                  # Build project in debug mode
+just test                   # Run all tests
+just test-mojo             # Run only Mojo tests
+just lint                  # Run all linters
+just format                # Format all files
+
+# CI-specific commands (match GitHub Actions)
+just ci-validate           # Full CI validation (build + test)
+just ci-build              # Build shared package
+just ci-compile            # Compile package (validation only)
+just ci-test-mojo          # Run all Mojo tests
+just ci-test-group PATH PATTERN  # Run specific test group
+just ci-lint               # Run pre-commit hooks
+
+# Training and inference
+just train                 # Train LeNet-5 with defaults
+just train lenet5 fp16 20  # Train with FP16, 20 epochs
+just infer lenet5 ./weights  # Run inference
+
+# Docker management
+just docker-up             # Start development environment
+just docker-down           # Stop environment
+just docker-shell          # Open shell in container
+```
+
+### Why Use Justfile?
+
+1. **Consistency**: Same commands work locally and in CI
+2. **Simplicity**: Easy-to-read recipes vs complex bash scripts
+3. **Documentation**: Self-documenting with `just --list`
+4. **Reliability**: Ensures identical flags between local dev and CI
+
+### CI Integration
+
+GitHub Actions workflows use justfile recipes to ensure consistency:
+
+```yaml
+# Example from comprehensive-tests.yml
+- name: Run test group
+  run: just ci-test-group "tests/shared/core" "test_*.mojo"
+
+# Example from build-validation.yml
+- name: Build package
+  run: just ci-build
+```
+
+This ensures developers can run `just ci-validate` locally to reproduce CI results exactly.
+
+**See**: `justfile` for complete recipe list and implementation details.
+
 ### GitHub CLI
 
 ```bash

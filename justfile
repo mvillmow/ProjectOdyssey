@@ -278,6 +278,144 @@ native-ci-full:
     @NATIVE=1 just ci-full
 
 # ==============================================================================
+# CI-Specific Recipes (Match GitHub Actions workflows)
+# ==============================================================================
+
+# CI: Test single Mojo file with -Werror enforcement
+ci-test-file file:
+    pixi run mojo -I . "{{file}}"
+
+# CI: Test group of Mojo files with -Werror enforcement
+ci-test-group path pattern:
+    #!/usr/bin/env bash
+    set -e
+    REPO_ROOT="$(pwd)"
+    TEST_PATH="{{path}}"
+    test_count=0
+    passed_count=0
+    failed_count=0
+    failed_tests=""
+
+    echo "=================================================="
+    echo "Testing: {{path}}"
+    echo "Pattern: {{pattern}}"
+    echo "=================================================="
+
+    # Expand pattern into actual files
+    test_files=""
+    for pattern in {{pattern}}; do
+        if [[ "$pattern" == *"*"* ]]; then
+            # Glob pattern - expand it
+            for file in $TEST_PATH/$pattern; do
+                if [ -f "$file" ]; then
+                    test_files="$test_files $file"
+                fi
+            done
+        else
+            # Direct file or subdirectory pattern
+            if [ -f "$TEST_PATH/$pattern" ]; then
+                test_files="$test_files $TEST_PATH/$pattern"
+            elif [[ "$pattern" == *"/"* ]]; then
+                for file in $TEST_PATH/$pattern; do
+                    if [ -f "$file" ]; then
+                        test_files="$test_files $file"
+                    fi
+                done
+            fi
+        fi
+    done
+
+    if [ -z "$test_files" ]; then
+        echo "⚠️  No test files found"
+        exit 0
+    fi
+
+    # Run each test file
+    for test_file in $test_files; do
+        if [ -f "$test_file" ]; then
+            echo ""
+            echo "Running: $test_file"
+            test_count=$((test_count + 1))
+
+            if pixi run mojo -I "$REPO_ROOT" -I . "$test_file"; then
+                echo "✅ PASSED: $test_file"
+                passed_count=$((passed_count + 1))
+            else
+                echo "❌ FAILED: $test_file"
+                failed_count=$((failed_count + 1))
+                failed_tests="$failed_tests\n  - $test_file"
+            fi
+        fi
+    done
+
+    echo ""
+    echo "=================================================="
+    echo "Summary"
+    echo "=================================================="
+    echo "Total: $test_count tests"
+    echo "Passed: $passed_count tests"
+    echo "Failed: $failed_count tests"
+
+    if [ $failed_count -gt 0 ]; then
+        echo ""
+        echo "Failed tests:"
+        echo -e "$failed_tests"
+        exit 1
+    fi
+
+# CI: Build shared package with -Werror enforcement
+ci-build:
+    #!/usr/bin/env bash
+    set -e
+    REPO_ROOT="$(pwd)"
+    mkdir -p build
+    echo "Building shared package with -Werror..."
+    pixi run mojo package -I "$REPO_ROOT" shared -o build/ml-odyssey-shared.mojopkg
+
+# CI: Compile shared package (validation only, no output)
+ci-compile:
+    #!/usr/bin/env bash
+    set -e
+    REPO_ROOT="$(pwd)"
+    echo "Compiling shared package for validation..."
+    pixi run mojo package -I "$REPO_ROOT" shared -o /tmp/shared.mojopkg
+
+# CI: Run all Mojo tests with -Werror
+ci-test-mojo:
+    #!/usr/bin/env bash
+    set -e
+    REPO_ROOT="$(pwd)"
+    echo "Running all Mojo tests with -Werror..."
+
+    failed=0
+    for test_file in tests/**/*.mojo; do
+        if [ -f "$test_file" ]; then
+            echo "Testing: $test_file"
+            if ! pixi run mojo -I "$REPO_ROOT" -I . "$test_file"; then
+                failed=1
+            fi
+        fi
+    done
+
+    if [ $failed -eq 1 ]; then
+        echo "❌ Some tests failed"
+        exit 1
+    fi
+    echo "✅ All tests passed"
+
+# CI: Full validation (build + test)
+ci-validate:
+    @echo "Running full CI validation..."
+    @just ci-build
+    @just ci-test-mojo
+    @echo "✅ CI validation complete"
+
+# CI: Lint all files
+ci-lint:
+    @echo "Running linters..."
+    @pre-commit run --all-files
+
+# ==============================================================================
 # Utility
 # ==============================================================================
 
@@ -297,12 +435,14 @@ help:
     @echo "Docker:    docker-up, docker-down, docker-shell, docker-logs"
     @echo "Dev:       dev, shell, docs, docs-serve"
     @echo "CI:        ci, ci-full, pre-commit, validate"
+    @echo "CI (GHA):  ci-build, ci-compile, ci-test-group, ci-test-mojo, ci-validate"
     @echo "Utility:   help, status, clean, version"
     @echo ""
     @echo "Examples:"
     @echo "  just train                          # Train LeNet-5 with defaults"
     @echo "  just train lenet5 fp16 20           # Train with FP16, 20 epochs"
     @echo "  just infer lenet5 ./weights         # Evaluate on test set"
+    @echo "  just ci-validate                    # Run CI validation locally"
     @echo ""
     @echo "For more: just --list"
 

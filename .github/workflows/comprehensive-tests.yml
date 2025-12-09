@@ -57,21 +57,24 @@ jobs:
       - name: Check Mojo version
         run: pixi run mojo --version
 
+      - name: Install Just
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
+
       - name: Compile shared package
         run: |
           echo "=================================================="
           echo "Compiling shared package..."
           echo "=================================================="
 
-          REPO_ROOT="$(pwd)"
           mkdir -p compilation-results
 
           # Count total files for reporting
           total_files=$(find shared -name "*.mojo" -type f | wc -l)
           echo "Total .mojo files in shared/: $total_files"
 
-          # Build the shared package (compiles all modules properly with relative imports)
-          if pixi run mojo package -I "$REPO_ROOT" shared -o /tmp/shared.mojopkg 2>&1; then
+          # Build the shared package using justfile
+          if just ci-compile 2>&1; then
             echo "✅ PASSED: shared package compiled successfully"
             echo "compilation_status=success" >> $GITHUB_ENV
           else
@@ -184,6 +187,10 @@ jobs:
           restore-keys: |
             pixi-${{ runner.os }}-
 
+      - name: Install Just
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
+
       - name: Run test group
         # Integration tests may have segfaults on CI runners due to memory constraints
         # Allow them to fail without blocking the workflow (tracked in issue)
@@ -196,108 +203,38 @@ jobs:
           echo ""
 
           mkdir -p test-results
-
-          test_count=0
-          passed_count=0
-          failed_count=0
-          failed_tests=""
           start_time=$(date +%s)
 
-          # Save repository root for imports
-          REPO_ROOT="$(pwd)"
-          TEST_PATH="${{ matrix.test-group.path }}"
-
-          # Expand pattern into actual files (from repo root)
-          test_files=""
-          for pattern in ${{ matrix.test-group.pattern }}; do
-            # Check if pattern contains wildcards or is a direct path
-            if [[ "$pattern" == *"*"* ]]; then
-              # Glob pattern - expand it with TEST_PATH prefix
-              for file in $TEST_PATH/$pattern; do
-                if [ -f "$file" ]; then
-                  test_files="$test_files $file"
-                fi
-              done
-            else
-              # Direct file or subdirectory pattern
-              if [ -f "$TEST_PATH/$pattern" ]; then
-                test_files="$test_files $TEST_PATH/$pattern"
-              elif [[ "$pattern" == *"/"* ]]; then
-                # Subdirectory pattern like "datasets/test_*.mojo"
-                for file in $TEST_PATH/$pattern; do
-                  if [ -f "$file" ]; then
-                    test_files="$test_files $file"
-                  fi
-                done
-              fi
-            fi
-          done
-
-          if [ -z "$test_files" ]; then
-            echo "⚠️  No test files found for this group"
-            echo "This may be expected if tests haven't been created yet."
-            echo '{"group": "${{ matrix.test-group.name }}", "tests": 0, "passed": 0, "failed": 0, "duration": 0}' > "test-results/${{ matrix.test-group.name }}.json"
-            exit 0
+          # Use justfile to run test group
+          # The justfile handles all the complexity of test discovery and execution
+          if just ci-test-group "${{ matrix.test-group.path }}" "${{ matrix.test-group.pattern }}"; then
+            test_result="passed"
+            exit_code=0
+          else
+            test_result="failed"
+            exit_code=1
           fi
-
-          # Run each test file
-          for test_file in $test_files; do
-            if [ -f "$test_file" ]; then
-              echo ""
-              echo "=================================================="
-              echo "Running: $test_file"
-              echo "=================================================="
-              test_count=$((test_count + 1))
-
-              if pixi run mojo -I "$REPO_ROOT" -I . "$test_file"; then
-                echo "✅ PASSED: $test_file"
-                passed_count=$((passed_count + 1))
-              else
-                echo "❌ FAILED: $test_file"
-                failed_count=$((failed_count + 1))
-                failed_tests="$failed_tests\\n  - $test_file"
-              fi
-            fi
-          done
 
           end_time=$(date +%s)
           duration=$((end_time - start_time))
 
-          echo ""
-          echo "=================================================="
-          echo "Test Group Summary: ${{ matrix.test-group.name }}"
-          echo "=================================================="
-          echo "Total: $test_count tests"
-          echo "Passed: $passed_count tests"
-          echo "Failed: $failed_count tests"
-          echo "Duration: ${duration}s"
-          echo ""
-
-          # Save results as JSON for aggregation
+          # Create simplified result files
+          # Note: Detailed metrics are in justfile output, these are for aggregation
           cat > "test-results/${{ matrix.test-group.name }}.json" << EOF
           {
             "group": "${{ matrix.test-group.name }}",
-            "tests": $test_count,
-            "passed": $passed_count,
-            "failed": $failed_count,
+            "tests": 1,
+            "passed": $([ "$test_result" = "passed" ] && echo 1 || echo 0),
+            "failed": $([ "$test_result" = "failed" ] && echo 1 || echo 0),
             "duration": $duration
           }
           EOF
 
-          # Also save human-readable format
-          result_file="$REPO_ROOT/test-results/${{ matrix.test-group.name }}.txt"
-          echo "Test Group: ${{ matrix.test-group.name }}" > "$result_file"
-          echo "Total: $test_count tests run, $passed_count passed, $failed_count failed" >> "$result_file"
-          echo "Duration: ${duration}s" >> "$result_file"
-          if [ $failed_count -gt 0 ]; then
-            echo "" >> "$result_file"
-            echo "Failed tests:" >> "$result_file"
-            echo -e "$failed_tests" >> "$result_file"
-          fi
+          echo "Test Group: ${{ matrix.test-group.name }}" > "test-results/${{ matrix.test-group.name }}.txt"
+          echo "Result: $test_result" >> "test-results/${{ matrix.test-group.name }}.txt"
+          echo "Duration: ${duration}s" >> "test-results/${{ matrix.test-group.name }}.txt"
 
-          if [ $failed_count -gt 0 ]; then
-            exit 1
-          fi
+          exit $exit_code
 
       - name: Upload test results
         if: always()
