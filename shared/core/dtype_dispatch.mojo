@@ -575,3 +575,873 @@ fn dispatch_float_scalar[
             "dispatch_float_scalar: operation only supports float16/32/64. Got "
             + dtype_name
         )
+
+
+# ============================================================================
+# Activation-Specific Dispatch Helpers
+# ============================================================================
+
+
+fn _softmax_impl[
+    dtype: DType
+](
+    result: ExTensor,
+    tensor: ExTensor,
+    outer_size: Int,
+    axis_size: Int,
+    axis_stride: Int,
+) raises:
+    """Compile-time specialized softmax implementation.
+
+    Uses log-sum-exp trick for numerical stability by subtracting max value
+    before exponentiation.
+
+    Args:
+        dtype: Compile-time dtype parameter
+        result: Output tensor (pre-allocated)
+        tensor: Input tensor
+        outer_size: Product of dimensions before the softmax axis
+        axis_size: Size of the softmax axis
+        axis_stride: Product of dimensions after the softmax axis
+    """
+    from math import exp
+
+    var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    # For float16, use float32 intermediate precision
+    @parameter
+    if dtype == DType.float16:
+        for outer_idx in range(outer_size):
+            for inner_idx in range(axis_stride):
+                # Find max along axis
+                var max_val = Float32(
+                    in_ptr[(outer_idx * axis_size + 0) * axis_stride + inner_idx]
+                )
+                for k in range(1, axis_size):
+                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var val = Float32(in_ptr[idx])
+                    if val > max_val:
+                        max_val = val
+
+                # Compute exp(x - max) and sum
+                var sum_exp: Float32 = 0.0
+                for k in range(axis_size):
+                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var val = Float32(in_ptr[idx])
+                    var exp_val = exp(val - max_val)
+                    out_ptr[idx] = Scalar[dtype](exp_val)
+                    sum_exp += exp_val
+
+                # Normalize
+                for k in range(axis_size):
+                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var current = Float32(out_ptr[idx])
+                    out_ptr[idx] = Scalar[dtype](current / sum_exp)
+    else:
+        for outer_idx in range(outer_size):
+            for inner_idx in range(axis_stride):
+                # Find max along axis
+                var max_val = in_ptr[
+                    (outer_idx * axis_size + 0) * axis_stride + inner_idx
+                ]
+                for k in range(1, axis_size):
+                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var val = in_ptr[idx]
+                    if val > max_val:
+                        max_val = val
+
+                # Compute exp(x - max) and sum
+                var sum_exp = Scalar[dtype](0.0)
+                for k in range(axis_size):
+                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var val = in_ptr[idx]
+                    var exp_val = exp(val - max_val)
+                    out_ptr[idx] = exp_val
+                    sum_exp += exp_val
+
+                # Normalize
+                for k in range(axis_size):
+                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    out_ptr[idx] /= sum_exp
+
+
+fn dispatch_softmax(
+    tensor: ExTensor, outer_size: Int, axis_size: Int, axis_stride: Int
+) raises -> ExTensor:
+    """Runtime dispatch for softmax operation.
+
+    Args:
+        tensor: Input tensor
+        outer_size: Product of dimensions before the softmax axis
+        axis_size: Size of the softmax axis
+        axis_stride: Product of dimensions after the softmax axis
+
+    Returns:
+        Softmax output tensor
+
+    Raises:
+        Error: If dtype is not float16/32/64
+    """
+    var result = ExTensor(tensor._shape, tensor._dtype)
+
+    if tensor._dtype == DType.float16:
+        _softmax_impl[DType.float16](
+            result, tensor, outer_size, axis_size, axis_stride
+        )
+    elif tensor._dtype == DType.float32:
+        _softmax_impl[DType.float32](
+            result, tensor, outer_size, axis_size, axis_stride
+        )
+    elif tensor._dtype == DType.float64:
+        _softmax_impl[DType.float64](
+            result, tensor, outer_size, axis_size, axis_stride
+        )
+    else:
+        var dtype_name = _format_dtype_name(tensor._dtype)
+        raise Error(
+            "dispatch_softmax: only supports float16/32/64. Got " + dtype_name
+        )
+
+    return result^
+
+
+fn _softmax_backward_impl[
+    dtype: DType
+](
+    result: ExTensor,
+    grad_output: ExTensor,
+    output: ExTensor,
+    outer_size: Int,
+    axis_size: Int,
+    axis_stride: Int,
+) raises:
+    """Compile-time specialized softmax backward implementation.
+
+    Softmax gradient: grad_input[i] = output[i] * (grad_output[i] - sum_j(grad_output[j] * output[j]))
+
+    Args:
+        dtype: Compile-time dtype parameter
+        result: Output gradient tensor (pre-allocated)
+        grad_output: Upstream gradient
+        output: Softmax forward output
+        outer_size: Product of dimensions before axis
+        axis_size: Size of softmax axis
+        axis_stride: Product of dimensions after axis
+    """
+    var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
+    var out_ptr = output._data.bitcast[Scalar[dtype]]()
+    var result_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    @parameter
+    if dtype == DType.float16:
+        for outer in range(outer_size):
+            for inner in range(axis_stride):
+                # Compute dot product sum(grad * output) along axis
+                var dot_sum: Float32 = 0.0
+                for k in range(axis_size):
+                    var idx = (outer * axis_size + k) * axis_stride + inner
+                    var grad_val = Float32(grad_ptr[idx])
+                    var out_val = Float32(out_ptr[idx])
+                    dot_sum += grad_val * out_val
+
+                # Compute gradient: output * (grad - dot_sum)
+                for k in range(axis_size):
+                    var idx = (outer * axis_size + k) * axis_stride + inner
+                    var grad_val = Float32(grad_ptr[idx])
+                    var out_val = Float32(out_ptr[idx])
+                    result_ptr[idx] = Scalar[dtype](out_val * (grad_val - dot_sum))
+    else:
+        for outer in range(outer_size):
+            for inner in range(axis_stride):
+                # Compute dot product sum(grad * output) along axis
+                var dot_sum = Scalar[dtype](0.0)
+                for k in range(axis_size):
+                    var idx = (outer * axis_size + k) * axis_stride + inner
+                    dot_sum += grad_ptr[idx] * out_ptr[idx]
+
+                # Compute gradient: output * (grad - dot_sum)
+                for k in range(axis_size):
+                    var idx = (outer * axis_size + k) * axis_stride + inner
+                    result_ptr[idx] = out_ptr[idx] * (grad_ptr[idx] - dot_sum)
+
+
+fn dispatch_softmax_backward(
+    grad_output: ExTensor,
+    output: ExTensor,
+    outer_size: Int,
+    axis_size: Int,
+    axis_stride: Int,
+) raises -> ExTensor:
+    """Runtime dispatch for softmax backward operation.
+
+    Args:
+        grad_output: Upstream gradient
+        output: Softmax forward output
+        outer_size: Product of dimensions before axis
+        axis_size: Size of softmax axis
+        axis_stride: Product of dimensions after axis
+
+    Returns:
+        Input gradient tensor
+
+    Raises:
+        Error: If dtype is not float16/32/64
+    """
+    var result = ExTensor(output._shape, output._dtype)
+
+    if output._dtype == DType.float16:
+        _softmax_backward_impl[DType.float16](
+            result, grad_output, output, outer_size, axis_size, axis_stride
+        )
+    elif output._dtype == DType.float32:
+        _softmax_backward_impl[DType.float32](
+            result, grad_output, output, outer_size, axis_size, axis_stride
+        )
+    elif output._dtype == DType.float64:
+        _softmax_backward_impl[DType.float64](
+            result, grad_output, output, outer_size, axis_size, axis_stride
+        )
+    else:
+        var dtype_name = _format_dtype_name(output._dtype)
+        raise Error(
+            "dispatch_softmax_backward: only supports float16/32/64. Got "
+            + dtype_name
+        )
+
+    return result^
+
+
+fn _gelu_impl[dtype: DType](result: ExTensor, tensor: ExTensor, approximate: Bool) raises:
+    """Compile-time specialized GELU implementation.
+
+    GELU(x) = x * Phi(x) where Phi is the CDF of standard normal.
+    Exact: x * 0.5 * (1 + erf(x / sqrt(2)))
+    Approximate: 0.5 * x * (1 + tanh(sqrt(2/pi) * (x + 0.044715 * x^3)))
+
+    Args:
+        dtype: Compile-time dtype parameter
+        result: Output tensor (pre-allocated)
+        tensor: Input tensor
+        approximate: Use tanh approximation if True
+    """
+    from math import exp, erf, tanh as math_tanh
+
+    alias SQRT_2_OVER_PI = 0.7978845608028654
+    alias GELU_COEFF = 0.044715
+    alias SQRT_2 = 1.4142135623730951
+
+    var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    @parameter
+    if dtype == DType.float16:
+        if approximate:
+            for i in range(tensor._numel):
+                var x = Float32(in_ptr[i])
+                var x_cubed = x * x * x
+                var inner = Float32(SQRT_2_OVER_PI) * (x + Float32(GELU_COEFF) * x_cubed)
+                var tanh_val = math_tanh(inner)
+                out_ptr[i] = Scalar[dtype](0.5 * x * (1.0 + tanh_val))
+        else:
+            for i in range(tensor._numel):
+                var x = Float32(in_ptr[i])
+                var erf_val = erf(x / Float32(SQRT_2))
+                out_ptr[i] = Scalar[dtype](x * 0.5 * (1.0 + erf_val))
+    elif dtype == DType.float32:
+        if approximate:
+            for i in range(tensor._numel):
+                var x = in_ptr[i]
+                var x_cubed = x * x * x
+                var inner = Float32(SQRT_2_OVER_PI) * (x + Float32(GELU_COEFF) * x_cubed)
+                var tanh_val = math_tanh(inner)
+                out_ptr[i] = 0.5 * x * (1.0 + tanh_val)
+        else:
+            for i in range(tensor._numel):
+                var x = in_ptr[i]
+                var erf_val = erf(x / Float32(SQRT_2))
+                out_ptr[i] = x * 0.5 * (1.0 + erf_val)
+    else:  # float64
+        if approximate:
+            for i in range(tensor._numel):
+                var x = in_ptr[i]
+                var x_cubed = x * x * x
+                var inner = SQRT_2_OVER_PI * (x + GELU_COEFF * x_cubed)
+                var tanh_val = math_tanh(inner)
+                out_ptr[i] = 0.5 * x * (1.0 + tanh_val)
+        else:
+            for i in range(tensor._numel):
+                var x = in_ptr[i]
+                var erf_val = erf(x / SQRT_2)
+                out_ptr[i] = x * 0.5 * (1.0 + erf_val)
+
+
+fn dispatch_gelu(tensor: ExTensor, approximate: Bool) raises -> ExTensor:
+    """Runtime dispatch for GELU activation.
+
+    Args:
+        tensor: Input tensor
+        approximate: Use tanh approximation if True
+
+    Returns:
+        GELU output tensor
+
+    Raises:
+        Error: If dtype is not float16/32/64
+    """
+    var result = ExTensor(tensor._shape, tensor._dtype)
+
+    if tensor._dtype == DType.float16:
+        _gelu_impl[DType.float16](result, tensor, approximate)
+    elif tensor._dtype == DType.float32:
+        _gelu_impl[DType.float32](result, tensor, approximate)
+    elif tensor._dtype == DType.float64:
+        _gelu_impl[DType.float64](result, tensor, approximate)
+    else:
+        var dtype_name = _format_dtype_name(tensor._dtype)
+        raise Error("dispatch_gelu: only supports float16/32/64. Got " + dtype_name)
+
+    return result^
+
+
+fn _gelu_backward_impl[
+    dtype: DType
+](result: ExTensor, grad_output: ExTensor, x: ExTensor, approximate: Bool) raises:
+    """Compile-time specialized GELU backward implementation.
+
+    Args:
+        dtype: Compile-time dtype parameter
+        result: Output gradient tensor (pre-allocated)
+        grad_output: Upstream gradient
+        x: Input from forward pass
+        approximate: Use tanh approximation derivative if True
+    """
+    from math import exp, erf, tanh as math_tanh
+
+    alias SQRT_2 = 1.4142135623730951
+    alias SQRT_2_OVER_PI = 0.7978845608028654
+    alias GELU_COEFF = 0.044715
+    alias INV_SQRT_2PI = 0.3989422804014327
+
+    var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
+    var x_ptr = x._data.bitcast[Scalar[dtype]]()
+    var result_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    @parameter
+    if dtype == DType.float16:
+        if approximate:
+            for i in range(x._numel):
+                var x_val = Float32(x_ptr[i])
+                var grad = Float32(grad_ptr[i])
+                var x_cubed = x_val * x_val * x_val
+                var inner = Float32(SQRT_2_OVER_PI) * (
+                    x_val + Float32(GELU_COEFF) * x_cubed
+                )
+                var tanh_val = math_tanh(inner)
+                var sech2 = 1.0 - tanh_val * tanh_val
+                var dtanh = Float32(SQRT_2_OVER_PI) * (
+                    1.0 + 3.0 * Float32(GELU_COEFF) * x_val * x_val
+                )
+                var dgelu = 0.5 * (1.0 + tanh_val) + 0.5 * x_val * sech2 * dtanh
+                result_ptr[i] = Scalar[dtype](grad * dgelu)
+        else:
+            for i in range(x._numel):
+                var x_val = Float32(x_ptr[i])
+                var grad = Float32(grad_ptr[i])
+                var erf_val = erf(x_val / Float32(SQRT_2))
+                var pdf = Float32(INV_SQRT_2PI) * exp(-0.5 * x_val * x_val)
+                var dgelu = 0.5 * (1.0 + erf_val) + x_val * pdf
+                result_ptr[i] = Scalar[dtype](grad * dgelu)
+    elif dtype == DType.float32:
+        if approximate:
+            for i in range(x._numel):
+                var x_val = x_ptr[i]
+                var grad = grad_ptr[i]
+                var x_cubed = x_val * x_val * x_val
+                var inner = Float32(SQRT_2_OVER_PI) * (
+                    x_val + Float32(GELU_COEFF) * x_cubed
+                )
+                var tanh_val = math_tanh(inner)
+                var sech2 = 1.0 - tanh_val * tanh_val
+                var dtanh = Float32(SQRT_2_OVER_PI) * (
+                    1.0 + 3.0 * Float32(GELU_COEFF) * x_val * x_val
+                )
+                var dgelu = 0.5 * (1.0 + tanh_val) + 0.5 * x_val * sech2 * dtanh
+                result_ptr[i] = grad * dgelu
+        else:
+            for i in range(x._numel):
+                var x_val = x_ptr[i]
+                var grad = grad_ptr[i]
+                var erf_val = erf(x_val / Float32(SQRT_2))
+                var pdf = Float32(INV_SQRT_2PI) * exp(-0.5 * x_val * x_val)
+                var dgelu = 0.5 * (1.0 + erf_val) + x_val * pdf
+                result_ptr[i] = grad * dgelu
+    else:  # float64
+        if approximate:
+            for i in range(x._numel):
+                var x_val = x_ptr[i]
+                var grad = grad_ptr[i]
+                var x_cubed = x_val * x_val * x_val
+                var inner = SQRT_2_OVER_PI * (x_val + GELU_COEFF * x_cubed)
+                var tanh_val = math_tanh(inner)
+                var sech2 = 1.0 - tanh_val * tanh_val
+                var dtanh = SQRT_2_OVER_PI * (1.0 + 3.0 * GELU_COEFF * x_val * x_val)
+                var dgelu = 0.5 * (1.0 + tanh_val) + 0.5 * x_val * sech2 * dtanh
+                result_ptr[i] = grad * dgelu
+        else:
+            for i in range(x._numel):
+                var x_val = x_ptr[i]
+                var grad = grad_ptr[i]
+                var erf_val = erf(x_val / SQRT_2)
+                var pdf = INV_SQRT_2PI * exp(-0.5 * x_val * x_val)
+                var dgelu = 0.5 * (1.0 + erf_val) + x_val * pdf
+                result_ptr[i] = grad * dgelu
+
+
+fn dispatch_gelu_backward(
+    grad_output: ExTensor, x: ExTensor, approximate: Bool
+) raises -> ExTensor:
+    """Runtime dispatch for GELU backward operation.
+
+    Args:
+        grad_output: Upstream gradient
+        x: Input from forward pass
+        approximate: Use tanh approximation derivative if True
+
+    Returns:
+        Input gradient tensor
+
+    Raises:
+        Error: If dtype is not float16/32/64
+    """
+    var result = ExTensor(x._shape, x._dtype)
+
+    if x._dtype == DType.float16:
+        _gelu_backward_impl[DType.float16](result, grad_output, x, approximate)
+    elif x._dtype == DType.float32:
+        _gelu_backward_impl[DType.float32](result, grad_output, x, approximate)
+    elif x._dtype == DType.float64:
+        _gelu_backward_impl[DType.float64](result, grad_output, x, approximate)
+    else:
+        var dtype_name = _format_dtype_name(x._dtype)
+        raise Error(
+            "dispatch_gelu_backward: only supports float16/32/64. Got " + dtype_name
+        )
+
+    return result^
+
+
+fn _hard_sigmoid_impl[dtype: DType](result: ExTensor, tensor: ExTensor) raises:
+    """Compile-time specialized hard_sigmoid implementation.
+
+    hard_sigmoid(x) = clip((x + 3) / 6, 0, 1)
+
+    Args:
+        dtype: Compile-time dtype parameter
+        result: Output tensor (pre-allocated)
+        tensor: Input tensor
+    """
+    var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    @parameter
+    if dtype == DType.float16:
+        for i in range(tensor._numel):
+            var x = Float32(in_ptr[i])
+            var val = (x + 3.0) / 6.0
+            val = max(Float32(0.0), min(Float32(1.0), val))
+            out_ptr[i] = Scalar[dtype](val)
+    else:
+        var zero = Scalar[dtype](0.0)
+        var one = Scalar[dtype](1.0)
+        var three = Scalar[dtype](3.0)
+        var six = Scalar[dtype](6.0)
+        for i in range(tensor._numel):
+            var x = in_ptr[i]
+            var val = (x + three) / six
+            out_ptr[i] = max(zero, min(one, val))
+
+
+fn dispatch_hard_sigmoid(tensor: ExTensor) raises -> ExTensor:
+    """Runtime dispatch for hard_sigmoid activation.
+
+    Args:
+        tensor: Input tensor
+
+    Returns:
+        hard_sigmoid output tensor
+
+    Raises:
+        Error: If dtype is not float16/32/64
+    """
+    var result = ExTensor(tensor._shape, tensor._dtype)
+
+    if tensor._dtype == DType.float16:
+        _hard_sigmoid_impl[DType.float16](result, tensor)
+    elif tensor._dtype == DType.float32:
+        _hard_sigmoid_impl[DType.float32](result, tensor)
+    elif tensor._dtype == DType.float64:
+        _hard_sigmoid_impl[DType.float64](result, tensor)
+    else:
+        var dtype_name = _format_dtype_name(tensor._dtype)
+        raise Error(
+            "dispatch_hard_sigmoid: only supports float16/32/64. Got " + dtype_name
+        )
+
+    return result^
+
+
+fn _hard_sigmoid_backward_impl[
+    dtype: DType
+](result: ExTensor, grad_output: ExTensor, x: ExTensor) raises:
+    """Compile-time specialized hard_sigmoid backward implementation.
+
+    Derivative: 1/6 if -3 < x < 3, else 0
+
+    Args:
+        dtype: Compile-time dtype parameter
+        result: Output gradient tensor (pre-allocated)
+        grad_output: Upstream gradient
+        x: Input from forward pass
+    """
+    var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
+    var x_ptr = x._data.bitcast[Scalar[dtype]]()
+    var result_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    @parameter
+    if dtype == DType.float16:
+        for i in range(x._numel):
+            var x_val = Float32(x_ptr[i])
+            var grad = Float32(grad_ptr[i])
+            if x_val > -3.0 and x_val < 3.0:
+                result_ptr[i] = Scalar[dtype](grad / 6.0)
+            else:
+                result_ptr[i] = Scalar[dtype](0.0)
+    else:
+        var zero = Scalar[dtype](0.0)
+        var neg_three = Scalar[dtype](-3.0)
+        var three = Scalar[dtype](3.0)
+        var six = Scalar[dtype](6.0)
+        for i in range(x._numel):
+            var x_val = x_ptr[i]
+            var grad = grad_ptr[i]
+            if x_val > neg_three and x_val < three:
+                result_ptr[i] = grad / six
+            else:
+                result_ptr[i] = zero
+
+
+fn dispatch_hard_sigmoid_backward(
+    grad_output: ExTensor, x: ExTensor
+) raises -> ExTensor:
+    """Runtime dispatch for hard_sigmoid backward operation.
+
+    Args:
+        grad_output: Upstream gradient
+        x: Input from forward pass
+
+    Returns:
+        Input gradient tensor
+
+    Raises:
+        Error: If dtype is not float16/32/64
+    """
+    var result = ExTensor(x._shape, x._dtype)
+
+    if x._dtype == DType.float16:
+        _hard_sigmoid_backward_impl[DType.float16](result, grad_output, x)
+    elif x._dtype == DType.float32:
+        _hard_sigmoid_backward_impl[DType.float32](result, grad_output, x)
+    elif x._dtype == DType.float64:
+        _hard_sigmoid_backward_impl[DType.float64](result, grad_output, x)
+    else:
+        var dtype_name = _format_dtype_name(x._dtype)
+        raise Error(
+            "dispatch_hard_sigmoid_backward: only supports float16/32/64. Got "
+            + dtype_name
+        )
+
+    return result^
+
+
+fn _hard_swish_impl[dtype: DType](result: ExTensor, tensor: ExTensor) raises:
+    """Compile-time specialized hard_swish implementation.
+
+    hard_swish(x) = x * hard_sigmoid(x) = x * clip((x + 3) / 6, 0, 1)
+                  = 0 if x <= -3
+                  = x if x >= 3
+                  = x * (x + 3) / 6 otherwise
+
+    Args:
+        dtype: Compile-time dtype parameter
+        result: Output tensor (pre-allocated)
+        tensor: Input tensor
+    """
+    var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    @parameter
+    if dtype == DType.float16:
+        for i in range(tensor._numel):
+            var x = Float32(in_ptr[i])
+            if x <= -3.0:
+                out_ptr[i] = Scalar[dtype](0.0)
+            elif x >= 3.0:
+                out_ptr[i] = Scalar[dtype](x)
+            else:
+                out_ptr[i] = Scalar[dtype](x * (x + 3.0) / 6.0)
+    else:
+        var zero = Scalar[dtype](0.0)
+        var neg_three = Scalar[dtype](-3.0)
+        var three = Scalar[dtype](3.0)
+        var six = Scalar[dtype](6.0)
+        for i in range(tensor._numel):
+            var x = in_ptr[i]
+            if x <= neg_three:
+                out_ptr[i] = zero
+            elif x >= three:
+                out_ptr[i] = x
+            else:
+                out_ptr[i] = x * (x + three) / six
+
+
+fn dispatch_hard_swish(tensor: ExTensor) raises -> ExTensor:
+    """Runtime dispatch for hard_swish activation.
+
+    Args:
+        tensor: Input tensor
+
+    Returns:
+        hard_swish output tensor
+
+    Raises:
+        Error: If dtype is not float16/32/64
+    """
+    var result = ExTensor(tensor._shape, tensor._dtype)
+
+    if tensor._dtype == DType.float16:
+        _hard_swish_impl[DType.float16](result, tensor)
+    elif tensor._dtype == DType.float32:
+        _hard_swish_impl[DType.float32](result, tensor)
+    elif tensor._dtype == DType.float64:
+        _hard_swish_impl[DType.float64](result, tensor)
+    else:
+        var dtype_name = _format_dtype_name(tensor._dtype)
+        raise Error(
+            "dispatch_hard_swish: only supports float16/32/64. Got " + dtype_name
+        )
+
+    return result^
+
+
+fn _hard_swish_backward_impl[
+    dtype: DType
+](result: ExTensor, grad_output: ExTensor, x: ExTensor) raises:
+    """Compile-time specialized hard_swish backward implementation.
+
+    Derivative: 0 if x <= -3, 1 if x >= 3, (2x + 3) / 6 otherwise
+
+    Args:
+        dtype: Compile-time dtype parameter
+        result: Output gradient tensor (pre-allocated)
+        grad_output: Upstream gradient
+        x: Input from forward pass
+    """
+    var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
+    var x_ptr = x._data.bitcast[Scalar[dtype]]()
+    var result_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    @parameter
+    if dtype == DType.float16:
+        for i in range(x._numel):
+            var x_val = Float32(x_ptr[i])
+            var grad = Float32(grad_ptr[i])
+            if x_val <= -3.0:
+                result_ptr[i] = Scalar[dtype](0.0)
+            elif x_val >= 3.0:
+                result_ptr[i] = Scalar[dtype](grad)
+            else:
+                result_ptr[i] = Scalar[dtype](grad * (2.0 * x_val + 3.0) / 6.0)
+    else:
+        var zero = Scalar[dtype](0.0)
+        var neg_three = Scalar[dtype](-3.0)
+        var three = Scalar[dtype](3.0)
+        var two = Scalar[dtype](2.0)
+        var six = Scalar[dtype](6.0)
+        for i in range(x._numel):
+            var x_val = x_ptr[i]
+            var grad = grad_ptr[i]
+            if x_val <= neg_three:
+                result_ptr[i] = zero
+            elif x_val >= three:
+                result_ptr[i] = grad
+            else:
+                result_ptr[i] = grad * (two * x_val + three) / six
+
+
+fn dispatch_hard_swish_backward(
+    grad_output: ExTensor, x: ExTensor
+) raises -> ExTensor:
+    """Runtime dispatch for hard_swish backward operation.
+
+    Args:
+        grad_output: Upstream gradient
+        x: Input from forward pass
+
+    Returns:
+        Input gradient tensor
+
+    Raises:
+        Error: If dtype is not float16/32/64
+    """
+    var result = ExTensor(x._shape, x._dtype)
+
+    if x._dtype == DType.float16:
+        _hard_swish_backward_impl[DType.float16](result, grad_output, x)
+    elif x._dtype == DType.float32:
+        _hard_swish_backward_impl[DType.float32](result, grad_output, x)
+    elif x._dtype == DType.float64:
+        _hard_swish_backward_impl[DType.float64](result, grad_output, x)
+    else:
+        var dtype_name = _format_dtype_name(x._dtype)
+        raise Error(
+            "dispatch_hard_swish_backward: only supports float16/32/64. Got "
+            + dtype_name
+        )
+
+    return result^
+
+
+fn _hard_tanh_impl[
+    dtype: DType
+](result: ExTensor, tensor: ExTensor, min_val: Float64, max_val: Float64) raises:
+    """Compile-time specialized hard_tanh implementation.
+
+    hard_tanh(x) = clip(x, min_val, max_val)
+
+    Args:
+        dtype: Compile-time dtype parameter
+        result: Output tensor (pre-allocated)
+        tensor: Input tensor
+        min_val: Minimum output value
+        max_val: Maximum output value
+    """
+    var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+    var min_typed = Scalar[dtype](min_val)
+    var max_typed = Scalar[dtype](max_val)
+
+    for i in range(tensor._numel):
+        var x = in_ptr[i]
+        out_ptr[i] = max(min_typed, min(max_typed, x))
+
+
+fn dispatch_hard_tanh(
+    tensor: ExTensor, min_val: Float64, max_val: Float64
+) raises -> ExTensor:
+    """Runtime dispatch for hard_tanh activation.
+
+    Args:
+        tensor: Input tensor
+        min_val: Minimum output value
+        max_val: Maximum output value
+
+    Returns:
+        hard_tanh output tensor
+
+    Raises:
+        Error: If dtype is not float16/32/64
+    """
+    var result = ExTensor(tensor._shape, tensor._dtype)
+
+    if tensor._dtype == DType.float16:
+        _hard_tanh_impl[DType.float16](result, tensor, min_val, max_val)
+    elif tensor._dtype == DType.float32:
+        _hard_tanh_impl[DType.float32](result, tensor, min_val, max_val)
+    elif tensor._dtype == DType.float64:
+        _hard_tanh_impl[DType.float64](result, tensor, min_val, max_val)
+    else:
+        var dtype_name = _format_dtype_name(tensor._dtype)
+        raise Error(
+            "dispatch_hard_tanh: only supports float16/32/64. Got " + dtype_name
+        )
+
+    return result^
+
+
+fn _hard_tanh_backward_impl[
+    dtype: DType
+](
+    result: ExTensor,
+    grad_output: ExTensor,
+    x: ExTensor,
+    min_val: Float64,
+    max_val: Float64,
+) raises:
+    """Compile-time specialized hard_tanh backward implementation.
+
+    Derivative: 1 if min_val < x < max_val, else 0
+
+    Args:
+        dtype: Compile-time dtype parameter
+        result: Output gradient tensor (pre-allocated)
+        grad_output: Upstream gradient
+        x: Input from forward pass
+        min_val: Minimum value used in forward pass
+        max_val: Maximum value used in forward pass
+    """
+    var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
+    var x_ptr = x._data.bitcast[Scalar[dtype]]()
+    var result_ptr = result._data.bitcast[Scalar[dtype]]()
+    var min_typed = Scalar[dtype](min_val)
+    var max_typed = Scalar[dtype](max_val)
+    var zero = Scalar[dtype](0.0)
+
+    for i in range(x._numel):
+        var x_val = x_ptr[i]
+        var grad = grad_ptr[i]
+        if x_val > min_typed and x_val < max_typed:
+            result_ptr[i] = grad
+        else:
+            result_ptr[i] = zero
+
+
+fn dispatch_hard_tanh_backward(
+    grad_output: ExTensor, x: ExTensor, min_val: Float64, max_val: Float64
+) raises -> ExTensor:
+    """Runtime dispatch for hard_tanh backward operation.
+
+    Args:
+        grad_output: Upstream gradient
+        x: Input from forward pass
+        min_val: Minimum value used in forward pass
+        max_val: Maximum value used in forward pass
+
+    Returns:
+        Input gradient tensor
+
+    Raises:
+        Error: If dtype is not float16/32/64
+    """
+    var result = ExTensor(x._shape, x._dtype)
+
+    if x._dtype == DType.float16:
+        _hard_tanh_backward_impl[DType.float16](
+            result, grad_output, x, min_val, max_val
+        )
+    elif x._dtype == DType.float32:
+        _hard_tanh_backward_impl[DType.float32](
+            result, grad_output, x, min_val, max_val
+        )
+    elif x._dtype == DType.float64:
+        _hard_tanh_backward_impl[DType.float64](
+            result, grad_output, x, min_val, max_val
+        )
+    else:
+        var dtype_name = _format_dtype_name(x._dtype)
+        raise Error(
+            "dispatch_hard_tanh_backward: only supports float16/32/64. Got "
+            + dtype_name
+        )
+
+    return result^

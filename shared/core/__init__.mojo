@@ -460,6 +460,16 @@ from .dtype_dispatch import (
     dispatch_float_unary,
     dispatch_float_binary,
     dispatch_float_scalar,
+    dispatch_softmax,
+    dispatch_softmax_backward,
+    dispatch_gelu,
+    dispatch_gelu_backward,
+    dispatch_hard_sigmoid,
+    dispatch_hard_sigmoid_backward,
+    dispatch_hard_swish,
+    dispatch_hard_swish_backward,
+    dispatch_hard_tanh,
+    dispatch_hard_tanh_backward,
 )
 
 # ============================================================================
