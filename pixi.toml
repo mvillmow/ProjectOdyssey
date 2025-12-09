@@ -6,7 +6,7 @@ version = "0.1.0"
 
 [tasks]
 # Build the shared Mojo package
-build = "mojo package shared -o build/ml-odyssey-shared.mojopkg"
+build = "mojo package -Werror shared -o build/ml-odyssey-shared.mojopkg"
 
 # Run a single Mojo file (example: training script)
 run = "mojo run"
