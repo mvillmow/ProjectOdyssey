@@ -311,7 +311,9 @@ fn test_load_and_substitute_training_config() raises:
     Verifies end-to-end workflow with environment variables.
     """
     var python = Python.import_module("os")
-    python.environ[PythonObject("EXPERIMENT_NAME")] = PythonObject("baseline_001")
+    python.environ[PythonObject("EXPERIMENT_NAME")] = PythonObject(
+        "baseline_001"
+    )
     python.environ[PythonObject("OUTPUT_PATH")] = PythonObject("/results")
 
     # Create config with env vars
