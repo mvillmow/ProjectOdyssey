@@ -144,11 +144,17 @@ fn test_training_loop_simulation() raises:
     var batch_size = 4
 
     # Initialize weights
+    var w1_shape = List[Int]()
+    w1_shape.append(input_dim)
+    w1_shape.append(hidden_dim)
     var w1 = kaiming_uniform(
-        input_dim, hidden_dim, List[Int](input_dim, hidden_dim), seed_val=1
+        input_dim, hidden_dim, w1_shape, seed_val=1
     )
+    var w2_shape = List[Int]()
+    w2_shape.append(hidden_dim)
+    w2_shape.append(output_dim)
     var w2 = xavier_uniform(
-        hidden_dim, output_dim, List[Int](hidden_dim, output_dim), seed_val=2
+        hidden_dim, output_dim, w2_shape, seed_val=2
     )
 
     # Setup metrics
@@ -169,8 +175,11 @@ fn test_training_loop_simulation() raises:
         # Simulate batches
         for batch_idx in range(num_batches):
             # Create fake batch
+            var input_shape = List[Int]()
+            input_shape.append(batch_size)
+            input_shape.append(input_dim)
             var input = normal(
-                List[Int](batch_size, input_dim),
+                input_shape,
                 seed_val=epoch * 100 + batch_idx,
             )
             var labels_shape = List[Int]()
