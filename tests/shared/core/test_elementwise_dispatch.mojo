@@ -697,7 +697,9 @@ fn test_apply_unary_preserves_dtype_float32() raises:
 
     var result = apply_unary[ExpOp](tensor)
 
-    assert_true(result.dtype() == DType.float32, "Output dtype should match input")
+    assert_true(
+        result.dtype() == DType.float32, "Output dtype should match input"
+    )
 
 
 fn test_apply_unary_preserves_dtype_float64() raises:
@@ -708,7 +710,9 @@ fn test_apply_unary_preserves_dtype_float64() raises:
 
     var result = apply_unary[ExpOp](tensor)
 
-    assert_true(result.dtype() == DType.float64, "Output dtype should match input")
+    assert_true(
+        result.dtype() == DType.float64, "Output dtype should match input"
+    )
 
 
 fn test_apply_binary_preserves_dtype() raises:
@@ -720,7 +724,9 @@ fn test_apply_binary_preserves_dtype() raises:
 
     var result = apply_binary[AddOp](a, b)
 
-    assert_true(result.dtype() == DType.float32, "Output dtype should match input")
+    assert_true(
+        result.dtype() == DType.float32, "Output dtype should match input"
+    )
 
 
 fn test_apply_binary_shape_mismatch_error() raises:

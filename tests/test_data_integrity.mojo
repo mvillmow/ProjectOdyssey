@@ -20,7 +20,9 @@ fn test_mxfp4_aligned_roundtrip() raises:
     """Test MXFP4 round-trip with aligned size (32 elements = 1 block)."""
     print("Test: MXFP4 aligned round-trip...")
 
-    var t = zeros(List[Int](32), DType.float32)
+    var shape = List[Int]()
+    shape.append(32)
+    var t = zeros(shape, DType.float32)
     for i in range(32):
         t._data.bitcast[Float32]()[i] = Float32(i) + 1.0
 
@@ -42,7 +44,9 @@ fn test_mxfp4_unaligned_roundtrip() raises:
     print("Test: MXFP4 unaligned round-trip...")
 
     # Create 33-element tensor (1 complete block + 1 extra)
-    var t = zeros(List[Int](33), DType.float32)
+    var shape = List[Int]()
+    shape.append(33)
+    var t = zeros(shape, DType.float32)
     for i in range(33):
         t._data.bitcast[Float32]()[i] = Float32(i) + 1.0
 
@@ -72,7 +76,9 @@ fn test_mxfp4_various_unaligned_sizes() raises:
         var original_size = test_sizes[size_idx]
 
         # Create tensor with original size
-        var t = zeros(List[Int](original_size), DType.float32)
+        var shape = List[Int]()
+        shape.append(original_size)
+        var t = zeros(shape, DType.float32)
         for i in range(original_size):
             t._data.bitcast[Float32]()[i] = Float32(i)
 
@@ -104,7 +110,9 @@ fn test_nvfp4_unaligned_roundtrip() raises:
     """
     print("Test: NVFP4 unaligned round-trip...")
 
-    var t = zeros(List[Int](17), DType.float32)
+    var shape = List[Int]()
+    shape.append(17)
+    var t = zeros(shape, DType.float32)
     for i in range(17):
         t._data.bitcast[Float32]()[i] = Float32(i) + 1.0
 
@@ -128,7 +136,9 @@ fn test_fp8_bounds_checking() raises:
     """
     print("Test: FP8 bounds checking...")
 
-    var t = zeros(List[Int](10), DType.float32)
+    var shape = List[Int]()
+    shape.append(10)
+    var t = zeros(shape, DType.float32)
     for i in range(10):
         t._data.bitcast[Float32]()[i] = Float32(i)
 
@@ -146,7 +156,9 @@ fn test_dtype_validation_fp8() raises:
     print("Test: FP8 dtype validation...")
 
     # Try to convert int32 tensor (should fail with defensive check)
-    var t_int = zeros(List[Int](10), DType.int32)
+    var shape = List[Int]()
+    shape.append(10)
+    var t_int = zeros(shape, DType.int32)
     try:
         var fp8_t = t_int.to_fp8()
         # Should not reach here - should have raised Error
@@ -163,7 +175,9 @@ fn test_dtype_validation_mxfp4() raises:
     print("Test: MXFP4 dtype validation...")
 
     # Try to convert int32 tensor (should fail with defensive check)
-    var t_int = zeros(List[Int](32), DType.int32)
+    var shape = List[Int]()
+    shape.append(32)
+    var t_int = zeros(shape, DType.int32)
     try:
         var mxfp4_t = t_int.to_mxfp4()
         # Should not reach here - should have raised Error
@@ -181,7 +195,9 @@ fn test_fp16_conversion_behavior() raises:
     print("Test: FP16 conversion behavior...")
 
     # Create FP16 tensor
-    var t_fp16 = zeros(List[Int](10), DType.float16)
+    var shape = List[Int]()
+    shape.append(10)
+    var t_fp16 = zeros(shape, DType.float16)
     for i in range(10):
         # Convert int to FP16
         var val_f32 = Float32(i) + 1.5
@@ -203,7 +219,9 @@ fn test_int_conversion_bounds() raises:
     """Test integer conversion with bounds checking."""
     print("Test: Integer conversion bounds checking...")
 
-    var t = zeros(List[Int](10), DType.float32)
+    var shape = List[Int]()
+    shape.append(10)
+    var t = zeros(shape, DType.float32)
     for i in range(10):
         t._data.bitcast[Float32]()[i] = Float32(i)
 
@@ -230,7 +248,9 @@ fn test_metadata_preservation() raises:
     """Test that quantization metadata is properly set and used."""
     print("Test: Quantization metadata preservation...")
 
-    var t = zeros(List[Int](123), DType.float32)
+    var shape = List[Int]()
+    shape.append(123)
+    var t = zeros(shape, DType.float32)
     for i in range(123):
         t._data.bitcast[Float32]()[i] = Float32(i)
 
@@ -258,7 +278,9 @@ fn test_backwards_compatibility() raises:
     """Test backwards compatibility for non-quantized tensors."""
     print("Test: Backwards compatibility...")
 
-    var t = zeros(List[Int](10), DType.float32)
+    var shape = List[Int]()
+    shape.append(10)
+    var t = zeros(shape, DType.float32)
 
     # Non-quantized tensors should have _original_numel_quantized = -1
     assert_true(

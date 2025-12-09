@@ -186,8 +186,12 @@ fn test_dataloader_basic() raises:
     """Test DataLoader basic functionality."""
     print("Testing DataLoader basic...")
 
-    var data = ExTensor(List[Int](10, 5), DType.float32)
-    var labels = ExTensor(List[Int](), DType.int32)
+    var data_shape = List[Int]()
+    data_shape.append(10)
+    data_shape.append(5)
+    var data = ExTensor(data_shape, DType.float32)
+    var labels_shape = List[Int]()
+    var labels = ExTensor(labels_shape, DType.int32)
 
     var loader = DataLoader(data, labels, batch_size=3)
 
@@ -202,8 +206,12 @@ fn test_dataloader_iteration() raises:
     """Test DataLoader iteration."""
     print("Testing DataLoader iteration...")
 
-    var data = ExTensor(List[Int](10, 5), DType.float32)
-    var labels = ExTensor(List[Int](), DType.int32)
+    var data_shape = List[Int]()
+    data_shape.append(10)
+    data_shape.append(5)
+    var data = ExTensor(data_shape, DType.float32)
+    var labels_shape = List[Int]()
+    var labels = ExTensor(labels_shape, DType.int32)
 
     var loader = DataLoader(data, labels, batch_size=3)
 
@@ -366,8 +374,12 @@ fn test_databatch_creation() raises:
     """Test DataBatch creation."""
     print("Testing DataBatch creation...")
 
-    var data = ExTensor(List[Int](5, 10), DType.float32)
-    var labels = ExTensor(List[Int](), DType.int32)
+    var data_shape = List[Int]()
+    data_shape.append(5)
+    data_shape.append(10)
+    var data = ExTensor(data_shape, DType.float32)
+    var labels_shape = List[Int]()
+    var labels = ExTensor(labels_shape, DType.int32)
 
     var batch = DataBatch(data, labels)
 
