@@ -9,7 +9,6 @@ Usage:
     python scripts/validate_test_coverage.py
 """
 
-import os
 import sys
 from pathlib import Path
 import yaml
@@ -152,7 +151,7 @@ def main():
             f.write("=" * 60 + "\n\n")
             f.write(f"Total Tests: {len(test_files)}\n")
             f.write(f"Covered: {len(covered_tests)}\n")
-            f.write(f"Uncovered: 0\n\n")
+            f.write("Uncovered: 0\n\n")
             f.write("✅ All tests are covered by CI workflow!\n")
 
         sys.exit(0)
