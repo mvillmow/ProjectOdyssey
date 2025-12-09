@@ -889,13 +889,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         return power(self, other)
 
-    # FIXME: __matmul__ operator disabled due to circular dependency with matrix.mojo
-    # Use matmul() function directly instead: `from shared.core.matrix import matmul; result = matmul(a, b)`
-    # See issue: https://github.com/modularml/mojo/issues/XXXX
-    # fn __matmul__(self, other: ExTensor) raises -> ExTensor:
-    #     """Matrix multiplication: `a @ b`"""
-    #     from shared.core.matrix import matmul
-    #     return matmul(self, other)
+    fn __matmul__(self, other: ExTensor) raises -> ExTensor:
+        """Matrix multiplication: `a @ b`"""
+        from .matrix import matmul
+        return matmul(self, other)
 
     fn __eq__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise equality: `a == b`"""

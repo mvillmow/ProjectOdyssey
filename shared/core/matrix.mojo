@@ -10,8 +10,8 @@ See Issue #49 for details
 """
 
 from collections import List
-from shared.core.extensor import ExTensor
-from shared.core.gradient_types import GradientPair
+from .extensor import ExTensor
+from .gradient_types import GradientPair
 
 
 fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
