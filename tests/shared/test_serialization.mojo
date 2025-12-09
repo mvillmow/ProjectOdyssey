@@ -27,7 +27,7 @@ from collections import List
 import os
 
 
-fn test_dtype_utilities():
+fn test_dtype_utilities() raises:
     """Test dtype string conversion functions."""
     # Test parse_dtype
     var f32_dtype = parse_dtype("float32")
@@ -57,7 +57,7 @@ fn test_dtype_utilities():
     assert_equal(size_int32, 4, "int32 should be 4 bytes")
 
 
-fn test_hex_encoding():
+fn test_hex_encoding() raises:
     """Test hex encoding/decoding."""
     # Test bytes_to_hex and hex_to_bytes roundtrip
     var shape: List[Int] = [4]
@@ -81,7 +81,7 @@ fn test_hex_encoding():
     for i in range(tensor.numel()):
         var v1 = tensor._get_float64(i)
         var v2 = tensor2._get_float64(i)
-        assert_almost_equal(v1, v2, tolerance=1e-6, msg="Hex decode mismatch")
+        assert_almost_equal(v1, v2, 1e-6, "Hex decode mismatch")
 
 
 fn test_single_tensor_serialization() raises:
@@ -113,9 +113,7 @@ fn test_single_tensor_serialization() raises:
         assert_equal(loaded.numel(), 6, "Wrong number of elements")
         for i in range(loaded.numel()):
             var v = loaded._get_float64(i)
-            assert_almost_equal(
-                v, 3.14, tolerance=1e-6, msg="Value mismatch after load"
-            )
+            assert_almost_equal(v, 3.14, 1e-6, "Value mismatch after load")
 
     finally:
         # Clean up
@@ -257,7 +255,8 @@ fn _create_temp_dir(path: String):
         from python import Python
 
         var os = Python.import_module("os")
-        os.makedirs(path, exist_ok=True)
+        var exist_ok = Python.import_module("builtins").bool(True)
+        os.makedirs(path, exist_ok)
     except:
         pass
 

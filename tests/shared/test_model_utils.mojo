@@ -116,7 +116,7 @@ fn test_get_vgg16_parameter_names() raises:
     """Test parameter naming for VGG-16."""
     var names = get_model_parameter_names("vgg16")
 
-    assert_equal(len(names), 26, "VGG-16 should have 26 parameters")
+    assert_equal(len(names), 32, "VGG-16 should have 32 parameters")
 
     # Verify block 1
     assert_equal(names[0], "conv1_1_kernel", "First conv layer")

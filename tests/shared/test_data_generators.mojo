@@ -255,35 +255,35 @@ fn test_random_normal_distribution_sanity() raises:
 
 fn test_synthetic_classification_data_shape_features() raises:
     """Test synthetic_classification_data produces correct feature shape."""
-    var (X, y) = synthetic_classification_data(100, 20, 3)
+    var (X, _) = synthetic_classification_data(100, 20, 3)
 
     assert_shape(X, [100, 20], "Features should have shape [100, 20]")
 
 
 fn test_synthetic_classification_data_shape_labels() raises:
     """Test synthetic_classification_data produces correct label shape."""
-    var (X, y) = synthetic_classification_data(100, 20, 3)
+    var (_, y) = synthetic_classification_data(100, 20, 3)
 
     assert_shape(y, [100], "Labels should have shape [100]")
 
 
 fn test_synthetic_classification_data_dtype_features() raises:
     """Test synthetic_classification_data feature dtype."""
-    var (X, y) = synthetic_classification_data(100, 20, 3, DType.float32)
+    var (X, _) = synthetic_classification_data(100, 20, 3, DType.float32)
 
     assert_dtype(X, DType.float32, "Features should have specified dtype")
 
 
 fn test_synthetic_classification_data_dtype_labels() raises:
     """Test synthetic_classification_data labels are int32."""
-    var (X, y) = synthetic_classification_data(100, 20, 3)
+    var (_, y) = synthetic_classification_data(100, 20, 3)
 
     assert_dtype(y, DType.int32, "Labels should be int32")
 
 
 fn test_synthetic_classification_data_label_values() raises:
     """Test synthetic_classification_data labels are in valid range."""
-    var (X, y) = synthetic_classification_data(50, 10, 3)
+    var (_, y) = synthetic_classification_data(50, 10, 3)
 
     # Check that labels are in [0, num_classes)
     for i in range(50):
@@ -302,7 +302,7 @@ fn test_synthetic_classification_data_single_sample() raises:
 
 fn test_synthetic_classification_data_many_classes() raises:
     """Test synthetic_classification_data with many classes."""
-    var (X, y) = synthetic_classification_data(100, 10, 10)
+    var (_, y) = synthetic_classification_data(100, 10, 10)
 
     # Check all labels are in valid range
     for i in range(100):
@@ -313,7 +313,7 @@ fn test_synthetic_classification_data_many_classes() raises:
 
 fn test_synthetic_classification_data_high_dimensions() raises:
     """Test synthetic_classification_data with high-dimensional features."""
-    var (X, y) = synthetic_classification_data(50, 100, 5)
+    var (X, _) = synthetic_classification_data(50, 100, 5)
 
     assert_shape(X, [50, 100], "Should handle high-dimensional features")
 
