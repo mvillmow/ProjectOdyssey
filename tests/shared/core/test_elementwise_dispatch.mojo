@@ -816,3 +816,102 @@ fn test_apply_unary_reciprocal_zero_error() raises:
         assert_true(False, "Expected error for reciprocal of zero")
     except e:
         assert_true(True, "Correctly raised error")
+
+
+# ============================================================================
+# Main Test Runner
+# ============================================================================
+
+
+fn main() raises:
+    """Run all elementwise dispatch tests."""
+    # Unary ExpOp tests
+    test_apply_unary_exp_zeros()
+    test_apply_unary_exp_ones()
+
+    # Unary LogOp tests
+    test_apply_unary_log_ones()
+    test_apply_unary_log_error_negative()
+
+    # Unary SqrtOp tests
+    test_apply_unary_sqrt_four()
+    test_apply_unary_sqrt_zero()
+
+    # Unary TrigonometricOps tests
+    test_apply_unary_sin_zero()
+    test_apply_unary_cos_zero()
+    test_apply_unary_tanh_zero()
+
+    # Unary AbsOp tests
+    test_apply_unary_abs_negative()
+    test_apply_unary_abs_positive()
+
+    # Unary NegateOp tests
+    test_apply_unary_negate()
+
+    # Unary SquareOp tests
+    test_apply_unary_square()
+
+    # Unary SignOp tests
+    test_apply_unary_sign_positive()
+    test_apply_unary_sign_negative()
+    test_apply_unary_sign_zero()
+
+    # Unary custom operations tests
+    test_apply_unary_custom_double()
+    test_apply_unary_custom_increment()
+
+    # Binary AddOp tests
+    test_apply_binary_add()
+
+    # Binary SubtractOp tests
+    test_apply_binary_subtract()
+
+    # Binary MultiplyOp tests
+    test_apply_binary_multiply()
+
+    # Binary DivideOp tests
+    test_apply_binary_divide()
+    test_apply_binary_divide_by_zero_error()
+
+    # Binary PowerOp tests
+    test_apply_binary_power_base_2()
+    test_apply_binary_power_square()
+
+    # Binary MaxOp tests
+    test_apply_binary_max_a_greater()
+    test_apply_binary_max_b_greater()
+
+    # Binary MinOp tests
+    test_apply_binary_min_a_less()
+
+    # Binary comparison operations tests
+    test_apply_binary_equal_true()
+    test_apply_binary_equal_false()
+    test_apply_binary_greater_true()
+    test_apply_binary_greater_false()
+    test_apply_binary_less_true()
+
+    # Binary logical operations tests
+    test_apply_binary_logical_and_both_true()
+    test_apply_binary_logical_and_one_false()
+    test_apply_binary_logical_or_both_true()
+    test_apply_binary_logical_or_one_true()
+
+    # Binary custom operations tests
+    test_apply_binary_custom_average()
+
+    # Shape and dtype tests
+    test_apply_unary_preserves_dtype_float32()
+    test_apply_unary_preserves_dtype_float64()
+    test_apply_binary_preserves_dtype()
+    test_apply_binary_shape_mismatch_error()
+    test_apply_binary_dtype_mismatch_error()
+
+    # Multi-dimensional tensor tests
+    test_apply_unary_2d_tensor()
+    test_apply_binary_2d_tensor()
+
+    # Reciprocal and edge cases tests
+    test_apply_unary_reciprocal()
+    test_apply_unary_reciprocal_zero_error()
