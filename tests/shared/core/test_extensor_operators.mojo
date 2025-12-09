@@ -19,14 +19,8 @@ from tests.shared.conftest import assert_true, assert_almost_equal, assert_equal
 
 fn test_radd_tensors() raises:
     """Test __radd__: reflected addition a + b = b + a (commutative)"""
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(3)
-    var a = full(shape, 2.0, DType.float32)
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(3)
-    var b = full(shape, 3.0, DType.float32)
+    var a = full([2, 3], 2.0, DType.float32)
+    var b = full([2, 3], 3.0, DType.float32)
 
     # Both should produce the same result (commutative)
     var result1 = a + b
@@ -48,14 +42,8 @@ fn test_radd_tensors() raises:
 
 fn test_rsub_tensors() raises:
     """Test __rsub__: reflected subtraction (order matters)"""
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(3)
-    var a = full(shape, 2.0, DType.float32)
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(3)
-    var b = full(shape, 5.0, DType.float32)
+    var a = full([2, 3], 2.0, DType.float32)
+    var b = full([2, 3], 5.0, DType.float32)
 
     # Different orders should give different results (non-commutative)
     var result1 = a - b  # 2.0 - 5.0 = -3.0
@@ -73,14 +61,8 @@ fn test_rsub_tensors() raises:
 
 fn test_rmul_tensors() raises:
     """Test __rmul__: reflected multiplication (commutative)"""
-    var shape = List[Int]()
-    shape.append(3)
-    shape.append(2)
-    var a = full(shape, 2.0, DType.float32)
-    var shape = List[Int]()
-    shape.append(3)
-    shape.append(2)
-    var b = full(shape, 3.0, DType.float32)
+    var a = full([3, 2], 2.0, DType.float32)
+    var b = full([3, 2], 3.0, DType.float32)
 
     # Both should produce the same result (commutative)
     var result1 = a * b
@@ -98,14 +80,8 @@ fn test_rmul_tensors() raises:
 
 fn test_rtruediv_tensors() raises:
     """Test __rtruediv__: reflected division (order matters)"""
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(2)
-    var a = full(shape, 2.0, DType.float32)
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(2)
-    var b = full(shape, 8.0, DType.float32)
+    var a = full([2, 2], 2.0, DType.float32)
+    var b = full([2, 2], 8.0, DType.float32)
 
     # Different orders should give different results (non-commutative)
     var result1 = a / b  # 2.0 / 8.0 = 0.25
@@ -128,14 +104,8 @@ fn test_rtruediv_tensors() raises:
 
 fn test_iadd_basic() raises:
     """Test __iadd__: in-place addition tensor += other"""
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(3)
-    var a = full(shape, 2.0, DType.float32)
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(3)
-    var b = full(shape, 3.0, DType.float32)
+    var a = full([2, 3], 2.0, DType.float32)
+    var b = full([2, 3], 3.0, DType.float32)
 
     # Store original value
     var original_a = a._get_float32(0)
@@ -151,14 +121,8 @@ fn test_iadd_basic() raises:
 
 fn test_isub_basic() raises:
     """Test __isub__: in-place subtraction tensor -= other"""
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(3)
-    var a = full(shape, 5.0, DType.float32)
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(3)
-    var b = full(shape, 2.0, DType.float32)
+    var a = full([2, 3], 5.0, DType.float32)
+    var b = full([2, 3], 2.0, DType.float32)
 
     # In-place subtract
     a -= b
@@ -170,14 +134,8 @@ fn test_isub_basic() raises:
 
 fn test_imul_basic() raises:
     """Test __imul__: in-place multiplication tensor *= other"""
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(3)
-    var a = full(shape, 2.0, DType.float32)
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(3)
-    var b = full(shape, 3.0, DType.float32)
+    var a = full([2, 3], 2.0, DType.float32)
+    var b = full([2, 3], 3.0, DType.float32)
 
     # In-place multiply
     a *= b
@@ -189,14 +147,8 @@ fn test_imul_basic() raises:
 
 fn test_itruediv_basic() raises:
     """Test __itruediv__: in-place division tensor /= other"""
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(3)
-    var a = full(shape, 8.0, DType.float32)
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(3)
-    var b = full(shape, 2.0, DType.float32)
+    var a = full([2, 3], 8.0, DType.float32)
+    var b = full([2, 3], 2.0, DType.float32)
 
     # In-place divide
     a /= b
@@ -208,18 +160,9 @@ fn test_itruediv_basic() raises:
 
 fn test_inplace_operators_chain() raises:
     """Test chaining multiple in-place operators"""
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(2)
-    var a = full(shape, 10.0, DType.float32)
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(2)
-    var b = full(shape, 2.0, DType.float32)
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(2)
-    var c = full(shape, 3.0, DType.float32)
+    var a = full([2, 2], 10.0, DType.float32)
+    var b = full([2, 2], 2.0, DType.float32)
+    var c = full([2, 2], 3.0, DType.float32)
 
     # Chain operations: a = ((10 / 2) * 3) = 15
     a /= b
@@ -237,10 +180,7 @@ fn test_inplace_operators_chain() raises:
 
 fn test_neg_basic() raises:
     """Test __neg__: negation -tensor"""
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(3)
-    var a = full(shape, 3.0, DType.float32)
+    var a = full([2, 3], 3.0, DType.float32)
 
     # Negate
     var result = -a
@@ -254,10 +194,7 @@ fn test_neg_basic() raises:
 
 fn test_neg_negative_values() raises:
     """Test __neg__: negation of negative values"""
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(3)
-    var a = full(shape, -5.0, DType.float32)
+    var a = full([2, 3], -5.0, DType.float32)
 
     # Negate negative value
     var result = -a
@@ -271,10 +208,7 @@ fn test_neg_negative_values() raises:
 
 fn test_neg_zeros() raises:
     """Test __neg__: negation of zeros"""
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(3)
-    var a = zeros(shape, DType.float32)
+    var a = zeros([2, 3], DType.float32)
 
     # Negate zeros
     var result = -a
@@ -288,10 +222,7 @@ fn test_neg_zeros() raises:
 
 fn test_pos_basic() raises:
     """Test __pos__: positive +tensor (returns copy)"""
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(3)
-    var a = full(shape, 3.0, DType.float32)
+    var a = full([2, 3], 3.0, DType.float32)
 
     # Positive (copy)
     var result = +a
@@ -308,10 +239,7 @@ fn test_pos_basic() raises:
 
 fn test_pos_preserves_values() raises:
     """Test __pos__: positive preserves values including negative"""
-    var shape = List[Int]()
-    shape.append(3)
-    shape.append(2)
-    var a = full(shape, -2.5, DType.float32)
+    var a = full([3, 2], -2.5, DType.float32)
 
     # Positive (copy)
     var result = +a
@@ -325,10 +253,7 @@ fn test_pos_preserves_values() raises:
 
 fn test_abs_positive_values() raises:
     """Test __abs__: absolute value of positive numbers"""
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(3)
-    var a = full(shape, 3.5, DType.float32)
+    var a = full([2, 3], 3.5, DType.float32)
 
     # Absolute value
     var result = a.__abs__()
@@ -342,10 +267,7 @@ fn test_abs_positive_values() raises:
 
 fn test_abs_negative_values() raises:
     """Test __abs__: absolute value of negative numbers"""
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(3)
-    var a = full(shape, -3.5, DType.float32)
+    var a = full([2, 3], -3.5, DType.float32)
 
     # Absolute value
     var result = a.__abs__()
@@ -359,7 +281,7 @@ fn test_abs_negative_values() raises:
 
 fn test_abs_mixed_values() raises:
     """Test __abs__: absolute value with mixed positive/negative"""
-    var a = zeros(List[Int](4), DType.float32)
+    var a = zeros([4], DType.float32)
 
     # Set mixed values
     a._set_float32(0, Float32(2.0))
@@ -379,10 +301,7 @@ fn test_abs_mixed_values() raises:
 
 fn test_abs_zeros() raises:
     """Test __abs__: absolute value of zeros"""
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(3)
-    var a = zeros(shape, DType.float32)
+    var a = zeros([2, 3], DType.float32)
 
     # Absolute value
     var result = a.__abs__()
@@ -401,14 +320,8 @@ fn test_abs_zeros() raises:
 
 fn test_combined_unary_binary_ops() raises:
     """Test combining unary and binary operators"""
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(2)
-    var a = full(shape, 2.0, DType.float32)
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(2)
-    var b = full(shape, -3.0, DType.float32)
+    var a = full([2, 2], 2.0, DType.float32)
+    var b = full([2, 2], -3.0, DType.float32)
 
     # Compute: a.__abs__() + b.__abs__() = 2.0 + 3.0 = 5.0
     var abs_a = a.__abs__()
@@ -424,10 +337,7 @@ fn test_combined_unary_binary_ops() raises:
 
 fn test_double_negation() raises:
     """Test double negation: -(-a) == a"""
-    var shape = List[Int]()
-    shape.append(2)
-    shape.append(2)
-    var a = full(shape, 3.0, DType.float32)
+    var a = full([2, 2], 3.0, DType.float32)
 
     # Double negate
     var result = -(-a)

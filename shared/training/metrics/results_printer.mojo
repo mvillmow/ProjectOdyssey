@@ -138,7 +138,7 @@ fn print_per_class_accuracy(per_class_accuracies: ExTensor) raises:
 
         Example:
             ```mojo
-            var per_class = ExTensor(List[Int](10), DType.float64)
+            var per_class = ExTensor([10], DType.float64)
             # ... populate with per-class accuracies ...
             print_per_class_accuracy(per_class)
 
@@ -180,7 +180,7 @@ fn print_per_class_accuracy(
 
         Example:
             ```mojo
-            var per_class = ExTensor(List[Int](3), DType.float64)
+            var per_class = ExTensor([3], DType.float64)
             # ... populate with per-class accuracies ...
             var names = List[String]()
             names.append("Cat")
@@ -258,7 +258,7 @@ fn print_confusion_matrix(matrix: ExTensor) raises:
 
         Example:
             ```mojo
-            var cm_shape = List[Int](3, 3)
+            var cm_shape = [3, 3]
             var matrix = ExTensor(cm_shape, DType.int32)
             # ... populate matrix ...
             print_confusion_matrix(matrix)
@@ -310,7 +310,7 @@ fn print_confusion_matrix(
 
         Example:
             ```mojo
-            var cm_shape = List[Int](3, 3)
+            var cm_shape = [3, 3]
             var matrix = ExTensor(cm_shape, DType.int32)
             # ... populate matrix ...
             var names = List[String]()

@@ -25,7 +25,7 @@ Example:
 
     # Linear layer implements Module trait
     var layer = Linear(10, 5)
-    var input = zeros(List[Int](4, 10), DType.float32)
+    var input = zeros([4, 10], DType.float32)
 
     # Call forward pass
     var output = layer.forward(input)

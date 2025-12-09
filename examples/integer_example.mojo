@@ -113,7 +113,7 @@ fn example_tensor_conversions() raises:
     print("\n=== Tensor Conversions ===\n")
 
     # Create a float32 tensor
-    var t = zeros(List[Int](2, 3), DType.float32)
+    var t = zeros([2, 3], DType.float32)
 
     # Set some values
     t._data.bitcast[Float32]()[0] = 10.5

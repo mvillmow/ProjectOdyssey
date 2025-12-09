@@ -147,14 +147,16 @@ ExTensor constructor requires owned List[Int] for shape parameter, but temporary
 - tests/shared/core/test_model.mojo:123
 
 ## Recommended Action
-Create named variables for shape lists before passing to ExTensor:
+Use list literals for ExTensor shape parameters:
 ```mojo
-# WRONG - Temporary expression
+# WRONG - Invalid variadic constructor
 var tensor = ExTensor(List[Int](4), DType.float32)
 
-# CORRECT - Named variable
-var shape = List[Int]()
-shape.append(4)
+# CORRECT - List literal (type inference)
+var tensor = ExTensor([4], DType.float32)
+
+# CORRECT - Explicit type annotation
+var shape: List[Int] = [4]
 var tensor = ExTensor(shape, DType.float32)
 ```
 

@@ -64,8 +64,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
     Examples:
             # Create tensors
-            var a = zeros(List[Int](3, 4), DType.float32)
-            var b = ones(List[Int](3, 4), DType.float32)
+            var a = zeros([3, 4], DType.float32)
+            var b = ones([3, 4], DType.float32)
 
             # Access properties
             print(a.shape())  # [3, 4]
@@ -425,7 +425,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             A copy of the shape vector
 
         Examples:
-            ```var t = zeros(List[Int](3, 4), DType.float32)
+            ```var t = zeros([3, 4], DType.float32)
             print(t.shape())  # List[3, 4]```
         """
         # Return a copy to avoid mutation issues
@@ -463,7 +463,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             The product of all dimension sizes
 
         Examples:
-            `var t = zeros(List[Int](3, 4), DType.float32)
+            `var t = zeros([3, 4], DType.float32)
             print(t.num_elements())  # 12`
         """
         return self._numel
@@ -516,8 +516,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         Example:
             ```mojo
-            var t = zeros(List[Int](2, 3), DType.float32)
-            var reshaped = t.reshape(List[Int](6))  # (2, 3) -> (6,)
+            var t = zeros([2, 3], DType.float32)
+            var reshaped = t.reshape([6])  # (2, 3) -> (6,)
         ```
         ```
         """
@@ -892,6 +892,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
     fn __matmul__(self, other: ExTensor) raises -> ExTensor:
         """Matrix multiplication: `a @ b`"""
         from .matrix import matmul
+
         return matmul(self, other)
 
     fn __eq__(self, other: ExTensor) raises -> ExTensor:
@@ -948,7 +949,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             Error: If the source tensor is not a floating-point dtype
 
         Examples:
-            ```var t = zeros(List[Int](3, 4), DType.float32)
+            ```var t = zeros([3, 4], DType.float32)
             var fp8_t = t.to_fp8()  # Returns uint8 tensor with FP8 encoding
             var restored = fp8_t.from_fp8()  # Convert back to float32```
 
@@ -1050,7 +1051,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             Error: If conversion is not supported for the source dtype
 
         Examples:
-            var t = zeros(List[Int](3, 4), DType.float32)
+            var t = zeros([3, 4], DType.float32)
             var i8_t = t.to_int8()  # Returns int8 tensor
 
         Note:
@@ -1470,7 +1471,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             Error: If the source tensor is not a floating-point dtype
 
         Examples:
-            var t = zeros(List[Int](3, 4), DType.float32)
+            var t = zeros([3, 4], DType.float32)
             var bf8_t = t.to_bf8()  # Returns uint8 tensor with BF8 encoding
             var restored = bf8_t.from_bf8()  # Convert back to float32
 
@@ -1570,21 +1571,21 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         Examples:
             # Aligned size (32 elements = 1 block)
-            var t = zeros(List[Int](32,), DType.float32)
+            var t = zeros([32], DType.float32)
             var mxfp4_t = t.to_mxfp4()  # Returns uint8 tensor (17 bytes)
             var restored = mxfp4_t.from_mxfp4()  # Restores 32 elements
 
             # Non-aligned size (33 elements = 2 blocks with padding)
-            var t2 = zeros(List[Int](33,), DType.float32)
+            var t2 = zeros([33], DType.float32)
             var mxfp4_t2 = t2.to_mxfp4()  # Pads to 64 elements, returns 34 bytes
             var restored2 = mxfp4_t2.from_mxfp4()  # Correctly restores 33 elements!
 
             # Small tensors (1 element still uses full 32-element block)
-            var scalar = ExTensor(List[Int](1,), DType.float32)
+            var scalar = ExTensor([1], DType.float32)
             var quantized_scalar = scalar.to_mxfp4()  # Returns 17 bytes (padded to 32)
 
             # Multi-dimensional tensors (flattened for quantization)
-            var weights = ExTensor(List[Int](64, 128), DType.float32)  # 8192 elements
+            var weights = ExTensor([64, 128], DType.float32)  # 8192 elements
             var quantized_weights = weights.to_mxfp4()  # 256 blocks × 17 bytes = 4352 bytes
 
             # ML workflow: quantize model weights for memory efficiency
@@ -1776,21 +1777,21 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         Examples:
             # Aligned size (16 elements = 1 block)
-            var t = zeros(List[Int](16,), DType.float32)
+            var t = zeros([16], DType.float32)
             var nvfp4_t = t.to_nvfp4()  # Returns uint8 tensor (9 bytes)
             var restored = nvfp4_t.from_nvfp4()  # Restores 16 elements
 
             # Non-aligned size (17 elements = 2 blocks with padding)
-            var t2 = zeros(List[Int](17,), DType.float32)
+            var t2 = zeros([17], DType.float32)
             var nvfp4_t2 = t2.to_nvfp4()  # Pads to 32 elements, returns 18 bytes
             var restored2 = nvfp4_t2.from_nvfp4()  # Correctly restores 17 elements!
 
             # Small tensors (1 element still uses full 16-element block)
-            var scalar = ExTensor(List[Int](1,), DType.float32)
+            var scalar = ExTensor([1], DType.float32)
             var quantized_scalar = scalar.to_nvfp4()  # Returns 9 bytes (padded to 16)
 
             # Multi-dimensional tensors (flattened for quantization)
-            var activations = ExTensor(List[Int](128, 256), DType.float32)  # 32768 elements
+            var activations = ExTensor([128, 256], DType.float32)  # 32768 elements
             var quantized_activations = activations.to_nvfp4()  # 2048 blocks × 9 bytes = 18432 bytes
 
             # ML workflow: quantize activations with better accuracy than MXFP4
@@ -2147,7 +2148,7 @@ fn zeros(shape: List[Int], dtype: DType) raises -> ExTensor:
             A new ExTensor filled with zeros
 
     Examples:
-            var t = zeros(List[Int](3, 4), DType.float32)
+            var t = zeros([3, 4], DType.float32)
             # Creates a 3x4 tensor of float32 zeros.
 
         Performance:
@@ -2169,7 +2170,7 @@ fn ones(shape: List[Int], dtype: DType) raises -> ExTensor:
             A new ExTensor filled with ones
 
     Examples:
-            var t = ones(List[Int](3, 4), DType.float32)
+            var t = ones([3, 4], DType.float32)
             # Creates a 3x4 tensor of float32 ones.
     """
     var tensor = ExTensor(shape, dtype)
@@ -2199,7 +2200,7 @@ fn full(shape: List[Int], fill_value: Float64, dtype: DType) raises -> ExTensor:
             A new ExTensor filled with fill_value
 
     Examples:
-            ```var t = full(List[Int](3, 4), 42.0, DType.float32)
+            ```var t = full([3, 4], 42.0, DType.float32)
             # Creates a 3x4 tensor filled with 42.0```
     """
     var tensor = ExTensor(shape, dtype)
@@ -2232,7 +2233,7 @@ fn empty(shape: List[Int], dtype: DType) raises -> ExTensor:
             Use this for performance when you will immediately write to all elements
 
     Examples:
-            var t = empty(List[Int](3, 4), DType.float32)
+            var t = empty([3, 4], DType.float32)
             # Creates a 3x4 tensor with undefined values.
     """
     # Just allocate without initialization
@@ -2414,7 +2415,7 @@ fn zeros_like(tensor: ExTensor) raises -> ExTensor:
 
         Example:
             ```mojo
-            var x = ones(List[Int](3, 4), DType.float32)
+            var x = ones([3, 4], DType.float32)
             var y = zeros_like(x)  # (3, 4) tensor of zeros, float32
             ```
     """
@@ -2435,7 +2436,7 @@ fn full_like(tensor: ExTensor, fill_value: Float64) raises -> ExTensor:
 
         Example:
             ```mojo
-            var x = ones(List[Int](3, 4), DType.float32)
+            var x = ones([3, 4], DType.float32)
             var y = full_like(x, 3.14)  # (3, 4) tensor of 3.14, float32
             ```
     """
@@ -2462,10 +2463,10 @@ fn randn(shape: List[Int], dtype: DType, seed: Int = 0) raises -> ExTensor:
             Error: If dtype is not a floating-point type
 
     Examples:
-            ```var t = randn(List[Int](3, 4), DType.float32)
+            ```var t = randn([3, 4], DType.float32)
             # Creates 3x4 tensor with values from N(0, 1)
 
-            var t2 = randn(List[Int](100, 100), DType.float32, seed=42)
+            var t2 = randn([100, 100], DType.float32, seed=42)
             # Reproducible random tensor with seed=42```
 
     Note:

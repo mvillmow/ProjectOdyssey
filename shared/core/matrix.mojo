@@ -40,11 +40,11 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
             - Result is always a new tensor - no in-place modification
 
     Examples:
-            var a = zeros(List[Int](3, 4), DType.float32)
-            var b = zeros(List[Int](4, 5), DType.float32)
+            var a = zeros([3, 4], DType.float32)
+            var b = zeros([4, 5], DType.float32)
             var c = matmul(a, b)  # Shape (3, 5)
 
-            var W = zeros(List[Int](10, 5), DType.float32)
+            var W = zeros([10, 5], DType.float32)
             var x = zeros(List[Int](), DType.float32)
             var y = matmul(W, x)  # Shape (10,) - matrix @ vector
 
@@ -228,11 +228,11 @@ fn transpose(
 
     Examples:
             # Default: reverse all axes
-            var t = zeros(List[Int](3, 4), DType.float32)
+            var t = zeros([3, 4], DType.float32)
             var t_T = transpose(t)  # Shape (4, 3)
 
             # Custom permutation: (2, 3, 4) -> (4, 3, 2) with axes=[2, 0, 1]
-            var t3d = zeros(List[Int](2, 3, 4), DType.float32)
+            var t3d = zeros([2, 3, 4], DType.float32)
             var axes  = List[Int]()
             axes.append(2)
             axes.append(0)
@@ -452,12 +452,12 @@ fn matmul_backward(
     Examples:
         ```
             # Forward pass
-            var a = zeros(List[Int](3, 4), DType.float32)
-            var b = zeros(List[Int](4, 5), DType.float32)
+            var a = zeros([3, 4], DType.float32)
+            var b = zeros([4, 5], DType.float32)
             var c = matmul(a, b)  # Shape (3, 5)
 
             # Backward pass
-            var grad_c = ones(List[Int](3, 5), DType.float32)
+            var grad_c = ones([3, 5], DType.float32)
             var grads = matmul_backward(grad_c, a, b)
             var grad_a = grads.grad_a  # Shape (3, 4)
             var grad_b = grads.grad_b  # Shape (4, 5)
@@ -563,19 +563,19 @@ fn transpose_backward(
     Examples:
         ```
             # Default case (reverse axes)
-            var x = zeros(List[Int](3, 4), DType.float32)
+            var x = zeros([3, 4], DType.float32)
             var y = transpose(x)  # Shape (4, 3)
-            var grad_y = ones(List[Int](4, 3), DType.float32)
+            var grad_y = ones([4, 3], DType.float32)
             var grad_x = transpose_backward(grad_y)  # Shape (3, 4)
 
             # Custom axes case
-            var x3d = zeros(List[Int](2, 3, 4), DType.float32)
+            var x3d = zeros([2, 3, 4], DType.float32)
             var axes  = List[Int]()
             axes.append(2)
             axes.append(0)
             axes.append(1)
             var y3d = transpose(x3d, axes)  # Shape (4, 2, 3)
-            var grad_y3d = ones(List[Int](4, 2, 3), DType.float32)
+            var grad_y3d = ones([4, 2, 3], DType.float32)
             var grad_x3d = transpose_backward(grad_y3d, axes)  # Shape (2, 3, 4)
         ```
 

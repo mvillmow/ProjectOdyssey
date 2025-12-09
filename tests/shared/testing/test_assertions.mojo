@@ -367,15 +367,15 @@ fn test_assert_less_or_equal_float32_fails() raises:
 
 fn test_assert_shape_equal_passes() raises:
     """Test assert_shape_equal with matching shapes."""
-    var shape1 = List[Int](2, 3, 4)
-    var shape2 = List[Int](2, 3, 4)
+    var shape1: List[Int] = [2, 3, 4]
+    var shape2: List[Int] = [2, 3, 4]
     assert_shape_equal(shape1, shape2)
 
 
 fn test_assert_shape_equal_fails_dimension() raises:
     """Test assert_shape_equal with different dimension count."""
-    var shape1 = List[Int](2, 3, 4)
-    var shape2 = List[Int](2, 3)
+    var shape1: List[Int] = [2, 3, 4]
+    var shape2: List[Int] = [2, 3]
     var failed = False
     try:
         assert_shape_equal(shape1, shape2)
@@ -388,8 +388,8 @@ fn test_assert_shape_equal_fails_dimension() raises:
 
 fn test_assert_shape_equal_fails_size() raises:
     """Test assert_shape_equal with different dimension sizes."""
-    var shape1 = List[Int](2, 3, 4)
-    var shape2 = List[Int](2, 5, 4)
+    var shape1: List[Int] = [2, 3, 4]
+    var shape2: List[Int] = [2, 5, 4]
     var failed = False
     try:
         assert_shape_equal(shape1, shape2)
@@ -407,15 +407,15 @@ fn test_assert_shape_equal_fails_size() raises:
 
 fn test_assert_shape_tensor_passes() raises:
     """Test assert_shape with matching tensor shape."""
-    var tensor = ones(List[Int](3, 4), DType.float32)
-    var expected = List[Int](3, 4)
+    var tensor = ones([3, 4], DType.float32)
+    var expected: List[Int] = [3, 4]
     assert_shape(tensor, expected)
 
 
 fn test_assert_shape_tensor_fails() raises:
     """Test assert_shape with mismatched tensor shape."""
-    var tensor = ones(List[Int](3, 4), DType.float32)
-    var expected = List[Int](4, 5)
+    var tensor = ones([3, 4], DType.float32)
+    var expected: List[Int] = [4, 5]
     var failed = False
     try:
         assert_shape(tensor, expected)
@@ -426,13 +426,13 @@ fn test_assert_shape_tensor_fails() raises:
 
 fn test_assert_dtype_tensor_passes() raises:
     """Test assert_dtype with matching dtype."""
-    var tensor = ones(List[Int](3, 4), DType.float32)
+    var tensor = ones([3, 4], DType.float32)
     assert_dtype(tensor, DType.float32)
 
 
 fn test_assert_dtype_tensor_fails() raises:
     """Test assert_dtype with mismatched dtype."""
-    var tensor = ones(List[Int](3, 4), DType.float32)
+    var tensor = ones([3, 4], DType.float32)
     var failed = False
     try:
         assert_dtype(tensor, DType.float64)
@@ -443,13 +443,13 @@ fn test_assert_dtype_tensor_fails() raises:
 
 fn test_assert_numel_tensor_passes() raises:
     """Test assert_numel with matching element count."""
-    var tensor = ones(List[Int](3, 4), DType.float32)
+    var tensor = ones([3, 4], DType.float32)
     assert_numel(tensor, 12)  # 3 * 4 = 12
 
 
 fn test_assert_numel_tensor_fails() raises:
     """Test assert_numel with mismatched element count."""
-    var tensor = ones(List[Int](3, 4), DType.float32)
+    var tensor = ones([3, 4], DType.float32)
     var failed = False
     try:
         assert_numel(tensor, 10)
@@ -460,13 +460,13 @@ fn test_assert_numel_tensor_fails() raises:
 
 fn test_assert_dim_tensor_passes() raises:
     """Test assert_dim with matching dimension count."""
-    var tensor = ones(List[Int](3, 4, 5), DType.float32)
+    var tensor = ones([3, 4, 5], DType.float32)
     assert_dim(tensor, 3)
 
 
 fn test_assert_dim_tensor_fails() raises:
     """Test assert_dim with mismatched dimension count."""
-    var tensor = ones(List[Int](3, 4), DType.float32)
+    var tensor = ones([3, 4], DType.float32)
     var failed = False
     try:
         assert_dim(tensor, 3)
@@ -477,13 +477,13 @@ fn test_assert_dim_tensor_fails() raises:
 
 fn test_assert_value_at_passes() raises:
     """Test assert_value_at with matching value."""
-    var tensor = ones(List[Int](3, 4), DType.float32)
+    var tensor = ones([3, 4], DType.float32)
     assert_value_at(tensor, 0, 1.0, tolerance=1e-6)
 
 
 fn test_assert_value_at_fails() raises:
     """Test assert_value_at with non-matching value."""
-    var tensor = ones(List[Int](3, 4), DType.float32)
+    var tensor = ones([3, 4], DType.float32)
     var failed = False
     try:
         assert_value_at(tensor, 0, 2.0, tolerance=1e-6)
@@ -494,13 +494,13 @@ fn test_assert_value_at_fails() raises:
 
 fn test_assert_all_values_passes() raises:
     """Test assert_all_values with all matching values."""
-    var tensor = ones(List[Int](3, 4), DType.float32)
+    var tensor = ones([3, 4], DType.float32)
     assert_all_values(tensor, 1.0, tolerance=1e-6)
 
 
 fn test_assert_all_values_fails() raises:
     """Test assert_all_values with non-matching values."""
-    var tensor = ones(List[Int](3, 4), DType.float32)
+    var tensor = ones([3, 4], DType.float32)
     var failed = False
     try:
         assert_all_values(tensor, 2.0, tolerance=1e-6)
@@ -513,15 +513,15 @@ fn test_assert_all_values_fails() raises:
 
 fn test_assert_all_close_passes() raises:
     """Test assert_all_close with close tensors."""
-    var tensor1 = ones(List[Int](3, 4), DType.float32)
-    var tensor2 = full(List[Int](3, 4), 1.0000001, DType.float32)
+    var tensor1 = ones([3, 4], DType.float32)
+    var tensor2 = full([3, 4], 1.0000001, DType.float32)
     assert_all_close(tensor1, tensor2, tolerance=1e-5)
 
 
 fn test_assert_all_close_fails() raises:
     """Test assert_all_close with distant tensors."""
-    var tensor1 = ones(List[Int](3, 4), DType.float32)
-    var tensor2 = full(List[Int](3, 4), 2.0, DType.float32)
+    var tensor1 = ones([3, 4], DType.float32)
+    var tensor2 = full([3, 4], 2.0, DType.float32)
     var failed = False
     try:
         assert_all_close(tensor1, tensor2, tolerance=1e-5)
@@ -534,15 +534,15 @@ fn test_assert_all_close_fails() raises:
 
 fn test_assert_tensor_equal_passes() raises:
     """Test assert_tensor_equal with equal tensors."""
-    var tensor1 = ones(List[Int](3, 4), DType.float32)
-    var tensor2 = ones(List[Int](3, 4), DType.float32)
+    var tensor1 = ones([3, 4], DType.float32)
+    var tensor2 = ones([3, 4], DType.float32)
     assert_tensor_equal(tensor1, tensor2)
 
 
 fn test_assert_tensor_equal_fails_shape() raises:
     """Test assert_tensor_equal with different shapes."""
-    var tensor1 = ones(List[Int](3, 4), DType.float32)
-    var tensor2 = ones(List[Int](4, 5), DType.float32)
+    var tensor1 = ones([3, 4], DType.float32)
+    var tensor2 = ones([4, 5], DType.float32)
     var failed = False
     try:
         assert_tensor_equal(tensor1, tensor2)
@@ -555,8 +555,8 @@ fn test_assert_tensor_equal_fails_shape() raises:
 
 fn test_assert_tensor_equal_fails_values() raises:
     """Test assert_tensor_equal with different values."""
-    var tensor1 = ones(List[Int](3, 4), DType.float32)
-    var tensor2 = full(List[Int](3, 4), 2.0, DType.float32)
+    var tensor1 = ones([3, 4], DType.float32)
+    var tensor2 = full([3, 4], 2.0, DType.float32)
     var failed = False
     try:
         assert_tensor_equal(tensor1, tensor2)
@@ -569,15 +569,15 @@ fn test_assert_tensor_equal_fails_values() raises:
 
 fn test_assert_not_equal_tensor_passes() raises:
     """Test assert_not_equal_tensor with different tensors."""
-    var tensor1 = ones(List[Int](3, 4), DType.float32)
-    var tensor2 = full(List[Int](3, 4), 2.0, DType.float32)
+    var tensor1 = ones([3, 4], DType.float32)
+    var tensor2 = full([3, 4], 2.0, DType.float32)
     assert_not_equal_tensor(tensor1, tensor2)
 
 
 fn test_assert_not_equal_tensor_fails() raises:
     """Test assert_not_equal_tensor with equal tensors."""
-    var tensor1 = ones(List[Int](3, 4), DType.float32)
-    var tensor2 = ones(List[Int](3, 4), DType.float32)
+    var tensor1 = ones([3, 4], DType.float32)
+    var tensor2 = ones([3, 4], DType.float32)
     var failed = False
     try:
         assert_not_equal_tensor(tensor1, tensor2)

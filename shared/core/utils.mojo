@@ -58,7 +58,7 @@ fn argmax(tensor: ExTensor, axis: Int) raises -> ExTensor:
             Error: If axis is out of bounds
 
     Examples:
-            var t = ones(List[Int](3, 4), DType.float32)
+            var t = ones([3, 4], DType.float32)
             var indices = argmax(t, axis=1)  # Shape: [3]
     """
     if axis < 0 or axis >= tensor.dim():

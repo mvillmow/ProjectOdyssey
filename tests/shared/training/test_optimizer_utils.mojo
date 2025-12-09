@@ -35,8 +35,8 @@ fn test_initialize_optimizer_state() raises:
     """Test basic optimizer state initialization."""
     # Create shapes for 2 parameters
     var shapes = List[List[Int]]()
-    shapes.append(List[Int](3, 4))
-    shapes.append(List[Int](4))
+    shapes.append([3, 4])
+    shapes.append([4])
 
     # Initialize 2 states per parameter (e.g., Adam: m and v)
     var states = initialize_optimizer_state(shapes, num_states=2)
@@ -55,8 +55,8 @@ fn test_initialize_optimizer_state() raises:
 fn test_initialize_optimizer_state_from_params() raises:
     """Test optimizer state initialization from parameters."""
     var params: List[ExTensor] = []
-    params.append(ones(List[Int](2, 3), DType.float32))
-    params.append(ones(List[Int](3), DType.float32))
+    params.append(ones([2, 3], DType.float32))
+    params.append(ones([3], DType.float32))
 
     var states = initialize_optimizer_state_from_params(params, num_states=2)
 
@@ -72,7 +72,7 @@ fn test_initialize_optimizer_state_from_params() raises:
 
 fn test_scale_tensor() raises:
     """Test tensor scaling."""
-    var tensor = full(List[Int](3), 2.0, DType.float32)
+    var tensor = full([3], 2.0, DType.float32)
     var scaled = scale_tensor(tensor, scale=0.5)
 
     # Check values
@@ -84,7 +84,7 @@ fn test_scale_tensor() raises:
 
 fn test_scale_tensor_inplace() raises:
     """Test in-place tensor scaling."""
-    var tensor = full(List[Int](2), 4.0, DType.float32)
+    var tensor = full([2], 4.0, DType.float32)
     scale_tensor_inplace(tensor, scale=0.25)
 
     # Check values after scaling
@@ -96,7 +96,7 @@ fn test_scale_tensor_inplace() raises:
 
 fn test_compute_tensor_norm() raises:
     """Test L2 norm computation."""
-    var tensor = full(List[Int](4), 3.0, DType.float32)
+    var tensor = full([4], 3.0, DType.float32)
 
     # L2 norm of [3, 3, 3, 3] = sqrt(9 + 9 + 9 + 9) = sqrt(36) = 6.0
     var norm = compute_tensor_norm(tensor)
@@ -105,15 +105,15 @@ fn test_compute_tensor_norm() raises:
 
 fn test_compute_tensor_norm_zero() raises:
     """Test L2 norm of zero tensor."""
-    var tensor = zeros(List[Int](3), DType.float32)
+    var tensor = zeros([3], DType.float32)
     var norm = compute_tensor_norm(tensor)
     assert_almost_equal(norm, 0.0, tolerance=1e-6)
 
 
 fn test_compute_global_norm() raises:
     """Test global L2 norm computation."""
-    var t1 = full(List[Int](3), 1.0, DType.float32)
-    var t2 = full(List[Int](4), 2.0, DType.float32)
+    var t1 = full([3], 1.0, DType.float32)
+    var t2 = full([4], 2.0, DType.float32)
 
     var tensors: List[ExTensor] = []
     tensors.append(t1)
@@ -127,7 +127,7 @@ fn test_compute_global_norm() raises:
 
 fn test_clip_tensor_norm() raises:
     """Test single tensor norm clipping."""
-    var tensor = full(List[Int](9), 1.0, DType.float32)
+    var tensor = full([9], 1.0, DType.float32)
     # L2 norm = sqrt(9) = 3.0
 
     var original_norm = clip_tensor_norm(tensor, max_norm=1.5)
@@ -142,7 +142,7 @@ fn test_clip_tensor_norm() raises:
 
 fn test_clip_tensor_norm_no_clip() raises:
     """Test that clipping doesn't occur when norm is below max."""
-    var tensor = full(List[Int](2), 0.5, DType.float32)
+    var tensor = full([2], 0.5, DType.float32)
     # L2 norm = sqrt(0.5) ≈ 0.707
 
     var original_norm = clip_tensor_norm(tensor, max_norm=2.0)
@@ -154,8 +154,8 @@ fn test_clip_tensor_norm_no_clip() raises:
 
 fn test_clip_global_norm() raises:
     """Test global norm clipping."""
-    var t1 = full(List[Int](3), 1.0, DType.float32)
-    var t2 = full(List[Int](4), 2.0, DType.float32)
+    var t1 = full([3], 1.0, DType.float32)
+    var t2 = full([4], 2.0, DType.float32)
 
     var tensors: List[ExTensor] = []
     tensors.append(t1)
@@ -172,7 +172,7 @@ fn test_clip_global_norm() raises:
 
 fn test_apply_weight_decay() raises:
     """Test in-place weight decay application."""
-    var params = full(List[Int](2), 10.0, DType.float32)
+    var params = full([2], 10.0, DType.float32)
 
     apply_weight_decay(params, weight_decay=0.1)
 
@@ -186,7 +186,7 @@ fn test_apply_weight_decay() raises:
 
 fn test_compute_weight_decay_term() raises:
     """Test weight decay term computation."""
-    var params = full(List[Int](2), 5.0, DType.float32)
+    var params = full([2], 5.0, DType.float32)
 
     var wd_term = compute_weight_decay_term(params, weight_decay=0.1)
 
@@ -199,7 +199,7 @@ fn test_compute_weight_decay_term() raises:
 
 fn test_normalize_tensor_to_unit_norm() raises:
     """Test tensor normalization to unit norm."""
-    var tensor = full(List[Int](4), 2.0, DType.float32)
+    var tensor = full([4], 2.0, DType.float32)
 
     normalize_tensor_to_unit_norm(tensor)
 
@@ -210,7 +210,7 @@ fn test_normalize_tensor_to_unit_norm() raises:
 fn test_apply_bias_correction() raises:
     """Test bias correction for exponential moving average."""
     # Create a simple estimate
-    var estimate = ones(List[Int](2), DType.float32)
+    var estimate = ones([2], DType.float32)
 
     # Apply bias correction with beta=0.9, t=1
     # Correction: estimate / (1 - 0.9^1) = estimate / 0.1 = estimate * 10

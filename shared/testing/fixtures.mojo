@@ -155,8 +155,8 @@ fn assert_tensor_shape(tensor: ExTensor, expected_shape: List[Int]) -> Bool:
 
         Example:
             ```mojo
-            var tensor = ones(List[Int](32, 10), DType.float32)
-            assert_true(assert_tensor_shape(tensor, List[Int](32, 10)))
+            var tensor = ones([32, 10], DType.float32)
+            assert_true(assert_tensor_shape(tensor, [32, 10]))
             ```
     """
     if len(tensor._shape) != len(expected_shape):
@@ -181,7 +181,7 @@ fn assert_tensor_dtype(tensor: ExTensor, expected_dtype: DType) -> Bool:
 
         Example:
             ```mojo
-            var tensor = ones(List[Int](32, 10), DType.float32)
+            var tensor = ones([32, 10], DType.float32)
             assert_true(assert_tensor_dtype(tensor, DType.float32))
             ```
     """
@@ -199,7 +199,7 @@ fn assert_tensor_all_finite(tensor: ExTensor) -> Bool:
 
         Example:
             ```mojo
-            var tensor = ones(List[Int](32, 10), DType.float32)
+            var tensor = ones([32, 10], DType.float32)
             assert_true(assert_tensor_all_finite(tensor))
             ```
     """
@@ -228,7 +228,7 @@ fn assert_tensor_not_all_zeros(tensor: ExTensor) -> Bool:
 
         Example:
             ```mojo
-            var tensor = ones(List[Int](32, 10), DType.float32)
+            var tensor = ones([32, 10], DType.float32)
             assert_true(assert_tensor_not_all_zeros(tensor))
             ```
     """

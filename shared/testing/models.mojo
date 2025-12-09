@@ -22,17 +22,17 @@ Example:
     fn test_model_forward():
         # Test CNN forward pass
         var cnn_model = SimpleCNN(1, 8, 10)
-        var input = ones(List[Int](32, 1, 28, 28), DType.float32)
+        var input = ones([32, 1, 28, 28], DType.float32)
         var output = cnn_model.forward(input)
 
         # Test linear model
         var linear = LinearModel(784, 10)
-        var linear_input = ones(List[Int](32, 784), DType.float32)
+        var linear_input = ones([32, 784], DType.float32)
         var linear_output = linear.forward(linear_input)
 
         # Test MLP
         var mlp = SimpleMLP(10, 20, 5, num_hidden_layers=1)
-        var mlp_input = zeros(List[Int](10), DType.float32)
+        var mlp_input = zeros([10], DType.float32)
         var mlp_output = mlp.forward(mlp_input)
     ```
 """
@@ -687,7 +687,7 @@ struct SimpleMLP(Copyable, Model, Movable):
         Example:
             ```mojo
             var mlp = SimpleMLP(10, 20, 5)
-            var input = zeros(List[Int](10), DType.float32)
+            var input = zeros([10], DType.float32)
             var output = mlp.forward(input)
             # output has shape [5]
         ```

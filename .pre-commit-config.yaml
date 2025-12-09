@@ -20,6 +20,13 @@ repos:
         language: system
         files: \.(mojo|🔥)$
         pass_filenames: true
+      - id: check-list-constructor
+        name: Check for deprecated List[Type](args) syntax
+        description: Prevent use of invalid List variadic constructor (use list literals instead)
+        entry: 'List\[.*\]\([0-9]'
+        language: pygrep
+        files: \.(mojo|🔥)$
+        types: [text]
 
   # Security checks
   - repo: local
