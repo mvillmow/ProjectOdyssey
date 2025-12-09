@@ -4,6 +4,7 @@
 
 # Python cache directories
 __pycache__
+*.pyc
 
 # agentic build artifacts
 logs/
