@@ -7,7 +7,8 @@ Tests the complete serialization pipeline including:
 - DType utilities
 """
 
-from testing import assert_true, assert_equal, assert_almost_equal
+from testing import assert_true, assert_equal
+from shared.testing.assertions import assert_almost_equal
 from shared.core.extensor import ExTensor, zeros, ones, full
 from shared.utils.serialization import (
     NamedTensor,
@@ -81,7 +82,9 @@ fn test_hex_encoding() raises:
     for i in range(tensor.numel()):
         var v1 = tensor._get_float64(i)
         var v2 = tensor2._get_float64(i)
-        assert_almost_equal(v1, v2, tolerance=1e-6, message="Hex decode mismatch")
+        assert_almost_equal(
+            v1, v2, tolerance=1e-6, message="Hex decode mismatch"
+        )
 
 
 fn test_single_tensor_serialization() raises:

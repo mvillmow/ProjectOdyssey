@@ -127,8 +127,8 @@ fn test_get_vgg16_parameter_names() raises:
     assert_equal(names[20], "conv5_1_kernel", "Block 5 first kernel")
 
     # Verify FC layers
-    assert_equal(names[23], "fc1_bias", "FC1 bias")
-    assert_equal(names[25], "fc3_bias", "Last param should be fc3_bias")
+    assert_equal(names[27], "fc1_bias", "FC1 bias")
+    assert_equal(names[31], "fc3_bias", "Last param should be fc3_bias")
 
 
 fn test_validate_shapes_matching() raises:
