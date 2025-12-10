@@ -317,9 +317,10 @@ fn test_conv2d_backward_gradient_shapes() raises:
     var grad_output = randn(output.shape(), DType.float32)
 
     # Backward pass
-    var (grad_input, grad_weight, grad_bias) = layer.backward(
-        grad_output, input
-    )
+    var grads = layer.backward(grad_output, input)
+    var grad_input = grads[0]
+    var grad_weight = grads[1]
+    var grad_bias = grads[2]
 
     # Check gradient shapes match input/parameter shapes
     var grad_input_shape = grad_input.shape()

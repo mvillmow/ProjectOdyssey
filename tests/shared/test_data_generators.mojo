@@ -255,35 +255,40 @@ fn test_random_normal_distribution_sanity() raises:
 
 fn test_synthetic_classification_data_shape_features() raises:
     """Test synthetic_classification_data produces correct feature shape."""
-    var (X, _) = synthetic_classification_data(100, 20, 3)
+    var result1 = synthetic_classification_data(100, 20, 3)
+    var X = result1[0]
 
     assert_shape(X, [100, 20], "Features should have shape [100, 20]")
 
 
 fn test_synthetic_classification_data_shape_labels() raises:
     """Test synthetic_classification_data produces correct label shape."""
-    var (_, y) = synthetic_classification_data(100, 20, 3)
+    var result2 = synthetic_classification_data(100, 20, 3)
+    var y = result2[1]
 
     assert_shape(y, [100], "Labels should have shape [100]")
 
 
 fn test_synthetic_classification_data_dtype_features() raises:
     """Test synthetic_classification_data feature dtype."""
-    var (X, _) = synthetic_classification_data(100, 20, 3, DType.float32)
+    var result3 = synthetic_classification_data(100, 20, 3, DType.float32)
+    var X = result3[0]
 
     assert_dtype(X, DType.float32, "Features should have specified dtype")
 
 
 fn test_synthetic_classification_data_dtype_labels() raises:
     """Test synthetic_classification_data labels are int32."""
-    var (_, y) = synthetic_classification_data(100, 20, 3)
+    var result2 = synthetic_classification_data(100, 20, 3)
+    var y = result2[1]
 
     assert_dtype(y, DType.int32, "Labels should be int32")
 
 
 fn test_synthetic_classification_data_label_values() raises:
     """Test synthetic_classification_data labels are in valid range."""
-    var (_, y) = synthetic_classification_data(50, 10, 3)
+    var result4 = synthetic_classification_data(50, 10, 3)
+    var y = result4[1]
 
     # Check that labels are in [0, num_classes)
     for i in range(50):
@@ -294,7 +299,9 @@ fn test_synthetic_classification_data_label_values() raises:
 
 fn test_synthetic_classification_data_single_sample() raises:
     """Test synthetic_classification_data with minimal size."""
-    var (X, y) = synthetic_classification_data(1, 1, 1)
+    var result5 = synthetic_classification_data(1, 1, 1)
+    var X = result5[0]
+    var y = result5[1]
 
     assert_shape(X, [1, 1], "Minimal features should have shape [1, 1]")
     assert_shape(y, [1], "Minimal labels should have shape [1]")
@@ -302,7 +309,8 @@ fn test_synthetic_classification_data_single_sample() raises:
 
 fn test_synthetic_classification_data_many_classes() raises:
     """Test synthetic_classification_data with many classes."""
-    var (_, y) = synthetic_classification_data(100, 10, 10)
+    var result6 = synthetic_classification_data(100, 10, 10)
+    var y = result6[1]
 
     # Check all labels are in valid range
     for i in range(100):
@@ -313,7 +321,8 @@ fn test_synthetic_classification_data_many_classes() raises:
 
 fn test_synthetic_classification_data_high_dimensions() raises:
     """Test synthetic_classification_data with high-dimensional features."""
-    var (X, _) = synthetic_classification_data(50, 100, 5)
+    var result7 = synthetic_classification_data(50, 100, 5)
+    var X = result7[0]
 
     assert_shape(X, [50, 100], "Should handle high-dimensional features")
 
@@ -339,7 +348,9 @@ fn test_integration_random_tensor_and_normal() raises:
 fn test_integration_classification_data_shapes_match() raises:
     """Test features and labels shapes are consistent."""
     var num_samples = 100
-    var (X, y) = synthetic_classification_data(num_samples, 15, 4)
+    var result8 = synthetic_classification_data(num_samples, 15, 4)
+    var X = result8[0]
+    var y = result8[1]
 
     # Number of samples should match
     assert_equal_int(
