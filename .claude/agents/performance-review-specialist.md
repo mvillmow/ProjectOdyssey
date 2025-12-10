@@ -39,8 +39,7 @@ and optimization opportunities.
 
 ## Output Location
 
-**CRITICAL**: All review feedback MUST be posted directly to the GitHub pull request using
-`gh pr review` or the GitHub MCP. **NEVER** write reviews to local files or `notes/review/`.
+See [review-specialist-template.md](./templates/review-specialist-template.md#output-location)
 
 ## Review Checklist
 
@@ -57,18 +56,7 @@ and optimization opportunities.
 
 ## Feedback Format
 
-```markdown
-[EMOJI] [SEVERITY]: [Issue summary] - Fix all N occurrences
-
-Locations:
-- file.mojo:42: [brief description]
-
-Fix: [2-3 line solution]
-
-See: [link to complexity guide]
-```
-
-Severity: 🔴 CRITICAL (must fix), 🟠 MAJOR (should fix), 🟡 MINOR (nice to have), 🔵 INFO (informational)
+See [review-specialist-template.md](./templates/review-specialist-template.md#feedback-format)
 
 ## Example Review
 

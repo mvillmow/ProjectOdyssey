@@ -2,7 +2,6 @@
 name: gh-check-ci-status
 description: "Check CI/CD status of a pull request including workflow runs and test results. Use when verifying if PR checks are passing or investigating CI failures."
 category: github
-mcp_fallback: github
 ---
 
 # Check CI Status

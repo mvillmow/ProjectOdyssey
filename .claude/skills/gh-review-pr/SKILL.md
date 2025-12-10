@@ -2,7 +2,6 @@
 name: gh-review-pr
 description: "Comprehensively review a pull request including code changes, CI status, and adherence to project standards. Use when asked to review a PR."
 category: github
-mcp_fallback: github
 ---
 
 # Review Pull Request

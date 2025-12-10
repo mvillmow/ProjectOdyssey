@@ -54,18 +54,7 @@ and prevention of NaN/Inf propagation.
 
 ## Feedback Format
 
-```markdown
-[EMOJI] [SEVERITY]: [Issue summary] - Fix all N occurrences
-
-Locations:
-- file.mojo:42: [brief 1-line description]
-
-Fix: [2-3 line solution with epsilon/guards]
-
-See: [Numerical stability guide or section]
-```
-
-Severity: 🔴 CRITICAL (NaN/Inf risk), 🟠 MAJOR (precision loss), 🟡 MINOR (edge cases), 🔵 INFO (informational)
+See [review-specialist-template.md](./templates/review-specialist-template.md#feedback-format)
 
 ## Example Review
 

@@ -2,7 +2,6 @@
 name: review-pr-changes
 description: "Review PR changes with structured checklist for quality and standards compliance. Use for comprehensive PR code review."
 category: review
-mcp_fallback: github
 ---
 
 # Review PR Changes with Checklist

@@ -7,6 +7,15 @@ tools: Read,Grep,Glob,Task
 model: sonnet
 delegates_to: [algorithm-review-specialist, architecture-review-specialist, data-engineering-review-specialist, dependency-review-specialist, documentation-review-specialist, implementation-review-specialist, mojo-language-review-specialist, paper-review-specialist, performance-review-specialist, research-review-specialist, safety-review-specialist, security-review-specialist, test-review-specialist]
 receives_from: []
+quick_checklist:
+  - Analyze all changed files and categorize by review dimension
+  - Route each dimension to exactly one specialist (no overlap)
+  - Collect feedback from all specialists in parallel
+  - Post consolidated review to GitHub PR (never local files)
+escalation_triggers:
+  - Conflicting specialist recommendations → chief-architect
+  - Major architectural changes in PR → chief-architect
+  - Cross-section impact detected → chief-architect
 ---
 
 # Code Review Orchestrator
@@ -68,6 +77,32 @@ EOF
 7. **Post consolidated review to GitHub PR** using `gh pr review` or GitHub MCP
 8. Escalate unresolved conflicts to Chief Architect
 
+## Delegation Decision Matrix
+
+| Trigger Keywords | Delegate To | Why |
+|------------------|-------------|-----|
+| ".mojo", "struct", "fn", "var", "mut", "out", "SIMD", "DType" | Mojo Language Review Specialist | Mojo-specific syntax and idioms |
+| "unsafe", "DTypePointer", "bitcast", "malloc", "free", "memcpy" | Safety Review Specialist | Memory safety and type safety |
+| "vulnerability", "input validation", "sanitize", "auth", "crypto" | Security Review Specialist | Security vulnerabilities and attack vectors |
+| "test_*.mojo", "assert_", "TestSuite", "TestCase" | Test Review Specialist | Test coverage and quality |
+| "backward", "gradient", "loss", "optimizer", "learning_rate" | Algorithm Review Specialist | ML algorithm correctness |
+| "load_data", "preprocess", "dataset", "batch", "shuffle" | Data Engineering Review Specialist | Data pipeline quality |
+| "O(", "complexity", "SIMD", "vectorize", "parallel", "benchmark" | Performance Review Specialist | Performance and optimization |
+| "README", "docstring", """"", "# Comment", "ADR" | Documentation Review Specialist | Documentation clarity |
+| "struct", "trait", "interface", "module", "package" | Architecture Review Specialist | System design and modularity |
+| "experiment", "reproduce", "hyperparameter", "seed", "random" | Research Review Specialist | Experimental reproducibility |
+| "citation", "reference", "paper", "author", "abstract" | Paper Review Specialist | Academic writing quality |
+| "import", "dependency", "version", "requirements", "pixi.toml" | Dependency Review Specialist | Dependency management |
+| ALL other .mojo files | Implementation Review Specialist | General code quality and bugs |
+
+**Decision Algorithm**:
+
+1. Scan PR diff for file extensions and content keywords
+2. Match changed files to specialists using keyword table
+3. Delegate to ALL matching specialists (parallel execution)
+4. Default to Implementation Review Specialist if no specific match
+5. Consolidate feedback and identify conflicts
+
 ## Routing Dimensions
 
 | Dimension | Specialist | What They Review |
@@ -90,7 +125,7 @@ EOF
 
 ## Review Feedback Protocol
 
-See [CLAUDE.md](../../CLAUDE.md#handling-pr-review-comments) for complete protocol.
+See [PR Workflow](../shared/pr-workflow.md) for complete protocol.
 
 **For Specialists**: Batch similar issues into single comments, count occurrences, list file:line
 locations, provide actionable fixes.

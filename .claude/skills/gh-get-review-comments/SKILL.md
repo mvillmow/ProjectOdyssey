@@ -2,7 +2,6 @@
 name: gh-get-review-comments
 description: "Retrieve all review comments from a pull request using the GitHub API. Use when you need to see what feedback has been provided on a PR."
 category: github
-mcp_fallback: github
 ---
 
 # Get PR Review Comments

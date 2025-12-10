@@ -1,7 +1,6 @@
 ---
 name: doc-issue-readme
 description: Post structured documentation to GitHub issue as a comment. Use when starting work on an issue to document approach and track progress.
-mcp_fallback: github
 category: doc
 ---
 

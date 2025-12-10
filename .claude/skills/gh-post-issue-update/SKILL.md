@@ -2,7 +2,6 @@
 name: gh-post-issue-update
 description: "Post structured updates to GitHub issues. Use to report progress, findings, and implementation notes directly to issues."
 category: github
-mcp_fallback: github
 ---
 
 # Post Issue Update

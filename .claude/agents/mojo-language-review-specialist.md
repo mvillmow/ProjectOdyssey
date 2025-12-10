@@ -40,8 +40,7 @@ and SIMD utilization.
 
 ## Output Location
 
-**CRITICAL**: All review feedback MUST be posted directly to the GitHub pull request using
-`gh pr review` or the GitHub MCP. **NEVER** write reviews to local files or `notes/review/`.
+See [review-specialist-template.md](./templates/review-specialist-template.md#output-location)
 
 ## Review Checklist - CRITICAL PATTERNS
 
@@ -70,18 +69,7 @@ and SIMD utilization.
 
 ## Feedback Format
 
-```markdown
-[EMOJI] [SEVERITY]: [Issue summary] - Fix all N occurrences
-
-Locations:
-- file.mojo:42: [brief 1-line description]
-
-Fix: [2-3 line solution]
-
-See: [CLAUDE.md#mojo-syntax-standards-v0257 or specific section]
-```
-
-Severity: 🔴 CRITICAL (must fix), 🟠 MAJOR (should fix), 🟡 MINOR (nice to have), 🔵 INFO (informational)
+See [review-specialist-template.md](./templates/review-specialist-template.md#feedback-format)
 
 **Batch similar issues into ONE comment** - Count total occurrences, list file:line locations, provide fix.
 

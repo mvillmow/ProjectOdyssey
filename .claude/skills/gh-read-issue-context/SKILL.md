@@ -2,7 +2,6 @@
 name: gh-read-issue-context
 description: "Read context from GitHub issue including body and comments. Use before starting implementation work or when prior context is needed."
 category: github
-mcp_fallback: github
 ---
 
 # Read Issue Context

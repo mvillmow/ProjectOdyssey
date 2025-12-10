@@ -2,7 +2,6 @@
 name: ci-analyze-failure-logs
 description: "Parse and analyze CI failure logs to identify root causes and error patterns. Use when CI builds fail to understand what broke."
 category: ci
-mcp_fallback: github
 ---
 
 # Analyze CI Failure Logs

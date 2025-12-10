@@ -79,4 +79,4 @@ mistakes (ownership violations, constructor signatures, syntax errors, uninitial
 
 ---
 
-**References**: [Mojo Anti-Patterns](../shared/mojo-anti-patterns.md), [Mojo Guidelines](../shared/mojo-guidelines.md), [CLAUDE.md](../../CLAUDE.md#mojo-test-patterns)
+**References**: [Mojo Anti-Patterns](../shared/mojo-anti-patterns.md), [Mojo Guidelines](../shared/mojo-guidelines.md)

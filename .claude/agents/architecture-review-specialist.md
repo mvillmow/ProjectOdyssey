@@ -39,8 +39,7 @@ interfaces, and system-level design patterns. Focuses exclusively on high-level 
 
 ## Output Location
 
-**CRITICAL**: All review feedback MUST be posted directly to the GitHub pull request using
-`gh pr review` or the GitHub MCP. **NEVER** write reviews to local files or `notes/review/`.
+See [review-specialist-template.md](./templates/review-specialist-template.md#output-location)
 
 ## Review Checklist
 
@@ -57,19 +56,7 @@ interfaces, and system-level design patterns. Focuses exclusively on high-level 
 
 ## Feedback Format
 
-```markdown
-[EMOJI] [SEVERITY]: [Issue summary] - Fix all N occurrences
-
-Locations:
-- file.mojo:42: [brief 1-line description]
-- file.mojo:89: [brief 1-line description]
-
-Fix: [2-3 line solution with example]
-
-See: [link to SOLID principle or pattern doc]
-```
-
-Severity: 🔴 CRITICAL (must fix), 🟠 MAJOR (should fix), 🟡 MINOR (nice to have), 🔵 INFO (informational)
+See [review-specialist-template.md](./templates/review-specialist-template.md#feedback-format)
 
 **Batch similar issues into ONE comment** - Count total occurrences, list locations, provide refactoring example.
 

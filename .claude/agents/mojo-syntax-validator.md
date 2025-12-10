@@ -63,7 +63,7 @@ Locations:
 
 Fix: [corrected syntax]
 
-See: [CLAUDE.md#mojo-syntax-standards-v0257]
+See: [Mojo Guidelines](../shared/mojo-guidelines.md)
 ```
 
 Severity: 🔴 CRITICAL (won't compile), 🟠 MAJOR (deprecated/wrong), 🟡 MINOR (style), 🔵 INFO (informational)

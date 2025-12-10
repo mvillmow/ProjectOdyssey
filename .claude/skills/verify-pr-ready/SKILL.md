@@ -2,7 +2,6 @@
 name: verify-pr-ready
 description: "Verify a PR is ready for merge (CI passing, approvals, no conflicts). Use before merging to ensure all requirements met."
 category: github
-mcp_fallback: github
 ---
 
 # Verify PR Ready for Merge
