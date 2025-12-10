@@ -309,6 +309,69 @@ fn calculate_gflops(size: Int, time_ms: Float64) -> Float64:
 # ============================================================================
 
 
+fn print_help(prog_name: String):
+    """Print help message and usage information.
+
+    Args:
+        prog_name: Program name from argv[0].
+    """
+    print("""
+Matrix Multiplication Optimization Benchmark
+=============================================
+
+USAGE:
+    pixi run mojo run """ + prog_name + """ [OPTIONS]
+
+OPTIONS:
+    --stage <int>           Stage to run: -1 (all, default), 0-4 (specific stage)
+                           0 = baseline (naive)
+                           1 = dtype-specific (eliminate Float64 conversion)
+                           2 = SIMD vectorization
+                           3 = cache-aware tiling
+                           4 = advanced optimizations (transpose + register blocking)
+
+    --sizes <string>        Comma-separated matrix sizes (default: "64,256,512,1024")
+                           Example: --sizes "64,128,256"
+
+    --dtype <string>        Data type: float32 (default), float64, float16
+                           Example: --dtype float64
+
+    --iterations <int>      Number of benchmark iterations (default: 10)
+                           More iterations = more accurate but slower
+                           Example: --iterations 20
+
+    --verify-only           Run correctness verification only (no benchmarking)
+                           Fast check that all stages produce identical results
+
+    -h, --help, -?          Show this help message
+
+EXAMPLES:
+    # Run all stages on default sizes
+    pixi run mojo run """ + prog_name + """
+
+    # Run only Stage 2 (SIMD) on small sizes
+    pixi run mojo run """ + prog_name + """ --stage 2 --sizes "64,256"
+
+    # Quick correctness check
+    pixi run mojo run """ + prog_name + """ --verify-only
+
+    # High-precision benchmark with float64
+    pixi run mojo run """ + prog_name + """ --dtype float64 --iterations 20
+
+OUTPUT:
+    Benchmark results table showing:
+    - Time per size (ms/μs/s)
+    - GFLOPS (billions of floating-point operations per second)
+    - Speedup over baseline
+
+EXPECTED SPEEDUPS:
+    - Stage 1 (dtype-specific):     3-5x over baseline
+    - Stage 2 (SIMD):               15-40x over baseline (cumulative)
+    - Stage 3 (cache-tiled):        50-150x over baseline (cumulative)
+    - Stage 4 (advanced):           100-400x over baseline (cumulative)
+""")
+
+
 fn parse_sizes(sizes_str: String) raises -> List[Int]:
     """Parse comma-separated sizes string into list of integers.
 
@@ -545,6 +608,15 @@ fn run_benchmarks[
 
 fn main() raises:
     """Main benchmark driver."""
+    # Check for help flags
+    from sys import argv
+    var args = argv()
+    for i in range(len(args)):
+        var arg = args[i]
+        if arg == "-h" or arg == "--help" or arg == "-?":
+            print_help(args[0])
+            return
+
     # Parse command-line arguments
     var args_tuple = parse_args()
     var stage = args_tuple[0]
