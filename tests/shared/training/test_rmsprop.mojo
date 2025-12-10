@@ -103,7 +103,7 @@ fn test_rmsprop_step_parameter_update() raises:
     var square_avg = zeros(shape, DType.float32)
     var buf = zeros(shape, DType.float32)
 
-    var (new_params, new_square_avg, _) = rmsprop_step(
+    var result3 = rmsprop_step(
         params,
         gradients,
         square_avg,
@@ -115,6 +115,8 @@ fn test_rmsprop_step_parameter_update() raises:
         momentum=0.0,
         buf=buf,
     )
+    var new_params = result3[0]
+    var new_square_avg = result3[1]
 
     # First step:
     # square_avg = 0.9 * 0.0 + 0.1 * (0.1)^2 = 0.001
@@ -149,7 +151,7 @@ fn test_rmsprop_simple_parameter_update() raises:
 
     var square_avg = zeros(shape, DType.float32)
 
-    var (new_params, new_square_avg) = rmsprop_step_simple(
+    var result2 = rmsprop_step_simple(
         params,
         gradients,
         square_avg,
@@ -157,6 +159,8 @@ fn test_rmsprop_simple_parameter_update() raises:
         alpha=0.9,
         epsilon=1e-8,
     )
+    var new_params = result2[0]
+    var new_square_avg = result2[1]
 
     # Should produce same result as rmsprop_step with momentum=0.0
     assert_true(new_params._data.bitcast[Float32]()[0] < 1.0)
@@ -178,7 +182,7 @@ fn test_rmsprop_square_avg_accumulation() raises:
     var buf = zeros(shape, DType.float32)
 
     # Step 1
-    var (params1, square_avg1, buf1) = rmsprop_step(
+    var result1 = rmsprop_step(
         params,
         gradients,
         square_avg,
@@ -190,11 +194,14 @@ fn test_rmsprop_square_avg_accumulation() raises:
         momentum=0.0,
         buf=buf,
     )
+    var params1 = result1[0]
+    var square_avg1 = result1[1]
+    var buf1 = result1[2]
 
     # square_avg after step 1: 0.9 * 0.0 + 0.1 * 0.01 = 0.001
 
     # Step 2
-    var (params2, square_avg2, buf2) = rmsprop_step(
+    var result2 = rmsprop_step(
         params1,
         gradients,
         square_avg1,
@@ -206,6 +213,9 @@ fn test_rmsprop_square_avg_accumulation() raises:
         momentum=0.0,
         buf=buf1,
     )
+    var params2 = result2[0]
+    var square_avg2 = result2[1]
+    var buf2 = result2[2]
 
     # square_avg after step 2: 0.9 * 0.001 + 0.1 * 0.01 = 0.0009 + 0.001 = 0.0019
 
@@ -235,7 +245,7 @@ fn test_rmsprop_with_momentum() raises:
     var buf = zeros(shape, DType.float32)
 
     # Step 1 with momentum
-    var (params1, square_avg1, buf1) = rmsprop_step(
+    var result_step1 = rmsprop_step(
         params,
         gradients,
         square_avg,
@@ -247,12 +257,15 @@ fn test_rmsprop_with_momentum() raises:
         momentum=0.9,
         buf=buf,
     )
+    var params1 = result_step1[0]
+    var square_avg1 = result_step1[1]
+    var buf1 = result_step1[2]
 
     # buf should now contain momentum-weighted gradient
     assert_true(buf1._data.bitcast[Float32]()[0] != 0.0)
 
     # Step 2 with momentum
-    var (params2, square_avg2, buf2) = rmsprop_step(
+    var result_step2 = rmsprop_step(
         params1,
         gradients,
         square_avg1,
@@ -264,6 +277,9 @@ fn test_rmsprop_with_momentum() raises:
         momentum=0.9,
         buf=buf1,
     )
+    var params2 = result_step2[0]
+    var square_avg2 = result_step2[1]
+    var buf2 = result_step2[2]
 
     # With momentum, buf accumulates and parameter updates should be larger
     assert_true(
@@ -283,7 +299,7 @@ fn test_rmsprop_with_weight_decay() raises:
     var square_avg = zeros(shape, DType.float32)
     var buf = zeros(shape, DType.float32)
 
-    var (new_params, _, _) = rmsprop_step(
+    var result_decay = rmsprop_step(
         params,
         gradients,
         square_avg,
@@ -295,6 +311,7 @@ fn test_rmsprop_with_weight_decay() raises:
         momentum=0.0,
         buf=buf,
     )
+    var new_params = result_decay[0]
 
     # With weight decay, parameters should decrease even with zero gradient
     # grad_with_decay = grad + weight_decay * params = 0.0 + 0.01 * 1.0 = 0.01
@@ -311,7 +328,7 @@ fn test_rmsprop_zero_gradient() raises:
     var square_avg = zeros(shape, DType.float32)
     var buf = zeros(shape, DType.float32)
 
-    var (new_params, new_square_avg, _) = rmsprop_step(
+    var result_zero_grad = rmsprop_step(
         params,
         gradients,
         square_avg,
@@ -323,6 +340,8 @@ fn test_rmsprop_zero_gradient() raises:
         momentum=0.0,
         buf=buf,
     )
+    var new_params = result_zero_grad[0]
+    var new_square_avg = result_zero_grad[1]
 
     # With zero gradient and no weight decay, parameters should not change
     assert_almost_equal(
@@ -343,7 +362,7 @@ fn test_rmsprop_alpha_parameter() raises:
     var buf = zeros(shape, DType.float32)
 
     # High alpha (0.99) - slow adaptation
-    var (_, square_avg_high, _) = rmsprop_step(
+    var result_high = rmsprop_step(
         params,
         gradients,
         square_avg,
@@ -355,9 +374,10 @@ fn test_rmsprop_alpha_parameter() raises:
         momentum=0.0,
         buf=buf,
     )
+    var square_avg_high = result_high[1]
 
     # Low alpha (0.5) - fast adaptation
-    var (_, square_avg_low, _) = rmsprop_step(
+    var result_low = rmsprop_step(
         params,
         gradients,
         square_avg,
@@ -369,6 +389,7 @@ fn test_rmsprop_alpha_parameter() raises:
         momentum=0.0,
         buf=buf,
     )
+    var square_avg_low = result_low[1]
 
     # Low alpha should result in larger square_avg update
     # alpha=0.99: 0.99 * 0.0 + 0.01 * 0.01 = 0.0001
@@ -390,7 +411,7 @@ fn test_rmsprop_epsilon_prevents_division_by_zero() raises:
     var buf = zeros(shape, DType.float32)
 
     # This should not crash despite zero square_avg
-    var (new_params, _, _) = rmsprop_step(
+    var result_eps = rmsprop_step(
         params,
         gradients,
         square_avg,
@@ -402,6 +423,7 @@ fn test_rmsprop_epsilon_prevents_division_by_zero() raises:
         momentum=0.0,
         buf=buf,
     )
+    var new_params = result_eps[0]
 
     # Result should be finite
     var val = new_params._data.bitcast[Float32]()[0]
@@ -425,7 +447,7 @@ fn test_rmsprop_batch_update() raises:
     var square_avg = zeros(shape, DType.float32)
     var buf = zeros(shape, DType.float32)
 
-    var (new_params, new_square_avg, _) = rmsprop_step(
+    var result_batch = rmsprop_step(
         params,
         gradients,
         square_avg,
@@ -437,6 +459,8 @@ fn test_rmsprop_batch_update() raises:
         momentum=0.0,
         buf=buf,
     )
+    var new_params = result_batch[0]
+    var new_square_avg = result_batch[1]
 
     # All parameters should have been updated
     var all_different = True
