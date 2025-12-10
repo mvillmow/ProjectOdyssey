@@ -59,7 +59,7 @@ fn test_batch_norm2d_shapes() raises:
     var running_var = ones(param_shape, DType.float32)
 
     # Training mode
-    var (output, new_mean, new_var) = batch_norm2d(
+    var result = batch_norm2d(
         x,
         gamma,
         beta,
@@ -69,6 +69,9 @@ fn test_batch_norm2d_shapes() raises:
         momentum=0.1,
         epsilon=1e-5,
     )
+    var output = result[0]
+    var new_mean = result[1]
+    var new_var = result[2]
 
     # Check output shape
     assert_equal(output.shape()[0], 2)
@@ -102,7 +105,7 @@ fn test_batch_norm2d_training_mode() raises:
     var running_mean = zeros(param_shape, DType.float32)
     var running_var = ones(param_shape, DType.float32)
 
-    var (output, new_mean, new_var) = batch_norm2d(
+    var result2 = batch_norm2d(
         x,
         gamma,
         beta,
@@ -112,6 +115,9 @@ fn test_batch_norm2d_training_mode() raises:
         momentum=0.1,
         epsilon=1e-5,
     )
+    var output = result2[0]
+    var new_mean = result2[1]
+    var new_var = result2[2]
 
     # In training mode, running stats should be updated
     # new_running_mean = (1 - momentum) * old + momentum * batch_mean
@@ -143,7 +149,7 @@ fn test_batch_norm2d_inference_mode() raises:
     running_var._data.bitcast[Float32]()[0] = 0.25
 
     # Inference mode
-    var (output, new_mean, new_var) = batch_norm2d(
+    var result3 = batch_norm2d(
         x,
         gamma,
         beta,
@@ -153,6 +159,9 @@ fn test_batch_norm2d_inference_mode() raises:
         momentum=0.1,
         epsilon=1e-5,
     )
+    var output = result3[0]
+    var new_mean = result3[1]
+    var new_var = result3[2]
 
     # Running statistics should be unchanged in inference mode
     assert_almost_equal(
@@ -197,7 +206,7 @@ fn test_batch_norm2d_scale_shift() raises:
     var running_var = ones(param_shape, DType.float32)
 
     # Inference mode with zero input and zero mean
-    var (output, _, _) = batch_norm2d(
+    var result4 = batch_norm2d(
         x,
         gamma,
         beta,
@@ -207,6 +216,7 @@ fn test_batch_norm2d_scale_shift() raises:
         momentum=0.1,
         epsilon=1e-5,
     )
+    var output = result4[0]
 
     # For zero input with zero mean: normalized = 0
     # output = gamma * 0 + beta = beta
@@ -243,7 +253,7 @@ fn test_batch_norm2d_zero_variance() raises:
     var running_var = ones(param_shape, DType.float32)
 
     # This should not crash due to division by zero
-    var (output, _, _) = batch_norm2d(
+    var result5 = batch_norm2d(
         x,
         gamma,
         beta,
@@ -253,6 +263,7 @@ fn test_batch_norm2d_zero_variance() raises:
         momentum=0.1,
         epsilon=1e-5,
     )
+    var output = result5[0]
 
     # All outputs should be finite
     for i in range(2):
@@ -296,15 +307,16 @@ fn test_batch_norm2d_backward_gradient_input() raises:
     var running_var = ones(param_shape, DType.float32)
 
     # Forward pass
-    var (output, _, _) = batch_norm2d(
+    var result6 = batch_norm2d(
         x, gamma, beta, running_mean, running_var, training=True, epsilon=1e-5
     )
+    var output = result6[0]
 
     # Upstream gradient (typically from loss)
     var grad_output = ones_like(output)
 
     # Backward pass
-    var (grad_input, grad_gamma, grad_beta) = batch_norm2d_backward(
+    var result7 = batch_norm2d_backward(
         grad_output,
         x,
         gamma,
@@ -313,10 +325,13 @@ fn test_batch_norm2d_backward_gradient_input() raises:
         training=True,
         epsilon=1e-5,
     )
+    var grad_input = result7[0]
+    var grad_gamma = result7[1]
+    var grad_beta = result7[2]
 
     # Numerical gradient via finite differences
     fn forward_for_grad(inp: ExTensor) raises -> ExTensor:
-        var (out, _, _) = batch_norm2d(
+        var result_nested = batch_norm2d(
             inp,
             gamma,
             beta,
@@ -325,6 +340,7 @@ fn test_batch_norm2d_backward_gradient_input() raises:
             training=True,
             epsilon=1e-5,
         )
+        var out = result_nested[0]
         # Sum output to get scalar (gradient checking requires scalar loss)
         # Reduce all dimensions by repeatedly summing along each axis
         var result = out
@@ -375,22 +391,26 @@ fn test_batch_norm2d_backward_training_vs_inference() raises:
     var running_var = ones(param_shape, DType.float32)
 
     # Forward passes
-    var (out_train, _, _) = batch_norm2d(
+    var result8 = batch_norm2d(
         x, gamma, beta, running_mean, running_var, training=True
     )
-    var (out_infer, _, _) = batch_norm2d(
+    var out_train = result8[0]
+    var result9 = batch_norm2d(
         x, gamma, beta, running_mean, running_var, training=False
     )
+    var out_infer = result9[0]
 
     var grad_output = ones_like(out_train)
 
     # Backward passes
-    var (grad_train, _, _) = batch_norm2d_backward(
+    var result10 = batch_norm2d_backward(
         grad_output, x, gamma, running_mean, running_var, training=True
     )
-    var (grad_infer, _, _) = batch_norm2d_backward(
+    var grad_train = result10[0]
+    var result11 = batch_norm2d_backward(
         grad_output, x, gamma, running_mean, running_var, training=False
     )
+    var grad_infer = result11[0]
 
     # Gradients should differ between training and inference modes
     var diff_found = False
@@ -424,9 +444,12 @@ fn test_batch_norm2d_backward_shapes() raises:
     var running_mean = zeros(param_shape, DType.float32)
     var running_var = ones(param_shape, DType.float32)
 
-    var (grad_input, grad_gamma, grad_beta) = batch_norm2d_backward(
+    var result12 = batch_norm2d_backward(
         grad_output, x, gamma, running_mean, running_var, training=True
     )
+    var grad_input = result12[0]
+    var grad_gamma = result12[1]
+    var grad_beta = result12[2]
 
     # Validate shapes
     assert_shape_equal(
@@ -622,9 +645,12 @@ fn test_layer_norm_backward_shapes_2d() raises:
     param_shape.append(10)
     var gamma = ones(param_shape, DType.float32)
 
-    var (grad_input, grad_gamma, grad_beta) = layer_norm_backward(
+    var result13 = layer_norm_backward(
         grad_output, x, gamma, epsilon=1e-5
     )
+    var grad_input = result13[0]
+    var grad_gamma = result13[1]
+    var grad_beta = result13[2]
 
     # Validate shapes
     assert_shape_equal(
@@ -661,9 +687,12 @@ fn test_layer_norm_backward_shapes_4d() raises:
     param_shape.append(normalized_size)
     var gamma = ones(param_shape, DType.float32)
 
-    var (grad_input, grad_gamma, grad_beta) = layer_norm_backward(
+    var result14 = layer_norm_backward(
         grad_output, x, gamma, epsilon=1e-5
     )
+    var grad_input = result14[0]
+    var grad_gamma = result14[1]
+    var grad_beta = result14[2]
 
     # Validate shapes
     assert_shape_equal(
@@ -702,9 +731,10 @@ fn test_layer_norm_backward_grad_beta() raises:
                 Float32(b + 1) * Float32(f + 1) * 0.1
             )
 
-    var (_, _, grad_beta) = layer_norm_backward(
+    var result15 = layer_norm_backward(
         grad_output, x, gamma, epsilon=1e-5
     )
+    var grad_beta = result15[2]
 
     # grad_beta should be sum over batch dimension
     # For each feature f: grad_beta[f] = sum over b of grad_output[b, f]
@@ -730,9 +760,12 @@ fn test_layer_norm_backward_zero_input() raises:
     var grad_output = ones(shape, DType.float32)
 
     # Should not crash with zero variance
-    var (grad_input, grad_gamma, grad_beta) = layer_norm_backward(
+    var result16 = layer_norm_backward(
         grad_output, x, gamma, epsilon=1e-5
     )
+    var grad_input = result16[0]
+    var grad_gamma = result16[1]
+    var grad_beta = result16[2]
 
     # All gradients should be finite
     for i in range(8):

@@ -134,7 +134,9 @@ fn test_tensor_with_name() raises:
         save_tensor(tensor, tmpfile, "my_param")
 
         # Load with name
-        var (name, loaded) = load_tensor_with_name(tmpfile)
+        var result = load_tensor_with_name(tmpfile)
+        var name = result[0]
+        var loaded = result[1]
 
         # Verify name
         assert_equal(name, "my_param", "Name not preserved")

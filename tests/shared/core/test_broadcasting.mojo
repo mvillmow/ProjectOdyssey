@@ -550,7 +550,9 @@ fn test_broadcast_iterator_1d() raises:
     # Expected sequence: (0,0), (1,1), (2,2)
     var count = 0
     while iterator.has_next():
-        var (idx1, idx2) = iterator.__next__()
+        var result = iterator.__next__()
+        var idx1 = result[0]
+        var idx2 = result[1]
         assert_true(
             idx1 == count, "Index 1 mismatch at iteration " + String(count)
         )
@@ -590,8 +592,12 @@ fn test_broadcast_iterator_2d_no_broadcast() raises:
 
     var count = 0
     while iterator.has_next():
-        var (idx1, idx2) = iterator.__next__()
-        var (exp1, exp2) = expected_pairs[count]
+        var result2 = iterator.__next__()
+        var idx1 = result2[0]
+        var idx2 = result2[1]
+        var expected_pair = expected_pairs[count]
+        var exp1 = expected_pair[0]
+        var exp2 = expected_pair[1]
         assert_true(
             idx1 == exp1 and idx2 == exp2,
             "Mismatch at iteration "
@@ -635,7 +641,9 @@ fn test_broadcast_iterator_2d_broadcast_second() raises:
     # Expected: tensor A accesses [0,1,2,3,4,5], tensor B accesses [0,1,2,0,1,2]
     var count = 0
     while iterator.has_next():
-        var (idx1, idx2) = iterator.__next__()
+        var result3 = iterator.__next__()
+        var idx1 = result3[0]
+        var idx2 = result3[1]
         var expected_idx1 = count
         var expected_idx2 = count % 3  # Only 3 elements in tensor B
         assert_true(
@@ -687,7 +695,9 @@ fn test_broadcast_iterator_3d_complex() raises:
     # Should iterate through all 2*3*4 = 24 elements
     var count = 0
     while iterator.has_next():
-        var (idx1, idx2) = iterator.__next__()
+        var result4 = iterator.__next__()
+        var idx1 = result4[0]
+        var idx2 = result4[1]
         # Both should have same index
         assert_true(idx1 == idx2, "Indices should match for non-broadcast case")
         assert_true(idx1 == count, "Index should match position")
@@ -717,7 +727,9 @@ fn test_broadcast_iterator_scalar_broadcast() raises:
     # Expected: A accesses [0,1,2,3,4], B always accesses [0]
     var count = 0
     while iterator.has_next():
-        var (idx1, idx2) = iterator.__next__()
+        var result5 = iterator.__next__()
+        var idx1 = result5[0]
+        var idx2 = result5[1]
         assert_true(idx1 == count, "Index 1 should match position")
         assert_true(idx2 == 0, "Index 2 should always be 0 for scalar")
         count += 1

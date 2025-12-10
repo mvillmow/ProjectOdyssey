@@ -39,7 +39,9 @@ fn test_dropout_backward_exported() raises:
     var x = ones(shape, DType.float32)
 
     # Forward pass
-    var (output, mask) = dropout(x, p=0.5, training=True, seed=42)
+    var result = dropout(x, p=0.5, training=True, seed=42)
+    var output = result[0]
+    var mask = result[1]
 
     # Backward pass using autograd-exported function
     var grad_output = ones(shape, DType.float32)
@@ -62,7 +64,9 @@ fn test_dropout_backward_p_zero() raises:
     var x = ones(shape, DType.float32)
 
     # Forward pass with p=0
-    var (output, mask) = dropout(x, p=0.0, training=True, seed=42)
+    var result2 = dropout(x, p=0.0, training=True, seed=42)
+    var output = result2[0]
+    var mask = result2[1]
 
     # Backward pass
     var grad_output = ones(shape, DType.float32)
@@ -87,7 +91,9 @@ fn test_dropout_backward_p_high() raises:
     var x = ones(shape, DType.float32)
 
     var p = 0.9
-    var (output, mask) = dropout(x, p=p, training=True, seed=42)
+    var result3 = dropout(x, p=p, training=True, seed=42)
+    var output = result3[0]
+    var mask = result3[1]
 
     # Backward pass
     var grad_output = ones(shape, DType.float32)
@@ -120,7 +126,9 @@ fn test_dropout_backward_mask_application() raises:
     var x = ones(shape, DType.float32)
 
     var p = 0.5
-    var (output, mask) = dropout(x, p=p, training=True, seed=42)
+    var result4 = dropout(x, p=p, training=True, seed=42)
+    var output = result4[0]
+    var mask = result4[1]
 
     # Create gradient tensor with all 5s
     var grad_output = ones(shape, DType.float32)
@@ -157,7 +165,9 @@ fn test_dropout_backward_consistency() raises:
     var x = ones(shape, DType.float32)
 
     var p = 0.3
-    var (output, mask) = dropout(x, p=p, training=True, seed=42)
+    var result5 = dropout(x, p=p, training=True, seed=42)
+    var output = result5[0]
+    var mask = result5[1]
 
     var grad_output = ones(shape, DType.float32)
 
@@ -190,7 +200,9 @@ fn test_dropout2d_backward_exported() raises:
     var x = ones(shape, DType.float32)
 
     # Forward pass
-    var (output, mask) = dropout2d(x, p=0.2, training=True, seed=42)
+    var result6 = dropout2d(x, p=0.2, training=True, seed=42)
+    var output = result6[0]
+    var mask = result6[1]
 
     # Backward pass using autograd-exported function
     var grad_output = ones(shape, DType.float32)
@@ -216,7 +228,9 @@ fn test_dropout2d_backward_scaling() raises:
     var x = ones(shape, DType.float32)
 
     var p = 0.3
-    var (output, mask) = dropout2d(x, p=p, training=True, seed=42)
+    var result7 = dropout2d(x, p=p, training=True, seed=42)
+    var output = result7[0]
+    var mask = result7[1]
 
     var grad_output = ones(shape, DType.float32)
     var grad_input = dropout2d_backward(grad_output, mask, p=p)
@@ -254,7 +268,9 @@ fn test_dropout2d_backward_channel_consistency() raises:
     var x = ones(shape, DType.float32)
 
     var p = 0.5
-    var (output, mask) = dropout2d(x, p=p, training=True, seed=42)
+    var result8 = dropout2d(x, p=p, training=True, seed=42)
+    var output = result8[0]
+    var mask = result8[1]
 
     var grad_output = ones(shape, DType.float32)
     var grad_input = dropout2d_backward(grad_output, mask, p=p)

@@ -42,7 +42,9 @@ fn test_dropout_shapes() raises:
     var x = ones(shape, DType.float32)
 
     # Training mode
-    var (output, mask) = dropout(x, p=0.5, training=True, seed=42)
+    var result = dropout(x, p=0.5, training=True, seed=42)
+    var output = result[0]
+    var mask = result[1]
 
     # Check shapes
     assert_equal(output.shape()[0], 4)
@@ -59,7 +61,9 @@ fn test_dropout_inference_mode() raises:
     var x = ones(shape, DType.float32)
 
     # Inference mode
-    var (output, mask) = dropout(x, p=0.5, training=False)
+    var result2 = dropout(x, p=0.5, training=False)
+    var output = result2[0]
+    var mask = result2[1]
 
     # Output should be unchanged
     var size = x.numel()
@@ -85,7 +89,9 @@ fn test_dropout_probability() raises:
     var x = ones(shape, DType.float32)
 
     var p = 0.5
-    var (output, mask) = dropout(x, p=p, training=True, seed=42)
+    var result3 = dropout(x, p=p, training=True, seed=42)
+    var output = result3[0]
+    var mask = result3[1]
 
     # Count dropped elements (where mask is 0)
     var total = x.numel()
@@ -112,7 +118,9 @@ fn test_dropout_scaling() raises:
     var x = ones(shape, DType.float32)
 
     var p = 0.5
-    var (output, mask) = dropout(x, p=p, training=True, seed=42)
+    var result4 = dropout(x, p=p, training=True, seed=42)
+    var output = result4[0]
+    var mask = result4[1]
 
     # Elements that weren't dropped should be scaled by 1/(1-p) = 2.0
     var expected_scale = Float32(1.0 / (1.0 - p))
@@ -137,8 +145,12 @@ fn test_dropout_reproducibility() raises:
     var x = ones(shape, DType.float32)
 
     # Same seed should produce same mask
-    var (output1, mask1) = dropout(x, p=0.5, training=True, seed=42)
-    var (output2, mask2) = dropout(x, p=0.5, training=True, seed=42)
+    var result5 = dropout(x, p=0.5, training=True, seed=42)
+    var output1 = result5[0]
+    var mask1 = result5[1]
+    var result6 = dropout(x, p=0.5, training=True, seed=42)
+    var output2 = result6[0]
+    var mask2 = result6[1]
 
     # Masks should be identical
     for i in range(x.numel()):
@@ -157,7 +169,9 @@ fn test_dropout_backward_shapes() raises:
     var x = ones(shape, DType.float32)
 
     # Forward pass
-    var (output, mask) = dropout(x, p=0.5, training=True, seed=42)
+    var result7 = dropout(x, p=0.5, training=True, seed=42)
+    var output = result7[0]
+    var mask = result7[1]
 
     # Backward pass
     var grad_output = ones(shape, DType.float32)
@@ -177,7 +191,9 @@ fn test_dropout_backward_gradient_flow() raises:
     var x = ones(shape, DType.float32)
 
     # Forward pass
-    var (output, mask) = dropout(x, p=0.5, training=True, seed=42)
+    var result8 = dropout(x, p=0.5, training=True, seed=42)
+    var output = result8[0]
+    var mask = result8[1]
 
     # Backward pass with all-ones gradient
     var grad_output = ones(shape, DType.float32)
@@ -213,7 +229,9 @@ fn test_dropout_backward_gradient() raises:
     # Forward pass to create mask ONCE
     # For gradient checking, we need the function to be deterministic,
     # so we use the SAME mask for all forward passes
-    var (output, mask) = dropout(x, p=0.3, training=True, seed=42)
+    var result9 = dropout(x, p=0.3, training=True, seed=42)
+    var output = result9[0]
+    var mask = result9[1]
     var grad_out = ones_like(output)
     var p = 0.3
 
@@ -254,7 +272,9 @@ fn test_dropout2d_shapes() raises:
     var x = ones(shape, DType.float32)
 
     # Training mode
-    var (output, mask) = dropout2d(x, p=0.2, training=True, seed=42)
+    var result10 = dropout2d(x, p=0.2, training=True, seed=42)
+    var output = result10[0]
+    var mask = result10[1]
 
     # Check shapes match input
     assert_equal(output.shape()[0], 2)
@@ -272,7 +292,9 @@ fn test_dropout2d_channel_level() raises:
     shape.append(3)  # width
     var x = ones(shape, DType.float32)
 
-    var (output, mask) = dropout2d(x, p=0.5, training=True, seed=42)
+    var result11 = dropout2d(x, p=0.5, training=True, seed=42)
+    var output = result11[0]
+    var mask = result11[1]
 
     # Check that entire channels are either all kept or all dropped
     var channels = 4
@@ -303,7 +325,9 @@ fn test_dropout2d_inference_mode() raises:
     var x = ones(shape, DType.float32)
 
     # Inference mode
-    var (output, mask) = dropout2d(x, p=0.5, training=False)
+    var result12 = dropout2d(x, p=0.5, training=False)
+    var output = result12[0]
+    var mask = result12[1]
 
     # Output should be unchanged
     var size = x.numel()
@@ -325,7 +349,9 @@ fn test_dropout2d_backward_shapes() raises:
     var x = ones(shape, DType.float32)
 
     # Forward pass
-    var (output, mask) = dropout2d(x, p=0.2, training=True, seed=42)
+    var result13 = dropout2d(x, p=0.2, training=True, seed=42)
+    var output = result13[0]
+    var mask = result13[1]
 
     # Backward pass
     var grad_output = ones(shape, DType.float32)
@@ -354,7 +380,9 @@ fn test_dropout2d_backward_gradient() raises:
     # Forward pass to create mask ONCE
     # For gradient checking, we need the function to be deterministic,
     # so we use the SAME mask for all forward passes
-    var (output, mask) = dropout2d(x, p=0.2, training=True, seed=42)
+    var result14 = dropout2d(x, p=0.2, training=True, seed=42)
+    var output = result14[0]
+    var mask = result14[1]
     var grad_out = ones_like(output)
     var p = 0.2
 
