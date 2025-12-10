@@ -645,9 +645,7 @@ fn test_layer_norm_backward_shapes_2d() raises:
     param_shape.append(10)
     var gamma = ones(param_shape, DType.float32)
 
-    var result13 = layer_norm_backward(
-        grad_output, x, gamma, epsilon=1e-5
-    )
+    var result13 = layer_norm_backward(grad_output, x, gamma, epsilon=1e-5)
     var grad_input = result13[0]
     var grad_gamma = result13[1]
     var grad_beta = result13[2]
@@ -687,9 +685,7 @@ fn test_layer_norm_backward_shapes_4d() raises:
     param_shape.append(normalized_size)
     var gamma = ones(param_shape, DType.float32)
 
-    var result14 = layer_norm_backward(
-        grad_output, x, gamma, epsilon=1e-5
-    )
+    var result14 = layer_norm_backward(grad_output, x, gamma, epsilon=1e-5)
     var grad_input = result14[0]
     var grad_gamma = result14[1]
     var grad_beta = result14[2]
@@ -731,9 +727,7 @@ fn test_layer_norm_backward_grad_beta() raises:
                 Float32(b + 1) * Float32(f + 1) * 0.1
             )
 
-    var result15 = layer_norm_backward(
-        grad_output, x, gamma, epsilon=1e-5
-    )
+    var result15 = layer_norm_backward(grad_output, x, gamma, epsilon=1e-5)
     var grad_beta = result15[2]
 
     # grad_beta should be sum over batch dimension
@@ -760,9 +754,7 @@ fn test_layer_norm_backward_zero_input() raises:
     var grad_output = ones(shape, DType.float32)
 
     # Should not crash with zero variance
-    var result16 = layer_norm_backward(
-        grad_output, x, gamma, epsilon=1e-5
-    )
+    var result16 = layer_norm_backward(grad_output, x, gamma, epsilon=1e-5)
     var grad_input = result16[0]
     var grad_gamma = result16[1]
     var grad_beta = result16[2]
