@@ -186,11 +186,16 @@ struct BatchNorm2dLayer(Copyable, Movable):
         var gamma_size = self.gamma.numel()
         var beta_size = self.beta.numel()
 
+        var gamma_src = self.gamma._data.bitcast[Float32]()
+        var gamma_dst = gamma_copy._data.bitcast[Float32]()
+        var beta_src = self.beta._data.bitcast[Float32]()
+        var beta_dst = beta_copy._data.bitcast[Float32]()
+
         for i in range(gamma_size):
-            gamma_copy._data[i] = self.gamma._data[i]
+            gamma_dst[i] = gamma_src[i]
 
         for i in range(beta_size):
-            beta_copy._data[i] = self.beta._data[i]
+            beta_dst[i] = beta_src[i]
 
         params.append(gamma_copy^)
         params.append(beta_copy^)
@@ -219,11 +224,16 @@ struct BatchNorm2dLayer(Copyable, Movable):
         var mean_size = self.running_mean.numel()
         var var_size = self.running_var.numel()
 
+        var mean_src = self.running_mean._data.bitcast[Float32]()
+        var mean_dst = mean_copy._data.bitcast[Float32]()
+        var var_src = self.running_var._data.bitcast[Float32]()
+        var var_dst = var_copy._data.bitcast[Float32]()
+
         for i in range(mean_size):
-            mean_copy._data[i] = self.running_mean._data[i]
+            mean_dst[i] = mean_src[i]
 
         for i in range(var_size):
-            var_copy._data[i] = self.running_var._data[i]
+            var_dst[i] = var_src[i]
 
         return Tuple[ExTensor, ExTensor](mean_copy^, var_copy^)
 
@@ -259,8 +269,13 @@ struct BatchNorm2dLayer(Copyable, Movable):
         self.running_mean = zeros_like(self.running_mean)
         self.running_var = zeros_like(self.running_var)
 
+        var mean_src = running_mean._data.bitcast[Float32]()
+        var mean_dst = self.running_mean._data.bitcast[Float32]()
+        var var_src = running_var._data.bitcast[Float32]()
+        var var_dst = self.running_var._data.bitcast[Float32]()
+
         for i in range(mean_size):
-            self.running_mean._data[i] = running_mean._data[i]
+            mean_dst[i] = mean_src[i]
 
         for i in range(var_size):
-            self.running_var._data[i] = running_var._data[i]
+            var_dst[i] = var_src[i]
