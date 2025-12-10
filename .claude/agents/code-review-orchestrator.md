@@ -7,15 +7,6 @@ tools: Read,Grep,Glob,Task
 model: sonnet
 delegates_to: [algorithm-review-specialist, architecture-review-specialist, data-engineering-review-specialist, dependency-review-specialist, documentation-review-specialist, implementation-review-specialist, mojo-language-review-specialist, paper-review-specialist, performance-review-specialist, research-review-specialist, safety-review-specialist, security-review-specialist, test-review-specialist]
 receives_from: []
-quick_checklist:
-  - Analyze all changed files and categorize by review dimension
-  - Route each dimension to exactly one specialist (no overlap)
-  - Collect feedback from all specialists in parallel
-  - Post consolidated review to GitHub PR (never local files)
-escalation_triggers:
-  - Conflicting specialist recommendations → chief-architect
-  - Major architectural changes in PR → chief-architect
-  - Cross-section impact detected → chief-architect
 ---
 
 # Code Review Orchestrator
