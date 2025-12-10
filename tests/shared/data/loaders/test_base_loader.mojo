@@ -41,6 +41,10 @@ struct StubBatch:
         """Move initializer."""
         self.batch_size = existing.batch_size
 
+    fn __len__(self) -> Int:
+        """Return batch size for len() builtin."""
+        return self.batch_size
+
     fn size(self) -> Int:
         return self.batch_size
 
