@@ -355,7 +355,8 @@ fn test_dropout_high_dropout_rate() raises:
             # Check that scaled value is approximately 10.0
             var diff = abs(val - 10.0)
             assert_true(
-                diff < 0.01, "Scale factor for dropout=0.9 should be approximately 10.0"
+                diff < 0.01,
+                "Scale factor for dropout=0.9 should be approximately 10.0",
             )
 
     print("✓ test_dropout_high_dropout_rate passed")
