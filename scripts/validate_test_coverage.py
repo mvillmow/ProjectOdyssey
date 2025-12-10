@@ -91,9 +91,9 @@ def parse_ci_matrix(workflow_file: Path) -> Dict[str, Dict[str, str]]:
         if name and path and pattern:
             groups[name] = {"path": path, "pattern": pattern}
 
-    # Also parse separate test jobs (test-configs, test-training, test-benchmarks)
+    # Also parse separate test jobs (test-configs, test-training, test-benchmarks, test-core-layers, test-example-arithmetic)
     # These are standalone jobs outside the matrix
-    for job_name in ["test-configs", "test-training", "test-benchmarks"]:
+    for job_name in ["test-configs", "test-training", "test-benchmarks", "test-core-layers", "test-example-arithmetic"]:
         job = jobs.get(job_name, {})
         if job:
             # Extract the test command from the "Run X tests" step
