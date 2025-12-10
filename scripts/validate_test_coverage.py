@@ -37,8 +37,16 @@ def find_test_files(root_dir: Path) -> List[Path]:
         "__pycache__/",
         ".git/",
         "worktrees/",
-        # Examples are tested separately and may require datasets
-        # Only specific example tests are included in CI (e.g., test_lenet5.mojo)
+    ]
+
+    # Exclude specific test files that require external datasets
+    # These tests need datasets/ directory which must be downloaded separately
+    exclude_files = [
+        "examples/lenet-emnist/test_gradients.mojo",
+        "examples/lenet-emnist/test_loss_decrease.mojo",
+        "examples/lenet-emnist/test_predictions.mojo",
+        "examples/lenet-emnist/test_training_metrics.mojo",
+        "examples/lenet-emnist/test_weight_updates.mojo",
     ]
 
     for test_file in root_dir.rglob("test_*.mojo"):
@@ -46,7 +54,12 @@ def find_test_files(root_dir: Path) -> List[Path]:
         if any(exclude in str(test_file) for exclude in exclude_patterns):
             continue
 
-        test_files.append(test_file.relative_to(root_dir))
+        # Check if file is explicitly excluded (dataset-dependent tests)
+        rel_path = test_file.relative_to(root_dir)
+        if str(rel_path) in exclude_files:
+            continue
+
+        test_files.append(rel_path)
 
     return sorted(test_files)
 
