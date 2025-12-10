@@ -29,7 +29,7 @@ struct StubDataset:
         return (Float32(index), index)
 
 
-struct StubBatch:
+struct StubBatch(Sized, Copyable, Movable):
     """Minimal stub batch for testing batch operations."""
 
     var batch_size: Int
