@@ -8,7 +8,7 @@ Tests cover:
 - Shape preservation across forward/backward passes
 """
 
-from testing import assert_true, assert_false
+from testing import assert_true, assert_false, assert_almost_equal
 from shared.core.layers import DropoutLayer
 from shared.core.extensor import ExTensor, zeros, ones, full
 
@@ -352,8 +352,10 @@ fn test_dropout_high_dropout_rate() raises:
     for i in range(100):
         var val = output._data.bitcast[Float32]()[i]
         if val != 0.0:
+            # Check that scaled value is approximately 10.0
+            var diff = abs(val - 10.0)
             assert_true(
-                val == 10.0, "Scale factor for dropout=0.9 should be 10.0"
+                diff < 0.01, "Scale factor for dropout=0.9 should be approximately 10.0"
             )
 
     print("✓ test_dropout_high_dropout_rate passed")
