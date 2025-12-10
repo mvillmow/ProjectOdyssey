@@ -186,11 +186,33 @@ pre-commit run --all-files
 
 pre-commit run
 
-# Skip hooks (use sparingly, only when necessary)
+# NEVER use --no-verify to bypass hooks
+# If a hook fails, fix the code instead
 
-git commit --no-verify
+# If a specific hook is broken, skip only that hook:
+SKIP=hook-name git commit -m "message"
+
+# Document in commit message WHY you're skipping a hook
 
 ```text
+
+### Hook Failure Policy
+
+Pre-commit hooks exist to enforce code quality. **Never bypass them with `--no-verify`.**
+
+**When hooks fail:**
+
+1. **Read the error** - Hooks tell you exactly what's wrong
+2. **Fix the issue** - Update your code to pass the check
+3. **Verify locally** - Run `pre-commit run --all-files` before committing
+4. **Commit properly** - Let hooks validate your changes
+
+**Broken hook?** If a hook itself is broken (not your code):
+
+- Use `SKIP=hook-id git commit` for specific hook
+- Document reason in commit message
+- Create issue to fix/remove the broken hook
+
 ## Pull Request Process
 
 ### Before You Start

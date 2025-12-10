@@ -194,10 +194,12 @@ Fix locally and push if CI fails.
 2. **Use pre-commit hooks** - Let hooks auto-fix
 3. **Review changes** - Check what was formatted
 4. **Separate commits** - Format in separate commit if large changes
-5. **Don't bypass** - Don't use `--no-verify` to skip
+5. **NEVER bypass hooks** - Using `--no-verify` is strictly prohibited. If formatting fails, fix the code instead of
+   bypassing the check.
 
 ## References
 
+- [Git Commit Policy](../../shared/git-commit-policy.md) - Hook bypass prohibition
 - Configuration: `.pre-commit-config.yaml`, `.markdownlint.yaml`
 - Related skill: `ci-run-precommit` for pre-commit hooks
 - Related skill: `quality-run-linters` for complete linting

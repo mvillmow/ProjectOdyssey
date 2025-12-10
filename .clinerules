@@ -106,8 +106,8 @@ pixi run mojo format path/to/file.mojo
 # Markdown linting issues
 npx markdownlint-cli2 path/to/file.md
 
-# Skip hooks (use sparingly)
-git commit --no-verify
+# NEVER use --no-verify - Fix hook failures instead
+# If specific hook is broken: SKIP=hook-name git commit
 ```
 
 ### Common Errors

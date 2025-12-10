@@ -28,8 +28,11 @@ pre-commit run --all-files
 # Run on staged files
 pre-commit run
 
-# Skip hooks (emergency only)
-git commit --no-verify
+# NEVER use --no-verify to bypass hooks
+# Fix the code instead to pass hooks
+
+# If a specific hook is broken (not your code):
+SKIP=hook-name git commit -m "message"  # Document why in message
 ```
 
 ## Configured Hooks
@@ -136,8 +139,10 @@ pre-commit run --files src/tensor.mojo
 # Update hook versions
 pre-commit autoupdate
 
-# Skip all hooks (emergency only)
-git commit --no-verify -m "message"
+# Skip a specific broken hook (document reason in commit message)
+SKIP=hook-name git commit -m "fix: reason for skipping hook-name"
+
+# NEVER use --no-verify to skip all hooks
 ```
 
 ## Error Handling
@@ -149,8 +154,41 @@ git commit --no-verify -m "message"
 | All files modified after hook | Stage fixes and re-commit |
 | Need to skip hook | Use `SKIP=hook-id git commit` |
 
+## Hook Bypass Policy
+
+**STRICT POLICY: `--no-verify` is PROHIBITED.**
+
+**Why this matters:**
+
+- Pre-commit hooks catch errors before they reach CI
+- Bypassing hooks allows broken code into the repository
+- CI will reject commits that bypass hooks anyway
+
+**What to do when hooks fail:**
+
+1. ✅ **Read the error** - Hook output explains what's wrong
+2. ✅ **Fix your code** - Update to pass the check
+3. ✅ **Re-run hooks** - Verify with `pre-commit run`
+4. ✅ **Commit again** - Let hooks validate
+
+**Exception for broken hooks:**
+
+If the hook itself is broken (not your code), use `SKIP=hook-id`:
+
+```bash
+# Example: trailing-whitespace hook is broken
+SKIP=trailing-whitespace git commit -m "fix: skip broken hook (see issue #123)"
+```
+
+**Never acceptable:**
+
+- ❌ `git commit --no-verify`
+- ❌ `git commit -n`
+- ❌ Bypassing all hooks
+
 ## References
 
+- [Git Commit Policy](../../shared/git-commit-policy.md) - Strict enforcement rules
 - Configuration: `.pre-commit-config.yaml`
 - Related skill: `quality-fix-formatting` for manual fixes
 - Related skill: `quality-run-linters` for all linters

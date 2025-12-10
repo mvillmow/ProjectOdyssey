@@ -375,7 +375,7 @@ Hooks enable proactive automation and safety checks. Use hooks for guardrails an
 
 1. **Fail fast** - Catch errors early in the development cycle
 2. **Clear messages** - Explain WHY the hook triggered and HOW to fix
-3. **Non-blocking for exploration** - Allow `--no-verify` escape hatch when needed
+3. **Strict enforcement** - NEVER use `--no-verify`. Fix hook failures instead of bypassing them.
 4. **Idempotent** - Hooks should be safe to run multiple times
 
 **Common Hooks for ML Odyssey**:
@@ -959,10 +959,34 @@ pre-commit run --all-files
 
 pre-commit run
 
-# Skip hooks (use sparingly, only when necessary)
-
-git commit --no-verify
+# NEVER skip hooks with --no-verify
+# If a hook fails, fix the code instead
+# If a specific hook is broken, use SKIP=hook-id:
+SKIP=trailing-whitespace git commit -m "message"  # Document why in commit message
 ```text
+
+### Pre-Commit Hook Policy - STRICT ENFORCEMENT
+
+`--no-verify` is **ABSOLUTELY PROHIBITED**. No exceptions.
+
+**If hooks fail:**
+
+1. Read the error message to understand what failed
+2. Fix the code to pass the hook
+3. Re-run `pre-commit run` to verify fixes
+4. Commit again
+
+**Valid alternatives to --no-verify:**
+
+- Fix the code (preferred)
+- Use `SKIP=hook-id` for specific broken hooks (must document reason)
+- Disable the hook in `.pre-commit-config.yaml` if permanently problematic
+
+**Invalid alternatives:**
+
+- ❌ `git commit --no-verify`
+- ❌ `git commit -n`
+- ❌ Any command that bypasses all hooks
 
 ### Configured Hooks
 
@@ -975,6 +999,8 @@ git commit --no-verify
 - `mixed-line-ending` - Fix mixed line endings
 
 **CI Enforcement**: The `.github/workflows/pre-commit.yml` workflow runs these checks on all PRs and pushes to `main`.
+
+**See:** [Git Commit Policy](.claude/shared/git-commit-policy.md) for complete enforcement rules.
 
 ## Repository Architecture
 
