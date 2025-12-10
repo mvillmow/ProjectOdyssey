@@ -199,9 +199,6 @@ jobs:
           - name: "Shared Infra"
             path: "tests/shared"
             pattern: "test_imports.mojo test_data_generators.mojo test_model_utils.mojo test_serialization.mojo utils/test_*.mojo fixtures/test_*.mojo"
-          - name: "Benchmarks"
-            path: "tests/shared/benchmarks"
-            pattern: "bench_*.mojo"
           - name: "Tooling"
             path: "tests/tooling/benchmarks"
             pattern: "test_*.mojo"
@@ -403,6 +400,37 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: test-results-Training
+          path: test-results/
+          retention-days: 7
+
+  # ============================================================================
+  # Benchmarks Tests - Non-blocking (just.systems 403 download issues)
+  # ============================================================================
+  test-benchmarks:
+    needs: [mojo-compilation, validate-test-coverage]
+    runs-on: ubuntu-latest
+    continue-on-error: true  # Non-blocking - investigating 403 errors installing Just
+    timeout-minutes: 15
+    name: "Benchmarks"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Pixi
+        uses: prefix-dev/setup-pixi@v0.9.3
+        with:
+          pixi-version: latest
+          cache: true
+
+      - name: Run Benchmarks tests
+        run: just ci-test-group tests/shared/benchmarks "bench_*.mojo"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: test-results-Benchmarks
           path: test-results/
           retention-days: 7
 
@@ -618,7 +646,7 @@ jobs:
   # Combined Test Report with Metrics
   # ============================================================================
   test-report:
-    needs: [mojo-compilation, validate-test-coverage, test-mojo-comprehensive, test-configs, test-training, test-python, code-quality]
+    needs: [mojo-compilation, validate-test-coverage, test-mojo-comprehensive, test-configs, test-training, test-benchmarks, test-python, code-quality]
     runs-on: ubuntu-latest
     if: always()
     name: "Test Report"
