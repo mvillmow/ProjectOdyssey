@@ -35,7 +35,6 @@ from shared.utils.arg_parser import ArgumentParser
 from shared.core import ExTensor, zeros, ones
 from time import perf_counter_ns
 from collections import List
-from math import abs
 
 # TODO: Import optimized kernels when implemented
 # from shared.core.matmul import matmul_v1, matmul_v2, matmul_v3, matmul_v4
@@ -51,7 +50,7 @@ fn matmul_v0[
 ](a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     """Stage 0: Baseline naive implementation (Float64 conversion).
 
-    This is the reference implementation - slow but simple and correct.
+    This is the reference implementation. Slow but simple and correct.
     Uses Float64 conversion for all arithmetic operations.
     """
     var a_rows = a.shape()[0]
@@ -136,16 +135,16 @@ fn verify_stage[
     """Verify a single optimization stage produces correct results.
 
     Args:
-        stage_id: Stage number (0-4)
-        stage_name: Descriptive stage name
-        a: First input matrix
-        b: Second input matrix
-        reference: Expected result (from baseline)
-        rtol: Relative tolerance
-        atol: Absolute tolerance
+        stage_id: Stage number (0-4).
+        stage_name: Descriptive stage name.
+        a: First input matrix.
+        b: Second input matrix.
+        reference: Expected result (from baseline).
+        rtol: Relative tolerance.
+        atol: Absolute tolerance.
 
     Raises:
-        Error if results don't match within tolerance
+        Error if results don't match within tolerance.
     """
     var result_shape = List[Int]()
     result_shape.append(a.shape()[0])
@@ -167,10 +166,6 @@ fn verify_stage[
         raise Error("Invalid stage ID: " + String(stage_id))
 
     # Compare with reference
-    var max_diff = 0.0
-    var max_i = 0
-    var max_j = 0
-
     for i in range(result.shape()[0]):
         for j in range(result.shape()[1]):
             var idx = i * result.shape()[1] + j
@@ -178,11 +173,6 @@ fn verify_stage[
             var result_val = result._get_float64(idx)
             var diff = abs(result_val - ref_val)
             var tolerance = atol + rtol * abs(ref_val)
-
-            if diff > max_diff:
-                max_diff = diff
-                max_i = i
-                max_j = j
 
             if diff > tolerance:
                 raise Error(
@@ -207,10 +197,10 @@ fn verify_all_stages[dtype: DType](size: Int) raises:
     """Verify all optimization stages produce identical results.
 
     Args:
-        size: Matrix size (NxN square matrices)
+        size: Matrix size (NxN square matrices).
 
     Raises:
-        Error if any stage produces incorrect results
+        Error if any stage produces incorrect results.
     """
     # Create test matrices
     var shape = List[Int]()
@@ -243,12 +233,12 @@ fn bench_stage[
     """Benchmark a single optimization stage.
 
     Args:
-        stage_id: Stage number (0-4)
-        size: Matrix size (NxN)
-        iterations: Number of iterations to run
+        stage_id: Stage number (0-4).
+        size: Matrix size (NxN).
+        iterations: Number of iterations to run.
 
     Returns:
-        Mean execution time in milliseconds
+        Mean execution time in milliseconds.
     """
     # Create test matrices
     var shape = List[Int]()
@@ -303,11 +293,11 @@ fn calculate_gflops(size: Int, time_ms: Float64) -> Float64:
     For square matrices: 2*N*N*N = 2*N^3
 
     Args:
-        size: Matrix size (NxN)
-        time_ms: Execution time in milliseconds
+        size: Matrix size (NxN).
+        time_ms: Execution time in milliseconds.
 
     Returns:
-        GFLOPS (billions of floating-point operations per second)
+        GFLOPS (billions of floating-point operations per second).
     """
     var flops = 2.0 * Float64(size) * Float64(size) * Float64(size)
     var time_s = time_ms / 1000.0
@@ -323,13 +313,13 @@ fn parse_sizes(sizes_str: String) raises -> List[Int]:
     """Parse comma-separated sizes string into list of integers.
 
     Args:
-        sizes_str: Comma-separated sizes (e.g., "64,256,1024")
+        sizes_str: Comma-separated sizes (e.g., "64,256,1024").
 
     Returns:
-        List of integer sizes
+        List of integer sizes.
 
     Raises:
-        Error if parsing fails
+        Error if parsing fails.
     """
     var sizes = List[Int]()
     var parts = sizes_str.split(",")
@@ -347,20 +337,14 @@ fn parse_sizes(sizes_str: String) raises -> List[Int]:
     return sizes^
 
 
-fn parse_args() raises -> (
-    Int,
-    List[Int],
-    DType,
-    Int,
-    Bool,
-):
+fn parse_args() raises -> Tuple[Int, List[Int], DType, Int, Bool]:
     """Parse command-line arguments.
 
     Returns:
-        Tuple of (stage, sizes, dtype, iterations, verify_only)
+        Tuple of (stage, sizes, dtype, iterations, verify_only).
 
     Raises:
-        Error if argument parsing or validation fails
+        Error if argument parsing or validation fails.
     """
     var parser = ArgumentParser()
 
@@ -422,57 +406,57 @@ fn format_time(time_ms: Float64) -> String:
     """Format time in milliseconds with appropriate precision.
 
     Args:
-        time_ms: Time in milliseconds
+        time_ms: Time in milliseconds.
 
     Returns:
-        Formatted string (e.g., "12.34ms")
+        Formatted string (e.g., "12.34ms").
     """
     if time_ms < 0.01:
-        return String(time_ms * 1000.0)[0:6] + "us"
+        return String(String(time_ms * 1000.0)[0:6]) + "us"
     elif time_ms < 1.0:
-        return String(time_ms)[0:6] + "ms"
+        return String(String(time_ms)[0:6]) + "ms"
     elif time_ms < 1000.0:
-        return String(time_ms)[0:7] + "ms"
+        return String(String(time_ms)[0:7]) + "ms"
     else:
-        return String(time_ms / 1000.0)[0:6] + "s"
+        return String(String(time_ms / 1000.0)[0:6]) + "s"
 
 
 fn format_gflops(gflops: Float64) -> String:
     """Format GFLOPS with appropriate precision.
 
     Args:
-        gflops: GFLOPS value
+        gflops: GFLOPS value.
 
     Returns:
-        Formatted string (e.g., "12.3")
+        Formatted string (e.g., "12.3").
     """
     if gflops < 1.0:
-        return String(gflops)[0:5]
+        return String(String(gflops)[0:5])
     elif gflops < 10.0:
-        return String(gflops)[0:4]
+        return String(String(gflops)[0:4])
     elif gflops < 100.0:
-        return String(gflops)[0:5]
+        return String(String(gflops)[0:5])
     else:
-        return String(gflops)[0:6]
+        return String(String(gflops)[0:6])
 
 
 fn format_speedup(speedup: Float64) -> String:
     """Format speedup with appropriate precision.
 
     Args:
-        speedup: Speedup factor
+        speedup: Speedup factor.
 
     Returns:
-        Formatted string (e.g., "12.3x")
+        Formatted string (e.g., "12.3x").
     """
     if speedup < 1.0:
-        return String(speedup)[0:4] + "x"
+        return String(String(speedup)[0:4]) + "x"
     elif speedup < 10.0:
-        return String(speedup)[0:4] + "x"
+        return String(String(speedup)[0:4]) + "x"
     elif speedup < 100.0:
-        return String(speedup)[0:5] + "x"
+        return String(String(speedup)[0:5]) + "x"
     else:
-        return String(speedup)[0:6] + "x"
+        return String(String(speedup)[0:6]) + "x"
 
 
 fn run_benchmarks[
@@ -483,9 +467,9 @@ fn run_benchmarks[
     """Run benchmarks for specified stages and sizes.
 
     Args:
-        stage: Stage to run (-1 for all)
-        sizes: List of matrix sizes to test
-        iterations: Number of iterations per benchmark
+        stage: Stage to run (-1 for all).
+        sizes: List of matrix sizes to test.
+        iterations: Number of iterations per benchmark.
     """
     # Determine which stages to run
     var stages_to_run = List[Int]()
@@ -515,7 +499,6 @@ fn run_benchmarks[
 
     # Benchmark each stage
     var baseline_time: Float64 = 0.0
-    var baseline_size: Int = 0
 
     for s in stages_to_run:
         var row = "| v" + String(s) + "    |"
@@ -532,7 +515,6 @@ fn run_benchmarks[
             # Track baseline for speedup calculation (use first size)
             if s == 0 and baseline_time == 0.0:
                 baseline_time = time_ms
-                baseline_size = size
 
         # Calculate GFLOPS (use largest size if 1024 is in list, else use last size)
         var gflops_size = sizes[len(sizes) - 1]
@@ -564,7 +546,14 @@ fn run_benchmarks[
 fn main() raises:
     """Main benchmark driver."""
     # Parse command-line arguments
-    var (stage, sizes, dtype, iterations, verify_only) = parse_args()
+    var args_tuple = parse_args()
+    var stage = args_tuple[0]
+    var sizes = List[Int]()
+    for i in range(len(args_tuple[1])):
+        sizes.append(args_tuple[1][i])
+    var dtype = args_tuple[2]
+    var iterations = args_tuple[3]
+    var verify_only = args_tuple[4]
 
     print("=" * 90)
     print("Matrix Multiplication Optimization Benchmark")

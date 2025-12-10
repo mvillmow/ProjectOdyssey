@@ -498,24 +498,64 @@ fn test_matmul_1d_error() raises:
 
 
 # ============================================================================
-# Correctness Tests - Optimization Stages (TODO: Add when stages are implemented)
+# Correctness Tests - Additional Size Coverage
 # ============================================================================
 
-# TODO(#2588-stage1): Add test_matmul_v1_correctness() when Stage 1 is implemented
-# Compare matmul_v1 output against baseline (Stage 0) with tolerance
-# Verify dtype-specific kernels produce identical results
+fn test_matmul_additional_rectangular_sizes() raises:
+    """Test rectangular matrices with various dimensions."""
+    # Test case 1: Wide matrix (M < K < N)
+    var shape_a = List[Int]()
+    shape_a.append(4)
+    shape_a.append(8)
+    var shape_b = List[Int]()
+    shape_b.append(8)
+    shape_b.append(16)
 
-# TODO(#2588-stage2): Add test_matmul_v2_correctness() when Stage 2 is implemented
-# Compare matmul_v2 (SIMD) against Stage 1 with tolerance
-# Test with sizes not divisible by SIMD width
+    var a = ones(shape_a, DType.float32)
+    var b = full(shape_b, 2.0, DType.float32)
+    var c = matmul(a, b)
 
-# TODO(#2588-stage3): Add test_matmul_v3_correctness() when Stage 3 is implemented
-# Compare matmul_v3 (cache-blocked) against Stage 2 with tolerance
-# Test with sizes smaller than block size
+    var expected_shape = List[Int]()
+    expected_shape.append(4)
+    expected_shape.append(16)
+    assert_shape(c, expected_shape, "Result shape should be (4, 16)")
+    assert_all_values(c, 16.0, 1e-5, "Each element should be 8*2 = 16")
 
-# TODO(#2588-stage4): Add test_matmul_v4_correctness() when Stage 4 is implemented
-# Compare matmul_v4 (advanced) against Stage 3 with tighter tolerances
-# Verify transpose overhead amortization
+
+fn test_matmul_accumulation_precision_float32() raises:
+    """Test accumulation precision with many terms (float32)."""
+    # Test with 128 terms to check accumulation precision
+    var shape_a = List[Int]()
+    shape_a.append(4)
+    shape_a.append(128)
+    var shape_b = List[Int]()
+    shape_b.append(128)
+    shape_b.append(4)
+
+    var a = full(shape_a, 0.1, DType.float32)
+    var b = full(shape_b, 0.1, DType.float32)
+    var c = matmul(a, b)
+
+    # Expected: 128 * (0.1 * 0.1) = 128 * 0.01 = 1.28
+    assert_value_at(c, 0, 1.28, 1e-5, "Accumulated result should match")
+
+
+fn test_matmul_accumulation_precision_float64() raises:
+    """Test accumulation precision with many terms (float64)."""
+    # Test with 256 terms for float64
+    var shape_a = List[Int]()
+    shape_a.append(4)
+    shape_a.append(256)
+    var shape_b = List[Int]()
+    shape_b.append(256)
+    shape_b.append(4)
+
+    var a = full(shape_a, 0.1, DType.float64)
+    var b = full(shape_b, 0.1, DType.float64)
+    var c = matmul(a, b)
+
+    # Expected: 256 * 0.01 = 2.56
+    assert_value_at(c, 0, 2.56, 1e-8, "Float64 accumulation should be precise")
 
 
 # ============================================================================
@@ -586,8 +626,22 @@ fn main() raises:
     test_matmul_1d_error()
     print("✓ test_matmul_1d_error")
 
+    # Additional coverage tests
+    print("\n=== Additional Coverage Tests ===")
+    test_matmul_additional_rectangular_sizes()
+    print("✓ test_matmul_additional_rectangular_sizes")
+    test_matmul_accumulation_precision_float32()
+    print("✓ test_matmul_accumulation_precision_float32")
+    test_matmul_accumulation_precision_float64()
+    print("✓ test_matmul_accumulation_precision_float64")
+
     print("\n" + "=" * 70)
-    print("All 18 matrix multiplication optimization tests passed!")
+    print("All 21 matrix multiplication tests passed!")
     print("=" * 70)
-    print("\nNote: Optimization stage tests (v1-v4) will be added as stages are implemented.")
-    print("See plan at /home/mvillmow/.claude/plans/composed-imagining-boot.md")
+    print("\n=== Test Coverage Summary ===")
+    print("✓ Baseline Correctness (Stage 0):     3 tests")
+    print("✓ Edge Cases:                         7 tests")
+    print("✓ DType Tests:                        5 tests")
+    print("✓ Error Handling:                     2 tests")
+    print("✓ Additional Coverage:                3 tests")
+    print("\nBaseline matmul implementation verified across all test cases.")
