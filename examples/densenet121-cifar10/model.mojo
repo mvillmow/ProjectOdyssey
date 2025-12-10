@@ -123,8 +123,8 @@ struct DenseLayer:
         # Bottleneck 1×1 conv
         var bn1_shape: List[Int] = [in_channels]
         self.bn1_gamma = constant(bn1_shape, 1.0)
-        self.bn1_beta = zeros(bn1_shape)
-        self.bn1_running_mean = zeros(bn1_shape)
+        self.bn1_beta = zeros(bn1_shape, DType.float32)
+        self.bn1_running_mean = zeros(bn1_shape, DType.float32)
         self.bn1_running_var = constant(bn1_shape, 1.0)
         var conv1_weights_shape: List[Int] = [
             bottleneck_channels,
@@ -136,13 +136,13 @@ struct DenseLayer:
             conv1_weights_shape, fan_in=in_channels
         )
         var conv1_bias_shape: List[Int] = [bottleneck_channels]
-        self.conv1_bias = zeros(conv1_bias_shape)
+        self.conv1_bias = zeros(conv1_bias_shape, DType.float32)
 
         # 3×3 conv
         var bn2_shape: List[Int] = [bottleneck_channels]
         self.bn2_gamma = constant(bn2_shape, 1.0)
-        self.bn2_beta = zeros(bn2_shape)
-        self.bn2_running_mean = zeros(bn2_shape)
+        self.bn2_beta = zeros(bn2_shape, DType.float32)
+        self.bn2_running_mean = zeros(bn2_shape, DType.float32)
         self.bn2_running_var = constant(bn2_shape, 1.0)
         var conv2_weights_shape: List[Int] = [
             growth_rate,
@@ -155,7 +155,7 @@ struct DenseLayer:
             fan_in=bottleneck_channels * 9,
         )
         var conv2_bias_shape: List[Int] = [growth_rate]
-        self.conv2_bias = zeros(conv2_bias_shape)
+        self.conv2_bias = zeros(conv2_bias_shape, DType.float32)
 
     fn forward(mut self, x: ExTensor, training: Bool) raises -> ExTensor:
         """Forward pass through dense layer.
@@ -286,8 +286,8 @@ struct TransitionLayer:
         """
         var bn_shape: List[Int] = [in_channels]
         self.bn_gamma = constant(bn_shape, 1.0)
-        self.bn_beta = zeros(bn_shape)
-        self.bn_running_mean = zeros(bn_shape)
+        self.bn_beta = zeros(bn_shape, DType.float32)
+        self.bn_running_mean = zeros(bn_shape, DType.float32)
         self.bn_running_var = constant(bn_shape, 1.0)
 
         var conv_weights_shape: List[Int] = [out_channels, in_channels, 1, 1]
@@ -295,7 +295,7 @@ struct TransitionLayer:
             conv_weights_shape, fan_in=in_channels
         )
         var conv_bias_shape: List[Int] = [out_channels]
-        self.conv_bias = zeros(conv_bias_shape)
+        self.conv_bias = zeros(conv_bias_shape, DType.float32)
 
     fn forward(mut self, x: ExTensor, training: Bool) raises -> ExTensor:
         """Forward pass through transition layer.
@@ -377,10 +377,10 @@ struct DenseNet121:
             fan_in=3 * 9,
         )
         var initial_bias_shape: List[Int] = [num_init_features]
-        self.initial_conv_bias = zeros(initial_bias_shape)
+        self.initial_conv_bias = zeros(initial_bias_shape, DType.float32)
         self.initial_bn_gamma = constant(initial_bias_shape, 1.0)
-        self.initial_bn_beta = zeros(initial_bias_shape)
-        self.initial_bn_running_mean = zeros(initial_bias_shape)
+        self.initial_bn_beta = zeros(initial_bias_shape, DType.float32)
+        self.initial_bn_running_mean = zeros(initial_bias_shape, DType.float32)
         self.initial_bn_running_var = constant(initial_bias_shape, 1.0)
 
         # Dense Block 1: 6 layers, 64 → 256 channels
@@ -419,7 +419,7 @@ struct DenseNet121:
             fan_out=num_classes,
         )
         var fc_bias_shape: List[Int] = [num_classes]
-        self.fc_bias = zeros(fc_bias_shape)
+        self.fc_bias = zeros(fc_bias_shape, DType.float32)
 
     fn forward(mut self, x: ExTensor, training: Bool = True) raises -> ExTensor:
         """Forward pass through DenseNet-121.

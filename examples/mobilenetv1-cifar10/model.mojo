@@ -163,7 +163,7 @@ struct DepthwiseSeparableBlock:
     var pw_bn_running_var: ExTensor
 
     fn __init__(
-        mut self, in_channels: Int, out_channels: Int, stride: Int = 1
+        out self, in_channels: Int, out_channels: Int, stride: Int = 1
     ) raises:
         """Initialize depthwise separable block.
 
@@ -178,10 +178,10 @@ struct DepthwiseSeparableBlock:
             dw_weights_shape, fan_in=9
         )  # 3×3 kernel
         var dw_bias_shape: List[Int] = [in_channels]
-        self.dw_bias = zeros(dw_bias_shape)
+        self.dw_bias = zeros(dw_bias_shape, DType.float32)
         self.dw_bn_gamma = constant(dw_bias_shape, 1.0)
-        self.dw_bn_beta = zeros(dw_bias_shape)
-        self.dw_bn_running_mean = zeros(dw_bias_shape)
+        self.dw_bn_beta = zeros(dw_bias_shape, DType.float32)
+        self.dw_bn_running_mean = zeros(dw_bias_shape, DType.float32)
         self.dw_bn_running_var = constant(dw_bias_shape, 1.0)
 
         # Pointwise convolution weights (1×1, channel mixing)
@@ -192,10 +192,10 @@ struct DepthwiseSeparableBlock:
             fan_out=out_channels,
         )
         var pw_bias_shape: List[Int] = [out_channels]
-        self.pw_bias = zeros(pw_bias_shape)
+        self.pw_bias = zeros(pw_bias_shape, DType.float32)
         self.pw_bn_gamma = constant(pw_bias_shape, 1.0)
-        self.pw_bn_beta = zeros(pw_bias_shape)
-        self.pw_bn_running_mean = zeros(pw_bias_shape)
+        self.pw_bn_beta = zeros(pw_bias_shape, DType.float32)
+        self.pw_bn_running_mean = zeros(pw_bias_shape, DType.float32)
         self.pw_bn_running_var = constant(pw_bias_shape, 1.0)
 
     fn forward(
@@ -294,10 +294,10 @@ struct MobileNetV1:
             fan_in=3 * 9,
         )
         var initial_bias_shape: List[Int] = [32]
-        self.initial_conv_bias = zeros(initial_bias_shape)
+        self.initial_conv_bias = zeros(initial_bias_shape, DType.float32)
         self.initial_bn_gamma = constant(initial_bias_shape, 1.0)
-        self.initial_bn_beta = zeros(initial_bias_shape)
-        self.initial_bn_running_mean = zeros(initial_bias_shape)
+        self.initial_bn_beta = zeros(initial_bias_shape, DType.float32)
+        self.initial_bn_running_mean = zeros(initial_bias_shape, DType.float32)
         self.initial_bn_running_var = constant(initial_bias_shape, 1.0)
 
         # Depthwise separable blocks
@@ -324,7 +324,7 @@ struct MobileNetV1:
             fan_out=num_classes,
         )
         var fc_bias_shape: List[Int] = [num_classes]
-        self.fc_bias = zeros(fc_bias_shape)
+        self.fc_bias = zeros(fc_bias_shape, DType.float32)
 
     fn forward(mut self, x: ExTensor, training: Bool = True) raises -> ExTensor:
         """Forward pass through MobileNetV1.

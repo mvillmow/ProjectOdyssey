@@ -100,7 +100,7 @@ struct InceptionModule:
     var bn1x1_4_running_var: ExTensor
 
     fn __init__(
-        mut self,
+        out self,
         in_channels: Int,
         out_1x1: Int,
         reduce_3x3: Int,
@@ -126,10 +126,10 @@ struct InceptionModule:
             conv1x1_1_weights_shape, fan_in=in_channels
         )
         var conv1x1_1_bias_shape: List[Int] = [out_1x1]
-        self.conv1x1_1_bias = zeros(conv1x1_1_bias_shape)
+        self.conv1x1_1_bias = zeros(conv1x1_1_bias_shape, DType.float32)
         self.bn1x1_1_gamma = constant(conv1x1_1_bias_shape, 1.0)
-        self.bn1x1_1_beta = zeros(conv1x1_1_bias_shape)
-        self.bn1x1_1_running_mean = zeros(conv1x1_1_bias_shape)
+        self.bn1x1_1_beta = zeros(conv1x1_1_bias_shape, DType.float32)
+        self.bn1x1_1_running_mean = zeros(conv1x1_1_bias_shape, DType.float32)
         self.bn1x1_1_running_var = constant(conv1x1_1_bias_shape, 1.0)
 
         # Branch 2: 1×1 reduce
@@ -138,10 +138,10 @@ struct InceptionModule:
             conv1x1_2_weights_shape, fan_in=in_channels
         )
         var conv1x1_2_bias_shape: List[Int] = [reduce_3x3]
-        self.conv1x1_2_bias = zeros(conv1x1_2_bias_shape)
+        self.conv1x1_2_bias = zeros(conv1x1_2_bias_shape, DType.float32)
         self.bn1x1_2_gamma = constant(conv1x1_2_bias_shape, 1.0)
-        self.bn1x1_2_beta = zeros(conv1x1_2_bias_shape)
-        self.bn1x1_2_running_mean = zeros(conv1x1_2_bias_shape)
+        self.bn1x1_2_beta = zeros(conv1x1_2_bias_shape, DType.float32)
+        self.bn1x1_2_running_mean = zeros(conv1x1_2_bias_shape, DType.float32)
         self.bn1x1_2_running_var = constant(conv1x1_2_bias_shape, 1.0)
 
         # Branch 2: 3×3 conv
@@ -150,10 +150,10 @@ struct InceptionModule:
             conv3x3_weights_shape, fan_in=reduce_3x3 * 9
         )
         var conv3x3_bias_shape: List[Int] = [out_3x3]
-        self.conv3x3_bias = zeros(conv3x3_bias_shape)
+        self.conv3x3_bias = zeros(conv3x3_bias_shape, DType.float32)
         self.bn3x3_gamma = constant(conv3x3_bias_shape, 1.0)
-        self.bn3x3_beta = zeros(conv3x3_bias_shape)
-        self.bn3x3_running_mean = zeros(conv3x3_bias_shape)
+        self.bn3x3_beta = zeros(conv3x3_bias_shape, DType.float32)
+        self.bn3x3_running_mean = zeros(conv3x3_bias_shape, DType.float32)
         self.bn3x3_running_var = constant(conv3x3_bias_shape, 1.0)
 
         # Branch 3: 1×1 reduce
@@ -162,10 +162,10 @@ struct InceptionModule:
             conv1x1_3_weights_shape, fan_in=in_channels
         )
         var conv1x1_3_bias_shape: List[Int] = [reduce_5x5]
-        self.conv1x1_3_bias = zeros(conv1x1_3_bias_shape)
+        self.conv1x1_3_bias = zeros(conv1x1_3_bias_shape, DType.float32)
         self.bn1x1_3_gamma = constant(conv1x1_3_bias_shape, 1.0)
-        self.bn1x1_3_beta = zeros(conv1x1_3_bias_shape)
-        self.bn1x1_3_running_mean = zeros(conv1x1_3_bias_shape)
+        self.bn1x1_3_beta = zeros(conv1x1_3_bias_shape, DType.float32)
+        self.bn1x1_3_running_mean = zeros(conv1x1_3_bias_shape, DType.float32)
         self.bn1x1_3_running_var = constant(conv1x1_3_bias_shape, 1.0)
 
         # Branch 3: 5×5 conv
@@ -174,10 +174,10 @@ struct InceptionModule:
             conv5x5_weights_shape, fan_in=reduce_5x5 * 25
         )
         var conv5x5_bias_shape: List[Int] = [out_5x5]
-        self.conv5x5_bias = zeros(conv5x5_bias_shape)
+        self.conv5x5_bias = zeros(conv5x5_bias_shape, DType.float32)
         self.bn5x5_gamma = constant(conv5x5_bias_shape, 1.0)
-        self.bn5x5_beta = zeros(conv5x5_bias_shape)
-        self.bn5x5_running_mean = zeros(conv5x5_bias_shape)
+        self.bn5x5_beta = zeros(conv5x5_bias_shape, DType.float32)
+        self.bn5x5_running_mean = zeros(conv5x5_bias_shape, DType.float32)
         self.bn5x5_running_var = constant(conv5x5_bias_shape, 1.0)
 
         # Branch 4: 1×1 projection after pooling
@@ -186,10 +186,10 @@ struct InceptionModule:
             conv1x1_4_weights_shape, fan_in=in_channels
         )
         var conv1x1_4_bias_shape: List[Int] = [pool_proj]
-        self.conv1x1_4_bias = zeros(conv1x1_4_bias_shape)
+        self.conv1x1_4_bias = zeros(conv1x1_4_bias_shape, DType.float32)
         self.bn1x1_4_gamma = constant(conv1x1_4_bias_shape, 1.0)
-        self.bn1x1_4_beta = zeros(conv1x1_4_bias_shape)
-        self.bn1x1_4_running_mean = zeros(conv1x1_4_bias_shape)
+        self.bn1x1_4_beta = zeros(conv1x1_4_bias_shape, DType.float32)
+        self.bn1x1_4_running_mean = zeros(conv1x1_4_bias_shape, DType.float32)
         self.bn1x1_4_running_var = constant(conv1x1_4_bias_shape, 1.0)
 
     fn forward(mut self, x: ExTensor, training: Bool) raises -> ExTensor:
@@ -416,10 +416,10 @@ struct GoogLeNet:
             initial_conv_weights_shape, fan_in=3 * 9
         )
         var initial_bias_shape: List[Int] = [64]
-        self.initial_conv_bias = zeros(initial_bias_shape)
+        self.initial_conv_bias = zeros(initial_bias_shape, DType.float32)
         self.initial_bn_gamma = constant(initial_bias_shape, 1.0)
-        self.initial_bn_beta = zeros(initial_bias_shape)
-        self.initial_bn_running_mean = zeros(initial_bias_shape)
+        self.initial_bn_beta = zeros(initial_bias_shape, DType.float32)
+        self.initial_bn_running_mean = zeros(initial_bias_shape, DType.float32)
         self.initial_bn_running_var = constant(initial_bias_shape, 1.0)
 
         # Inception 3a: input 64, output 256 (64 + 128 + 32 + 32)
@@ -529,7 +529,7 @@ struct GoogLeNet:
             fan_out=num_classes,
         )
         var fc_bias_shape: List[Int] = [num_classes]
-        self.fc_bias = zeros(fc_bias_shape)
+        self.fc_bias = zeros(fc_bias_shape, DType.float32)
 
     fn forward(mut self, x: ExTensor, training: Bool = True) raises -> ExTensor:
         """Forward pass through GoogLeNet.

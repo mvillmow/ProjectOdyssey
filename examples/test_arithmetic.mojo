@@ -12,7 +12,7 @@ fn main() raises:
     print("=" * 50)
 
     # Create test tensors
-    var shape = List[Int]()
+    var shape: List[Int] = [2, 3]
     var a = ones(shape, DType.float32)
     var b = full(shape, 2.0, DType.float32)
 
