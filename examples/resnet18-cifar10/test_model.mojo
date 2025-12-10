@@ -29,9 +29,8 @@ fn main() raises:
     print(
         "\nCreating dummy input (batch=4, channels=3, height=32, width=32)..."
     )
-    var input = zeros(
-        List[Int]().append(4).append(3).append(32).append(32), DType.float32
-    )
+    var input_shape: List[Int] = [4, 3, 32, 32]
+    var input = zeros(input_shape, DType.float32)
     var input_data = input._data.bitcast[Float32]()
     for i in range(4 * 3 * 32 * 32):
         input_data[i] = Float32(0.1)

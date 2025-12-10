@@ -121,82 +121,76 @@ struct InceptionModule:
             pool_proj: Projection channels after pooling.
         """
         # Branch 1: 1×1 conv
+        var conv1x1_1_weights_shape: List[Int] = [out_1x1, in_channels, 1, 1]
         self.conv1x1_1_weights = kaiming_normal(
-            List[Int]().append(out_1x1).append(in_channels).append(1).append(1),
-            fan_in=in_channels,
+            conv1x1_1_weights_shape, fan_in=in_channels
         )
-        self.conv1x1_1_bias = zeros(List[Int]().append(out_1x1))
-        self.bn1x1_1_gamma = constant(List[Int]().append(out_1x1), 1.0)
-        self.bn1x1_1_beta = zeros(List[Int]().append(out_1x1))
-        self.bn1x1_1_running_mean = zeros(List[Int]().append(out_1x1))
-        self.bn1x1_1_running_var = constant(List[Int]().append(out_1x1), 1.0)
+        var conv1x1_1_bias_shape: List[Int] = [out_1x1]
+        self.conv1x1_1_bias = zeros(conv1x1_1_bias_shape)
+        self.bn1x1_1_gamma = constant(conv1x1_1_bias_shape, 1.0)
+        self.bn1x1_1_beta = zeros(conv1x1_1_bias_shape)
+        self.bn1x1_1_running_mean = zeros(conv1x1_1_bias_shape)
+        self.bn1x1_1_running_var = constant(conv1x1_1_bias_shape, 1.0)
 
         # Branch 2: 1×1 reduce
+        var conv1x1_2_weights_shape: List[Int] = [reduce_3x3, in_channels, 1, 1]
         self.conv1x1_2_weights = kaiming_normal(
-            List[Int]()
-            .append(reduce_3x3)
-            .append(in_channels)
-            .append(1)
-            .append(1),
-            fan_in=in_channels,
+            conv1x1_2_weights_shape, fan_in=in_channels
         )
-        self.conv1x1_2_bias = zeros(List[Int]().append(reduce_3x3))
-        self.bn1x1_2_gamma = constant(List[Int]().append(reduce_3x3), 1.0)
-        self.bn1x1_2_beta = zeros(List[Int]().append(reduce_3x3))
-        self.bn1x1_2_running_mean = zeros(List[Int]().append(reduce_3x3))
-        self.bn1x1_2_running_var = constant(List[Int]().append(reduce_3x3), 1.0)
+        var conv1x1_2_bias_shape: List[Int] = [reduce_3x3]
+        self.conv1x1_2_bias = zeros(conv1x1_2_bias_shape)
+        self.bn1x1_2_gamma = constant(conv1x1_2_bias_shape, 1.0)
+        self.bn1x1_2_beta = zeros(conv1x1_2_bias_shape)
+        self.bn1x1_2_running_mean = zeros(conv1x1_2_bias_shape)
+        self.bn1x1_2_running_var = constant(conv1x1_2_bias_shape, 1.0)
 
         # Branch 2: 3×3 conv
+        var conv3x3_weights_shape: List[Int] = [out_3x3, reduce_3x3, 3, 3]
         self.conv3x3_weights = kaiming_normal(
-            List[Int]().append(out_3x3).append(reduce_3x3).append(3).append(3),
-            fan_in=reduce_3x3 * 9,
+            conv3x3_weights_shape, fan_in=reduce_3x3 * 9
         )
-        self.conv3x3_bias = zeros(List[Int]().append(out_3x3))
-        self.bn3x3_gamma = constant(List[Int]().append(out_3x3), 1.0)
-        self.bn3x3_beta = zeros(List[Int]().append(out_3x3))
-        self.bn3x3_running_mean = zeros(List[Int]().append(out_3x3))
-        self.bn3x3_running_var = constant(List[Int]().append(out_3x3), 1.0)
+        var conv3x3_bias_shape: List[Int] = [out_3x3]
+        self.conv3x3_bias = zeros(conv3x3_bias_shape)
+        self.bn3x3_gamma = constant(conv3x3_bias_shape, 1.0)
+        self.bn3x3_beta = zeros(conv3x3_bias_shape)
+        self.bn3x3_running_mean = zeros(conv3x3_bias_shape)
+        self.bn3x3_running_var = constant(conv3x3_bias_shape, 1.0)
 
         # Branch 3: 1×1 reduce
+        var conv1x1_3_weights_shape: List[Int] = [reduce_5x5, in_channels, 1, 1]
         self.conv1x1_3_weights = kaiming_normal(
-            List[Int]()
-            .append(reduce_5x5)
-            .append(in_channels)
-            .append(1)
-            .append(1),
-            fan_in=in_channels,
+            conv1x1_3_weights_shape, fan_in=in_channels
         )
-        self.conv1x1_3_bias = zeros(List[Int]().append(reduce_5x5))
-        self.bn1x1_3_gamma = constant(List[Int]().append(reduce_5x5), 1.0)
-        self.bn1x1_3_beta = zeros(List[Int]().append(reduce_5x5))
-        self.bn1x1_3_running_mean = zeros(List[Int]().append(reduce_5x5))
-        self.bn1x1_3_running_var = constant(List[Int]().append(reduce_5x5), 1.0)
+        var conv1x1_3_bias_shape: List[Int] = [reduce_5x5]
+        self.conv1x1_3_bias = zeros(conv1x1_3_bias_shape)
+        self.bn1x1_3_gamma = constant(conv1x1_3_bias_shape, 1.0)
+        self.bn1x1_3_beta = zeros(conv1x1_3_bias_shape)
+        self.bn1x1_3_running_mean = zeros(conv1x1_3_bias_shape)
+        self.bn1x1_3_running_var = constant(conv1x1_3_bias_shape, 1.0)
 
         # Branch 3: 5×5 conv
+        var conv5x5_weights_shape: List[Int] = [out_5x5, reduce_5x5, 5, 5]
         self.conv5x5_weights = kaiming_normal(
-            List[Int]().append(out_5x5).append(reduce_5x5).append(5).append(5),
-            fan_in=reduce_5x5 * 25,
+            conv5x5_weights_shape, fan_in=reduce_5x5 * 25
         )
-        self.conv5x5_bias = zeros(List[Int]().append(out_5x5))
-        self.bn5x5_gamma = constant(List[Int]().append(out_5x5), 1.0)
-        self.bn5x5_beta = zeros(List[Int]().append(out_5x5))
-        self.bn5x5_running_mean = zeros(List[Int]().append(out_5x5))
-        self.bn5x5_running_var = constant(List[Int]().append(out_5x5), 1.0)
+        var conv5x5_bias_shape: List[Int] = [out_5x5]
+        self.conv5x5_bias = zeros(conv5x5_bias_shape)
+        self.bn5x5_gamma = constant(conv5x5_bias_shape, 1.0)
+        self.bn5x5_beta = zeros(conv5x5_bias_shape)
+        self.bn5x5_running_mean = zeros(conv5x5_bias_shape)
+        self.bn5x5_running_var = constant(conv5x5_bias_shape, 1.0)
 
         # Branch 4: 1×1 projection after pooling
+        var conv1x1_4_weights_shape: List[Int] = [pool_proj, in_channels, 1, 1]
         self.conv1x1_4_weights = kaiming_normal(
-            List[Int]()
-            .append(pool_proj)
-            .append(in_channels)
-            .append(1)
-            .append(1),
-            fan_in=in_channels,
+            conv1x1_4_weights_shape, fan_in=in_channels
         )
-        self.conv1x1_4_bias = zeros(List[Int]().append(pool_proj))
-        self.bn1x1_4_gamma = constant(List[Int]().append(pool_proj), 1.0)
-        self.bn1x1_4_beta = zeros(List[Int]().append(pool_proj))
-        self.bn1x1_4_running_mean = zeros(List[Int]().append(pool_proj))
-        self.bn1x1_4_running_var = constant(List[Int]().append(pool_proj), 1.0)
+        var conv1x1_4_bias_shape: List[Int] = [pool_proj]
+        self.conv1x1_4_bias = zeros(conv1x1_4_bias_shape)
+        self.bn1x1_4_gamma = constant(conv1x1_4_bias_shape, 1.0)
+        self.bn1x1_4_beta = zeros(conv1x1_4_bias_shape)
+        self.bn1x1_4_running_mean = zeros(conv1x1_4_bias_shape)
+        self.bn1x1_4_running_var = constant(conv1x1_4_bias_shape, 1.0)
 
     fn forward(mut self, x: ExTensor, training: Bool) raises -> ExTensor:
         """Forward pass through Inception module.
@@ -417,15 +411,16 @@ struct GoogLeNet:
             num_classes: Number of output classes (default: 10 for CIFAR-10).
         """
         # Initial convolution: 3×3, 64 filters
+        var initial_conv_weights_shape: List[Int] = [64, 3, 3, 3]
         self.initial_conv_weights = kaiming_normal(
-            List[Int]().append(64).append(3).append(3).append(3),
-            fan_in=3 * 9,
+            initial_conv_weights_shape, fan_in=3 * 9
         )
-        self.initial_conv_bias = zeros(List[Int]().append(64))
-        self.initial_bn_gamma = constant(List[Int]().append(64), 1.0)
-        self.initial_bn_beta = zeros(List[Int]().append(64))
-        self.initial_bn_running_mean = zeros(List[Int]().append(64))
-        self.initial_bn_running_var = constant(List[Int]().append(64), 1.0)
+        var initial_bias_shape: List[Int] = [64]
+        self.initial_conv_bias = zeros(initial_bias_shape)
+        self.initial_bn_gamma = constant(initial_bias_shape, 1.0)
+        self.initial_bn_beta = zeros(initial_bias_shape)
+        self.initial_bn_running_mean = zeros(initial_bias_shape)
+        self.initial_bn_running_var = constant(initial_bias_shape, 1.0)
 
         # Inception 3a: input 64, output 256 (64 + 128 + 32 + 32)
         self.inception_3a = InceptionModule(
@@ -527,12 +522,14 @@ struct GoogLeNet:
         )
 
         # Final FC layer: 1024 → num_classes
+        var fc_weights_shape: List[Int] = [num_classes, 1024]
         self.fc_weights = xavier_normal(
-            List[Int]().append(num_classes).append(1024),
+            fc_weights_shape,
             fan_in=1024,
             fan_out=num_classes,
         )
-        self.fc_bias = zeros(List[Int]().append(num_classes))
+        var fc_bias_shape: List[Int] = [num_classes]
+        self.fc_bias = zeros(fc_bias_shape)
 
     fn forward(mut self, x: ExTensor, training: Bool = True) raises -> ExTensor:
         """Forward pass through GoogLeNet.
@@ -618,10 +615,8 @@ struct GoogLeNet:
         # Flatten
         var batch_size = out.shape()[0]
         var channels = out.shape()[1]
-        var flattened = zeros(
-            List[Int]().append(batch_size).append(channels),
-            out.dtype(),
-        )
+        var flattened_shape: List[Int] = [batch_size, channels]
+        var flattened = zeros(flattened_shape, out.dtype())
         var flattened_data = flattened._data.bitcast[Float32]()
         var out_data = out._data.bitcast[Float32]()
 

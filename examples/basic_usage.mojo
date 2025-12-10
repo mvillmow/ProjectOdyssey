@@ -3,7 +3,7 @@
 Demonstrates creation operations and basic tensor manipulation.
 """
 
-from src.extensor import ExTensor, zeros, ones, full, arange, eye, linspace
+from shared.core import ExTensor, zeros, ones, full, arange, eye, linspace
 
 
 fn main() raises:

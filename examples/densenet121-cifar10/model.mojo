@@ -59,14 +59,8 @@ fn concatenate_channel_list(tensors: List[ExTensor]) raises -> ExTensor:
         total_channels += tensors[i].shape()[1]
 
     # Create output tensor
-    var result = zeros(
-        List[Int]()
-        .append(batch_size)
-        .append(total_channels)
-        .append(height)
-        .append(width),
-        tensors[0].dtype(),
-    )
+    var result_shape: List[Int] = [batch_size, total_channels, height, width]
+    var result = zeros(result_shape, tensors[0].dtype())
 
     var result_data = result._data.bitcast[Float32]()
     var hw = height * width
@@ -127,36 +121,41 @@ struct DenseLayer:
         var bottleneck_channels = 4 * growth_rate
 
         # Bottleneck 1×1 conv
-        self.bn1_gamma = constant(List[Int]().append(in_channels), 1.0)
-        self.bn1_beta = zeros(List[Int]().append(in_channels))
-        self.bn1_running_mean = zeros(List[Int]().append(in_channels))
-        self.bn1_running_var = constant(List[Int]().append(in_channels), 1.0)
+        var bn1_shape: List[Int] = [in_channels]
+        self.bn1_gamma = constant(bn1_shape, 1.0)
+        self.bn1_beta = zeros(bn1_shape)
+        self.bn1_running_mean = zeros(bn1_shape)
+        self.bn1_running_var = constant(bn1_shape, 1.0)
+        var conv1_weights_shape: List[Int] = [
+            bottleneck_channels,
+            in_channels,
+            1,
+            1,
+        ]
         self.conv1_weights = kaiming_normal(
-            List[Int]()
-            .append(bottleneck_channels)
-            .append(in_channels)
-            .append(1)
-            .append(1),
-            fan_in=in_channels,
+            conv1_weights_shape, fan_in=in_channels
         )
-        self.conv1_bias = zeros(List[Int]().append(bottleneck_channels))
+        var conv1_bias_shape: List[Int] = [bottleneck_channels]
+        self.conv1_bias = zeros(conv1_bias_shape)
 
         # 3×3 conv
-        self.bn2_gamma = constant(List[Int]().append(bottleneck_channels), 1.0)
-        self.bn2_beta = zeros(List[Int]().append(bottleneck_channels))
-        self.bn2_running_mean = zeros(List[Int]().append(bottleneck_channels))
-        self.bn2_running_var = constant(
-            List[Int]().append(bottleneck_channels), 1.0
-        )
+        var bn2_shape: List[Int] = [bottleneck_channels]
+        self.bn2_gamma = constant(bn2_shape, 1.0)
+        self.bn2_beta = zeros(bn2_shape)
+        self.bn2_running_mean = zeros(bn2_shape)
+        self.bn2_running_var = constant(bn2_shape, 1.0)
+        var conv2_weights_shape: List[Int] = [
+            growth_rate,
+            bottleneck_channels,
+            3,
+            3,
+        ]
         self.conv2_weights = kaiming_normal(
-            List[Int]()
-            .append(growth_rate)
-            .append(bottleneck_channels)
-            .append(3)
-            .append(3),
+            conv2_weights_shape,
             fan_in=bottleneck_channels * 9,
         )
-        self.conv2_bias = zeros(List[Int]().append(growth_rate))
+        var conv2_bias_shape: List[Int] = [growth_rate]
+        self.conv2_bias = zeros(conv2_bias_shape)
 
     fn forward(mut self, x: ExTensor, training: Bool) raises -> ExTensor:
         """Forward pass through dense layer.
@@ -285,20 +284,18 @@ struct TransitionLayer:
             in_channels: Number of input channels
             out_channels: Number of output channels (typically in_channels / 2).
         """
-        self.bn_gamma = constant(List[Int]().append(in_channels), 1.0)
-        self.bn_beta = zeros(List[Int]().append(in_channels))
-        self.bn_running_mean = zeros(List[Int]().append(in_channels))
-        self.bn_running_var = constant(List[Int]().append(in_channels), 1.0)
+        var bn_shape: List[Int] = [in_channels]
+        self.bn_gamma = constant(bn_shape, 1.0)
+        self.bn_beta = zeros(bn_shape)
+        self.bn_running_mean = zeros(bn_shape)
+        self.bn_running_var = constant(bn_shape, 1.0)
 
+        var conv_weights_shape: List[Int] = [out_channels, in_channels, 1, 1]
         self.conv_weights = kaiming_normal(
-            List[Int]()
-            .append(out_channels)
-            .append(in_channels)
-            .append(1)
-            .append(1),
-            fan_in=in_channels,
+            conv_weights_shape, fan_in=in_channels
         )
-        self.conv_bias = zeros(List[Int]().append(out_channels))
+        var conv_bias_shape: List[Int] = [out_channels]
+        self.conv_bias = zeros(conv_bias_shape)
 
     fn forward(mut self, x: ExTensor, training: Bool) raises -> ExTensor:
         """Forward pass through transition layer.
@@ -374,21 +371,17 @@ struct DenseNet121:
         var num_init_features = 2 * growth_rate  # 64 channels
 
         # Initial convolution: 3×3, 64 filters
+        var initial_conv_weights_shape: List[Int] = [num_init_features, 3, 3, 3]
         self.initial_conv_weights = kaiming_normal(
-            List[Int]().append(num_init_features).append(3).append(3).append(3),
+            initial_conv_weights_shape,
             fan_in=3 * 9,
         )
-        self.initial_conv_bias = zeros(List[Int]().append(num_init_features))
-        self.initial_bn_gamma = constant(
-            List[Int]().append(num_init_features), 1.0
-        )
-        self.initial_bn_beta = zeros(List[Int]().append(num_init_features))
-        self.initial_bn_running_mean = zeros(
-            List[Int]().append(num_init_features)
-        )
-        self.initial_bn_running_var = constant(
-            List[Int]().append(num_init_features), 1.0
-        )
+        var initial_bias_shape: List[Int] = [num_init_features]
+        self.initial_conv_bias = zeros(initial_bias_shape)
+        self.initial_bn_gamma = constant(initial_bias_shape, 1.0)
+        self.initial_bn_beta = zeros(initial_bias_shape)
+        self.initial_bn_running_mean = zeros(initial_bias_shape)
+        self.initial_bn_running_var = constant(initial_bias_shape, 1.0)
 
         # Dense Block 1: 6 layers, 64 → 256 channels
         self.dense_block_1 = DenseBlock(6, num_init_features, growth_rate)
@@ -419,12 +412,14 @@ struct DenseNet121:
         var num_features_final = num_features_6 + 16 * growth_rate  # 1024
 
         # Final FC layer
+        var fc_weights_shape: List[Int] = [num_classes, num_features_final]
         self.fc_weights = xavier_normal(
-            List[Int]().append(num_classes).append(num_features_final),
+            fc_weights_shape,
             fan_in=num_features_final,
             fan_out=num_classes,
         )
-        self.fc_bias = zeros(List[Int]().append(num_classes))
+        var fc_bias_shape: List[Int] = [num_classes]
+        self.fc_bias = zeros(fc_bias_shape)
 
     fn forward(mut self, x: ExTensor, training: Bool = True) raises -> ExTensor:
         """Forward pass through DenseNet-121.
@@ -481,10 +476,8 @@ struct DenseNet121:
         # Flatten
         var batch_size = out.shape()[0]
         var channels = out.shape()[1]
-        var flattened = zeros(
-            List[Int]().append(batch_size).append(channels),
-            out.dtype(),
-        )
+        var flattened_shape: List[Int] = [batch_size, channels]
+        var flattened = zeros(flattened_shape, out.dtype())
         var flattened_data = flattened._data.bitcast[Float32]()
         var out_data = out._data.bitcast[Float32]()
 

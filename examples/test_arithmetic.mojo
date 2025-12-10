@@ -3,7 +3,7 @@
 Tests basic arithmetic operations with operator overloading.
 """
 
-from src.extensor import ExTensor, zeros, ones, full
+from shared.core import ExTensor, zeros, ones, full
 
 
 fn main() raises:

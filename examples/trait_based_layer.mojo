@@ -51,7 +51,7 @@ struct ReLULayer(Differentiable):
 
     var last_input: ExTensor  # Cached for backward pass
 
-    fn __init__(mut self) raises:
+    fn __init__(out self) raises:
         """Initialize ReLU layer."""
         # Start with empty tensor (will be filled during first forward)
         self.last_input = zeros(List[Int].append(1))

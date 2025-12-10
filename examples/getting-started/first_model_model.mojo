@@ -36,7 +36,7 @@ struct DigitClassifier:
 
     var model: Sequential
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Create a 3-layer network: 784 -> 128 -> 64 -> 10."""
 
         # Input: 784 pixels (28x28 flattened)

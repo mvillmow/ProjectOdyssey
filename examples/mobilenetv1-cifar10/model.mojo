@@ -73,14 +73,8 @@ fn depthwise_conv2d(
     )
 
     # Create output tensor
-    var output = zeros(
-        List[Int]()
-        .append(batch_size)
-        .append(channels)
-        .append(out_h)
-        .append(out_w),
-        x.dtype(),
-    )
+    var output_shape: List[Int] = [batch_size, channels, out_h, out_w]
+    var output = zeros(output_shape, x.dtype())
 
     # Process each channel independently
     var x_data = x._data.bitcast[Float32]()
@@ -92,10 +86,8 @@ fn depthwise_conv2d(
     for b in range(batch_size):
         for c in range(channels):
             # Extract single channel
-            var channel_input = zeros(
-                List[Int]().append(1).append(1).append(height).append(width),
-                x.dtype(),
-            )
+            var channel_input_shape: List[Int] = [1, 1, height, width]
+            var channel_input = zeros(channel_input_shape, x.dtype())
             var channel_input_data = channel_input._data.bitcast[Float32]()
 
             # Copy channel data
@@ -106,14 +98,8 @@ fn depthwise_conv2d(
                     channel_input_data[dst_idx] = x_data[src_idx]
 
             # Extract single filter for this channel
-            var channel_filter = zeros(
-                List[Int]()
-                .append(1)
-                .append(1)
-                .append(kernel_h)
-                .append(kernel_w),
-                weights.dtype(),
-            )
+            var channel_filter_shape: List[Int] = [1, 1, kernel_h, kernel_w]
+            var channel_filter = zeros(channel_filter_shape, weights.dtype())
             var channel_filter_data = channel_filter._data.bitcast[Float32]()
 
             for kh in range(kernel_h):
@@ -125,7 +111,8 @@ fn depthwise_conv2d(
                     channel_filter_data[dst_idx] = weights_data[filter_idx]
 
             # Create single-element bias
-            var channel_bias = zeros(List[Int]().append(1), bias.dtype())
+            var channel_bias_shape: List[Int] = [1]
+            var channel_bias = zeros(channel_bias_shape, bias.dtype())
             var channel_bias_data = channel_bias._data.bitcast[Float32]()
             channel_bias_data[0] = bias_data[c]
 
@@ -186,31 +173,30 @@ struct DepthwiseSeparableBlock:
             stride: Stride for depthwise convolution (1 or 2).
         """
         # Depthwise convolution weights (one 3×3 filter per channel)
+        var dw_weights_shape: List[Int] = [in_channels, 1, 3, 3]
         self.dw_weights = kaiming_normal(
-            List[Int]().append(in_channels).append(1).append(3).append(3),
-            fan_in=9,  # 3×3 kernel
-        )
-        self.dw_bias = zeros(List[Int]().append(in_channels))
-        self.dw_bn_gamma = constant(List[Int]().append(in_channels), 1.0)
-        self.dw_bn_beta = zeros(List[Int]().append(in_channels))
-        self.dw_bn_running_mean = zeros(List[Int]().append(in_channels))
-        self.dw_bn_running_var = constant(List[Int]().append(in_channels), 1.0)
+            dw_weights_shape, fan_in=9
+        )  # 3×3 kernel
+        var dw_bias_shape: List[Int] = [in_channels]
+        self.dw_bias = zeros(dw_bias_shape)
+        self.dw_bn_gamma = constant(dw_bias_shape, 1.0)
+        self.dw_bn_beta = zeros(dw_bias_shape)
+        self.dw_bn_running_mean = zeros(dw_bias_shape)
+        self.dw_bn_running_var = constant(dw_bias_shape, 1.0)
 
         # Pointwise convolution weights (1×1, channel mixing)
+        var pw_weights_shape: List[Int] = [out_channels, in_channels, 1, 1]
         self.pw_weights = xavier_normal(
-            List[Int]()
-            .append(out_channels)
-            .append(in_channels)
-            .append(1)
-            .append(1),
+            pw_weights_shape,
             fan_in=in_channels,
             fan_out=out_channels,
         )
-        self.pw_bias = zeros(List[Int]().append(out_channels))
-        self.pw_bn_gamma = constant(List[Int]().append(out_channels), 1.0)
-        self.pw_bn_beta = zeros(List[Int]().append(out_channels))
-        self.pw_bn_running_mean = zeros(List[Int]().append(out_channels))
-        self.pw_bn_running_var = constant(List[Int]().append(out_channels), 1.0)
+        var pw_bias_shape: List[Int] = [out_channels]
+        self.pw_bias = zeros(pw_bias_shape)
+        self.pw_bn_gamma = constant(pw_bias_shape, 1.0)
+        self.pw_bn_beta = zeros(pw_bias_shape)
+        self.pw_bn_running_mean = zeros(pw_bias_shape)
+        self.pw_bn_running_var = constant(pw_bias_shape, 1.0)
 
     fn forward(
         mut self, x: ExTensor, stride: Int, training: Bool
@@ -302,15 +288,17 @@ struct MobileNetV1:
             num_classes: Number of output classes (default: 10 for CIFAR-10).
         """
         # Initial standard convolution: 3×3, 32 filters, stride=2
+        var initial_conv_weights_shape: List[Int] = [32, 3, 3, 3]
         self.initial_conv_weights = kaiming_normal(
-            List[Int]().append(32).append(3).append(3).append(3),
+            initial_conv_weights_shape,
             fan_in=3 * 9,
         )
-        self.initial_conv_bias = zeros(List[Int]().append(32))
-        self.initial_bn_gamma = constant(List[Int]().append(32), 1.0)
-        self.initial_bn_beta = zeros(List[Int]().append(32))
-        self.initial_bn_running_mean = zeros(List[Int]().append(32))
-        self.initial_bn_running_var = constant(List[Int]().append(32), 1.0)
+        var initial_bias_shape: List[Int] = [32]
+        self.initial_conv_bias = zeros(initial_bias_shape)
+        self.initial_bn_gamma = constant(initial_bias_shape, 1.0)
+        self.initial_bn_beta = zeros(initial_bias_shape)
+        self.initial_bn_running_mean = zeros(initial_bias_shape)
+        self.initial_bn_running_var = constant(initial_bias_shape, 1.0)
 
         # Depthwise separable blocks
         # Channel progression: 32 → 64 → 128 → 256 → 512 → 1024
@@ -329,12 +317,14 @@ struct MobileNetV1:
         self.ds_block_13 = DepthwiseSeparableBlock(1024, 1024, stride=1)
 
         # Final FC layer: 1024 → num_classes
+        var fc_weights_shape: List[Int] = [num_classes, 1024]
         self.fc_weights = xavier_normal(
-            List[Int]().append(num_classes).append(1024),
+            fc_weights_shape,
             fan_in=1024,
             fan_out=num_classes,
         )
-        self.fc_bias = zeros(List[Int]().append(num_classes))
+        var fc_bias_shape: List[Int] = [num_classes]
+        self.fc_bias = zeros(fc_bias_shape)
 
     fn forward(mut self, x: ExTensor, training: Bool = True) raises -> ExTensor:
         """Forward pass through MobileNetV1.
@@ -404,10 +394,8 @@ struct MobileNetV1:
         # Flatten
         var batch_size = out.shape()[0]
         var channels = out.shape()[1]
-        var flattened = zeros(
-            List[Int]().append(batch_size).append(channels),
-            out.dtype(),
-        )
+        var flattened_shape: List[Int] = [batch_size, channels]
+        var flattened = zeros(flattened_shape, out.dtype())
         var flattened_data = flattened._data.bitcast[Float32]()
         var out_data = out._data.bitcast[Float32]()
 
