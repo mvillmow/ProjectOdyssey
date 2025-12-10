@@ -211,7 +211,7 @@ struct InceptionModule:
         var b1 = conv2d(
             x, self.conv1x1_1_weights, self.conv1x1_1_bias, stride=1, padding=0
         )
-        b1 = batch_norm2d(
+        b1, _, _ = batch_norm2d(
             b1,
             self.bn1x1_1_gamma,
             self.bn1x1_1_beta,
@@ -225,7 +225,7 @@ struct InceptionModule:
         var b2 = conv2d(
             x, self.conv1x1_2_weights, self.conv1x1_2_bias, stride=1, padding=0
         )
-        b2 = batch_norm2d(
+        b2, _, _ = batch_norm2d(
             b2,
             self.bn1x1_2_gamma,
             self.bn1x1_2_beta,
@@ -237,7 +237,7 @@ struct InceptionModule:
         b2 = conv2d(
             b2, self.conv3x3_weights, self.conv3x3_bias, stride=1, padding=1
         )
-        b2 = batch_norm2d(
+        b2, _, _ = batch_norm2d(
             b2,
             self.bn3x3_gamma,
             self.bn3x3_beta,
@@ -251,7 +251,7 @@ struct InceptionModule:
         var b3 = conv2d(
             x, self.conv1x1_3_weights, self.conv1x1_3_bias, stride=1, padding=0
         )
-        b3 = batch_norm2d(
+        b3, _, _ = batch_norm2d(
             b3,
             self.bn1x1_3_gamma,
             self.bn1x1_3_beta,
@@ -263,7 +263,7 @@ struct InceptionModule:
         b3 = conv2d(
             b3, self.conv5x5_weights, self.conv5x5_bias, stride=1, padding=2
         )
-        b3 = batch_norm2d(
+        b3, _, _ = batch_norm2d(
             b3,
             self.bn5x5_gamma,
             self.bn5x5_beta,
@@ -278,7 +278,7 @@ struct InceptionModule:
         b4 = conv2d(
             b4, self.conv1x1_4_weights, self.conv1x1_4_bias, stride=1, padding=0
         )
-        b4 = batch_norm2d(
+        b4, _, _ = batch_norm2d(
             b4,
             self.bn1x1_4_gamma,
             self.bn1x1_4_beta,
@@ -545,7 +545,7 @@ struct GoogLeNet:
             stride=1,
             padding=1,
         )
-        out = batch_norm2d(
+        out, _, _ = batch_norm2d(
             out,
             self.initial_bn_gamma,
             self.initial_bn_beta,

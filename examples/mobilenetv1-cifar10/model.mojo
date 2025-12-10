@@ -215,7 +215,7 @@ struct DepthwiseSeparableBlock:
         var out = depthwise_conv2d(
             x, self.dw_weights, self.dw_bias, stride=stride, padding=1
         )
-        out = batch_norm2d(
+        out, _, _ = batch_norm2d(
             out,
             self.dw_bn_gamma,
             self.dw_bn_beta,
@@ -227,7 +227,7 @@ struct DepthwiseSeparableBlock:
 
         # Pointwise convolution (channel mixing, 1×1)
         out = conv2d(out, self.pw_weights, self.pw_bias, stride=1, padding=0)
-        out = batch_norm2d(
+        out, _, _ = batch_norm2d(
             out,
             self.pw_bn_gamma,
             self.pw_bn_beta,
@@ -345,7 +345,7 @@ struct MobileNetV1:
             stride=2,
             padding=1,
         )
-        out = batch_norm2d(
+        out, _, _ = batch_norm2d(
             out,
             self.initial_bn_gamma,
             self.initial_bn_beta,
