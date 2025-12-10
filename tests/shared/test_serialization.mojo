@@ -75,13 +75,13 @@ fn test_hex_encoding() raises:
 
     # Create new tensor and decode hex
     var tensor2 = zeros(shape, DType.float32)
-    hex_to_bytes(hex_str, tensor2._data)
+    hex_to_bytes(hex_str, tensor2)
 
     # Verify data matches
     for i in range(tensor.numel()):
         var v1 = tensor._get_float64(i)
         var v2 = tensor2._get_float64(i)
-        assert_almost_equal(v1, v2, 1e-6, "Hex decode mismatch")
+        assert_almost_equal(v1, v2, tolerance=1e-6, message="Hex decode mismatch")
 
 
 fn test_single_tensor_serialization() raises:
@@ -113,7 +113,9 @@ fn test_single_tensor_serialization() raises:
         assert_equal(loaded.numel(), 6, "Wrong number of elements")
         for i in range(loaded.numel()):
             var v = loaded._get_float64(i)
-            assert_almost_equal(v, 3.14, 1e-6, "Value mismatch after load")
+            assert_almost_equal(
+                v, 3.14, tolerance=1e-6, message="Value mismatch after load"
+            )
 
     finally:
         # Clean up
