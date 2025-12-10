@@ -135,7 +135,9 @@ struct InceptionModule:
         # Branch 2: 1×1 reduce
         var conv1x1_2_weights_shape: List[Int] = [reduce_3x3, in_channels, 1, 1]
         self.conv1x1_2_weights = kaiming_normal(
-            fan_in=in_channels, fan_out=reduce_3x3, shape=conv1x1_2_weights_shape
+            fan_in=in_channels,
+            fan_out=reduce_3x3,
+            shape=conv1x1_2_weights_shape,
         )
         var conv1x1_2_bias_shape: List[Int] = [reduce_3x3]
         self.conv1x1_2_bias = zeros(conv1x1_2_bias_shape, DType.float32)
@@ -159,7 +161,9 @@ struct InceptionModule:
         # Branch 3: 1×1 reduce
         var conv1x1_3_weights_shape: List[Int] = [reduce_5x5, in_channels, 1, 1]
         self.conv1x1_3_weights = kaiming_normal(
-            fan_in=in_channels, fan_out=reduce_5x5, shape=conv1x1_3_weights_shape
+            fan_in=in_channels,
+            fan_out=reduce_5x5,
+            shape=conv1x1_3_weights_shape,
         )
         var conv1x1_3_bias_shape: List[Int] = [reduce_5x5]
         self.conv1x1_3_bias = zeros(conv1x1_3_bias_shape, DType.float32)

@@ -156,10 +156,8 @@ fn test_tensor_with_name() raises:
 
 fn test_named_tensor_collection() raises:
     """Test saving and loading NamedTensor collections."""
-    # Create directory for test
-    var tmpdir_name = "test_named_tensors_dir"
-    var tmpdir = _get_temp_path(tmpdir_name)
-    _create_temp_dir(tmpdir_name)
+    # Create directory for test with proper permissions
+    var tmpdir = _create_temp_dir("test_named_tensors_dir")
 
     try:
         # Create named tensors
@@ -201,14 +199,13 @@ fn test_named_tensor_collection() raises:
 
     finally:
         # Clean up
-        _cleanup_temp_dir(tmpdir_name)
+        _cleanup_temp_dir(tmpdir)
 
 
 fn test_different_dtypes() raises:
     """Test serialization with different data types."""
-    var tmpdir_name = "test_dtype_serialization"
-    var tmpdir = _get_temp_path(tmpdir_name)
-    _create_temp_dir(tmpdir_name)
+    # Create temp directory with proper permissions
+    var tmpdir = _create_temp_dir("test_dtype_serialization")
 
     try:
         # Test float32
@@ -240,7 +237,7 @@ fn test_different_dtypes() raises:
         assert_true(i32_loaded.dtype() == DType.int32, "int32 dtype mismatch")
 
     finally:
-        _cleanup_temp_dir(tmpdir_name)
+        _cleanup_temp_dir(tmpdir)
 
 
 # ============================================================================
@@ -258,36 +255,41 @@ fn _file_exists(path: String) -> Bool:
         return False
 
 
-fn _get_temp_path(path: String) -> String:
-    """Get full temp path using tempfile.mkdtemp() for CI compatibility."""
+fn _create_temp_dir(prefix: String) -> String:
+    """Create temporary directory with proper permissions for CI compatibility.
+
+    Uses Python's tempfile.mkdtemp() to create a directory with guaranteed
+    write permissions, which is necessary in CI environments.
+
+    Args:
+        prefix: Prefix for the temporary directory name.
+
+    Returns:
+        Full path to the created temporary directory.
+    """
     try:
         from python import Python
 
         var tempfile = Python.import_module("tempfile")
-        # Create a unique temp directory with proper permissions
         var builtins = Python.import_module("builtins")
-        var py_path = builtins.str(path + "_")
-        var tmp_dir = tempfile.mkdtemp(prefix=py_path)
+        var py_prefix = builtins.str(prefix + "_")
+        var tmp_dir = tempfile.mkdtemp(prefix=py_prefix)
         return String(tmp_dir)
     except:
-        return path  # Fallback to original path
-
-
-fn _create_temp_dir(path: String):
-    """Create temporary directory with proper permissions."""
-    # Directory is created by _get_temp_path() using mkdtemp
-    # This function is kept for compatibility but does nothing
-    pass
+        return prefix  # Fallback to original path
 
 
 fn _cleanup_temp_dir(path: String):
-    """Clean up temporary directory."""
+    """Clean up temporary directory and all its contents.
+
+    Args:
+        path: Full path to the temporary directory to remove.
+    """
     try:
         from python import Python
 
-        var full_path = _get_temp_path(path)
         var shutil = Python.import_module("shutil")
-        shutil.rmtree(full_path)
+        shutil.rmtree(path)
     except:
         pass
 
