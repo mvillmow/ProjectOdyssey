@@ -27,12 +27,12 @@ from shared.core import (
     global_avgpool2d,
     batch_norm2d,
     relu,
-    linear,
-    dropout,
     kaiming_normal,
     xavier_normal,
     constant,
 )
+from shared.core.linear import linear
+from shared.core.dropout import dropout
 
 
 struct InceptionModule:
@@ -123,7 +123,7 @@ struct InceptionModule:
         # Branch 1: 1×1 conv
         var conv1x1_1_weights_shape: List[Int] = [out_1x1, in_channels, 1, 1]
         self.conv1x1_1_weights = kaiming_normal(
-            conv1x1_1_weights_shape, fan_in=in_channels
+            fan_in=in_channels, fan_out=out_1x1, shape=conv1x1_1_weights_shape
         )
         var conv1x1_1_bias_shape: List[Int] = [out_1x1]
         self.conv1x1_1_bias = zeros(conv1x1_1_bias_shape, DType.float32)
@@ -135,7 +135,7 @@ struct InceptionModule:
         # Branch 2: 1×1 reduce
         var conv1x1_2_weights_shape: List[Int] = [reduce_3x3, in_channels, 1, 1]
         self.conv1x1_2_weights = kaiming_normal(
-            conv1x1_2_weights_shape, fan_in=in_channels
+            fan_in=in_channels, fan_out=reduce_3x3, shape=conv1x1_2_weights_shape
         )
         var conv1x1_2_bias_shape: List[Int] = [reduce_3x3]
         self.conv1x1_2_bias = zeros(conv1x1_2_bias_shape, DType.float32)
@@ -147,7 +147,7 @@ struct InceptionModule:
         # Branch 2: 3×3 conv
         var conv3x3_weights_shape: List[Int] = [out_3x3, reduce_3x3, 3, 3]
         self.conv3x3_weights = kaiming_normal(
-            conv3x3_weights_shape, fan_in=reduce_3x3 * 9
+            fan_in=reduce_3x3 * 9, fan_out=out_3x3, shape=conv3x3_weights_shape
         )
         var conv3x3_bias_shape: List[Int] = [out_3x3]
         self.conv3x3_bias = zeros(conv3x3_bias_shape, DType.float32)
@@ -159,7 +159,7 @@ struct InceptionModule:
         # Branch 3: 1×1 reduce
         var conv1x1_3_weights_shape: List[Int] = [reduce_5x5, in_channels, 1, 1]
         self.conv1x1_3_weights = kaiming_normal(
-            conv1x1_3_weights_shape, fan_in=in_channels
+            fan_in=in_channels, fan_out=reduce_5x5, shape=conv1x1_3_weights_shape
         )
         var conv1x1_3_bias_shape: List[Int] = [reduce_5x5]
         self.conv1x1_3_bias = zeros(conv1x1_3_bias_shape, DType.float32)
@@ -171,7 +171,7 @@ struct InceptionModule:
         # Branch 3: 5×5 conv
         var conv5x5_weights_shape: List[Int] = [out_5x5, reduce_5x5, 5, 5]
         self.conv5x5_weights = kaiming_normal(
-            conv5x5_weights_shape, fan_in=reduce_5x5 * 25
+            fan_in=reduce_5x5 * 25, fan_out=out_5x5, shape=conv5x5_weights_shape
         )
         var conv5x5_bias_shape: List[Int] = [out_5x5]
         self.conv5x5_bias = zeros(conv5x5_bias_shape, DType.float32)
@@ -183,7 +183,7 @@ struct InceptionModule:
         # Branch 4: 1×1 projection after pooling
         var conv1x1_4_weights_shape: List[Int] = [pool_proj, in_channels, 1, 1]
         self.conv1x1_4_weights = kaiming_normal(
-            conv1x1_4_weights_shape, fan_in=in_channels
+            fan_in=in_channels, fan_out=pool_proj, shape=conv1x1_4_weights_shape
         )
         var conv1x1_4_bias_shape: List[Int] = [pool_proj]
         self.conv1x1_4_bias = zeros(conv1x1_4_bias_shape, DType.float32)
@@ -624,7 +624,7 @@ struct GoogLeNet:
 
         # Dropout (p=0.4)
         if training:
-            flattened = dropout(flattened, p=0.4)
+            flattened, _ = dropout(flattened, p=0.4, training=True)
 
         # Final FC layer
         var logits = linear(flattened, self.fc_weights, self.fc_bias)

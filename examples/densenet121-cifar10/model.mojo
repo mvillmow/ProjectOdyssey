@@ -26,12 +26,12 @@ from shared.core import (
     avgpool2d,
     batch_norm2d,
     relu,
-    linear,
     global_avgpool2d,
     kaiming_normal,
     xavier_normal,
     constant,
 )
+from shared.core.linear import linear
 
 
 fn concatenate_channel_list(tensors: List[ExTensor]) raises -> ExTensor:
@@ -86,8 +86,8 @@ fn concatenate_channel_list(tensors: List[ExTensor]) raises -> ExTensor:
     return result
 
 
-@value
-struct DenseLayer:
+@fieldwise_init
+struct DenseLayer(Copyable, Movable):
     """Single dense layer with bottleneck architecture.
 
     Architecture:
@@ -172,7 +172,8 @@ struct DenseLayer:
             Output tensor (batch, growth_rate, H, W).
         """
         # Bottleneck
-        var out = batch_norm2d(
+        var out: ExTensor
+        out, _, _ = batch_norm2d(
             x,
             self.bn1_gamma,
             self.bn1_beta,
@@ -186,7 +187,7 @@ struct DenseLayer:
         )
 
         # 3×3 convolution
-        out = batch_norm2d(
+        out, _, _ = batch_norm2d(
             out,
             self.bn2_gamma,
             self.bn2_beta,
@@ -313,7 +314,8 @@ struct TransitionLayer:
         Returns:
             Output tensor (batch, out_channels, H/2, W/2).
         """
-        var out = batch_norm2d(
+        var out: ExTensor
+        out, _, _ = batch_norm2d(
             x,
             self.bn_gamma,
             self.bn_beta,
@@ -446,7 +448,7 @@ struct DenseNet121:
             stride=1,
             padding=1,
         )
-        out = batch_norm2d(
+        out, _, _ = batch_norm2d(
             out,
             self.initial_bn_gamma,
             self.initial_bn_beta,

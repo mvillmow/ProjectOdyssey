@@ -25,12 +25,12 @@ from shared.core import (
     conv2d,
     batch_norm2d,
     relu,
-    linear,
     global_avgpool2d,
     kaiming_normal,
     xavier_normal,
     constant,
 )
+from shared.core.linear import linear
 from shared.core.shape import conv2d_output_shape
 
 
@@ -175,7 +175,7 @@ struct DepthwiseSeparableBlock:
         # Depthwise convolution weights (one 3×3 filter per channel)
         var dw_weights_shape: List[Int] = [in_channels, 1, 3, 3]
         self.dw_weights = kaiming_normal(
-            dw_weights_shape, fan_in=9
+            fan_in=9, fan_out=in_channels, shape=dw_weights_shape
         )  # 3×3 kernel
         var dw_bias_shape: List[Int] = [in_channels]
         self.dw_bias = zeros(dw_bias_shape, DType.float32)
@@ -187,9 +187,9 @@ struct DepthwiseSeparableBlock:
         # Pointwise convolution weights (1×1, channel mixing)
         var pw_weights_shape: List[Int] = [out_channels, in_channels, 1, 1]
         self.pw_weights = xavier_normal(
-            pw_weights_shape,
             fan_in=in_channels,
             fan_out=out_channels,
+            shape=pw_weights_shape,
         )
         var pw_bias_shape: List[Int] = [out_channels]
         self.pw_bias = zeros(pw_bias_shape, DType.float32)
