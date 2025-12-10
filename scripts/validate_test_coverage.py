@@ -91,6 +91,24 @@ def parse_ci_matrix(workflow_file: Path) -> Dict[str, Dict[str, str]]:
         if name and path and pattern:
             groups[name] = {"path": path, "pattern": pattern}
 
+    # Also parse separate test jobs (test-configs, test-training)
+    # These are standalone jobs outside the matrix
+    for job_name in ["test-configs", "test-training"]:
+        job = jobs.get(job_name, {})
+        if job:
+            # Extract the test command from the "Run X tests" step
+            steps = job.get("steps", [])
+            for step in steps:
+                run_cmd = step.get("run", "")
+                # Parse command like: just ci-test-group tests/configs "test_*.mojo"
+                if "ci-test-group" in run_cmd:
+                    parts = run_cmd.split()
+                    if len(parts) >= 3:
+                        path = parts[2]  # tests/configs or tests/shared/training
+                        pattern = parts[3].strip('"')  # "test_*.mojo"
+                        name = job.get("name", job_name)
+                        groups[name] = {"path": path, "pattern": pattern}
+
     return groups
 
 
