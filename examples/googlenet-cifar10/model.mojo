@@ -315,14 +315,8 @@ fn concatenate_depthwise(
     var width = t1.shape()[3]
 
     var total_channels = c1 + c2 + c3 + c4
-    var result = zeros(
-        List[Int]()
-        .append(batch_size)
-        .append(total_channels)
-        .append(height)
-        .append(width),
-        t1.dtype(),
-    )
+    var result_shape: List[Int] = [batch_size, total_channels, height, width]
+    var result = zeros(result_shape, t1.dtype())
 
     # Copy data from each tensor
     var result_data = result._data.bitcast[Float32]()

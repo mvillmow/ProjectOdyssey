@@ -86,6 +86,7 @@ fn concatenate_channel_list(tensors: List[ExTensor]) raises -> ExTensor:
     return result
 
 
+@value
 struct DenseLayer:
     """Single dense layer with bottleneck architecture.
 
