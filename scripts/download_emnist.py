@@ -39,11 +39,10 @@ except ImportError:
 
 # EMNIST download URLs (with fallbacks)
 # Primary URL (NIST official - may have availability issues)
-EMNIST_PRIMARY_URL = "http://www.itl.nist.gov/iaui/vip/cs_links/EMNIST/gzip.zip"
+EMNIST_PRIMARY_URL = "https://biometrics.nist.gov/cs_links/EMNIST/gzip.zip"
 
 # Fallback mirrors (if primary fails)
 EMNIST_FALLBACK_URLS = [
-    "http://biometrics.nist.gov/cs_links/EMNIST/gzip.zip",
     # Add more mirrors as they become available
 ]
 

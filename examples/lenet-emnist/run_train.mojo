@@ -73,6 +73,7 @@ fn parse_args() raises -> TrainConfig:
     var parser = create_training_parser()
     parser.add_argument("precision", "string", "fp32")
     parser.add_argument("weights-dir", "string", "lenet5_weights")
+    parser.add_argument("data-dir", "string", "datasets/emnist")
 
     var args = parser.parse()
 
