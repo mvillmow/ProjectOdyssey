@@ -124,4 +124,4 @@ pytest --cov=src --cov-report=html tests/
 
 - Related skill: `phase-test-tdd` for test generation
 - Related skill: `quality-run-linters` for complete quality check
-- Pytest docs: <https://pytest.readthedocs.io/>
+- Pytest docs: <https://docs.pytest.org/en/stable/>
