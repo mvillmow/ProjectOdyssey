@@ -10,6 +10,7 @@ It is used for memory-efficient training and inference in modern ML workloads.
 Supported range: approximately ±57,344 with reduced precision.
 
 Example:
+    ```mojo
     from shared.core.types.bf8 import BF8
 
     var x = BF8.from_float32(3.14159)
@@ -52,10 +53,10 @@ struct BF8(Copyable, Movable, Representable, Stringable):
             x: Float32 value to convert
 
         Returns:
-            BF8 representation (with potential precision loss)
+            BF8 representation (with potential precision loss).
 
         Note:
-            Values outside BF8 range are clamped to max/min representable values
+            Values outside BF8 range are clamped to max/min representable values.
         """
         # Handle special cases
         if isnan(x):
@@ -135,7 +136,7 @@ struct BF8(Copyable, Movable, Representable, Stringable):
         """Convert BF8 E5M2 to Float32.
 
         Returns:
-            Float32 representation of the BF8 value
+            Float32 representation of the BF8 value.
         """
         # Extract components
         var sign = (self.value >> 7) & 0x1
@@ -196,7 +197,7 @@ struct BF8(Copyable, Movable, Representable, Stringable):
         """String representation showing BF8 value as Float32.
 
         Returns:
-            String representation
+            String representation.
         """
         return "BF8(" + String(self.to_float32()) + ")"
 
@@ -204,7 +205,7 @@ struct BF8(Copyable, Movable, Representable, Stringable):
         """Detailed representation showing both bits and value.
 
         Returns:
-            Detailed string representation
+            Detailed string representation.
         """
         return (
             "BF8(bits=0x"
@@ -218,10 +219,10 @@ struct BF8(Copyable, Movable, Representable, Stringable):
         """Check equality by comparing raw bits.
 
         Args:
-            other: Other BF8 value
+            other: Other BF8 value.
 
         Returns:
-            True if bit patterns match
+            True if bit patterns match.
         """
         return self.value == other.value
 
@@ -229,9 +230,9 @@ struct BF8(Copyable, Movable, Representable, Stringable):
         """Check inequality.
 
         Args:
-            other: Other BF8 value
+            other: Other BF8 value.
 
         Returns:
-            True if bit patterns differ
+            True if bit patterns differ.
         """
         return self.value != other.value

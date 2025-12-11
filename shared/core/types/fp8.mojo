@@ -9,6 +9,7 @@ FP8 is used for memory-efficient training and inference in modern ML workloads
 Supported range: approximately ±240 with reduced precision.
 
 Example:
+    ```mojo
     from shared.core.types.fp8 import FP8
 
     var x = FP8.from_float32(3.14159)
@@ -51,10 +52,10 @@ struct FP8(Copyable, Movable, Representable, Stringable):
             x: Float32 value to convert
 
         Returns:
-            FP8 representation (with potential precision loss)
+            FP8 representation (with potential precision loss).
 
         Note:
-            Values outside FP8 range are clamped to max/min representable values
+            Values outside FP8 range are clamped to max/min representable values.
         """
         # Handle special cases
         if isnan(x):
@@ -134,7 +135,7 @@ struct FP8(Copyable, Movable, Representable, Stringable):
         """Convert FP8 E4M3 to Float32.
 
         Returns:
-            Float32 representation of the FP8 value
+            Float32 representation of the FP8 value.
         """
         # Extract components
         var sign = (self.value >> 7) & 0x1
@@ -195,7 +196,7 @@ struct FP8(Copyable, Movable, Representable, Stringable):
         """String representation showing FP8 value as Float32.
 
         Returns:
-            String representation
+            String representation.
         """
         return "FP8(" + String(self.to_float32()) + ")"
 
@@ -203,7 +204,7 @@ struct FP8(Copyable, Movable, Representable, Stringable):
         """Detailed representation showing both bits and value.
 
         Returns:
-            Detailed string representation
+            Detailed string representation.
         """
         return (
             "FP8(bits=0x"
@@ -217,10 +218,10 @@ struct FP8(Copyable, Movable, Representable, Stringable):
         """Check equality by comparing raw bits.
 
         Args:
-            other: Other FP8 value
+            other: Other FP8 value.
 
         Returns:
-            True if bit patterns match
+            True if bit patterns match.
         """
         return self.value == other.value
 
@@ -228,9 +229,9 @@ struct FP8(Copyable, Movable, Representable, Stringable):
         """Check inequality.
 
         Args:
-            other: Other FP8 value
+            other: Other FP8 value.
 
         Returns:
-            True if bit patterns differ
+            True if bit patterns differ.
         """
         return self.value != other.value

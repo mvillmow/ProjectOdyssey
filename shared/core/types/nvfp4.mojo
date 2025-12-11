@@ -18,6 +18,7 @@ Key characteristics:
 - Use case: Memory-efficient ML training with better accuracy than MXFP4
 
 Example:
+    ```mojo
     from shared.core.types.nvfp4 import NVFP4, NVFP4Block
 
     # Individual value (stores both E2M1 and scale for convenience)
@@ -29,9 +30,9 @@ Example:
     ```
 
 Reference:
-    Tim Dettmers, Nolan Miller, Deepak Kapur, Luke Zettlemoyer
+    Tim Dettmers, Nolan Miller, Deepak Kapur, Luke Zettlemoyer.
     "Microscaling Data Formats for Deep Learning."
-    arXiv preprint arXiv:2310.10537, 2023
+    arXiv preprint arXiv:2310.10537, 2023.
     https://arxiv.org/abs/2310.10537
     https://doi.org/10.48550/arXiv.2310.10537
 
@@ -584,7 +585,7 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
     Smaller blocks (16 vs 32) provide better accuracy per the paper.
 
     Example:
-        ```
+        ```mojo
         from collections import List
 
         # Create block from Float32 array

@@ -37,14 +37,14 @@ fn add_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """SIMD-optimized element-wise addition for same-shape tensors.
 
         Uses vectorized operations when possible, falls back to broadcasting
-        for different shapes. Achieves 2-8x speedup for large same-shape tensors
+        for different shapes. Achieves 2-8x speedup for large same-shape tensors.
 
     Args:
-            a: First tensor
-            b: Second tensor
+            a: First tensor.
+            b: Second tensor.
 
     Returns:
-            New tensor containing a + b
+            New tensor containing a + b.
 
     Raises:
             Error if dtypes don't match.
@@ -55,6 +55,7 @@ fn add_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
             - Different shapes: Falls back to scalar broadcasting
 
     Examples:
+            ```mojo
             # Same shape - uses SIMD
             var a = ones([1024, 1024], DType.float32)
             var b = ones([1024, 1024], DType.float32)
@@ -64,6 +65,7 @@ fn add_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
             var x = ones([1, 1024], DType.float32)
             var y = ones([1024, 1024], DType.float32)
             var z = add_simd(x, y)  # Scalar broadcasting
+            ```
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot add tensors with different dtypes")
@@ -138,11 +140,11 @@ fn subtract_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """SIMD-optimized element-wise subtraction for same-shape tensors.
 
     Args:
-            a: First tensor
-            b: Second tensor
+            a: First tensor.
+            b: Second tensor.
 
     Returns:
-            New tensor containing a - b
+            New tensor containing a - b.
 
     Raises:
             Error if dtypes don't match.
@@ -220,11 +222,11 @@ fn multiply_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """SIMD-optimized element-wise multiplication for same-shape tensors.
 
     Args:
-            a: First tensor
-            b: Second tensor
+            a: First tensor.
+            b: Second tensor.
 
     Returns:
-            New tensor containing a * b
+            New tensor containing a * b.
 
     Raises:
             Error if dtypes don't match.
@@ -302,11 +304,11 @@ fn divide_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """SIMD-optimized element-wise division for same-shape tensors.
 
     Args:
-            a: First tensor (numerator)
-            b: Second tensor (denominator)
+            a: First tensor (numerator).
+            b: Second tensor (denominator).
 
     Returns:
-            New tensor containing a / b
+            New tensor containing a / b.
 
     Raises:
             Error if dtypes don't match or division by zero.

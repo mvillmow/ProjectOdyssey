@@ -16,6 +16,7 @@ Components:
     - AvgPool2D: 2D average pooling
 
 Example:
+    ```mojo
     from shared.core.layers import Linear, ReLU
 
     struct MLP:

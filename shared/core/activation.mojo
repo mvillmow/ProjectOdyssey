@@ -75,8 +75,8 @@ fn relu(tensor: ExTensor) raises -> ExTensor:
             New tensor with ReLU applied element-wise.
 
     Examples:
-            var x = ExTensor(...)  # [-2, -1, 0, 1, 2]
-            var y = relu(x)        # [0, 0, 0, 1, 2]
+        var x = ExTensor(...)  # [-2, -1, 0, 1, 2]
+        var y = relu(x)        # [0, 0, 0, 1, 2]
     """
     return dispatch_unary[_relu_op](tensor)
 
@@ -84,10 +84,10 @@ fn relu(tensor: ExTensor) raises -> ExTensor:
 fn leaky_relu(tensor: ExTensor, alpha: Float64 = 0.01) raises -> ExTensor:
     """Apply Leaky ReLU activation: max(alpha*x, x).
 
-        Leaky ReLU introduces a small slope for negative values to prevent
-        "dying ReLU" problem where neurons can become permanently inactive.
+    Leaky ReLU introduces a small slope for negative values to prevent
+    "dying ReLU" problem where neurons can become permanently inactive.
 
-        Supported dtypes: float16, float32, float64, int8, int16, int32, int64.
+    Supported dtypes: float16, float32, float64, int8, int16, int32, int64.
 
     Args:
             tensor: Input tensor of any shape.
@@ -97,8 +97,10 @@ fn leaky_relu(tensor: ExTensor, alpha: Float64 = 0.01) raises -> ExTensor:
             New tensor with Leaky ReLU applied element-wise.
 
     Examples:
-            var x = ExTensor(...)           # [-2, -1, 0, 1, 2]
-            var y = leaky_relu(x, 0.01)     # [-0.02, -0.01, 0, 1, 2]
+```mojo
+        var x = ExTensor(...)           # [-2, -1, 0, 1, 2]
+        var y = leaky_relu(x, 0.01)     # [-0.02, -0.01, 0, 1, 2]
+```
     """
     var result = ExTensor(tensor._shape, tensor._dtype)
 
@@ -167,9 +169,11 @@ fn prelu(tensor: ExTensor, alpha: ExTensor) raises -> ExTensor:
             Error: If alpha shape is incompatible with tensor shape.
 
     Examples:
-            var x = ExTensor(...)      # [-2, -1, 0, 1, 2]
-            var a = full(x.shape(), 0.25, DType.float32)
-            var y = prelu(x, a)        # [-0.5, -0.25, 0, 1, 2]
+```
+        var x = ExTensor(...)      # [-2, -1, 0, 1, 2]
+        var a = full(x.shape(), 0.25, DType.float32)
+        var y = prelu(x, a)        # [-0.5, -0.25, 0, 1, 2]
+```
     """
     # Validate alpha is scalar or compatible shape
     if alpha._numel != 1 and alpha._numel != tensor._numel:
@@ -241,9 +245,9 @@ fn sigmoid(tensor: ExTensor) raises -> ExTensor:
         Sigmoid maps inputs to (0, 1) range. Uses numerically stable implementation
         with input clipping to prevent overflow in exp() computation.
 
-        For large |x| (>20), uses approximations:
-        - x > 20: sigmoid(x) = 1.0
-        - x < -20: sigmoid(x) = 0.0
+    For large |x| (>20), uses approximations:
+    - `x > 20: sigmoid(x) = 1.0`
+    - `x < -20: sigmoid(x) = 0.0`
 
         Supported dtypes: float16, float32, float64.
 
@@ -254,8 +258,10 @@ fn sigmoid(tensor: ExTensor) raises -> ExTensor:
             New tensor with sigmoid applied element-wise, values in (0, 1).
 
     Examples:
-            var x = ExTensor(...)  # [-2, 0, 2]
-            var y = sigmoid(x)     # [0.119, 0.5, 0.881]
+```
+        var x = ExTensor(...)  # [-2, 0, 2]
+        var y = sigmoid(x)     # [0.119, 0.5, 0.881]
+```
     """
     return dispatch_float_unary[_sigmoid_op](tensor)
 
@@ -288,8 +294,10 @@ fn tanh(tensor: ExTensor) raises -> ExTensor:
             New tensor with tanh applied element-wise, values in (-1, 1).
 
     Examples:
-            var x = ExTensor(...)  # [-2, 0, 2]
-            var y = tanh(x)        # [-0.964, 0, 0.964]
+```
+        var x = ExTensor(...)  # [-2, 0, 2]
+        var y = tanh(x)        # [-0.964, 0, 0.964]
+```
     """
     return dispatch_float_unary[_tanh_op](tensor)
 
@@ -321,9 +329,11 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
             Error: If axis is out of bounds.
 
     Examples:
-            var logits = ExTensor(...)  # [[1, 2, 3], [4, 5, 6]]
-            var probs = softmax(logits, axis=-1)
-            # [[0.09, 0.24, 0.67], [0.09, 0.24, 0.67]]
+```
+        var logits = ExTensor(...)  # [[1, 2, 3], [4, 5, 6]]
+        var probs = softmax(logits, axis=-1)
+        # [[0.09, 0.24, 0.67], [0.09, 0.24, 0.67]]
+```
     """
     # Normalize axis
     var ndim = len(tensor._shape)
@@ -367,9 +377,11 @@ fn gelu(tensor: ExTensor, approximate: Bool = False) raises -> ExTensor:
             New tensor with GELU applied element-wise.
 
     Examples:
-            var x = ExTensor(...)     # [-2, 0, 2]
-            var y_exact = gelu(x, approximate=False)
-            var y_approx = gelu(x, approximate=True)
+```
+        var x = ExTensor(...)     # [-2, 0, 2]
+        var y_exact = gelu(x, approximate=False)
+        var y_approx = gelu(x, approximate=True)
+```
     """
     return dispatch_gelu(tensor, approximate)
 
@@ -390,7 +402,7 @@ fn relu_backward(
 ) raises escaping -> ExTensor:
     """Compute gradient of ReLU activation.
 
-        ReLU gradient: dL/dx = dL/dy * (x > 0).
+        ReLU gradient: `dL/dx = dL/dy * (x > 0)`
 
     Args:
             grad_output: Gradient from upstream (dL/dy).
@@ -400,10 +412,12 @@ fn relu_backward(
             Gradient with respect to input (dL/dx).
 
     Examples:
-            var x = ExTensor(...)  # Input
-            var y = relu(x)        # Forward pass
-            var grad_y = ExTensor(...)  # Gradient from loss
-            var grad_x = relu_backward(grad_y, x)  # Backward pass
+```
+        var x = ExTensor(...)  # Input
+        var y = relu(x)        # Forward pass
+        var grad_y = ExTensor(...)  # Gradient from loss
+        var grad_x = relu_backward(grad_y, x)  # Backward pass
+```
     """
     if grad_output._dtype != x._dtype:
         raise Error("relu_backward: grad_output and x must have same dtype")
@@ -434,7 +448,7 @@ fn leaky_relu_backward(
 ) raises escaping -> ExTensor:
     """Compute gradient of Leaky ReLU activation.
 
-        Leaky ReLU gradient: dL/dx = dL/dy * (1 if x > 0 else alpha).
+        Leaky ReLU gradient: `dL/dx = dL/dy * (1 if x > 0 else alpha)`.
 
     Args:
             grad_output: Gradient from upstream (dL/dy).
@@ -510,8 +524,8 @@ fn prelu_backward(
     """Compute gradients of PReLU activation.
 
         PReLU gradients:
-        - dL/dx = dL/dy * (1 if x > 0 else alpha).
-        - dL/dalpha = sum(dL/dy * x) where x <= 0.
+        - `dL/dx = dL/dy * (1 if x > 0 else alpha)`
+        - `dL/dalpha = sum(dL/dy * x) where x <= 0`
 
     Args:
             grad_output: Gradient from upstream (dL/dy).
@@ -559,8 +573,8 @@ fn sigmoid_backward(
 ) raises escaping -> ExTensor:
     """Compute gradient of sigmoid activation.
 
-        Sigmoid gradient: dL/dx = dL/dy * y * (1 - y).
-        where y = sigmoid(x).
+        Sigmoid gradient: `dL/dx = dL/dy * y * (1 - y)`
+        where `y = sigmoid(x)`
 
     Args:
             grad_output: Gradient from upstream (dL/dy).
@@ -595,8 +609,8 @@ fn tanh_backward(
 ) raises escaping -> ExTensor:
     """Compute gradient of tanh activation.
 
-        Tanh gradient: dL/dx = dL/dy * (1 - y^2).
-        where y = tanh(x).
+        Tanh gradient: `dL/dx = dL/dy * (1 - y^2)`
+        where `y = tanh(x)`
 
     Args:
             grad_output: Gradient from upstream (dL/dy).
@@ -625,7 +639,7 @@ fn gelu_backward(
 ) raises escaping -> ExTensor:
     """Compute gradient of GELU activation.
 
-        GELU gradient (exact): dL/dx = dL/dy * [Phi(x) + x*phi(x)].
+        GELU gradient (exact): `dL/dx = dL/dy * [Phi(x) + x*phi(x)]`
         where Phi is CDF and phi is PDF of standard normal.
 
         GELU gradient (approximate): Uses derivative of tanh approximation.
@@ -652,7 +666,7 @@ fn softmax_backward(
     """Compute gradient of softmax activation.
 
         Softmax gradient (along axis):
-            dL/dx_i = y_i * (dL/dy_i - sum_j(dL/dy_j * y_j)).
+            `dL/dx_i = y_i * (dL/dy_i - sum_j(dL/dy_j * y_j))`
 
         where y = softmax(x) is the output from the forward pass.
 
@@ -667,7 +681,7 @@ fn softmax_backward(
             Gradient with respect to input (dL/dx).
 
     Raises:
-            Error: If dtypes don't match or shapes incompatible.
+        Error: If dtypes don't match or shapes incompatible.
     """
     if grad_output._dtype != output._dtype:
         raise Error(
@@ -774,8 +788,8 @@ fn elu(tensor: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
         reducing bias shift and improving learning.
 
         Formula:
-            elu(x) = x if x > 0.
-            elu(x) = alpha * (exp(x) - 1) if x <= 0.
+            `elu(x) = x if x > 0`
+            `elu(x) = alpha * (exp(x) - 1) if x <= 0`
 
     Args:
             tensor: Input tensor of any shape.

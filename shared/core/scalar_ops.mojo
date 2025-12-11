@@ -1,6 +1,6 @@
 """Scalar mathematical operations.
 
-This module provides pure functional scalar operations for floating-point values
+This module provides pure functional scalar operations for floating-point values.
 These are used throughout the library for numerical computations with single values.
 
 Functions:
@@ -10,6 +10,7 @@ Functions:
     pow_scalar_f64: Compute power (x^y) for float64 scalars
 
 Example:
+    ```mojo
     from shared.core.scalar_ops import sqrt_scalar_f32, pow_scalar_f32
 
     var x = Float32(4.0)
@@ -31,17 +32,17 @@ fn sqrt_scalar_f32(x: Float32) -> Float32:
     """Compute square root of a scalar float32.
 
     Args:
-            x: Input float32 value
+        x: Input float32 value
 
     Returns:
-            Square root of x
+        Square root of x
 
-        Example:
-            ```mojo
-            from shared.core.scalar_ops import sqrt_scalar_f32
+    Example:
+        ```mojo
+        from shared.core.scalar_ops import sqrt_scalar_f32
 
-            var result = sqrt_scalar_f32(Float32(4.0))  # 2.0
-            ```
+        var result = sqrt_scalar_f32(Float32(4.0))  # 2.0
+        ```
     """
     return x**0.5
 
@@ -50,17 +51,17 @@ fn sqrt_scalar_f64(x: Float64) -> Float64:
     """Compute square root of a scalar float64.
 
     Args:
-            x: Input float64 value
+        x: Input float64 value
 
     Returns:
-            Square root of x
+        Square root of x
 
-        Example:
-            ```mojo
-            from shared.core.scalar_ops import sqrt_scalar_f64
+    Example:
+        ```mojo
+        from shared.core.scalar_ops import sqrt_scalar_f64
 
-            var result = sqrt_scalar_f64(4.0)  # 2.0
-            ```
+        var result = sqrt_scalar_f64(4.0)  # 2.0
+        ```
     """
     return x**0.5
 
@@ -69,18 +70,18 @@ fn pow_scalar_f32(x: Float32, y: Float32) -> Float32:
     """Compute x^y for scalar float32 values.
 
     Args:
-            x: Base value (float32)
-            y: Exponent value (float32)
+        x: Base value (float32)
+        y: Exponent value (float32)
 
     Returns:
-            Result of x^y
+        Result of x^y
 
-        Example:
-            ```mojo
-            from shared.core.scalar_ops import pow_scalar_f32
+    Example:
+        ```mojo
+        from shared.core.scalar_ops import pow_scalar_f32
 
-            var result = pow_scalar_f32(Float32(2.0), Float32(3.0))  # 8.0
-            ```
+        var result = pow_scalar_f32(Float32(2.0), Float32(3.0))  # 8.0
+        ```
     """
     return x**y
 
@@ -89,17 +90,17 @@ fn pow_scalar_f64(x: Float64, y: Float64) -> Float64:
     """Compute x^y for scalar float64 values.
 
     Args:
-            x: Base value (float64)
-            y: Exponent value (float64)
+        x: Base value (float64)
+        y: Exponent value (float64)
 
     Returns:
-            Result of x^y
+        Result of x^y
 
-        Example:
-            ```mojo
-            from shared.core.scalar_ops import pow_scalar_f64
+    Example:
+        ```mojo
+        from shared.core.scalar_ops import pow_scalar_f64
 
-            var result = pow_scalar_f64(2.0, 3.0)  # 8.0
-            ```
+        var result = pow_scalar_f64(2.0, 3.0)  # 8.0
+        ```
     """
     return x**y

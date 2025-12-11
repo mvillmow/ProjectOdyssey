@@ -12,19 +12,21 @@ fn equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise equality comparison with broadcasting.
 
     Args:
-            a: First tensor
-            b: Second tensor
+        a: First tensor
+        b: Second tensor
 
     Returns:
-            A new boolean tensor containing a == b
+        A new boolean tensor containing a == b
 
     Raises:
-            Error if shapes are not broadcast-compatible or dtypes don't match.
+        Error if shapes are not broadcast-compatible or dtypes don't match
 
     Examples:
-            var a = full([3, 4], 2.0, DType.float32)
-            var b = full([3, 4], 2.0, DType.float32)
-            var c = equal(a, b)  # Shape (3, 4), all True
+        ```mojo
+        var a = full([3, 4], 2.0, DType.float32)
+        var b = full([3, 4], 2.0, DType.float32)
+        var c = equal(a, b)  # Shape (3, 4), all True
+        ```
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
@@ -79,19 +81,21 @@ fn not_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise inequality comparison with broadcasting.
 
     Args:
-            a: First tensor
-            b: Second tensor
+        a: First tensor
+        b: Second tensor
 
     Returns:
-            A new boolean tensor containing a != b
+        A new boolean tensor containing a != b
 
     Raises:
-            Error if shapes are not broadcast-compatible or dtypes don't match.
+        Error if shapes are not broadcast-compatible or dtypes don't match
 
     Examples:
-            var a = full([3, 4], 2.0, DType.float32)
-            var b = full([3, 4], 3.0, DType.float32)
-            var c = not_equal(a, b)  # Shape (3, 4), all True
+        ```mojo
+        var a = full([3, 4], 2.0, DType.float32)
+        var b = full([3, 4], 3.0, DType.float32)
+        var c = not_equal(a, b)  # Shape (3, 4), all True
+        ```
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
@@ -146,19 +150,21 @@ fn less(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise less-than comparison with broadcasting.
 
     Args:
-            a: First tensor
-            b: Second tensor
+        a: First tensor
+        b: Second tensor
 
     Returns:
-            A new boolean tensor containing a < b
+        A new boolean tensor containing a < b
 
     Raises:
-            Error if shapes are not broadcast-compatible or dtypes don't match.
+        Error if shapes are not broadcast-compatible or dtypes don't match
 
     Examples:
-            var a = full([3, 4], 2.0, DType.float32)
-            var b = full([3, 4], 3.0, DType.float32)
-            var c = less(a, b)  # Shape (3, 4), all True
+        ```mojo
+        var a = full([3, 4], 2.0, DType.float32)
+        var b = full([3, 4], 3.0, DType.float32)
+        var c = less(a, b)  # Shape (3, 4), all True
+        ```
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
@@ -213,19 +219,21 @@ fn less_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise less-than-or-equal comparison with broadcasting.
 
     Args:
-            a: First tensor
-            b: Second tensor
+        a: First tensor
+        b: Second tensor
 
     Returns:
-            A new boolean tensor containing a <= b
+        A new boolean tensor containing a <= b
 
     Raises:
-            Error if shapes are not broadcast-compatible or dtypes don't match.
+        Error if shapes are not broadcast-compatible or dtypes don't match
 
     Examples:
-            var a = full([3, 4], 2.0, DType.float32)
-            var b = full([3, 4], 2.0, DType.float32)
-            var c = less_equal(a, b)  # Shape (3, 4), all True
+        ```mojo
+        var a = full([3, 4], 2.0, DType.float32)
+        var b = full([3, 4], 2.0, DType.float32)
+        var c = less_equal(a, b)  # Shape (3, 4), all True
+        ```
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
@@ -280,19 +288,21 @@ fn greater(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise greater-than comparison with broadcasting.
 
     Args:
-            a: First tensor
-            b: Second tensor
+        a: First tensor
+        b: Second tensor
 
     Returns:
-            A new boolean tensor containing a > b
+        A new boolean tensor containing a > b
 
     Raises:
-            Error if shapes are not broadcast-compatible or dtypes don't match.
+        Error if shapes are not broadcast-compatible or dtypes don't match
 
     Examples:
-            var a = full([3, 4], 3.0, DType.float32)
-            var b = full([3, 4], 2.0, DType.float32)
-            var c = greater(a, b)  # Shape (3, 4), all True
+        ```mojo
+        var a = full([3, 4], 3.0, DType.float32)
+        var b = full([3, 4], 2.0, DType.float32)
+        var c = greater(a, b)  # Shape (3, 4), all True
+        ```
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
@@ -347,19 +357,21 @@ fn greater_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise greater-than-or-equal comparison with broadcasting.
 
     Args:
-            a: First tensor
-            b: Second tensor
+        a: First tensor
+        b: Second tensor
 
     Returns:
-            A new boolean tensor containing a >= b
+        A new boolean tensor containing a >= b
 
     Raises:
-            Error if shapes are not broadcast-compatible or dtypes don't match.
+        Error if shapes are not broadcast-compatible or dtypes don't match
 
     Examples:
-            var a = full([3, 4], 3.0, DType.float32)
-            var b = full([3, 4], 3.0, DType.float32)
-            var c = greater_equal(a, b)  # Shape (3, 4), all True
+        ```mojo
+        var a = full([3, 4], 3.0, DType.float32)
+        var b = full([3, 4], 3.0, DType.float32)
+        var c = greater_equal(a, b)  # Shape (3, 4), all True
+        ```
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")

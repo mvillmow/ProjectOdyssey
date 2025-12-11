@@ -8,25 +8,25 @@ fn broadcast_shapes(shape1: List[Int], shape2: List[Int]) raises -> List[Int]:
     """Compute the broadcast shape of two tensor shapes.
 
     Args:
-            shape1: First tensor shape
-            shape2: Second tensor shape
+        shape1: First tensor shape.
+        shape2: Second tensor shape.
 
     Returns:
-            The broadcast result shape
+        The broadcast result shape.
 
     Raises:
-            Error if shapes are not broadcast-compatible
+        Error if shapes are not broadcast-compatible.
 
-        Broadcasting rules:
-            1. Compare shapes element-wise from right to left
-            2. Dimensions are compatible if they are equal or one is 1
-            3. Missing dimensions are treated as 1
-            4. Output shape is element-wise maximum of input shapes
+    Broadcasting rules:
+        1. Compare shapes element-wise from right to left
+        2. Dimensions are compatible if they are equal or one is 1
+        3. Missing dimensions are treated as 1
+        4. Output shape is element-wise maximum of input shapes
 
     Examples:
-            broadcast_shapes([3, 4, 5], [4, 5]) -> [3, 4, 5]
-            broadcast_shapes([3, 1, 5], [3, 4, 5]) -> [3, 4, 5]
-            broadcast_shapes([3, 4], [5, 4]) -> Error (incompatible)
+        broadcast_shapes([3, 4, 5], [4, 5]) -> [3, 4, 5]
+        broadcast_shapes([3, 1, 5], [3, 4, 5]) -> [3, 4, 5]
+        broadcast_shapes([3, 4], [5, 4]) -> Error (incompatible)
     """
     var ndim1 = len(shape1)
     var ndim2 = len(shape2)
@@ -70,15 +70,15 @@ fn are_shapes_broadcastable(shape1: List[Int], shape2: List[Int]) -> Bool:
     """Check if two shapes are broadcast-compatible.
 
     Args:
-            shape1: First tensor shape
-            shape2: Second tensor shape
+        shape1: First tensor shape.
+        shape2: Second tensor shape.
 
     Returns:
-            True if shapes are broadcast-compatible, False otherwise
+        True if shapes are broadcast-compatible, False otherwise.
 
     Examples:
-            are_shapes_broadcastable([3, 4, 5], [4, 5]) -> True
-            are_shapes_broadcastable([3, 4], [5, 4]) -> False
+        are_shapes_broadcastable([3, 4, 5], [4, 5]) -> True
+        are_shapes_broadcastable([3, 4], [5, 4]) -> False
     """
     var ndim1 = len(shape1)
     var ndim2 = len(shape2)
@@ -104,22 +104,22 @@ fn compute_broadcast_strides(
     """Compute strides for broadcasting a tensor to a new shape.
 
     Args:
-            original_shape: The original tensor shape
-            broadcast_shape: The target broadcast shape
+        original_shape: The original tensor shape.
+        broadcast_shape: The target broadcast shape.
 
     Returns:
-            Strides for the broadcast tensor (0 for broadcasted dimensions)
+        Strides for the broadcast tensor (0 for broadcasted dimensions).
 
     Note:
-            Dimensions that are 1 in the original shape get stride 0 in the broadcast
-            This allows efficient broadcasting without materializing extra copies
+        Dimensions that are 1 in the original shape get stride 0 in the broadcast.
+        This allows efficient broadcasting without materializing extra copies.
 
     Examples:
-            ```
-            original_shape = [3, 1, 5]
-            broadcast_shape = [3, 4, 5]
-            result = [stride_for_3, 0, stride_for_5]  # Middle dimension has stride 0
-            ```
+        ```
+        original_shape = [3, 1, 5]
+        broadcast_shape = [3, 4, 5]
+        result = [stride_for_3, 0, stride_for_5]  # Middle dimension has stride 0
+        ```
     """
     var ndim_orig = len(original_shape)
     var ndim_broad = len(broadcast_shape)
@@ -160,7 +160,7 @@ struct BroadcastIterator:
     """Iterator for efficiently iterating over broadcast tensor elements.
 
     This allows element-wise operations to work efficiently with broadcasting
-    without materializing the full broadcast tensor
+    without materializing the full broadcast tensor.
     """
 
     var shape: List[Int]
@@ -205,17 +205,17 @@ struct BroadcastIterator:
         """Get next pair of indices for the two tensors.
 
         Returns:
-            Tuple of (index1, index2) for accessing elements
+            Tuple of (index1, index2) for accessing elements.
 
         Raises:
-            Error when iteration is complete
+            Error when iteration is complete.
 
         Algorithm:
             Converts flat position to multi-dimensional coordinates using the
             broadcast shape and row-major (C-style) layout, then applies
             broadcast strides to get indices for both tensors. Broadcasting
             strides are 0 for dimensions that are being broadcast, allowing
-            efficient iteration without materializing the full broadcast tensor
+            efficient iteration without materializing the full broadcast tensor.
         """
         if self.position >= self.size:
             raise Error("Iterator exhausted")
