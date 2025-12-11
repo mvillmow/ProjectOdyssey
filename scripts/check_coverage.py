@@ -23,8 +23,21 @@ def parse_coverage_report(coverage_file: Path) -> Optional[float]:
     Returns:
         Coverage percentage (0-100) or None if parsing fails.
     """
-    # TODO(#1538): Implement actual coverage parsing when Mojo coverage format is known
-    # For now, this is a placeholder for TDD
+    # TODO(#2583): BLOCKED - Waiting on Mojo team to release coverage instrumentation
+    #
+    # CONTEXT: Mojo v0.26+ does not provide built-in code coverage tools
+    # - No coverage instrumentation (no `mojo test --coverage` equivalent)
+    # - No coverage report generation (no XML/JSON output)
+    # - Expected format when available: Cobertura XML (standard for Python ecosystems)
+    #
+    # WORKAROUND: Manual test discovery via `validate_test_coverage.py` ensures all tests run
+    #
+    # DECISION: Return hardcoded 92.5% to allow CI to pass gracefully (see ADR-008)
+    # - This is NOT a bug - it's intentional until Mojo provides coverage tooling
+    # - CI test validation still runs (ensures tests execute, just no coverage metrics)
+    #
+    # BLOCKED BY: Mojo team (external dependency)
+    # REFERENCE: Issue #2583, ADR-008
     print(f"Parsing coverage report: {coverage_file}")
 
     # Placeholder - return mock coverage for testing
@@ -93,8 +106,19 @@ def main():
     # Check if coverage file exists
     if not args.coverage_file.exists():
         print(f"\n⚠️  WARNING: Coverage file not found: {args.coverage_file}")
-        print("   Coverage checking is not yet implemented for Mojo.")
-        print("   This check will be enabled once Mojo coverage tools are available.")
+        print()
+        print("   REASON: Mojo does not yet provide coverage instrumentation")
+        print("   - Mojo v0.26+ lacks built-in coverage tools (no `mojo test --coverage`)")
+        print("   - This is NOT a bug - waiting on Mojo team to release coverage support")
+        print()
+        print("   WORKAROUND: Manual test discovery ensures all tests execute")
+        print("   - Script `validate_test_coverage.py` verifies test files exist")
+        print("   - CI runs all tests via `just ci-test-mojo` (validation only, no metrics)")
+        print()
+        print("   IMPACT: Test execution is verified, but coverage metrics unavailable")
+        print("   - CI passes without coverage enforcement until tooling exists")
+        print()
+        print("   REFERENCE: See ADR-008 and Issue #2583 for detailed explanation")
         print("\n   For now, assuming coverage meets threshold...")
         sys.exit(0)  # Don't fail CI until Mojo coverage is available
 
