@@ -72,11 +72,23 @@ fn assert_matrices_equal[
     """
     # Verify shapes match
     if len(a.shape()) != len(b.shape()):
-        raise Error("Shape dimension mismatch: " + String(len(a.shape())) + " vs " + String(len(b.shape())))
+        raise Error(
+            "Shape dimension mismatch: "
+            + String(len(a.shape()))
+            + " vs "
+            + String(len(b.shape()))
+        )
 
     for i in range(len(a.shape())):
         if a.shape()[i] != b.shape()[i]:
-            raise Error("Shape mismatch at dimension " + String(i) + ": " + String(a.shape()[i]) + " vs " + String(b.shape()[i]))
+            raise Error(
+                "Shape mismatch at dimension "
+                + String(i)
+                + ": "
+                + String(a.shape()[i])
+                + " vs "
+                + String(b.shape()[i])
+            )
 
     # Compare element-wise
     var numel = a.numel()
@@ -103,11 +115,17 @@ fn assert_matrices_equal[
 
         if diff > tolerance:
             raise Error(
-                "Mismatch at index " + String(i) +
-                ": " + String(a_val) +
-                " vs " + String(b_val) +
-                " (diff=" + String(diff) +
-                ", tolerance=" + String(tolerance) + ")"
+                "Mismatch at index "
+                + String(i)
+                + ": "
+                + String(a_val)
+                + " vs "
+                + String(b_val)
+                + " (diff="
+                + String(diff)
+                + ", tolerance="
+                + String(tolerance)
+                + ")"
             )
 
 
@@ -158,10 +176,18 @@ fn test_matmul_baseline_2x2() raises:
 
     # Result = [[1*5+2*7, 1*6+2*8], [3*5+4*7, 3*6+4*8]]
     #        = [[19, 22], [43, 50]]
-    assert_almost_equal(result._data.bitcast[Float32]()[0], Float32(19.0), tolerance=1e-5)
-    assert_almost_equal(result._data.bitcast[Float32]()[1], Float32(22.0), tolerance=1e-5)
-    assert_almost_equal(result._data.bitcast[Float32]()[2], Float32(43.0), tolerance=1e-5)
-    assert_almost_equal(result._data.bitcast[Float32]()[3], Float32(50.0), tolerance=1e-5)
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[0], Float32(19.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[1], Float32(22.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[2], Float32(43.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[3], Float32(50.0), tolerance=1e-5
+    )
 
 
 fn test_matmul_baseline_identity() raises:
@@ -169,7 +195,6 @@ fn test_matmul_baseline_identity() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(3)
-
 
     var a = zeros(shape, DType.float32)
     var identity = zeros(shape, DType.float32)
@@ -220,7 +245,6 @@ fn test_matmul_trivial_1x1() raises:
     shape.append(1)
     shape.append(1)
 
-
     var a = full(shape, 3.0, DType.float32)
     var b = full(shape, 4.0, DType.float32)
     var c = matmul(a, b)
@@ -239,7 +263,6 @@ fn test_matmul_vector_matrix_1x64x1() raises:
     var shape_b = List[Int]()
     shape_b.append(64)
     shape_b.append(1)
-
 
     var a = ones(shape_a, DType.float32)
     var b = full(shape_b, 2.0, DType.float32)
@@ -261,7 +284,6 @@ fn test_matmul_matrix_vector_64x1x64() raises:
     shape_b.append(1)
     shape_b.append(64)
 
-
     var a = full(shape_a, 2.0, DType.float32)
     var b = ones(shape_b, DType.float32)
     var c = matmul(a, b)
@@ -277,7 +299,6 @@ fn test_matmul_smaller_than_simd_7x7x7() raises:
     var shape = List[Int]()
     shape.append(7)
     shape.append(7)
-
 
     var a = ones(shape, DType.float32)
     var b = full(shape, 2.0, DType.float32)
@@ -298,7 +319,6 @@ fn test_matmul_non_power_of_2() raises:
     var shape_b = List[Int]()
     shape_b.append(65)
     shape_b.append(67)
-
 
     var a = ones(shape_a, DType.float32)
     var b = full(shape_b, 0.5, DType.float32)
@@ -321,7 +341,6 @@ fn test_matmul_exact_block_size_64x64x64() raises:
     shape.append(64)
     shape.append(64)
 
-
     var a = ones(shape, DType.float32)
     var b = full(shape, 2.0, DType.float32)
     var c = matmul(a, b)
@@ -341,7 +360,6 @@ fn test_matmul_large_rectangular() raises:
     var shape_b = List[Int]()
     shape_b.append(512)
     shape_b.append(2048)
-
 
     var a = full(shape_a, 0.1, DType.float32)
     var b = full(shape_b, 0.2, DType.float32)
@@ -412,7 +430,6 @@ fn test_matmul_dtype_preserves_type() raises:
     shape.append(3)
     shape.append(3)
 
-
     # Float32
     var a32 = ones(shape, DType.float32)
     var b32 = ones(shape, DType.float32)
@@ -476,7 +493,10 @@ fn test_matmul_incompatible_shapes() raises:
         error_raised = True
 
     if not error_raised:
-        raise Error("Should have raised error for incompatible matmul shapes (3,4) @ (5,2)")
+        raise Error(
+            "Should have raised error for incompatible matmul shapes (3,4) @"
+            " (5,2)"
+        )
 
 
 fn test_matmul_1d_error() raises:
@@ -500,6 +520,7 @@ fn test_matmul_1d_error() raises:
 # ============================================================================
 # Correctness Tests - Additional Size Coverage
 # ============================================================================
+
 
 fn test_matmul_additional_rectangular_sizes() raises:
     """Test rectangular matrices with various dimensions."""

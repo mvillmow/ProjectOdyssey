@@ -297,12 +297,15 @@ fn print_help(prog_name: String):
     Args:
         prog_name: Program name from argv[0].
     """
-    print("""
+    print(
+        """
 Matrix Multiplication Optimization Benchmark
 =============================================
 
 USAGE:
-    pixi run mojo run """ + prog_name + """ [OPTIONS]
+    pixi run mojo run """
+        + prog_name
+        + """ [OPTIONS]
 
 OPTIONS:
     --stage <int>           Stage to run: -1 (all, default), 0-4 (specific stage)
@@ -329,16 +332,24 @@ OPTIONS:
 
 EXAMPLES:
     # Run all stages on default sizes
-    pixi run mojo run """ + prog_name + """
+    pixi run mojo run """
+        + prog_name
+        + """
 
     # Run only Stage 2 (SIMD) on small sizes
-    pixi run mojo run """ + prog_name + """ --stage 2 --sizes "64,256"
+    pixi run mojo run """
+        + prog_name
+        + """ --stage 2 --sizes "64,256"
 
     # Quick correctness check
-    pixi run mojo run """ + prog_name + """ --verify-only
+    pixi run mojo run """
+        + prog_name
+        + """ --verify-only
 
     # High-precision benchmark with float64
-    pixi run mojo run """ + prog_name + """ --dtype float64 --iterations 20
+    pixi run mojo run """
+        + prog_name
+        + """ --dtype float64 --iterations 20
 
 OUTPUT:
     Benchmark results table showing:
@@ -351,7 +362,8 @@ EXPECTED SPEEDUPS:
     - Stage 2 (SIMD):               15-40x over baseline (cumulative)
     - Stage 3 (cache-tiled):        50-150x over baseline (cumulative)
     - Stage 4 (advanced):           100-400x over baseline (cumulative)
-""")
+"""
+    )
 
 
 fn parse_sizes(sizes_str: String) raises -> List[Int]:
@@ -506,9 +518,7 @@ fn format_speedup(speedup: Float64) -> String:
 
 fn run_benchmarks[
     dtype: DType
-](
-    stage: Int, sizes: List[Int], iterations: Int
-) raises:
+](stage: Int, sizes: List[Int], iterations: Int) raises:
     """Run benchmarks for specified stages and sizes.
 
     Args:
@@ -598,6 +608,7 @@ fn main() raises:
     """Main benchmark driver."""
     # Check for help flags
     from sys import argv
+
     var args = argv()
     for i in range(len(args)):
         var arg = args[i]

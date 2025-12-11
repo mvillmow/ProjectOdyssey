@@ -48,7 +48,7 @@ alias BLOCK_N: Int = 64  # Block size in N dimension
 alias BLOCK_K: Int = 64  # Block size in K dimension
 
 # Register blocking parameters (micro-kernel tile sizes)
-alias MICRO_M: Int = 4   # Number of rows in micro-tile
+alias MICRO_M: Int = 4  # Number of rows in micro-tile
 alias MICRO_N: Int = 16  # Number of columns in micro-tile (must be multiple of SIMD width)
 
 # Transpose threshold: only transpose B if matrix is large enough to amortize cost
@@ -336,6 +336,7 @@ fn _matmul_tiled_float32(
 
                 # Micro-kernel with SIMD within block
                 for i in range(i0, i1):
+
                     @parameter
                     fn vec_inner[width: Int](j_off: Int) unified {mut}:
                         var j = j0 + j_off
@@ -373,6 +374,7 @@ fn _matmul_tiled_float64(
 
                 # Micro-kernel with SIMD within block
                 for i in range(i0, i1):
+
                     @parameter
                     fn vec_inner[width: Int](j_off: Int) unified {mut}:
                         var j = j0 + j_off
@@ -442,7 +444,11 @@ fn matmul_transpose(a: ExTensor, b: ExTensor, mut c: ExTensor) raises:
         )
 
     # For small matrices, fall back to matmul_tiled (transpose overhead not worth it)
-    if M < TRANSPOSE_THRESHOLD or N < TRANSPOSE_THRESHOLD or K < TRANSPOSE_THRESHOLD:
+    if (
+        M < TRANSPOSE_THRESHOLD
+        or N < TRANSPOSE_THRESHOLD
+        or K < TRANSPOSE_THRESHOLD
+    ):
         matmul_tiled(a, b, c)
         return
 
@@ -510,7 +516,8 @@ fn _transpose_matrix_float64(b: ExTensor, K: Int, N: Int) raises -> ExTensor:
 fn _matmul_float32(
     a: ExTensor, b: ExTensor, mut c: ExTensor, M: Int, K: Int, N: Int
 ) raises:
-    """Float32-specific fully optimized GEMM with transpose and register blocking."""
+    """Float32-specific fully optimized GEMM with transpose and register blocking.
+    """
     alias simd_width = simd_width_of[DType.float32]()
 
     # Transpose B for contiguous access: B^T[j, k] = B[k, j]
@@ -558,10 +565,18 @@ fn _matmul_float32(
                     vectorize[simd_width](K, vec_k)
 
                     # Store accumulated results
-                    c_ptr.store((i + 0) * N + j, c_ptr.load((i + 0) * N + j) + c0)
-                    c_ptr.store((i + 1) * N + j, c_ptr.load((i + 1) * N + j) + c1)
-                    c_ptr.store((i + 2) * N + j, c_ptr.load((i + 2) * N + j) + c2)
-                    c_ptr.store((i + 3) * N + j, c_ptr.load((i + 3) * N + j) + c3)
+                    c_ptr.store(
+                        (i + 0) * N + j, c_ptr.load((i + 0) * N + j) + c0
+                    )
+                    c_ptr.store(
+                        (i + 1) * N + j, c_ptr.load((i + 1) * N + j) + c1
+                    )
+                    c_ptr.store(
+                        (i + 2) * N + j, c_ptr.load((i + 2) * N + j) + c2
+                    )
+                    c_ptr.store(
+                        (i + 3) * N + j, c_ptr.load((i + 3) * N + j) + c3
+                    )
 
                 i += MICRO_M
 
@@ -586,7 +601,8 @@ fn _matmul_float32(
 fn _matmul_float64(
     a: ExTensor, b: ExTensor, mut c: ExTensor, M: Int, K: Int, N: Int
 ) raises:
-    """Float64-specific fully optimized GEMM with transpose and register blocking."""
+    """Float64-specific fully optimized GEMM with transpose and register blocking.
+    """
     alias simd_width = simd_width_of[DType.float64]()
 
     # Transpose B for contiguous access
@@ -629,10 +645,18 @@ fn _matmul_float64(
 
                     vectorize[simd_width](K, vec_k)
 
-                    c_ptr.store((i + 0) * N + j, c_ptr.load((i + 0) * N + j) + c0)
-                    c_ptr.store((i + 1) * N + j, c_ptr.load((i + 1) * N + j) + c1)
-                    c_ptr.store((i + 2) * N + j, c_ptr.load((i + 2) * N + j) + c2)
-                    c_ptr.store((i + 3) * N + j, c_ptr.load((i + 3) * N + j) + c3)
+                    c_ptr.store(
+                        (i + 0) * N + j, c_ptr.load((i + 0) * N + j) + c0
+                    )
+                    c_ptr.store(
+                        (i + 1) * N + j, c_ptr.load((i + 1) * N + j) + c1
+                    )
+                    c_ptr.store(
+                        (i + 2) * N + j, c_ptr.load((i + 2) * N + j) + c2
+                    )
+                    c_ptr.store(
+                        (i + 3) * N + j, c_ptr.load((i + 3) * N + j) + c3
+                    )
 
                 i += MICRO_M
 
