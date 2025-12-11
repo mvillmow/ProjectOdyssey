@@ -93,8 +93,7 @@ jobs:
         run: pixi run mojo --version
 
       - name: Install Just
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
+        uses: extractions/setup-just@v2
 
       - name: Compile shared package
         run: |
@@ -281,8 +280,7 @@ jobs:
             pixi-${{ runner.os }}-
 
       - name: Install Just
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
+        uses: extractions/setup-just@v2
 
       - name: Run test group
         # Integration tests may have segfaults on CI runners due to memory constraints
@@ -358,6 +356,9 @@ jobs:
           pixi-version: latest
           cache: true
 
+      - name: Install Just
+        uses: extractions/setup-just@v2
+
       - name: Run Configs tests
         run: just ci-test-group tests/configs "test_*.mojo"
 
@@ -405,6 +406,9 @@ jobs:
           python3 scripts/download_cifar10.py datasets/cifar10
           python3 scripts/download_emnist.py datasets/emnist
 
+      - name: Install Just
+        uses: extractions/setup-just@v2
+
       - name: Run Training tests
         run: just ci-test-group tests/shared/training "test_*.mojo"
 
@@ -417,12 +421,12 @@ jobs:
           retention-days: 7
 
   # ============================================================================
-  # Benchmarks Tests - Non-blocking (just.systems 403 download issues)
+  # Benchmarks Tests - Non-blocking (known test discovery issues)
   # ============================================================================
   test-benchmarks:
     needs: [mojo-compilation, validate-test-coverage]
     runs-on: ubuntu-latest
-    continue-on-error: true  # Non-blocking - investigating 403 errors installing Just
+    continue-on-error: true  # Non-blocking - investigating test discovery issues
     timeout-minutes: 15
     name: "Benchmarks"
 
@@ -435,6 +439,9 @@ jobs:
         with:
           pixi-version: latest
           cache: true
+
+      - name: Install Just
+        uses: extractions/setup-just@v2
 
       - name: Run Benchmarks tests
         run: just ci-test-group tests/shared/benchmarks "bench_*.mojo"
@@ -467,6 +474,9 @@ jobs:
           pixi-version: latest
           cache: true
 
+      - name: Install Just
+        uses: extractions/setup-just@v2
+
       - name: Run Core Layers tests
         run: just ci-test-group tests/shared/core/layers "test_*.mojo"
 
@@ -479,12 +489,12 @@ jobs:
           retention-days: 7
 
   # ============================================================================
-  # Example Arithmetic Tests - Non-blocking (just.systems 403 download issues)
+  # Example Arithmetic Tests - Non-blocking (known test discovery issues)
   # ============================================================================
   test-example-arithmetic:
     needs: [mojo-compilation, validate-test-coverage]
     runs-on: ubuntu-latest
-    continue-on-error: true  # Non-blocking - investigating 403 errors installing Just
+    continue-on-error: true  # Non-blocking - investigating test discovery issues
     timeout-minutes: 15
     name: "Example Arithmetic"
 
@@ -497,6 +507,9 @@ jobs:
         with:
           pixi-version: latest
           cache: true
+
+      - name: Install Just
+        uses: extractions/setup-just@v2
 
       - name: Run Example Arithmetic tests
         run: just ci-test-group examples "test_arithmetic.mojo"

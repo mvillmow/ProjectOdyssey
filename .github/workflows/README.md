@@ -416,10 +416,9 @@ The CI/CD strategy uses GitHub Actions with the following principles:
 All CI workflows use justfile recipes for consistent command execution between local development and CI:
 
 ```yaml
-# Install Just in workflow
+# Install Just in workflow (using official GitHub Action - more reliable)
 - name: Install Just
-  run: |
-    curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
+  uses: extractions/setup-just@v2
 
 # Use justfile recipes
 - name: Build package
