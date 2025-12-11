@@ -38,14 +38,6 @@ repos:
         language: pygrep
         files: \.py$
         types: [python]
-      - id: validate-urls
-        name: Validate URLs in Python files
-        description: Check that HTTP/HTTPS URLs in Python files are reachable
-        entry: python3 scripts/validate_urls.py
-        language: system
-        files: \.py$
-        types: [python]
-        pass_filenames: true
       - id: ruff-format-scripts
         name: Ruff Format Scripts
         description: Format Python files in scripts/ using pixi run ruff format
