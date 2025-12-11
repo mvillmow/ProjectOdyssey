@@ -9,6 +9,63 @@ comprehensive 4-level hierarchical planning structure with automated GitHub issu
 
 **Current Status**: Planning phase - repository structure and GitHub issues are being established before implementation begins.
 
+## ⚠️ CRITICAL RULES - READ FIRST
+
+### 🚫 NEVER Push Directly to Main
+
+**The `main` branch is protected. ALL changes MUST go through a pull request.**
+
+❌ **ABSOLUTELY PROHIBITED:**
+
+```bash
+git checkout main
+git add <files>
+git commit -m "changes"
+git push origin main  # ❌ BLOCKED - Will be rejected by GitHub
+```
+
+**Why this is prohibited:**
+
+- Bypasses code review and CI checks
+- Can break production immediately
+- Violates GitHub branch protection rules
+- Makes it impossible to track changes properly
+
+✅ **CORRECT WORKFLOW (Always Use PRs):**
+
+```bash
+# 1. Create feature branch
+git checkout -b <issue-number>-description
+
+# 2. Make changes and commit
+git add <files>
+git commit -m "type(scope): description"
+
+# 3. Push feature branch
+git push -u origin <issue-number>-description
+
+# 4. Create pull request
+gh pr create \
+  --title "Brief description" \
+  --body "Closes #<issue-number>" \
+  --label "appropriate-label"
+
+# 5. Enable auto-merge
+gh pr merge --auto --rebase
+```
+
+**Emergency Situations:**
+
+- Even for critical CI fixes, CREATE A PR
+- Even for one-line changes, CREATE A PR
+- Even if you're fixing your own mistake, CREATE A PR
+- NO EXCEPTIONS - Always use the PR workflow
+
+**See Also:**
+
+- Full Git Workflow: [Git Workflow Section](#git-workflow)
+- PR Best Practices: [PR Workflow](/.claude/shared/pr-workflow.md)
+
 ## Quick Links
 
 ### Core Guidelines
@@ -1266,25 +1323,71 @@ See `.claude/shared/github-issue-workflow.md` for complete workflow patterns.
 
    **Always enable auto-merge** so PRs merge automatically once CI passes.
 
-### Never Push Directly to Main
+### 🚫 Never Push Directly to Main
 
-❌ **NEVER DO THIS:**
+**⚠️ CRITICAL:** See [CRITICAL RULES section](#️-critical-rules---read-first) at the top of this document.
+
+**This rule has NO EXCEPTIONS - not even for emergencies.**
+
+❌ **ABSOLUTELY PROHIBITED:**
 
 ```bash
 git checkout main
+git add <files>
 git commit -m "changes"
-git push origin main  # Will be rejected - main is protected
+git push origin main  # ❌ BLOCKED - GitHub will reject this
 ```
 
-✅ **ALWAYS DO THIS:**
+**Even These Are WRONG:**
 
 ```bash
-git checkout -b <issue-number>-description
-git commit -m "changes"
-git push -u origin <issue-number>-description
-gh pr create --title "..." --body "Closes #<issue>" --label "..."
-gh pr merge --auto --rebase  # Enable auto-merge
+# ❌ WRONG - Bypassing with force push
+git push --force origin main
+
+# ❌ WRONG - Directly committing on main
+git checkout main && git commit -am "quick fix"
+
+# ❌ WRONG - Emergency fix without PR
+git checkout main && git cherry-pick <commit> && git push
 ```
+
+✅ **CORRECT - ALWAYS Use Pull Requests:**
+
+```bash
+# 1. Create feature branch from main
+git checkout main
+git pull origin main
+git checkout -b <issue-number>-description
+
+# 2. Make changes and commit
+git add <files>
+git commit -m "type(scope): description"
+
+# 3. Push feature branch
+git push -u origin <issue-number>-description
+
+# 4. Create and auto-merge PR
+gh pr create \
+  --title "Brief description" \
+  --body "Closes #<issue-number>" \
+  --label "appropriate-label"
+gh pr merge --auto --rebase
+```
+
+**Why This Rule Exists:**
+
+1. **Code Review** - All changes must be reviewed
+2. **CI Validation** - All changes must pass automated tests
+3. **Audit Trail** - Track what changed, why, and who approved it
+4. **Prevent Breakage** - Catch issues before they hit production
+5. **Branch Protection** - GitHub enforces this rule automatically
+
+**What If CI Is Already Broken?**
+
+- Still create a PR to fix it
+- PR description should explain the emergency
+- Enable auto-merge so it merges immediately when CI passes
+- Example: PR #2689 (cleanup) followed emergency fix commit 4446eba2
 
 ### Commit Message Format
 
