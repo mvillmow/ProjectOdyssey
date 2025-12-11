@@ -45,7 +45,8 @@ import os
 
 
 struct LeNet5:
-    """Minimal LeNet-5 for testing. Uses same architecture as examples/lenet-emnist/model.mojo"""
+    """Minimal LeNet-5 for testing. Uses same architecture as examples/lenet-emnist/model.mojo
+    """
 
     var num_classes: Int
     var conv1_kernel: ExTensor
@@ -67,38 +68,52 @@ struct LeNet5:
 
         # Conv1: (6, 1, 5, 5)
         var conv1_shape: List[Int] = [6, 1, 5, 5]
-        self.conv1_kernel = kaiming_uniform(5, 30, conv1_shape, dtype=DType.float32)
+        self.conv1_kernel = kaiming_uniform(
+            5, 30, conv1_shape, dtype=DType.float32
+        )
         self.conv1_bias = zeros([6], DType.float32)
 
         # Conv2: (16, 6, 5, 5)
         var conv2_shape: List[Int] = [16, 6, 5, 5]
-        self.conv2_kernel = kaiming_uniform(150, 400, conv2_shape, dtype=DType.float32)
+        self.conv2_kernel = kaiming_uniform(
+            150, 400, conv2_shape, dtype=DType.float32
+        )
         self.conv2_bias = zeros([16], DType.float32)
 
         # FC1: (120, flattened_size)
         var fc1_shape: List[Int] = [120, flattened_size]
-        self.fc1_weights = kaiming_uniform(flattened_size, 120, fc1_shape, dtype=DType.float32)
+        self.fc1_weights = kaiming_uniform(
+            flattened_size, 120, fc1_shape, dtype=DType.float32
+        )
         self.fc1_bias = zeros([120], DType.float32)
 
         # FC2: (84, 120)
         var fc2_shape: List[Int] = [84, 120]
-        self.fc2_weights = kaiming_uniform(120, 84, fc2_shape, dtype=DType.float32)
+        self.fc2_weights = kaiming_uniform(
+            120, 84, fc2_shape, dtype=DType.float32
+        )
         self.fc2_bias = zeros([84], DType.float32)
 
         # FC3: (num_classes, 84)
         var fc3_shape: List[Int] = [num_classes, 84]
-        self.fc3_weights = kaiming_uniform(84, num_classes, fc3_shape, dtype=DType.float32)
+        self.fc3_weights = kaiming_uniform(
+            84, num_classes, fc3_shape, dtype=DType.float32
+        )
         self.fc3_bias = zeros([num_classes], DType.float32)
 
     fn forward(mut self, input: ExTensor) raises -> ExTensor:
         """Forward pass through LeNet-5."""
         # Conv1 + ReLU + MaxPool
-        var conv1_out = conv2d(input, self.conv1_kernel, self.conv1_bias, stride=1, padding=0)
+        var conv1_out = conv2d(
+            input, self.conv1_kernel, self.conv1_bias, stride=1, padding=0
+        )
         var relu1_out = relu(conv1_out)
         var pool1_out = maxpool2d(relu1_out, kernel_size=2, stride=2, padding=0)
 
         # Conv2 + ReLU + MaxPool
-        var conv2_out = conv2d(pool1_out, self.conv2_kernel, self.conv2_bias, stride=1, padding=0)
+        var conv2_out = conv2d(
+            pool1_out, self.conv2_kernel, self.conv2_bias, stride=1, padding=0
+        )
         var relu2_out = relu(conv2_out)
         var pool2_out = maxpool2d(relu2_out, kernel_size=2, stride=2, padding=0)
 
@@ -211,7 +226,9 @@ fn test_forward_output_shape() raises:
     var model = LeNet5(num_classes=10)
 
     # Create batch of inputs: (4, 1, 28, 28)
-    var input = create_seeded_random_tensor([4, 1, 28, 28], DType.float32, seed=42)
+    var input = create_seeded_random_tensor(
+        [4, 1, 28, 28], DType.float32, seed=42
+    )
 
     # Forward pass
     var output = model.forward(input)
@@ -234,7 +251,9 @@ fn test_forward_single_sample() raises:
     var model = LeNet5(num_classes=47)
 
     # Create single input
-    var input = create_seeded_random_tensor([1, 1, 28, 28], DType.float32, seed=123)
+    var input = create_seeded_random_tensor(
+        [1, 1, 28, 28], DType.float32, seed=123
+    )
 
     # Forward pass
     var output = model.forward(input)
@@ -251,17 +270,23 @@ fn test_forward_batch_sizes() raises:
     var model = LeNet5(num_classes=10)
 
     # Test batch size 1
-    var input1 = create_seeded_random_tensor([1, 1, 28, 28], DType.float32, seed=1)
+    var input1 = create_seeded_random_tensor(
+        [1, 1, 28, 28], DType.float32, seed=1
+    )
     var output1 = model.forward(input1)
     assert_shape(output1, [1, 10], "Batch size 1 output shape")
 
     # Test batch size 8
-    var input8 = create_seeded_random_tensor([8, 1, 28, 28], DType.float32, seed=2)
+    var input8 = create_seeded_random_tensor(
+        [8, 1, 28, 28], DType.float32, seed=2
+    )
     var output8 = model.forward(input8)
     assert_shape(output8, [8, 10], "Batch size 8 output shape")
 
     # Test batch size 32
-    var input32 = create_seeded_random_tensor([32, 1, 28, 28], DType.float32, seed=3)
+    var input32 = create_seeded_random_tensor(
+        [32, 1, 28, 28], DType.float32, seed=3
+    )
     var output32 = model.forward(input32)
     assert_shape(output32, [32, 10], "Batch size 32 output shape")
 
@@ -271,7 +296,9 @@ fn test_forward_deterministic() raises:
     var model = LeNet5(num_classes=10)
 
     # Create input
-    var input = create_seeded_random_tensor([2, 1, 28, 28], DType.float32, seed=999)
+    var input = create_seeded_random_tensor(
+        [2, 1, 28, 28], DType.float32, seed=999
+    )
 
     # Forward pass twice
     var output1 = model.forward(input)
@@ -294,7 +321,9 @@ fn test_predict_single_sample() raises:
     var model = LeNet5(num_classes=10)
 
     # Create single input
-    var input = create_seeded_random_tensor([1, 1, 28, 28], DType.float32, seed=42)
+    var input = create_seeded_random_tensor(
+        [1, 1, 28, 28], DType.float32, seed=42
+    )
 
     # Predict
     var pred_class = model.predict(input)
@@ -308,7 +337,9 @@ fn test_predict_output_class_range() raises:
     """Test predict for EMNIST (47 classes)."""
     var model = LeNet5(num_classes=47)
 
-    var input = create_seeded_random_tensor([1, 1, 28, 28], DType.float32, seed=77)
+    var input = create_seeded_random_tensor(
+        [1, 1, 28, 28], DType.float32, seed=77
+    )
 
     var pred_class = model.predict(input)
 
@@ -423,11 +454,8 @@ fn test_update_parameters() raises:
 
     # Verify parameter changed (updated in direction opposite to gradient)
     var new_conv1 = model.conv1_kernel._get_float64(0)
-    var expected = orig_conv1 - 0.01 * 1.0  // param - lr * grad
-    assert_close_float(
-        new_conv1, expected, 1e-6,
-        "Parameter update mismatch"
-    )
+    var expected = orig_conv1 - 0.01 * 1.0 // param - lr * grad
+    assert_close_float(new_conv1, expected, 1e-6, "Parameter update mismatch")
 
 
 # ============================================================================
@@ -463,7 +491,9 @@ fn test_num_classes_customizable() raises:
     assert_true(model_mnist.num_classes == 10, "MNIST num_classes mismatch")
 
     # Verify output shapes match num_classes
-    var input = create_seeded_random_tensor([1, 1, 28, 28], DType.float32, seed=42)
+    var input = create_seeded_random_tensor(
+        [1, 1, 28, 28], DType.float32, seed=42
+    )
 
     var output_emnist = model_emnist.forward(input)
     assert_shape(output_emnist, [1, 47], "EMNIST output shape")
@@ -497,8 +527,12 @@ fn test_full_forward_pipeline() raises:
     # Verify output is valid
     for i in range(output.numel()):
         var val = output._get_float64(i)
-        assert_false(isnan(val), "Full pipeline output contains NaN at " + String(i))
-        assert_false(isinf(val), "Full pipeline output contains Inf at " + String(i))
+        assert_false(
+            isnan(val), "Full pipeline output contains NaN at " + String(i)
+        )
+        assert_false(
+            isinf(val), "Full pipeline output contains Inf at " + String(i)
+        )
 
     # Verify output range is reasonable (unconstrained logits)
     # Logits should generally be in range [-10, 10] for reasonable models

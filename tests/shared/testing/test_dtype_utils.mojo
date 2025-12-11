@@ -82,8 +82,7 @@ fn test_get_float_dtypes_no_int8() raises:
     var dtypes = get_float_dtypes()
     for dtype in dtypes:
         assert_true(
-            dtype != DType.int8,
-            "get_float_dtypes should not include int8"
+            dtype != DType.int8, "get_float_dtypes should not include int8"
         )
 
 
@@ -136,9 +135,7 @@ fn test_dtype_lists_are_independent() raises:
 
     # Both should have same content
     assert_equal_int(
-        dtypes1.__len__(),
-        dtypes2.__len__(),
-        "Lists should have same length"
+        dtypes1.__len__(), dtypes2.__len__(), "Lists should have same length"
     )
 
     # Both should contain float32

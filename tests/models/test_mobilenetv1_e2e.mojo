@@ -325,7 +325,9 @@ fn test_mobilenetv1_forward_with_batchnorm() raises:
     var dw_kernel = ones(dw_kernel_shape, DType.float32)
     var dw_bias = zeros([in_channels], DType.float32)
 
-    var dw_out = depthwise_conv2d(input, dw_kernel, dw_bias, stride=1, padding=1)
+    var dw_out = depthwise_conv2d(
+        input, dw_kernel, dw_bias, stride=1, padding=1
+    )
 
     # BatchNorm after depthwise conv
     var bn_dw = BatchNorm2dLayer(in_channels)
@@ -396,7 +398,9 @@ fn test_mobilenetv1_backward_conv_only() raises:
     var dw_kernel = ones(dw_kernel_shape, DType.float32)
     var dw_bias = zeros([in_channels], DType.float32)
 
-    var dw_out = depthwise_conv2d(input, dw_kernel, dw_bias, stride=1, padding=1)
+    var dw_out = depthwise_conv2d(
+        input, dw_kernel, dw_bias, stride=1, padding=1
+    )
 
     # Forward pass: pointwise
     var pw_kernel_shape = List[Int]()
@@ -594,7 +598,9 @@ fn test_mobilenetv1_different_batch_sizes() raises:
         var dw_kernel = ones(dw_kernel_shape, DType.float32)
         var dw_bias = zeros([in_channels], DType.float32)
 
-        var output = depthwise_conv2d(input, dw_kernel, dw_bias, stride=1, padding=1)
+        var output = depthwise_conv2d(
+            input, dw_kernel, dw_bias, stride=1, padding=1
+        )
 
         # Verify output batch size matches
         var out_shape = output.shape()
@@ -628,7 +634,9 @@ fn test_mobilenetv1_gradient_flow_through_convs() raises:
     var dw_kernel = ones(dw_kernel_shape, DType.float32)
     var dw_bias = zeros([channels], DType.float32)
 
-    var dw_out = depthwise_conv2d(input, dw_kernel, dw_bias, stride=1, padding=1)
+    var dw_out = depthwise_conv2d(
+        input, dw_kernel, dw_bias, stride=1, padding=1
+    )
 
     var pw_kernel_shape = List[Int]()
     pw_kernel_shape.append(channels)
@@ -647,7 +655,9 @@ fn test_mobilenetv1_gradient_flow_through_convs() raises:
     from shared.core.conv import conv2d_backward, depthwise_conv2d_backward
 
     # Backward through pointwise conv
-    var pw_grad = conv2d_backward(grad_output, dw_out, pw_kernel, stride=1, padding=0)
+    var pw_grad = conv2d_backward(
+        grad_output, dw_out, pw_kernel, stride=1, padding=0
+    )
     var grad_pw_in = pw_grad.grad_input
     var grad_pw_in_shape = grad_pw_in.shape()
     assert_equal(grad_pw_in_shape[0], batch_size)

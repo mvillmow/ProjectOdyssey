@@ -91,7 +91,9 @@ struct InceptionModule:
     ) raises:
         """Initialize Inception module."""
         # Branch 1
-        self.conv1x1_1_weights = kaiming_normal(in_channels, out_1x1, [out_1x1, in_channels, 1, 1])
+        self.conv1x1_1_weights = kaiming_normal(
+            in_channels, out_1x1, [out_1x1, in_channels, 1, 1]
+        )
         self.conv1x1_1_bias = zeros([out_1x1], DType.float32)
         self.bn1x1_1_gamma = constant([out_1x1], 1.0)
         self.bn1x1_1_beta = zeros([out_1x1], DType.float32)
@@ -99,7 +101,9 @@ struct InceptionModule:
         self.bn1x1_1_running_var = constant([out_1x1], 1.0)
 
         # Branch 2: 1x1
-        self.conv1x1_2_weights = kaiming_normal(in_channels, reduce_3x3, [reduce_3x3, in_channels, 1, 1])
+        self.conv1x1_2_weights = kaiming_normal(
+            in_channels, reduce_3x3, [reduce_3x3, in_channels, 1, 1]
+        )
         self.conv1x1_2_bias = zeros([reduce_3x3], DType.float32)
         self.bn1x1_2_gamma = constant([reduce_3x3], 1.0)
         self.bn1x1_2_beta = zeros([reduce_3x3], DType.float32)
@@ -107,7 +111,9 @@ struct InceptionModule:
         self.bn1x1_2_running_var = constant([reduce_3x3], 1.0)
 
         # Branch 2: 3x3
-        self.conv3x3_weights = kaiming_normal(reduce_3x3 * 9, out_3x3, [out_3x3, reduce_3x3, 3, 3])
+        self.conv3x3_weights = kaiming_normal(
+            reduce_3x3 * 9, out_3x3, [out_3x3, reduce_3x3, 3, 3]
+        )
         self.conv3x3_bias = zeros([out_3x3], DType.float32)
         self.bn3x3_gamma = constant([out_3x3], 1.0)
         self.bn3x3_beta = zeros([out_3x3], DType.float32)
@@ -115,7 +121,9 @@ struct InceptionModule:
         self.bn3x3_running_var = constant([out_3x3], 1.0)
 
         # Branch 3: 1x1
-        self.conv1x1_3_weights = kaiming_normal(in_channels, reduce_5x5, [reduce_5x5, in_channels, 1, 1])
+        self.conv1x1_3_weights = kaiming_normal(
+            in_channels, reduce_5x5, [reduce_5x5, in_channels, 1, 1]
+        )
         self.conv1x1_3_bias = zeros([reduce_5x5], DType.float32)
         self.bn1x1_3_gamma = constant([reduce_5x5], 1.0)
         self.bn1x1_3_beta = zeros([reduce_5x5], DType.float32)
@@ -123,7 +131,9 @@ struct InceptionModule:
         self.bn1x1_3_running_var = constant([reduce_5x5], 1.0)
 
         # Branch 3: 5x5
-        self.conv5x5_weights = kaiming_normal(reduce_5x5 * 25, out_5x5, [out_5x5, reduce_5x5, 5, 5])
+        self.conv5x5_weights = kaiming_normal(
+            reduce_5x5 * 25, out_5x5, [out_5x5, reduce_5x5, 5, 5]
+        )
         self.conv5x5_bias = zeros([out_5x5], DType.float32)
         self.bn5x5_gamma = constant([out_5x5], 1.0)
         self.bn5x5_beta = zeros([out_5x5], DType.float32)
@@ -131,7 +141,9 @@ struct InceptionModule:
         self.bn5x5_running_var = constant([out_5x5], 1.0)
 
         # Branch 4: pool + 1x1
-        self.conv1x1_4_weights = kaiming_normal(in_channels, pool_proj, [pool_proj, in_channels, 1, 1])
+        self.conv1x1_4_weights = kaiming_normal(
+            in_channels, pool_proj, [pool_proj, in_channels, 1, 1]
+        )
         self.conv1x1_4_bias = zeros([pool_proj], DType.float32)
         self.bn1x1_4_gamma = constant([pool_proj], 1.0)
         self.bn1x1_4_beta = zeros([pool_proj], DType.float32)
@@ -141,41 +153,83 @@ struct InceptionModule:
     fn forward(mut self, x: ExTensor, training: Bool) raises -> ExTensor:
         """Forward pass through Inception module."""
         # Branch 1: 1x1 conv
-        var b1 = conv2d(x, self.conv1x1_1_weights, self.conv1x1_1_bias, stride=1, padding=0)
+        var b1 = conv2d(
+            x, self.conv1x1_1_weights, self.conv1x1_1_bias, stride=1, padding=0
+        )
         b1, _, _ = batch_norm2d(
-            b1, self.bn1x1_1_gamma, self.bn1x1_1_beta, self.bn1x1_1_running_mean, self.bn1x1_1_running_var, training
+            b1,
+            self.bn1x1_1_gamma,
+            self.bn1x1_1_beta,
+            self.bn1x1_1_running_mean,
+            self.bn1x1_1_running_var,
+            training,
         )
         b1 = relu(b1)
 
         # Branch 2: 1x1 reduce -> 3x3
-        var b2 = conv2d(x, self.conv1x1_2_weights, self.conv1x1_2_bias, stride=1, padding=0)
+        var b2 = conv2d(
+            x, self.conv1x1_2_weights, self.conv1x1_2_bias, stride=1, padding=0
+        )
         b2, _, _ = batch_norm2d(
-            b2, self.bn1x1_2_gamma, self.bn1x1_2_beta, self.bn1x1_2_running_mean, self.bn1x1_2_running_var, training
+            b2,
+            self.bn1x1_2_gamma,
+            self.bn1x1_2_beta,
+            self.bn1x1_2_running_mean,
+            self.bn1x1_2_running_var,
+            training,
         )
         b2 = relu(b2)
-        b2 = conv2d(b2, self.conv3x3_weights, self.conv3x3_bias, stride=1, padding=1)
+        b2 = conv2d(
+            b2, self.conv3x3_weights, self.conv3x3_bias, stride=1, padding=1
+        )
         b2, _, _ = batch_norm2d(
-            b2, self.bn3x3_gamma, self.bn3x3_beta, self.bn3x3_running_mean, self.bn3x3_running_var, training
+            b2,
+            self.bn3x3_gamma,
+            self.bn3x3_beta,
+            self.bn3x3_running_mean,
+            self.bn3x3_running_var,
+            training,
         )
         b2 = relu(b2)
 
         # Branch 3: 1x1 reduce -> 5x5
-        var b3 = conv2d(x, self.conv1x1_3_weights, self.conv1x1_3_bias, stride=1, padding=0)
+        var b3 = conv2d(
+            x, self.conv1x1_3_weights, self.conv1x1_3_bias, stride=1, padding=0
+        )
         b3, _, _ = batch_norm2d(
-            b3, self.bn1x1_3_gamma, self.bn1x1_3_beta, self.bn1x1_3_running_mean, self.bn1x1_3_running_var, training
+            b3,
+            self.bn1x1_3_gamma,
+            self.bn1x1_3_beta,
+            self.bn1x1_3_running_mean,
+            self.bn1x1_3_running_var,
+            training,
         )
         b3 = relu(b3)
-        b3 = conv2d(b3, self.conv5x5_weights, self.conv5x5_bias, stride=1, padding=2)
+        b3 = conv2d(
+            b3, self.conv5x5_weights, self.conv5x5_bias, stride=1, padding=2
+        )
         b3, _, _ = batch_norm2d(
-            b3, self.bn5x5_gamma, self.bn5x5_beta, self.bn5x5_running_mean, self.bn5x5_running_var, training
+            b3,
+            self.bn5x5_gamma,
+            self.bn5x5_beta,
+            self.bn5x5_running_mean,
+            self.bn5x5_running_var,
+            training,
         )
         b3 = relu(b3)
 
         # Branch 4: pool -> 1x1
         var b4 = maxpool2d(x, kernel_size=3, stride=1, padding=1)
-        b4 = conv2d(b4, self.conv1x1_4_weights, self.conv1x1_4_bias, stride=1, padding=0)
+        b4 = conv2d(
+            b4, self.conv1x1_4_weights, self.conv1x1_4_bias, stride=1, padding=0
+        )
         b4, _, _ = batch_norm2d(
-            b4, self.bn1x1_4_gamma, self.bn1x1_4_beta, self.bn1x1_4_running_mean, self.bn1x1_4_running_var, training
+            b4,
+            self.bn1x1_4_gamma,
+            self.bn1x1_4_beta,
+            self.bn1x1_4_running_mean,
+            self.bn1x1_4_running_var,
+            training,
         )
         b4 = relu(b4)
 
@@ -228,7 +282,9 @@ fn concatenate_depthwise(
         for c in range(c4):
             for i in range(hw):
                 var src_idx = ((b * c4 + c) * hw) + i
-                var dst_idx = ((b * total_channels + (c1 + c2 + c3 + c)) * hw) + i
+                var dst_idx = (
+                    (b * total_channels + (c1 + c2 + c3 + c)) * hw
+                ) + i
                 result_data[dst_idx] = t4_data[src_idx]
 
     return result
@@ -305,7 +361,11 @@ struct GoogLeNetSmall:
         """Forward pass through simplified GoogLeNet."""
         # Initial conv
         var out = conv2d(
-            x, self.initial_conv_weights, self.initial_conv_bias, stride=1, padding=1
+            x,
+            self.initial_conv_weights,
+            self.initial_conv_bias,
+            stride=1,
+            padding=1,
         )
         out, _, _ = batch_norm2d(
             out,
@@ -637,7 +697,10 @@ fn test_googlenet_inception_module_contribution() raises:
     for i in range(output.numel()):
         sum_val += Float32(output_data[i] * output_data[i])
 
-    assert_true(sum_val > 0.0, "Output should contain non-zero values from Inception modules")
+    assert_true(
+        sum_val > 0.0,
+        "Output should contain non-zero values from Inception modules",
+    )
 
 
 fn test_googlenet_batch_independence() raises:

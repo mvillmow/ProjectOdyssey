@@ -399,7 +399,9 @@ fn test_pointwise_conv2d_backward() raises:
     var grad_output = ones(output.shape(), DType.float32)
 
     # Backward pass
-    var result = conv2d_backward(grad_output, input, kernel, stride=1, padding=0)
+    var result = conv2d_backward(
+        grad_output, input, kernel, stride=1, padding=0
+    )
 
     # Verify gradient shapes
     var grad_input = result.grad_input
@@ -860,7 +862,9 @@ fn test_mobilenetv1_block1_32to64() raises:
     var dw_kernel = ones(dw_kernel_shape, DType.float32)
     var dw_bias = zeros(List[Int](in_channels), DType.float32)
 
-    var dw_output = depthwise_conv2d(input, dw_kernel, dw_bias, stride=1, padding=1)
+    var dw_output = depthwise_conv2d(
+        input, dw_kernel, dw_bias, stride=1, padding=1
+    )
 
     # Pointwise conv
     var pw_kernel_shape = List[Int]()
@@ -961,7 +965,9 @@ fn test_mobilenetv1_block5_512_repeat() raises:
     var dw_kernel = ones(dw_kernel_shape, DType.float32)
     var dw_bias = zeros(List[Int](channels), DType.float32)
 
-    var dw_output = depthwise_conv2d(input, dw_kernel, dw_bias, stride=1, padding=1)
+    var dw_output = depthwise_conv2d(
+        input, dw_kernel, dw_bias, stride=1, padding=1
+    )
 
     # Pointwise conv (no channel change)
     var pw_kernel_shape = List[Int]()

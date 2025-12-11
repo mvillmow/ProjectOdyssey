@@ -36,7 +36,9 @@ from math import isnan, isinf
 # ============================================================================
 
 
-fn create_alexnet_parameters(dtype: DType) raises -> Tuple[
+fn create_alexnet_parameters(
+    dtype: DType,
+) raises -> Tuple[
     ExTensor,
     ExTensor,
     ExTensor,
@@ -57,7 +59,8 @@ fn create_alexnet_parameters(dtype: DType) raises -> Tuple[
     ExTensor,
     ExTensor,
 ]:
-    """Create all AlexNet parameters (conv kernels, biases, FC weights, biases)."""
+    """Create all AlexNet parameters (conv kernels, biases, FC weights, biases).
+    """
     # Conv1: 3->64, 11x11
     var c1_k = kaiming_uniform(
         3 * 11 * 11, 64 * 11 * 11, [64, 3, 11, 11], dtype=dtype
@@ -191,18 +194,32 @@ fn alexnet_forward(
 
 
 fn test_forward_output_shape_224x224() raises:
-    """Test forward pass produces correct output shape (batch, 1000) with 224x224 input."""
+    """Test forward pass produces correct output shape (batch, 1000) with 224x224 input.
+    """
     var dtype = DType.float32
 
     # Create parameters
-    var (c1_k, c1_b, c2_k, c2_b, c3_k, c3_b, c4_k, c4_b, c5_k, c5_b, fc1_w, fc1_b, fc2_w, fc2_b, fc3_w, fc3_b) = create_alexnet_parameters(
-        dtype
-    )
+    var (
+        c1_k,
+        c1_b,
+        c2_k,
+        c2_b,
+        c3_k,
+        c3_b,
+        c4_k,
+        c4_b,
+        c5_k,
+        c5_b,
+        fc1_w,
+        fc1_b,
+        fc2_w,
+        fc2_b,
+        fc3_w,
+        fc3_b,
+    ) = create_alexnet_parameters(dtype)
 
     # Create batch of inputs: (2, 3, 224, 224)
-    var input = create_seeded_random_tensor(
-        [2, 3, 224, 224], dtype, seed=42
-    )
+    var input = create_seeded_random_tensor([2, 3, 224, 224], dtype, seed=42)
 
     # Forward pass
     var output = alexnet_forward(
@@ -242,9 +259,24 @@ fn test_forward_single_sample_224x224() raises:
     """Test forward pass with single sample (1, 3, 224, 224)."""
     var dtype = DType.float32
 
-    var (c1_k, c1_b, c2_k, c2_b, c3_k, c3_b, c4_k, c4_b, c5_k, c5_b, fc1_w, fc1_b, fc2_w, fc2_b, fc3_w, fc3_b) = create_alexnet_parameters(
-        dtype
-    )
+    var (
+        c1_k,
+        c1_b,
+        c2_k,
+        c2_b,
+        c3_k,
+        c3_b,
+        c4_k,
+        c4_b,
+        c5_k,
+        c5_b,
+        fc1_w,
+        fc1_b,
+        fc2_w,
+        fc2_b,
+        fc3_w,
+        fc3_b,
+    ) = create_alexnet_parameters(dtype)
 
     # Create single input
     var input = create_seeded_random_tensor([1, 3, 224, 224], dtype, seed=123)
@@ -281,9 +313,24 @@ fn test_forward_batch_sizes() raises:
     """Test forward pass with different batch sizes."""
     var dtype = DType.float32
 
-    var (c1_k, c1_b, c2_k, c2_b, c3_k, c3_b, c4_k, c4_b, c5_k, c5_b, fc1_w, fc1_b, fc2_w, fc2_b, fc3_w, fc3_b) = create_alexnet_parameters(
-        dtype
-    )
+    var (
+        c1_k,
+        c1_b,
+        c2_k,
+        c2_b,
+        c3_k,
+        c3_b,
+        c4_k,
+        c4_b,
+        c5_k,
+        c5_b,
+        fc1_w,
+        fc1_b,
+        fc2_w,
+        fc2_b,
+        fc3_w,
+        fc3_b,
+    ) = create_alexnet_parameters(dtype)
 
     # Test batch size 1
     var input1 = create_seeded_random_tensor([1, 3, 224, 224], dtype, seed=1)
@@ -336,9 +383,24 @@ fn test_forward_deterministic() raises:
     """Test that forward pass is deterministic with same input."""
     var dtype = DType.float32
 
-    var (c1_k, c1_b, c2_k, c2_b, c3_k, c3_b, c4_k, c4_b, c5_k, c5_b, fc1_w, fc1_b, fc2_w, fc2_b, fc3_w, fc3_b) = create_alexnet_parameters(
-        dtype
-    )
+    var (
+        c1_k,
+        c1_b,
+        c2_k,
+        c2_b,
+        c3_k,
+        c3_b,
+        c4_k,
+        c4_b,
+        c5_k,
+        c5_b,
+        fc1_w,
+        fc1_b,
+        fc2_w,
+        fc2_b,
+        fc3_w,
+        fc3_b,
+    ) = create_alexnet_parameters(dtype)
 
     # Create input
     var input = create_seeded_random_tensor([2, 3, 224, 224], dtype, seed=999)
@@ -399,9 +461,24 @@ fn test_shape_propagation_through_conv_layers() raises:
     """Test that shapes propagate correctly through conv and pool layers."""
     var dtype = DType.float32
 
-    var (c1_k, c1_b, c2_k, c2_b, c3_k, c3_b, c4_k, c4_b, c5_k, c5_b, _, _, _, _, _, _) = create_alexnet_parameters(
-        dtype
-    )
+    var (
+        c1_k,
+        c1_b,
+        c2_k,
+        c2_b,
+        c3_k,
+        c3_b,
+        c4_k,
+        c4_b,
+        c5_k,
+        c5_b,
+        _,
+        _,
+        _,
+        _,
+        _,
+        _,
+    ) = create_alexnet_parameters(dtype)
 
     # Input: (1, 3, 224, 224)
     var input = create_seeded_random_tensor([1, 3, 224, 224], dtype, seed=42)
@@ -458,9 +535,24 @@ fn test_shape_propagation_through_fc_layers() raises:
     """Test that shapes propagate correctly through FC layers."""
     var dtype = DType.float32
 
-    var (_, _, _, _, _, _, _, _, _, _, fc1_w, fc1_b, fc2_w, fc2_b, fc3_w, fc3_b) = create_alexnet_parameters(
-        dtype
-    )
+    var (
+        _,
+        _,
+        _,
+        _,
+        _,
+        _,
+        _,
+        _,
+        _,
+        _,
+        fc1_w,
+        fc1_b,
+        fc2_w,
+        fc2_b,
+        fc3_w,
+        fc3_b,
+    ) = create_alexnet_parameters(dtype)
 
     # Create flattened input: (2, 9216) from (2, 256, 6, 6)
     var flattened = create_seeded_random_tensor([2, 9216], dtype, seed=42)
@@ -503,9 +595,24 @@ fn test_parameters_initialization() raises:
     """Test that model parameters initialize correctly."""
     var dtype = DType.float32
 
-    var (c1_k, c1_b, c2_k, c2_b, c3_k, c3_b, c4_k, c4_b, c5_k, c5_b, fc1_w, fc1_b, fc2_w, fc2_b, fc3_w, fc3_b) = create_alexnet_parameters(
-        dtype
-    )
+    var (
+        c1_k,
+        c1_b,
+        c2_k,
+        c2_b,
+        c3_k,
+        c3_b,
+        c4_k,
+        c4_b,
+        c5_k,
+        c5_b,
+        fc1_w,
+        fc1_b,
+        fc2_w,
+        fc2_b,
+        fc3_w,
+        fc3_b,
+    ) = create_alexnet_parameters(dtype)
 
     # Verify all parameters exist and have correct shapes
     assert_shape(c1_k, [64, 3, 11, 11], "Conv1 kernel shape")
@@ -541,10 +648,27 @@ fn test_multiple_dtypes() raises:
     input_shape.append(224)
 
     # Test float32
-    var input_f32 = create_seeded_random_tensor(input_shape, DType.float32, seed=42)
-    var (c1_k_f32, c1_b_f32, c2_k_f32, c2_b_f32, c3_k_f32, c3_b_f32, c4_k_f32, c4_b_f32, c5_k_f32, c5_b_f32, fc1_w_f32, fc1_b_f32, fc2_w_f32, fc2_b_f32, fc3_w_f32, fc3_b_f32) = create_alexnet_parameters(
-        DType.float32
+    var input_f32 = create_seeded_random_tensor(
+        input_shape, DType.float32, seed=42
     )
+    var (
+        c1_k_f32,
+        c1_b_f32,
+        c2_k_f32,
+        c2_b_f32,
+        c3_k_f32,
+        c3_b_f32,
+        c4_k_f32,
+        c4_b_f32,
+        c5_k_f32,
+        c5_b_f32,
+        fc1_w_f32,
+        fc1_b_f32,
+        fc2_w_f32,
+        fc2_b_f32,
+        fc3_w_f32,
+        fc3_b_f32,
+    ) = create_alexnet_parameters(DType.float32)
     var output_f32 = alexnet_forward(
         input_f32,
         c1_k_f32,
@@ -568,10 +692,27 @@ fn test_multiple_dtypes() raises:
     assert_dtype(output_f32, DType.float32, "float32 output dtype")
 
     # Test float16
-    var input_f16 = create_seeded_random_tensor(input_shape, DType.float16, seed=42)
-    var (c1_k_f16, c1_b_f16, c2_k_f16, c2_b_f16, c3_k_f16, c3_b_f16, c4_k_f16, c4_b_f16, c5_k_f16, c5_b_f16, fc1_w_f16, fc1_b_f16, fc2_w_f16, fc2_b_f16, fc3_w_f16, fc3_b_f16) = create_alexnet_parameters(
-        DType.float16
+    var input_f16 = create_seeded_random_tensor(
+        input_shape, DType.float16, seed=42
     )
+    var (
+        c1_k_f16,
+        c1_b_f16,
+        c2_k_f16,
+        c2_b_f16,
+        c3_k_f16,
+        c3_b_f16,
+        c4_k_f16,
+        c4_b_f16,
+        c5_k_f16,
+        c5_b_f16,
+        fc1_w_f16,
+        fc1_b_f16,
+        fc2_w_f16,
+        fc2_b_f16,
+        fc3_w_f16,
+        fc3_b_f16,
+    ) = create_alexnet_parameters(DType.float16)
     var output_f16 = alexnet_forward(
         input_f16,
         c1_k_f16,
@@ -615,9 +756,24 @@ fn test_full_forward_pipeline() raises:
     """Test complete forward pass: input -> output through all 16 operations."""
     var dtype = DType.float32
 
-    var (c1_k, c1_b, c2_k, c2_b, c3_k, c3_b, c4_k, c4_b, c5_k, c5_b, fc1_w, fc1_b, fc2_w, fc2_b, fc3_w, fc3_b) = create_alexnet_parameters(
-        dtype
-    )
+    var (
+        c1_k,
+        c1_b,
+        c2_k,
+        c2_b,
+        c3_k,
+        c3_b,
+        c4_k,
+        c4_b,
+        c5_k,
+        c5_b,
+        fc1_w,
+        fc1_b,
+        fc2_w,
+        fc2_b,
+        fc3_w,
+        fc3_b,
+    ) = create_alexnet_parameters(dtype)
 
     # Create realistic batch
     var batch_size = 4
@@ -654,8 +810,12 @@ fn test_full_forward_pipeline() raises:
     var has_valid_values = false
     for i in range(output.numel()):
         var val = output._get_float64(i)
-        assert_false(isnan(val), "Full pipeline output contains NaN at " + String(i))
-        assert_false(isinf(val), "Full pipeline output contains Inf at " + String(i))
+        assert_false(
+            isnan(val), "Full pipeline output contains NaN at " + String(i)
+        )
+        assert_false(
+            isinf(val), "Full pipeline output contains Inf at " + String(i)
+        )
         if val != 0.0:
             has_valid_values = true
 

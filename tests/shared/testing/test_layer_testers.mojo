@@ -86,9 +86,7 @@ fn test_activation_layer_backward_relu() raises:
     """Test ReLU activation backward pass with gradient checking."""
     # Use small shape to avoid timeout
     LayerTester.test_activation_layer_backward(
-        shape=[2, 3, 4, 4],
-        dtype=DType.float32,
-        activation="relu"
+        shape=[2, 3, 4, 4], dtype=DType.float32, activation="relu"
     )
 
 
@@ -96,9 +94,7 @@ fn test_activation_layer_backward_sigmoid() raises:
     """Test Sigmoid activation backward pass with gradient checking."""
     # Use small shape to avoid timeout
     LayerTester.test_activation_layer_backward(
-        shape=[2, 3, 4, 4],
-        dtype=DType.float32,
-        activation="sigmoid"
+        shape=[2, 3, 4, 4], dtype=DType.float32, activation="sigmoid"
     )
 
 
@@ -106,9 +102,7 @@ fn test_activation_layer_backward_tanh() raises:
     """Test Tanh activation backward pass with gradient checking."""
     # Use small shape to avoid timeout
     LayerTester.test_activation_layer_backward(
-        shape=[2, 3, 4, 4],
-        dtype=DType.float32,
-        activation="tanh"
+        shape=[2, 3, 4, 4], dtype=DType.float32, activation="tanh"
     )
 
 
@@ -124,14 +118,16 @@ fn test_linear_layer_backward_fp32() raises:
         out_features=10,
         weights=weights,
         bias=bias,
-        dtype=DType.float32
+        dtype=DType.float32,
     )
 
 
 fn test_conv_layer_backward_fp32() raises:
     """Test conv layer backward pass with FP32 gradient checking."""
     # Create small kernel and bias tensors (small spatial dimensions to avoid timeout)
-    var weights = create_ones_tensor([8, 3, 3, 3], DType.float32)  # 8 filters, 3x3
+    var weights = create_ones_tensor(
+        [8, 3, 3, 3], DType.float32
+    )  # 8 filters, 3x3
     var bias = create_ones_tensor([8], DType.float32)
 
     # Test backward pass with small input size
@@ -145,7 +141,7 @@ fn test_conv_layer_backward_fp32() raises:
         bias=bias,
         dtype=DType.float32,
         stride=1,
-        padding=1
+        padding=1,
     )
 
 
@@ -153,10 +149,10 @@ fn test_batchnorm_layer_training_mode() raises:
     """Test BatchNorm layer in training mode."""
     var num_features = 16
     var input_shape = List[Int]()
-    input_shape.append(2)      # batch size
-    input_shape.append(16)     # channels
-    input_shape.append(4)      # height
-    input_shape.append(4)      # width
+    input_shape.append(2)  # batch size
+    input_shape.append(16)  # channels
+    input_shape.append(4)  # height
+    input_shape.append(4)  # width
 
     var gamma = create_ones_tensor([num_features], DType.float32)
     var beta = create_ones_tensor([num_features], DType.float32)
@@ -172,7 +168,7 @@ fn test_batchnorm_layer_training_mode() raises:
         running_mean=running_mean,
         running_var=running_var,
         dtype=DType.float32,
-        training_mode=True
+        training_mode=True,
     )
 
 
@@ -180,10 +176,10 @@ fn test_batchnorm_layer_inference_mode() raises:
     """Test BatchNorm layer in inference mode."""
     var num_features = 16
     var input_shape = List[Int]()
-    input_shape.append(2)      # batch size
-    input_shape.append(16)     # channels
-    input_shape.append(4)      # height
-    input_shape.append(4)      # width
+    input_shape.append(2)  # batch size
+    input_shape.append(16)  # channels
+    input_shape.append(4)  # height
+    input_shape.append(4)  # width
 
     var gamma = create_ones_tensor([num_features], DType.float32)
     var beta = create_ones_tensor([num_features], DType.float32)
@@ -199,7 +195,7 @@ fn test_batchnorm_layer_inference_mode() raises:
         running_mean=running_mean,
         running_var=running_var,
         dtype=DType.float32,
-        training_mode=False
+        training_mode=False,
     )
 
 
@@ -207,10 +203,10 @@ fn test_batchnorm_layer_backward_fp32() raises:
     """Test BatchNorm backward pass with FP32."""
     var num_features = 16
     var input_shape = List[Int]()
-    input_shape.append(2)      # batch size
-    input_shape.append(16)     # channels
-    input_shape.append(4)      # height
-    input_shape.append(4)      # width
+    input_shape.append(2)  # batch size
+    input_shape.append(16)  # channels
+    input_shape.append(4)  # height
+    input_shape.append(4)  # width
 
     var gamma = create_ones_tensor([num_features], DType.float32)
     var beta = create_ones_tensor([num_features], DType.float32)
@@ -225,7 +221,7 @@ fn test_batchnorm_layer_backward_fp32() raises:
         beta=beta,
         running_mean=running_mean,
         running_var=running_var,
-        dtype=DType.float32
+        dtype=DType.float32,
     )
 
 

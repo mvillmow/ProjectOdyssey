@@ -135,7 +135,12 @@ fn test_dense_layer_bottleneck_block1_layer1() raises:
     var bottleneck_channels = 4 * growth_rate
 
     # Create conv1 weights and bias for block 1
-    var conv1_weights_shape: List[Int] = [bottleneck_channels, in_channels, 1, 1]
+    var conv1_weights_shape: List[Int] = [
+        bottleneck_channels,
+        in_channels,
+        1,
+        1,
+    ]
     var conv1_weights = kaiming_normal(
         fan_in=in_channels,
         fan_out=bottleneck_channels,
@@ -146,7 +151,9 @@ fn test_dense_layer_bottleneck_block1_layer1() raises:
 
     # Create input (batch=2, channels=64, h=8, w=8)
     var input_shape: List[Int] = [2, in_channels, 8, 8]
-    var input = create_special_value_tensor(input_shape, DType.float32, SPECIAL_VALUE_ONE)
+    var input = create_special_value_tensor(
+        input_shape, DType.float32, SPECIAL_VALUE_ONE
+    )
 
     # Forward pass
     var output = conv2d(input, conv1_weights, conv1_bias, stride=1, padding=0)
@@ -179,7 +186,12 @@ fn test_dense_layer_main_conv() raises:
     var growth_rate = 32
 
     # Create conv2 weights and bias
-    var conv2_weights_shape: List[Int] = [growth_rate, bottleneck_channels, 3, 3]
+    var conv2_weights_shape: List[Int] = [
+        growth_rate,
+        bottleneck_channels,
+        3,
+        3,
+    ]
     var conv2_weights = kaiming_normal(
         fan_in=bottleneck_channels * 9,
         fan_out=growth_rate,
@@ -190,7 +202,9 @@ fn test_dense_layer_main_conv() raises:
 
     # Create input (batch=2, channels=128, h=8, w=8)
     var input_shape: List[Int] = [2, bottleneck_channels, 8, 8]
-    var input = create_special_value_tensor(input_shape, DType.float32, SPECIAL_VALUE_ONE)
+    var input = create_special_value_tensor(
+        input_shape, DType.float32, SPECIAL_VALUE_ONE
+    )
 
     # Forward pass
     var output = conv2d(input, conv2_weights, conv2_bias, stride=1, padding=1)
@@ -223,7 +237,12 @@ fn test_dense_layer_bottleneck_block2() raises:
     var bottleneck_channels = 4 * growth_rate
 
     # Create conv1 weights and bias
-    var conv1_weights_shape: List[Int] = [bottleneck_channels, in_channels, 1, 1]
+    var conv1_weights_shape: List[Int] = [
+        bottleneck_channels,
+        in_channels,
+        1,
+        1,
+    ]
     var conv1_weights = kaiming_normal(
         fan_in=in_channels,
         fan_out=bottleneck_channels,
@@ -234,7 +253,9 @@ fn test_dense_layer_bottleneck_block2() raises:
 
     # Create input
     var input_shape: List[Int] = [2, in_channels, 16, 16]
-    var input = create_special_value_tensor(input_shape, DType.float32, SPECIAL_VALUE_ONE)
+    var input = create_special_value_tensor(
+        input_shape, DType.float32, SPECIAL_VALUE_ONE
+    )
 
     # Forward pass
     var output = conv2d(input, conv1_weights, conv1_bias, stride=1, padding=0)
@@ -267,7 +288,12 @@ fn test_dense_layer_bottleneck_block3() raises:
     var bottleneck_channels = 4 * growth_rate
 
     # Create conv1 weights and bias
-    var conv1_weights_shape: List[Int] = [bottleneck_channels, in_channels, 1, 1]
+    var conv1_weights_shape: List[Int] = [
+        bottleneck_channels,
+        in_channels,
+        1,
+        1,
+    ]
     var conv1_weights = kaiming_normal(
         fan_in=in_channels,
         fan_out=bottleneck_channels,
@@ -278,7 +304,9 @@ fn test_dense_layer_bottleneck_block3() raises:
 
     # Create input
     var input_shape: List[Int] = [2, in_channels, 8, 8]
-    var input = create_special_value_tensor(input_shape, DType.float32, SPECIAL_VALUE_ONE)
+    var input = create_special_value_tensor(
+        input_shape, DType.float32, SPECIAL_VALUE_ONE
+    )
 
     # Forward pass
     var output = conv2d(input, conv1_weights, conv1_bias, stride=1, padding=0)
@@ -311,7 +339,12 @@ fn test_dense_layer_bottleneck_block4() raises:
     var bottleneck_channels = 4 * growth_rate
 
     # Create conv1 weights and bias
-    var conv1_weights_shape: List[Int] = [bottleneck_channels, in_channels, 1, 1]
+    var conv1_weights_shape: List[Int] = [
+        bottleneck_channels,
+        in_channels,
+        1,
+        1,
+    ]
     var conv1_weights = kaiming_normal(
         fan_in=in_channels,
         fan_out=bottleneck_channels,
@@ -322,7 +355,9 @@ fn test_dense_layer_bottleneck_block4() raises:
 
     # Create input
     var input_shape: List[Int] = [2, in_channels, 4, 4]
-    var input = create_special_value_tensor(input_shape, DType.float32, SPECIAL_VALUE_ONE)
+    var input = create_special_value_tensor(
+        input_shape, DType.float32, SPECIAL_VALUE_ONE
+    )
 
     # Forward pass
     var output = conv2d(input, conv1_weights, conv1_bias, stride=1, padding=0)
@@ -352,10 +387,14 @@ fn test_concatenation_operation() raises:
 
     # Test simple 2-tensor concatenation
     var shape1: List[Int] = [2, 64, 8, 8]
-    var tensor1 = create_special_value_tensor(shape1, DType.float32, SPECIAL_VALUE_ONE)
+    var tensor1 = create_special_value_tensor(
+        shape1, DType.float32, SPECIAL_VALUE_ONE
+    )
 
     var shape2: List[Int] = [2, 32, 8, 8]
-    var tensor2 = create_special_value_tensor(shape2, DType.float32, SPECIAL_VALUE_ONE)
+    var tensor2 = create_special_value_tensor(
+        shape2, DType.float32, SPECIAL_VALUE_ONE
+    )
 
     var tensors: List[ExTensor] = []
     tensors.append(tensor1)
@@ -370,7 +409,9 @@ fn test_concatenation_operation() raises:
 
     # Test 3-tensor concatenation (simulating layer 2 in dense block)
     var shape3: List[Int] = [2, 32, 8, 8]
-    var tensor3 = create_special_value_tensor(shape3, DType.float32, SPECIAL_VALUE_ONE)
+    var tensor3 = create_special_value_tensor(
+        shape3, DType.float32, SPECIAL_VALUE_ONE
+    )
 
     tensors.append(tensor3)
     var result2 = concatenate_channel_list(tensors)
@@ -407,7 +448,9 @@ fn test_dense_block_forward() raises:
 
     # Create input
     var input_shape: List[Int] = [2, in_channels, 8, 8]
-    var input = create_special_value_tensor(input_shape, DType.float32, SPECIAL_VALUE_ONE)
+    var input = create_special_value_tensor(
+        input_shape, DType.float32, SPECIAL_VALUE_ONE
+    )
 
     # Forward pass
     var output = block.forward(input, training=True)
@@ -444,7 +487,9 @@ fn test_transition_layer_forward() raises:
 
     var transition1 = TransitionLayer(in_channels_1, out_channels_1)
     var input1_shape: List[Int] = [2, in_channels_1, 16, 16]
-    var input1 = create_special_value_tensor(input1_shape, DType.float32, SPECIAL_VALUE_ONE)
+    var input1 = create_special_value_tensor(
+        input1_shape, DType.float32, SPECIAL_VALUE_ONE
+    )
 
     var output1 = transition1.forward(input1, training=True)
     assert_shape(output1, [2, out_channels_1, 8, 8])  # H: 16→8, W: 16→8
@@ -456,7 +501,9 @@ fn test_transition_layer_forward() raises:
 
     var transition2 = TransitionLayer(in_channels_2, out_channels_2)
     var input2_shape: List[Int] = [2, in_channels_2, 8, 8]
-    var input2 = create_special_value_tensor(input2_shape, DType.float32, SPECIAL_VALUE_ONE)
+    var input2 = create_special_value_tensor(
+        input2_shape, DType.float32, SPECIAL_VALUE_ONE
+    )
 
     var output2 = transition2.forward(input2, training=True)
     assert_shape(output2, [2, out_channels_2, 4, 4])  # H: 8→4, W: 8→4
@@ -490,7 +537,9 @@ fn test_batchnorm_modes() raises:
 
     # Create input
     var input_shape: List[Int] = [2, channels, 8, 8]
-    var input = create_special_value_tensor(input_shape, DType.float32, SPECIAL_VALUE_ONE)
+    var input = create_special_value_tensor(
+        input_shape, DType.float32, SPECIAL_VALUE_ONE
+    )
 
     # Training mode
     var output_train, _, _ = batch_norm2d(
@@ -579,7 +628,9 @@ fn test_initial_conv() raises:
 
     # Create input (CIFAR-10: 32×32)
     var input_shape: List[Int] = [2, in_channels, 32, 32]
-    var input = create_special_value_tensor(input_shape, DType.float32, SPECIAL_VALUE_ONE)
+    var input = create_special_value_tensor(
+        input_shape, DType.float32, SPECIAL_VALUE_ONE
+    )
 
     # Forward pass
     var output = conv2d(input, conv_weights, conv_bias, stride=1, padding=1)
@@ -613,7 +664,9 @@ fn test_global_avgpool_and_fc() raises:
 
     # Create input (after final dense block: 4×4 spatial)
     var input_shape: List[Int] = [batch_size, channels, 4, 4]
-    var input = create_special_value_tensor(input_shape, DType.float32, SPECIAL_VALUE_ONE)
+    var input = create_special_value_tensor(
+        input_shape, DType.float32, SPECIAL_VALUE_ONE
+    )
 
     # Global average pooling
     var pooled = global_avgpool2d(input)
@@ -627,7 +680,9 @@ fn test_global_avgpool_and_fc() raises:
 
     for b in range(batch_size):
         for c in range(channels):
-            flattened_data[b * channels + c] = pooled_data[((b * channels + c) * 1) + 0]
+            flattened_data[b * channels + c] = pooled_data[
+                ((b * channels + c) * 1) + 0
+            ]
 
     assert_shape(flattened, flattened_shape)
 
@@ -672,7 +727,9 @@ fn test_densenet121_forward() raises:
 
     # Create input
     var input_shape: List[Int] = [2, 3, 32, 32]
-    var input = create_special_value_tensor(input_shape, DType.float32, SPECIAL_VALUE_ONE)
+    var input = create_special_value_tensor(
+        input_shape, DType.float32, SPECIAL_VALUE_ONE
+    )
 
     # Forward pass (training mode)
     var output = model.forward(input, training=True)
@@ -704,7 +761,9 @@ fn test_output_sanity() raises:
 
     # Create input
     var input_shape: List[Int] = [2, 3, 32, 32]
-    var input = create_seeded_random_tensor(input_shape, DType.float32, seed=123)
+    var input = create_seeded_random_tensor(
+        input_shape, DType.float32, seed=123
+    )
 
     # Forward pass
     var output = model.forward(input, training=True)

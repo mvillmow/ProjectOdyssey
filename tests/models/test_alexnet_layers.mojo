@@ -63,7 +63,12 @@ fn create_conv1_parameters(dtype: DType) raises -> Tuple[ExTensor, ExTensor]:
     var kernel_size = 11
 
     # Conv1 weights: (64, 3, 11, 11)
-    var kernel_shape: List[Int] = [out_channels, in_channels, kernel_size, kernel_size]
+    var kernel_shape: List[Int] = [
+        out_channels,
+        in_channels,
+        kernel_size,
+        kernel_size,
+    ]
     var fan_in = in_channels * kernel_size * kernel_size
     var fan_out = out_channels * kernel_size * kernel_size
     var kernel = kaiming_uniform(fan_in, fan_out, kernel_shape, dtype=dtype)
@@ -81,7 +86,12 @@ fn create_conv2_parameters(dtype: DType) raises -> Tuple[ExTensor, ExTensor]:
     var kernel_size = 5
 
     # Conv2 weights: (192, 64, 5, 5)
-    var kernel_shape: List[Int] = [out_channels, in_channels, kernel_size, kernel_size]
+    var kernel_shape: List[Int] = [
+        out_channels,
+        in_channels,
+        kernel_size,
+        kernel_size,
+    ]
     var fan_in = in_channels * kernel_size * kernel_size
     var fan_out = out_channels * kernel_size * kernel_size
     var kernel = kaiming_uniform(fan_in, fan_out, kernel_shape, dtype=dtype)
@@ -99,7 +109,12 @@ fn create_conv3_parameters(dtype: DType) raises -> Tuple[ExTensor, ExTensor]:
     var kernel_size = 3
 
     # Conv3 weights: (384, 192, 3, 3)
-    var kernel_shape: List[Int] = [out_channels, in_channels, kernel_size, kernel_size]
+    var kernel_shape: List[Int] = [
+        out_channels,
+        in_channels,
+        kernel_size,
+        kernel_size,
+    ]
     var fan_in = in_channels * kernel_size * kernel_size
     var fan_out = out_channels * kernel_size * kernel_size
     var kernel = kaiming_uniform(fan_in, fan_out, kernel_shape, dtype=dtype)
@@ -117,7 +132,12 @@ fn create_conv4_parameters(dtype: DType) raises -> Tuple[ExTensor, ExTensor]:
     var kernel_size = 3
 
     # Conv4 weights: (384, 384, 3, 3)
-    var kernel_shape: List[Int] = [out_channels, in_channels, kernel_size, kernel_size]
+    var kernel_shape: List[Int] = [
+        out_channels,
+        in_channels,
+        kernel_size,
+        kernel_size,
+    ]
     var fan_in = in_channels * kernel_size * kernel_size
     var fan_out = out_channels * kernel_size * kernel_size
     var kernel = kaiming_uniform(fan_in, fan_out, kernel_shape, dtype=dtype)
@@ -135,7 +155,12 @@ fn create_conv5_parameters(dtype: DType) raises -> Tuple[ExTensor, ExTensor]:
     var kernel_size = 3
 
     # Conv5 weights: (256, 384, 3, 3)
-    var kernel_shape: List[Int] = [out_channels, in_channels, kernel_size, kernel_size]
+    var kernel_shape: List[Int] = [
+        out_channels,
+        in_channels,
+        kernel_size,
+        kernel_size,
+    ]
     var fan_in = in_channels * kernel_size * kernel_size
     var fan_out = out_channels * kernel_size * kernel_size
     var kernel = kaiming_uniform(fan_in, fan_out, kernel_shape, dtype=dtype)
@@ -153,7 +178,9 @@ fn create_fc1_parameters(dtype: DType) raises -> Tuple[ExTensor, ExTensor]:
 
     # FC1 weights: (4096, 9216)
     var weights_shape: List[Int] = [out_features, in_features]
-    var weights = kaiming_uniform(in_features, out_features, weights_shape, dtype=dtype)
+    var weights = kaiming_uniform(
+        in_features, out_features, weights_shape, dtype=dtype
+    )
 
     # FC1 bias: (4096,)
     var bias = zeros([out_features], dtype)
@@ -168,7 +195,9 @@ fn create_fc2_parameters(dtype: DType) raises -> Tuple[ExTensor, ExTensor]:
 
     # FC2 weights: (4096, 4096)
     var weights_shape: List[Int] = [out_features, in_features]
-    var weights = kaiming_uniform(in_features, out_features, weights_shape, dtype=dtype)
+    var weights = kaiming_uniform(
+        in_features, out_features, weights_shape, dtype=dtype
+    )
 
     # FC2 bias: (4096,)
     var bias = zeros([out_features], dtype)
@@ -183,7 +212,9 @@ fn create_fc3_parameters(dtype: DType) raises -> Tuple[ExTensor, ExTensor]:
 
     # FC3 weights: (1000, 4096)
     var weights_shape: List[Int] = [out_features, in_features]
-    var weights = kaiming_uniform(in_features, out_features, weights_shape, dtype=dtype)
+    var weights = kaiming_uniform(
+        in_features, out_features, weights_shape, dtype=dtype
+    )
 
     # FC3 bias: (1000,)
     var bias = zeros([out_features], dtype)
@@ -834,7 +865,9 @@ fn test_flatten_operation_float32() raises:
     var dtype = DType.float32
 
     # Create a tensor with final conv output shape: (1, 256, 6, 6)
-    var input = create_special_value_tensor([1, 256, 6, 6], dtype, SPECIAL_VALUE_ONE)
+    var input = create_special_value_tensor(
+        [1, 256, 6, 6], dtype, SPECIAL_VALUE_ONE
+    )
 
     # Flatten: (1, 256, 6, 6) -> (1, 9216)
     var flattened = input.reshape([1, 9216])
@@ -856,7 +889,9 @@ fn test_flatten_operation_float16() raises:
     """Test flatten with float16."""
     var dtype = DType.float16
 
-    var input = create_special_value_tensor([1, 256, 6, 6], dtype, SPECIAL_VALUE_ONE)
+    var input = create_special_value_tensor(
+        [1, 256, 6, 6], dtype, SPECIAL_VALUE_ONE
+    )
     var flattened = input.reshape([1, 9216])
 
     assert_shape(flattened, [1, 9216], "Flatten shape mismatch (float16)")
@@ -878,7 +913,9 @@ fn test_all_layers_sequence_float32() raises:
     var batch_size = 1
 
     # Input: (1, 3, 224, 224) - typical ImageNet size
-    var input = create_special_value_tensor([batch_size, 3, 224, 224], dtype, SPECIAL_VALUE_ONE)
+    var input = create_special_value_tensor(
+        [batch_size, 3, 224, 224], dtype, SPECIAL_VALUE_ONE
+    )
     assert_shape(input, [batch_size, 3, 224, 224], "Input shape")
 
     # Conv1: (1, 3, 224, 224) -> (1, 64, 55, 55) with stride 4

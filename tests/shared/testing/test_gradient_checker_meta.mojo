@@ -156,9 +156,7 @@ fn test_gradient_checker_accepts_correct_gradient() raises:
         tolerance=1e-2,
     )
 
-    assert_true(
-        passed, "Gradient checker should accept correct gradient"
-    )
+    assert_true(passed, "Gradient checker should accept correct gradient")
     print("  OK: Gradient checker correctly accepts gradient df/dx = 2x")
 
 
@@ -194,9 +192,7 @@ fn test_gradient_checker_correct_gradient_multiple_values() raises:
             tolerance=1e-2,
         )
 
-        assert_true(
-            passed, "Gradient checker should pass for value"
-        )
+        assert_true(passed, "Gradient checker should pass for value")
 
     print("  OK: Gradient checker passes for all input values")
 
@@ -261,9 +257,7 @@ fn test_gradient_checker_rejects_wrong_gradient_linear() raises:
         tolerance=1e-2,
     )
 
-    assert_true(
-        not passed, "Gradient checker should reject wrong gradient"
-    )
+    assert_true(not passed, "Gradient checker should reject wrong gradient")
     print("  OK: Gradient checker correctly rejects df/dx = x")
 
 
@@ -291,9 +285,7 @@ fn test_gradient_checker_rejects_wrong_gradient_triple() raises:
         tolerance=1e-2,
     )
 
-    assert_true(
-        not passed, "Gradient checker should reject wrong gradient"
-    )
+    assert_true(not passed, "Gradient checker should reject wrong gradient")
     print("  OK: Gradient checker correctly rejects df/dx = 3x")
 
 
@@ -354,9 +346,7 @@ fn test_compute_numerical_gradient_matches_analytical() raises:
     fn forward(t: ExTensor) raises escaping -> ExTensor:
         return square_forward(t)^
 
-    var numerical_grad = compute_numerical_gradient(
-        forward, x, epsilon=1e-5
-    )
+    var numerical_grad = compute_numerical_gradient(forward, x, epsilon=1e-5)
 
     # Expected: df/dx = 2x = 2*2.0 = 4.0
     var expected = 4.0
@@ -384,9 +374,7 @@ fn test_relative_error_sensitivity() raises:
 
     var err = relative_error(correct_grad, wrong_grad)
 
-    assert_true(
-        err > 0.4, "Relative error should detect gradient mismatch"
-    )
+    assert_true(err > 0.4, "Relative error should detect gradient mismatch")
     print("  OK: Relative error correctly identifies mismatch")
 
 
@@ -422,9 +410,7 @@ fn test_gradient_checker_zero_input() raises:
         tolerance=1e-2,
     )
 
-    assert_true(
-        passed, "Gradient checker should handle x=0 correctly"
-    )
+    assert_true(passed, "Gradient checker should handle x=0 correctly")
     print("  OK: Gradient checker handles zero input")
 
 
@@ -455,9 +441,7 @@ fn test_gradient_checker_negative_input() raises:
         tolerance=1e-2,
     )
 
-    assert_true(
-        passed, "Gradient checker should handle negative inputs"
-    )
+    assert_true(passed, "Gradient checker should handle negative inputs")
     print("  OK: Gradient checker handles negative input")
 
 
@@ -490,9 +474,7 @@ fn test_gradient_checker_large_input() raises:
         tolerance=0.05,
     )
 
-    assert_true(
-        passed, "Gradient checker should handle moderate inputs"
-    )
+    assert_true(passed, "Gradient checker should handle moderate inputs")
     print("  OK: Gradient checker handles moderate input values")
 
 
@@ -525,9 +507,7 @@ fn test_gradient_checker_small_epsilon() raises:
         tolerance=1e-2,
     )
 
-    assert_true(
-        passed, "Gradient checker should work with smaller epsilon"
-    )
+    assert_true(passed, "Gradient checker should work with smaller epsilon")
     print("  OK: Gradient checker stable with smaller epsilon")
 
 
@@ -555,9 +535,7 @@ fn test_gradient_checker_large_epsilon() raises:
         tolerance=1e-2,
     )
 
-    assert_true(
-        passed, "Gradient checker should work with large epsilon"
-    )
+    assert_true(passed, "Gradient checker should work with large epsilon")
     print("  OK: Gradient checker stable with large epsilon")
 
 

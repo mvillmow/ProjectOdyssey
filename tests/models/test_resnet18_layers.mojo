@@ -91,8 +91,8 @@ fn create_basic_block(
     # First conv -> BN -> ReLU
     var conv1_out = conv2d(x, conv1_weight, conv1_bias, stride=1, padding=1)
     var bn1_out: ExTensor
-    var _ : ExTensor
-    var __ : ExTensor
+    var _: ExTensor
+    var __: ExTensor
     (bn1_out, _, __) = batch_norm2d(
         conv1_out,
         bn1_gamma,
@@ -104,10 +104,12 @@ fn create_basic_block(
     var relu1_out = relu(bn1_out)
 
     # Second conv -> BN
-    var conv2_out = conv2d(relu1_out, conv2_weight, conv2_bias, stride=1, padding=1)
+    var conv2_out = conv2d(
+        relu1_out, conv2_weight, conv2_bias, stride=1, padding=1
+    )
     var bn2_out: ExTensor
-    var _ : ExTensor
-    var __ : ExTensor
+    var _: ExTensor
+    var __: ExTensor
     (bn2_out, _, __) = batch_norm2d(
         conv2_out,
         bn2_gamma,
@@ -213,9 +215,7 @@ fn test_residual_block_64_channels_forward() raises:
         if out_data[i] > 0.0:
             non_zero_count += 1
 
-    assert_true(
-        non_zero_count > 0, "Output should have non-zero values"
-    )
+    assert_true(non_zero_count > 0, "Output should have non-zero values")
 
 
 fn test_residual_block_64_channels_training_mode() raises:
@@ -419,8 +419,8 @@ fn test_residual_block_128_channels_projection() raises:
     )  # (2, 128, 16, 16)
 
     var bn1_out: ExTensor
-    var _ : ExTensor
-    var __ : ExTensor
+    var _: ExTensor
+    var __: ExTensor
     (bn1_out, _, __) = batch_norm2d(
         conv1_out,
         bn1_gamma,
@@ -432,10 +432,12 @@ fn test_residual_block_128_channels_projection() raises:
     var relu1_out = relu(bn1_out)
 
     # Second conv
-    var conv2_out = conv2d(relu1_out, conv2_weight, conv2_bias, stride=1, padding=1)
+    var conv2_out = conv2d(
+        relu1_out, conv2_weight, conv2_bias, stride=1, padding=1
+    )
     var bn2_out: ExTensor
-    var _ : ExTensor
-    var __ : ExTensor
+    var _: ExTensor
+    var __: ExTensor
     (bn2_out, _, __) = batch_norm2d(
         conv2_out,
         bn2_gamma,
@@ -652,7 +654,9 @@ fn test_batchnorm2d_inference_mode() raises:
         assert_almost_equal(
             new_mean_data[i], running_mean_data[i], tolerance=1e-5
         )
-        assert_almost_equal(new_var_data[i], running_var_data[i], tolerance=1e-5)
+        assert_almost_equal(
+            new_var_data[i], running_var_data[i], tolerance=1e-5
+        )
 
 
 fn test_batchnorm2d_gamma_beta_effects() raises:
@@ -682,8 +686,8 @@ fn test_batchnorm2d_gamma_beta_effects() raises:
 
     # Forward pass
     var output: ExTensor
-    var _ : ExTensor
-    var __ : ExTensor
+    var _: ExTensor
+    var __: ExTensor
     (output, _, __) = batch_norm2d(
         x, gamma, beta, running_mean, running_var, training=False
     )

@@ -63,9 +63,7 @@ alias SPECIAL_VALUE_NEG_ONE: Float64 = -1.0
 
 
 fn create_special_value_tensor(
-    shape: List[Int],
-    dtype: DType,
-    value: Float64 = SPECIAL_VALUE_ONE
+    shape: List[Int], dtype: DType, value: Float64 = SPECIAL_VALUE_ONE
 ) raises -> ExTensor:
     """Create tensor filled with a special value.
 
@@ -97,11 +95,16 @@ fn create_special_value_tensor(
     """
     # Validate value is special
     if (
-        value != -1.0 and value != -0.5 and value != 0.0 and value != 0.5 and value != 1.0
+        value != -1.0
+        and value != -0.5
+        and value != 0.0
+        and value != 0.5
+        and value != 1.0
         and value != 1.5
     ):
         raise Error(
-            "Value must be a special value: -1.0, -0.5, 0.0, 0.5, 1.0, or 1.5. Got: "
+            "Value must be a special value: -1.0, -0.5, 0.0, 0.5, 1.0, or 1.5."
+            " Got: "
             + String(value)
         )
 
@@ -125,8 +128,7 @@ fn create_special_value_tensor(
 
 
 fn create_alternating_pattern_tensor(
-    shape: List[Int],
-    dtype: DType
+    shape: List[Int], dtype: DType
 ) raises -> ExTensor:
     """Create tensor with alternating special values pattern.
 
@@ -176,8 +178,7 @@ fn create_alternating_pattern_tensor(
 
 
 fn verify_special_value_invariants(
-    tensor: ExTensor,
-    expected_value: Float64
+    tensor: ExTensor, expected_value: Float64
 ) raises:
     """Verify all elements match expected special value.
 
@@ -206,11 +207,16 @@ fn verify_special_value_invariants(
     """
     # Validate expected_value is special
     if (
-        expected_value != -1.0 and expected_value != -0.5 and expected_value != 0.0
-        and expected_value != 0.5 and expected_value != 1.0 and expected_value != 1.5
+        expected_value != -1.0
+        and expected_value != -0.5
+        and expected_value != 0.0
+        and expected_value != 0.5
+        and expected_value != 1.0
+        and expected_value != 1.5
     ):
         raise Error(
-            "Expected value must be a special value: -1.0, -0.5, 0.0, 0.5, 1.0, or 1.5. Got: "
+            "Expected value must be a special value: -1.0, -0.5, 0.0, 0.5, 1.0,"
+            " or 1.5. Got: "
             + String(expected_value)
         )
 
@@ -219,8 +225,12 @@ fn verify_special_value_invariants(
         var actual = tensor._get_float64(i)
         if actual != expected_value:
             raise Error(
-                "Element " + String(i) + " = " + String(actual)
-                + ", expected " + String(expected_value)
+                "Element "
+                + String(i)
+                + " = "
+                + String(actual)
+                + ", expected "
+                + String(expected_value)
                 + " (exact match required for special values)"
             )
 
@@ -230,7 +240,7 @@ fn create_seeded_random_tensor(
     dtype: DType,
     seed: Int = 42,
     low: Float64 = -1.0,
-    high: Float64 = 1.0
+    high: Float64 = 1.0,
 ) raises -> ExTensor:
     """Create random tensor with fixed seed for gradient checking.
 
@@ -269,7 +279,11 @@ fn create_seeded_random_tensor(
     """
     if low >= high:
         raise Error(
-            "Invalid range: low (" + String(low) + ") must be less than high (" + String(high) + ")"
+            "Invalid range: low ("
+            + String(low)
+            + ") must be less than high ("
+            + String(high)
+            + ")"
         )
 
     # Set seed for reproducible random generation
@@ -357,7 +371,9 @@ fn create_halves_tensor(shape: List[Int], dtype: DType) raises -> ExTensor:
     return create_special_value_tensor(shape, dtype, SPECIAL_VALUE_HALF)
 
 
-fn create_one_and_half_tensor(shape: List[Int], dtype: DType) raises -> ExTensor:
+fn create_one_and_half_tensor(
+    shape: List[Int], dtype: DType
+) raises -> ExTensor:
     """Create tensor filled with 1.5 values (special value).
 
     Convenience wrapper around create_special_value_tensor for 1.5 initialization.

@@ -132,24 +132,36 @@ struct InceptionModule:
             Concatenated output (batch, out_1x1+out_3x3+out_5x5+pool_proj, H, W).
         """
         # Branch 1: 1×1 conv
-        var b1 = conv2d(x, self.conv1x1_1_weights, self.conv1x1_1_bias, stride=1, padding=0)
+        var b1 = conv2d(
+            x, self.conv1x1_1_weights, self.conv1x1_1_bias, stride=1, padding=0
+        )
         b1 = relu(b1)
 
         # Branch 2: 1×1 reduce → 3×3 conv
-        var b2 = conv2d(x, self.conv1x1_2_weights, self.conv1x1_2_bias, stride=1, padding=0)
+        var b2 = conv2d(
+            x, self.conv1x1_2_weights, self.conv1x1_2_bias, stride=1, padding=0
+        )
         b2 = relu(b2)
-        b2 = conv2d(b2, self.conv3x3_weights, self.conv3x3_bias, stride=1, padding=1)
+        b2 = conv2d(
+            b2, self.conv3x3_weights, self.conv3x3_bias, stride=1, padding=1
+        )
         b2 = relu(b2)
 
         # Branch 3: 1×1 reduce → 5×5 conv
-        var b3 = conv2d(x, self.conv1x1_3_weights, self.conv1x1_3_bias, stride=1, padding=0)
+        var b3 = conv2d(
+            x, self.conv1x1_3_weights, self.conv1x1_3_bias, stride=1, padding=0
+        )
         b3 = relu(b3)
-        b3 = conv2d(b3, self.conv5x5_weights, self.conv5x5_bias, stride=1, padding=2)
+        b3 = conv2d(
+            b3, self.conv5x5_weights, self.conv5x5_bias, stride=1, padding=2
+        )
         b3 = relu(b3)
 
         # Branch 4: 3×3 max pool → 1×1 projection
         var b4 = maxpool2d(x, kernel_size=3, stride=1, padding=1)
-        b4 = conv2d(b4, self.conv1x1_4_weights, self.conv1x1_4_bias, stride=1, padding=0)
+        b4 = conv2d(
+            b4, self.conv1x1_4_weights, self.conv1x1_4_bias, stride=1, padding=0
+        )
         b4 = relu(b4)
 
         # Concatenate all branches depth-wise
@@ -216,7 +228,9 @@ fn concatenate_depthwise(
         for c in range(c4):
             for i in range(hw):
                 var src_idx = ((b * c4 + c) * hw) + i
-                var dst_idx = ((b * total_channels + (c1 + c2 + c3 + c)) * hw) + i
+                var dst_idx = (
+                    (b * total_channels + (c1 + c2 + c3 + c)) * hw
+                ) + i
                 result_data[dst_idx] = t4_data[src_idx]
 
     return result
@@ -238,7 +252,13 @@ fn test_inception_module_initialization() raises:
     var pool_proj = 16
 
     var inception = InceptionModule(
-        in_channels, out_1x1, reduce_3x3, out_3x3, reduce_5x5, out_5x5, pool_proj
+        in_channels,
+        out_1x1,
+        reduce_3x3,
+        out_3x3,
+        reduce_5x5,
+        out_5x5,
+        pool_proj,
     )
 
     # Verify branch 1 shapes
@@ -270,7 +290,9 @@ fn test_inception_module_forward_shape() raises:
     var in_width = 8
 
     # Create input
-    var input = ones([batch_size, in_channels, in_height, in_width], DType.float32)
+    var input = ones(
+        [batch_size, in_channels, in_height, in_width], DType.float32
+    )
 
     # Create Inception module
     var inception = InceptionModule(
@@ -287,10 +309,11 @@ fn test_inception_module_forward_shape() raises:
     var output = inception.forward(input)
 
     # Expected output: (batch, 32+32+16+16, 8, 8) = (batch, 96, 8, 8)
-    assert_equal(output.shape()[0], batch_size)
-    assert_equal(output.shape()[1]), 96)
-    assert_equal(output.shape()[2], in_height)
-    assert_equal(output.shape()[3], in_width)
+    ref outShape = output.shape()
+    assert_equal(outShape[0], batch_size)
+    assert_equal(outShape[1], 96)
+    assert_equal(outShape[2], in_height)
+    assert_equal(outShape[3], in_width)
 
 
 fn test_inception_module_forward_values() raises:
@@ -307,7 +330,9 @@ fn test_inception_module_forward_values() raises:
     var in_width = 4
 
     # Create input with known values
-    var input = ones([batch_size, in_channels, in_height, in_width], DType.float32)
+    var input = ones(
+        [batch_size, in_channels, in_height, in_width], DType.float32
+    )
     var input_data = input._data.bitcast[Float32]()
     for i in range(input.numel()):
         input_data[i] = 0.5
@@ -357,7 +382,9 @@ fn test_inception_branch_1x1_convolution() raises:
     var input = ones([batch_size, in_channels, height, width], DType.float32)
 
     # Create 1×1 conv weights and bias
-    var weights = kaiming_normal(in_channels, out_channels, [out_channels, in_channels, 1, 1])
+    var weights = kaiming_normal(
+        in_channels, out_channels, [out_channels, in_channels, 1, 1]
+    )
     var bias = zeros([out_channels], DType.float32)
 
     # Forward pass
@@ -391,7 +418,9 @@ fn test_inception_branch_3x3_convolution() raises:
         in_channels, reduce_channels, [reduce_channels, in_channels, 1, 1]
     )
     var reduce_bias = zeros([reduce_channels], DType.float32)
-    var reduced = conv2d(input, reduce_weights, reduce_bias, stride=1, padding=0)
+    var reduced = conv2d(
+        input, reduce_weights, reduce_bias, stride=1, padding=0
+    )
     reduced = relu(reduced)
 
     # 3×3 conv
@@ -399,7 +428,9 @@ fn test_inception_branch_3x3_convolution() raises:
         reduce_channels * 9, out_channels, [out_channels, reduce_channels, 3, 3]
     )
     var conv3x3_bias = zeros([out_channels], DType.float32)
-    var output = conv2d(reduced, conv3x3_weights, conv3x3_bias, stride=1, padding=1)
+    var output = conv2d(
+        reduced, conv3x3_weights, conv3x3_bias, stride=1, padding=1
+    )
     output = relu(output)
 
     # Verify output shape: (batch, out_channels, height, width)
@@ -430,15 +461,21 @@ fn test_inception_branch_5x5_convolution() raises:
         in_channels, reduce_channels, [reduce_channels, in_channels, 1, 1]
     )
     var reduce_bias = zeros([reduce_channels], DType.float32)
-    var reduced = conv2d(input, reduce_weights, reduce_bias, stride=1, padding=0)
+    var reduced = conv2d(
+        input, reduce_weights, reduce_bias, stride=1, padding=0
+    )
     reduced = relu(reduced)
 
     # 5×5 conv (padding=2 maintains spatial dimensions)
     var conv5x5_weights = kaiming_normal(
-        reduce_channels * 25, out_channels, [out_channels, reduce_channels, 5, 5]
+        reduce_channels * 25,
+        out_channels,
+        [out_channels, reduce_channels, 5, 5],
     )
     var conv5x5_bias = zeros([out_channels], DType.float32)
-    var output = conv2d(reduced, conv5x5_weights, conv5x5_bias, stride=1, padding=2)
+    var output = conv2d(
+        reduced, conv5x5_weights, conv5x5_bias, stride=1, padding=2
+    )
     output = relu(output)
 
     # Verify output shape: (batch, out_channels, height, width)
@@ -526,7 +563,7 @@ fn test_concatenate_depthwise_4_tensors() raises:
 
     # Verify output shape: (batch, 8+8+4+4, height, width) = (batch, 24, height, width)
     assert_equal(result.shape()[0], batch_size)
-    assert_equal(result.shape()[1]), 24)
+    assert_equal(result.shape()[1], 24)
     assert_equal(result.shape()[2], height)
     assert_equal(result.shape()[3], width)
 
@@ -555,7 +592,7 @@ fn test_concatenate_depthwise_values() raises:
 
     # Verify shape
     assert_equal(result.shape()[0], batch_size)
-    assert_equal(result.shape()[1]), 8)
+    assert_equal(result.shape()[1], 8)
     assert_equal(result.shape()[2], height)
     assert_equal(result.shape()[3], width)
 
@@ -570,15 +607,15 @@ fn test_concatenate_depthwise_values() raises:
     assert_close_float(Float64(result_data[idx_t1]), 1.0)
 
     # Check third channel value (from t2) is 2.0
-    var idx_t2 = (2 * height * width)
+    var idx_t2 = 2 * height * width
     assert_close_float(Float64(result_data[idx_t2]), 2.0)
 
     # Check fifth channel value (from t3) is 3.0
-    var idx_t3 = (4 * height * width)
+    var idx_t3 = 4 * height * width
     assert_close_float(Float64(result_data[idx_t3]), 3.0)
 
     # Check seventh channel value (from t4) is 4.0
-    var idx_t4 = (6 * height * width)
+    var idx_t4 = 6 * height * width
     assert_close_float(Float64(result_data[idx_t4]), 4.0)
 
 
@@ -706,7 +743,9 @@ fn test_fc_layer() raises:
     var input = ones([batch_size, in_features], DType.float32)
 
     # Create weights and bias
-    var weights = xavier_normal(in_features, num_classes, [num_classes, in_features])
+    var weights = xavier_normal(
+        in_features, num_classes, [num_classes, in_features]
+    )
     var bias = zeros([num_classes], DType.float32)
 
     # Forward pass: y = xW^T + b
@@ -731,7 +770,9 @@ fn test_fc_layer_different_sizes() raises:
     var input = ones([batch_size, in_features], DType.float32)
 
     # Create weights and bias
-    var weights = xavier_normal(in_features, num_classes, [num_classes, in_features])
+    var weights = xavier_normal(
+        in_features, num_classes, [num_classes, in_features]
+    )
     var bias = zeros([num_classes], DType.float32)
 
     # Forward pass
@@ -767,7 +808,9 @@ fn test_inception_branch_1x1_backward() raises:
     var output = conv2d(input, weights, bias, stride=1, padding=0)
 
     # Create gradient from upstream
-    var grad_output = ones([batch_size, out_channels, height, width], DType.float32)
+    var grad_output = ones(
+        [batch_size, out_channels, height, width], DType.float32
+    )
 
     # Backward pass
     var _result = conv2d_backward(
@@ -803,7 +846,9 @@ fn test_inception_branch_3x3_backward() raises:
     var output = conv2d(input, weights, bias, stride=1, padding=1)
 
     # Create gradient from upstream
-    var grad_output = ones([batch_size, out_channels, height, width], DType.float32)
+    var grad_output = ones(
+        [batch_size, out_channels, height, width], DType.float32
+    )
 
     # Backward pass
     var _result = conv2d_backward(
@@ -839,7 +884,9 @@ fn test_inception_branch_5x5_backward() raises:
     var output = conv2d(input, weights, bias, stride=1, padding=2)
 
     # Create gradient from upstream
-    var grad_output = ones([batch_size, out_channels, height, width], DType.float32)
+    var grad_output = ones(
+        [batch_size, out_channels, height, width], DType.float32
+    )
 
     # Backward pass
     var _result = conv2d_backward(
@@ -878,6 +925,6 @@ fn test_concatenate_gradient_preservation() raises:
 
     # Verify gradient shape
     assert_equal(grad_result.shape()[0], batch_size)
-    assert_equal(grad_result.shape()[1]), 8)
+    assert_equal(grad_result.shape()[1], 8)
     assert_equal(grad_result.shape()[2], height)
     assert_equal(grad_result.shape()[3], width)

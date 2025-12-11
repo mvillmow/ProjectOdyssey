@@ -56,7 +56,9 @@ fn test_single_sample_inference() raises:
 
     # Single sample input (simulating one CIFAR-10 image)
     var input_shape: List[Int] = [1, 3, 32, 32]
-    var input = create_seeded_random_tensor(input_shape, DType.float32, seed=100)
+    var input = create_seeded_random_tensor(
+        input_shape, DType.float32, seed=100
+    )
 
     # Forward pass
     var output = model.forward(input, training=False)
@@ -93,7 +95,9 @@ fn test_batch_inference_size4() raises:
 
     # Batch of 4 samples
     var input_shape: List[Int] = [4, 3, 32, 32]
-    var input = create_seeded_random_tensor(input_shape, DType.float32, seed=101)
+    var input = create_seeded_random_tensor(
+        input_shape, DType.float32, seed=101
+    )
 
     # Forward pass
     var output = model.forward(input, training=False)
@@ -124,7 +128,9 @@ fn test_batch_inference_size8() raises:
 
     # Batch of 8 samples
     var input_shape: List[Int] = [8, 3, 32, 32]
-    var input = create_seeded_random_tensor(input_shape, DType.float32, seed=102)
+    var input = create_seeded_random_tensor(
+        input_shape, DType.float32, seed=102
+    )
 
     # Forward pass
     var output = model.forward(input, training=False)
@@ -158,7 +164,9 @@ fn test_training_vs_inference_mode() raises:
 
     # Create input
     var input_shape: List[Int] = [2, 3, 32, 32]
-    var input = create_seeded_random_tensor(input_shape, DType.float32, seed=103)
+    var input = create_seeded_random_tensor(
+        input_shape, DType.float32, seed=103
+    )
 
     # Training mode
     var output_train = model.forward(input, training=True)
@@ -206,7 +214,9 @@ fn test_multi_batch_consistency() raises:
 
     # Replicate single sample 4 times (simulating batch)
     var batch_input_shape: List[Int] = [4, 3, 32, 32]
-    var batch_input = create_seeded_random_tensor(batch_input_shape, DType.float32, seed=200)
+    var batch_input = create_seeded_random_tensor(
+        batch_input_shape, DType.float32, seed=200
+    )
 
     # Forward passes
     var single_output = model1.forward(single_input, training=False)
@@ -238,7 +248,9 @@ fn test_output_logits_properties() raises:
 
     # Create input
     var input_shape: List[Int] = [4, 3, 32, 32]
-    var input = create_seeded_random_tensor(input_shape, DType.float32, seed=105)
+    var input = create_seeded_random_tensor(
+        input_shape, DType.float32, seed=105
+    )
 
     # Forward pass
     var output = model.forward(input, training=False)
@@ -284,7 +296,9 @@ fn test_forward_pass_stability() raises:
     # Run multiple forward passes with different inputs
     for seed in range(200, 205):
         var input_shape: List[Int] = [2, 3, 32, 32]
-        var input = create_seeded_random_tensor(input_shape, DType.float32, seed=seed)
+        var input = create_seeded_random_tensor(
+            input_shape, DType.float32, seed=seed
+        )
 
         var output = model.forward(input, training=False)
 
@@ -322,7 +336,9 @@ fn test_dense_connectivity_impact() raises:
     var input1 = zeros(input1_shape, DType.float32)
 
     # Input 2: Random
-    var input2 = create_seeded_random_tensor(input1_shape, DType.float32, seed=106)
+    var input2 = create_seeded_random_tensor(
+        input1_shape, DType.float32, seed=106
+    )
 
     # Forward passes
     var output1 = model.forward(input1, training=False)
@@ -364,7 +380,9 @@ fn test_different_input_seeds() raises:
     # Test with multiple random seeds
     for seed in range(300, 305):
         var input_shape: List[Int] = [2, 3, 32, 32]
-        var input = create_seeded_random_tensor(input_shape, DType.float32, seed=seed)
+        var input = create_seeded_random_tensor(
+            input_shape, DType.float32, seed=seed
+        )
 
         var output = model.forward(input, training=True)
 
@@ -402,7 +420,9 @@ fn test_gradient_flow() raises:
 
     # Create input
     var input_shape: List[Int] = [2, 3, 32, 32]
-    var input = create_seeded_random_tensor(input_shape, DType.float32, seed=107)
+    var input = create_seeded_random_tensor(
+        input_shape, DType.float32, seed=107
+    )
 
     # Multiple forward passes in training mode (simulating training loop)
     for step in range(3):
@@ -439,7 +459,9 @@ fn test_output_covers_all_classes() raises:
 
     # Create input
     var input_shape: List[Int] = [10, 3, 32, 32]
-    var input = create_seeded_random_tensor(input_shape, DType.float32, seed=108)
+    var input = create_seeded_random_tensor(
+        input_shape, DType.float32, seed=108
+    )
 
     # Forward pass
     var output = model.forward(input, training=False)
@@ -486,7 +508,9 @@ fn test_large_batch_processing() raises:
 
     # Batch of 16 samples
     var input_shape: List[Int] = [16, 3, 32, 32]
-    var input = create_seeded_random_tensor(input_shape, DType.float32, seed=109)
+    var input = create_seeded_random_tensor(
+        input_shape, DType.float32, seed=109
+    )
 
     # Forward pass
     var output = model.forward(input, training=False)
@@ -520,7 +544,9 @@ fn test_consistency_across_runs() raises:
 
     # Create input
     var input_shape: List[Int] = [2, 3, 32, 32]
-    var input = create_seeded_random_tensor(input_shape, DType.float32, seed=110)
+    var input = create_seeded_random_tensor(
+        input_shape, DType.float32, seed=110
+    )
 
     # Two models with same seed
     var model1 = DenseNet121(num_classes=10)

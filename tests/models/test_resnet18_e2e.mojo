@@ -83,8 +83,8 @@ fn resnet18_forward_simplified(
     var running_var = ones([64], DType.float32)
 
     var bn_out: ExTensor
-    var _ : ExTensor
-    var __ : ExTensor
+    var _: ExTensor
+    var __: ExTensor
     (bn_out, _, __) = batch_norm2d(
         x_out,
         gamma,
@@ -232,7 +232,9 @@ fn _forward_basic_block(
     var conv1_weight = ones(conv1_weight_shape, DType.float32)
     var conv1_bias = zeros([out_channels], DType.float32)
 
-    var conv1_out = conv2d(x, conv1_weight, conv1_bias, stride=stride, padding=1)
+    var conv1_out = conv2d(
+        x, conv1_weight, conv1_bias, stride=stride, padding=1
+    )
 
     var gamma1 = ones([out_channels], DType.float32)
     var beta1 = zeros([out_channels], DType.float32)
@@ -240,8 +242,8 @@ fn _forward_basic_block(
     var running_var1 = ones([out_channels], DType.float32)
 
     var bn1_out: ExTensor
-    var _ : ExTensor
-    var __ : ExTensor
+    var _: ExTensor
+    var __: ExTensor
     (bn1_out, _, __) = batch_norm2d(
         conv1_out,
         gamma1,
@@ -262,7 +264,9 @@ fn _forward_basic_block(
     var conv2_weight = ones(conv2_weight_shape, DType.float32)
     var conv2_bias = zeros([out_channels], DType.float32)
 
-    var conv2_out = conv2d(relu1_out, conv2_weight, conv2_bias, stride=1, padding=1)
+    var conv2_out = conv2d(
+        relu1_out, conv2_weight, conv2_bias, stride=1, padding=1
+    )
 
     var gamma2 = ones([out_channels], DType.float32)
     var beta2 = zeros([out_channels], DType.float32)
@@ -270,8 +274,8 @@ fn _forward_basic_block(
     var running_var2 = ones([out_channels], DType.float32)
 
     var bn2_out: ExTensor
-    var _ : ExTensor
-    var __ : ExTensor
+    var _: ExTensor
+    var __: ExTensor
     (bn2_out, _, __) = batch_norm2d(
         conv2_out,
         gamma2,
@@ -303,8 +307,8 @@ fn _forward_basic_block(
         var running_var_proj = ones([out_channels], DType.float32)
 
         var bn_proj_out: ExTensor
-        var _ : ExTensor
-        var __ : ExTensor
+        var _: ExTensor
+        var __: ExTensor
         (bn_proj_out, _, __) = batch_norm2d(
             proj_out,
             gamma_proj,

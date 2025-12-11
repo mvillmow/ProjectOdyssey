@@ -69,7 +69,7 @@ fn get_test_dtypes() -> List[DType]:
     dtypes.append(DType.bfloat16)  # Alternate format
     dtypes.append(DType.int8)  # Integer quantization
     dtypes.append(DType.float32)  # Standard precision
-    return dtypes ^
+    return dtypes^
 
 
 fn get_float_dtypes() -> List[DType]:
@@ -94,7 +94,7 @@ fn get_float_dtypes() -> List[DType]:
     dtypes.append(DType.float16)
     dtypes.append(DType.bfloat16)
     dtypes.append(DType.float32)
-    return dtypes ^
+    return dtypes^
 
 
 fn get_precision_dtypes() -> List[DType]:
@@ -119,7 +119,7 @@ fn get_precision_dtypes() -> List[DType]:
     dtypes.append(DType.float16)  # Lower float precision
     dtypes.append(DType.bfloat16)  # Alternate format
     dtypes.append(DType.float32)  # Highest standard precision
-    return dtypes ^
+    return dtypes^
 
 
 fn get_float32_only() -> List[DType]:
@@ -143,7 +143,7 @@ fn get_float32_only() -> List[DType]:
     """
     var dtypes = List[DType]()
     dtypes.append(DType.float32)
-    return dtypes ^
+    return dtypes^
 
 
 fn dtype_to_string(dtype: DType) -> String:

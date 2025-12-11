@@ -26,17 +26,39 @@ from shared.testing.special_values import (
     create_halves_tensor,
     create_one_and_half_tensor,
 )
-from shared.testing.assertions import assert_equal_float, assert_shape, assert_dtype
+from shared.testing.assertions import (
+    assert_equal_float,
+    assert_shape,
+    assert_dtype,
+)
 
 
 fn test_special_value_constants() raises:
     """Test that special value constants have correct values."""
-    assert_equal_float(Float32(SPECIAL_VALUE_ZERO), 0.0, "SPECIAL_VALUE_ZERO should be 0.0")
-    assert_equal_float(Float32(SPECIAL_VALUE_HALF), 0.5, "SPECIAL_VALUE_HALF should be 0.5")
-    assert_equal_float(Float32(SPECIAL_VALUE_ONE), 1.0, "SPECIAL_VALUE_ONE should be 1.0")
-    assert_equal_float(Float32(SPECIAL_VALUE_ONE_HALF), 1.5, "SPECIAL_VALUE_ONE_HALF should be 1.5")
-    assert_equal_float(Float32(SPECIAL_VALUE_NEG_HALF), -0.5, "SPECIAL_VALUE_NEG_HALF should be -0.5")
-    assert_equal_float(Float32(SPECIAL_VALUE_NEG_ONE), -1.0, "SPECIAL_VALUE_NEG_ONE should be -1.0")
+    assert_equal_float(
+        Float32(SPECIAL_VALUE_ZERO), 0.0, "SPECIAL_VALUE_ZERO should be 0.0"
+    )
+    assert_equal_float(
+        Float32(SPECIAL_VALUE_HALF), 0.5, "SPECIAL_VALUE_HALF should be 0.5"
+    )
+    assert_equal_float(
+        Float32(SPECIAL_VALUE_ONE), 1.0, "SPECIAL_VALUE_ONE should be 1.0"
+    )
+    assert_equal_float(
+        Float32(SPECIAL_VALUE_ONE_HALF),
+        1.5,
+        "SPECIAL_VALUE_ONE_HALF should be 1.5",
+    )
+    assert_equal_float(
+        Float32(SPECIAL_VALUE_NEG_HALF),
+        -0.5,
+        "SPECIAL_VALUE_NEG_HALF should be -0.5",
+    )
+    assert_equal_float(
+        Float32(SPECIAL_VALUE_NEG_ONE),
+        -1.0,
+        "SPECIAL_VALUE_NEG_ONE should be -1.0",
+    )
 
 
 fn test_create_special_value_tensor_zeros() raises:
@@ -97,7 +119,8 @@ fn test_create_special_value_tensor_neg_half() raises:
 
 
 fn test_create_alternating_pattern_tensor() raises:
-    """Test creating tensor with alternating special values (6-value pattern)."""
+    """Test creating tensor with alternating special values (6-value pattern).
+    """
     var tensor = create_alternating_pattern_tensor([2, 3], DType.float32)
     assert_shape(tensor, [2, 3], "Shape should be [2, 3]")
     assert_dtype(tensor, DType.float32, "Dtype should be float32")
@@ -123,20 +146,44 @@ fn test_create_alternating_pattern_repeats() raises:
     var tensor = create_alternating_pattern_tensor([2, 6], DType.float32)
 
     # First cycle: -1.0, -0.5, 0.0, 0.5, 1.0, 1.5
-    assert_equal_float(Float32(tensor._get_float64(0)), -1.0, "Element 0 should be -1.0")
-    assert_equal_float(Float32(tensor._get_float64(1)), -0.5, "Element 1 should be -0.5")
-    assert_equal_float(Float32(tensor._get_float64(2)), 0.0, "Element 2 should be 0.0")
-    assert_equal_float(Float32(tensor._get_float64(3)), 0.5, "Element 3 should be 0.5")
-    assert_equal_float(Float32(tensor._get_float64(4)), 1.0, "Element 4 should be 1.0")
-    assert_equal_float(Float32(tensor._get_float64(5)), 1.5, "Element 5 should be 1.5")
+    assert_equal_float(
+        Float32(tensor._get_float64(0)), -1.0, "Element 0 should be -1.0"
+    )
+    assert_equal_float(
+        Float32(tensor._get_float64(1)), -0.5, "Element 1 should be -0.5"
+    )
+    assert_equal_float(
+        Float32(tensor._get_float64(2)), 0.0, "Element 2 should be 0.0"
+    )
+    assert_equal_float(
+        Float32(tensor._get_float64(3)), 0.5, "Element 3 should be 0.5"
+    )
+    assert_equal_float(
+        Float32(tensor._get_float64(4)), 1.0, "Element 4 should be 1.0"
+    )
+    assert_equal_float(
+        Float32(tensor._get_float64(5)), 1.5, "Element 5 should be 1.5"
+    )
 
     # Second cycle: repeats
-    assert_equal_float(Float32(tensor._get_float64(6)), -1.0, "Element 6 should be -1.0")
-    assert_equal_float(Float32(tensor._get_float64(7)), -0.5, "Element 7 should be -0.5")
-    assert_equal_float(Float32(tensor._get_float64(8)), 0.0, "Element 8 should be 0.0")
-    assert_equal_float(Float32(tensor._get_float64(9)), 0.5, "Element 9 should be 0.5")
-    assert_equal_float(Float32(tensor._get_float64(10)), 1.0, "Element 10 should be 1.0")
-    assert_equal_float(Float32(tensor._get_float64(11)), 1.5, "Element 11 should be 1.5")
+    assert_equal_float(
+        Float32(tensor._get_float64(6)), -1.0, "Element 6 should be -1.0"
+    )
+    assert_equal_float(
+        Float32(tensor._get_float64(7)), -0.5, "Element 7 should be -0.5"
+    )
+    assert_equal_float(
+        Float32(tensor._get_float64(8)), 0.0, "Element 8 should be 0.0"
+    )
+    assert_equal_float(
+        Float32(tensor._get_float64(9)), 0.5, "Element 9 should be 0.5"
+    )
+    assert_equal_float(
+        Float32(tensor._get_float64(10)), 1.0, "Element 10 should be 1.0"
+    )
+    assert_equal_float(
+        Float32(tensor._get_float64(11)), 1.5, "Element 11 should be 1.5"
+    )
 
 
 fn test_verify_special_value_invariants_passes() raises:
@@ -204,22 +251,34 @@ fn test_dtypes_bfloat16() raises:
 fn test_create_seeded_random_tensor_reproducibility() raises:
     """Test that seeded random tensors are reproducible."""
     # Create two tensors with same seed
-    var tensor1 = create_seeded_random_tensor([3, 3], DType.float32, 42, -1.0, 1.0)
-    var tensor2 = create_seeded_random_tensor([3, 3], DType.float32, 42, -1.0, 1.0)
+    var tensor1 = create_seeded_random_tensor(
+        [3, 3], DType.float32, 42, -1.0, 1.0
+    )
+    var tensor2 = create_seeded_random_tensor(
+        [3, 3], DType.float32, 42, -1.0, 1.0
+    )
 
     # They should be identical
     var numel = tensor1.numel()
     for i in range(numel):
         var val1 = tensor1._get_float64(i)
         var val2 = tensor2._get_float64(i)
-        assert_equal_float(Float32(val1), Float32(val2), "Element " + String(i) + " should match")
+        assert_equal_float(
+            Float32(val1),
+            Float32(val2),
+            "Element " + String(i) + " should match",
+        )
 
 
 fn test_create_seeded_random_tensor_different_seeds() raises:
     """Test that different seeds produce different tensors."""
     # Create tensors with different seeds
-    var tensor1 = create_seeded_random_tensor([2, 2], DType.float32, 42, -1.0, 1.0)
-    var tensor2 = create_seeded_random_tensor([2, 2], DType.float32, 123, -1.0, 1.0)
+    var tensor1 = create_seeded_random_tensor(
+        [2, 2], DType.float32, 42, -1.0, 1.0
+    )
+    var tensor2 = create_seeded_random_tensor(
+        [2, 2], DType.float32, 123, -1.0, 1.0
+    )
 
     # They should be different (with very high probability)
     var numel = tensor1.numel()
@@ -232,25 +291,38 @@ fn test_create_seeded_random_tensor_different_seeds() raises:
             break
 
     if not found_difference:
-        raise Error("Tensors with different seeds should have different values (with very high probability)")
+        raise Error(
+            "Tensors with different seeds should have different values (with"
+            " very high probability)"
+        )
 
 
 fn test_create_seeded_random_tensor_range() raises:
     """Test that seeded random values fall within specified range."""
-    var tensor = create_seeded_random_tensor([5, 5], DType.float32, 42, -1.0, 1.0)
+    var tensor = create_seeded_random_tensor(
+        [5, 5], DType.float32, 42, -1.0, 1.0
+    )
 
     var numel = tensor.numel()
     for i in range(numel):
         var val = tensor._get_float64(i)
         # Values should be in [-1.0, 1.0]
         if val < -1.0 or val >= 1.0:
-            raise Error("Value " + String(val) + " at index " + String(i) + " is outside range [-1.0, 1.0)")
+            raise Error(
+                "Value "
+                + String(val)
+                + " at index "
+                + String(i)
+                + " is outside range [-1.0, 1.0)"
+            )
 
 
 fn test_create_seeded_random_tensor_custom_range() raises:
     """Test seeded random tensor with custom range."""
     # For gradient checking, we might want small random values
-    var tensor = create_seeded_random_tensor([3, 3], DType.float64, 42, -0.01, 0.01)
+    var tensor = create_seeded_random_tensor(
+        [3, 3], DType.float64, 42, -0.01, 0.01
+    )
 
     var numel = tensor.numel()
     for i in range(numel):
@@ -258,14 +330,19 @@ fn test_create_seeded_random_tensor_custom_range() raises:
         # Values should be in [-0.01, 0.01)
         if val < -0.01 or val >= 0.01:
             raise Error(
-                "Value " + String(val) + " at index " + String(i)
+                "Value "
+                + String(val)
+                + " at index "
+                + String(i)
                 + " is outside range [-0.01, 0.01)"
             )
 
 
 fn test_create_seeded_random_tensor_shape() raises:
     """Test that seeded random tensor has correct shape and dtype."""
-    var tensor = create_seeded_random_tensor([4, 5], DType.float16, 42, -1.0, 1.0)
+    var tensor = create_seeded_random_tensor(
+        [4, 5], DType.float16, 42, -1.0, 1.0
+    )
     assert_shape(tensor, [4, 5], "Shape should be [4, 5]")
     assert_dtype(tensor, DType.float16, "Dtype should be float16")
 

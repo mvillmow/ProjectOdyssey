@@ -140,10 +140,14 @@ struct LayerTester:
         )
 
         # Forward pass
-        var output = conv2d(input, weights, bias, stride=stride, padding=padding)
+        var output = conv2d(
+            input, weights, bias, stride=stride, padding=padding
+        )
 
         # Verify shape
-        var output_shape = conv2d_output_shape(input_h, input_w, kernel_size, kernel_size, stride, padding)
+        var output_shape = conv2d_output_shape(
+            input_h, input_w, kernel_size, kernel_size, stride, padding
+        )
         var expected_h = output_shape[0]
         var expected_w = output_shape[1]
         assert_shape(
@@ -281,7 +285,9 @@ struct LayerTester:
             output = avgpool2d(input, pool_size, stride, padding=padding)
 
         # Verify shape
-        var output_shape = pool_output_shape(input_h, input_w, pool_size, stride, padding)
+        var output_shape = pool_output_shape(
+            input_h, input_w, pool_size, stride, padding
+        )
         var expected_h = output_shape[0]
         var expected_w = output_shape[1]
         assert_shape(
@@ -291,7 +297,9 @@ struct LayerTester:
         )
 
         # Verify dtype
-        assert_dtype(output, dtype, pool_type + " pooling output dtype mismatch")
+        assert_dtype(
+            output, dtype, pool_type + " pooling output dtype mismatch"
+        )
 
         # Check for NaN/Inf
         var has_invalid = False
@@ -301,7 +309,9 @@ struct LayerTester:
                 has_invalid = True
                 break
 
-        assert_false(has_invalid, pool_type + " pooling output contains NaN or Inf")
+        assert_false(
+            has_invalid, pool_type + " pooling output contains NaN or Inf"
+        )
 
     @staticmethod
     fn test_activation_layer(
@@ -366,7 +376,8 @@ struct LayerTester:
             for i in range(output.numel()):
                 var val = output._get_float64(i)
                 assert_true(
-                    val >= 0.0, "ReLU output must be non-negative, got: " + String(val)
+                    val >= 0.0,
+                    "ReLU output must be non-negative, got: " + String(val),
                 )
 
         elif activation == "sigmoid":
@@ -413,7 +424,9 @@ struct LayerTester:
         )
 
     @staticmethod
-    fn test_layer_no_invalid_values(output: ExTensor, layer_name: String = "Layer") raises:
+    fn test_layer_no_invalid_values(
+        output: ExTensor, layer_name: String = "Layer"
+    ) raises:
         """Test that layer output contains no NaN or Inf values.
 
         Args:
@@ -505,10 +518,14 @@ struct LayerTester:
         )
 
         # Forward pass
-        var output = conv2d(input, weights, bias, stride=stride, padding=padding)
+        var output = conv2d(
+            input, weights, bias, stride=stride, padding=padding
+        )
 
         # Verify output shape
-        var output_shape = conv2d_output_shape(input_h, input_w, kernel_size, kernel_size, stride, padding)
+        var output_shape = conv2d_output_shape(
+            input_h, input_w, kernel_size, kernel_size, stride, padding
+        )
         var expected_h = output_shape[0]
         var expected_w = output_shape[1]
         assert_shape(
@@ -534,14 +551,20 @@ struct LayerTester:
 
         # Verify numerical gradient has correct shape
         assert_shape(
-            numerical_grad, input.shape(), "Conv2D backward: numerical gradient shape mismatch"
+            numerical_grad,
+            input.shape(),
+            "Conv2D backward: numerical gradient shape mismatch",
         )
 
         # Verify no NaN/Inf in numerical gradients
         for i in range(numerical_grad.numel()):
             var val = numerical_grad._get_float64(i)
-            assert_false(isnan(val), "Conv2D backward: NaN in numerical gradient")
-            assert_false(isinf(val), "Conv2D backward: Inf in numerical gradient")
+            assert_false(
+                isnan(val), "Conv2D backward: NaN in numerical gradient"
+            )
+            assert_false(
+                isinf(val), "Conv2D backward: Inf in numerical gradient"
+            )
 
     @staticmethod
     fn test_linear_layer_backward(
@@ -582,7 +605,9 @@ struct LayerTester:
             ```
         """
         # Create seeded random input
-        var input = create_seeded_random_tensor([1, in_features], dtype, seed=42)
+        var input = create_seeded_random_tensor(
+            [1, in_features], dtype, seed=42
+        )
 
         # Forward pass
         var output = linear(input, weights, bias)
@@ -608,20 +633,24 @@ struct LayerTester:
 
         # Verify numerical gradient has correct shape
         assert_shape(
-            numerical_grad, input.shape(), "Linear backward: numerical gradient shape mismatch"
+            numerical_grad,
+            input.shape(),
+            "Linear backward: numerical gradient shape mismatch",
         )
 
         # Verify no NaN/Inf in numerical gradients
         for i in range(numerical_grad.numel()):
             var val = numerical_grad._get_float64(i)
-            assert_false(isnan(val), "Linear backward: NaN in numerical gradient")
-            assert_false(isinf(val), "Linear backward: Inf in numerical gradient")
+            assert_false(
+                isnan(val), "Linear backward: NaN in numerical gradient"
+            )
+            assert_false(
+                isinf(val), "Linear backward: Inf in numerical gradient"
+            )
 
     @staticmethod
     fn test_activation_layer_backward(
-        shape: List[Int],
-        dtype: DType,
-        activation: String = "relu"
+        shape: List[Int], dtype: DType, activation: String = "relu"
     ) raises:
         """Test activation backward pass with gradient checking.
 
@@ -654,7 +683,9 @@ struct LayerTester:
             ```
         """
         # Create seeded random input with values that span activation range
-        var input = create_seeded_random_tensor(shape, dtype, seed=42, low=-1.0, high=1.0)
+        var input = create_seeded_random_tensor(
+            shape, dtype, seed=42, low=-1.0, high=1.0
+        )
 
         # Forward pass
         var output: ExTensor
@@ -668,10 +699,14 @@ struct LayerTester:
             raise Error("Unknown activation: " + activation)
 
         # Verify output shape unchanged
-        assert_shape(output, shape, activation + " backward: output shape changed")
+        assert_shape(
+            output, shape, activation + " backward: output shape changed"
+        )
 
         # Verify output dtype
-        assert_dtype(output, dtype, activation + " backward: output dtype mismatch")
+        assert_dtype(
+            output, dtype, activation + " backward: output dtype mismatch"
+        )
 
         # Test gradient checking with appropriate epsilon and tolerance for dtype
         var epsilon = 1e-5 if dtype == DType.float32 else 1e-4
@@ -691,7 +726,9 @@ struct LayerTester:
 
         # Verify numerical gradient has correct shape
         assert_shape(
-            numerical_grad, shape, activation + " backward: numerical gradient shape mismatch"
+            numerical_grad,
+            shape,
+            activation + " backward: numerical gradient shape mismatch",
         )
 
         # Verify no NaN/Inf in numerical gradients
@@ -757,20 +794,18 @@ struct LayerTester:
 
         # Verify shapes
         assert_true(
-            gamma.numel() == num_features,
-            "BatchNorm: gamma shape mismatch"
+            gamma.numel() == num_features, "BatchNorm: gamma shape mismatch"
         )
         assert_true(
-            beta.numel() == num_features,
-            "BatchNorm: beta shape mismatch"
+            beta.numel() == num_features, "BatchNorm: beta shape mismatch"
         )
         assert_true(
             running_mean.numel() == num_features,
-            "BatchNorm: running_mean shape mismatch"
+            "BatchNorm: running_mean shape mismatch",
         )
         assert_true(
             running_var.numel() == num_features,
-            "BatchNorm: running_var shape mismatch"
+            "BatchNorm: running_var shape mismatch",
         )
 
         # Note: Actual BatchNorm implementation would go here
@@ -834,15 +869,17 @@ struct LayerTester:
         # Verify shapes
         assert_true(
             gamma.numel() == num_features,
-            "BatchNorm backward: gamma shape mismatch"
+            "BatchNorm backward: gamma shape mismatch",
         )
         assert_true(
             beta.numel() == num_features,
-            "BatchNorm backward: beta shape mismatch"
+            "BatchNorm backward: beta shape mismatch",
         )
 
         # Verify input shape and dtype
-        assert_shape(input, input_shape, "BatchNorm backward: input shape mismatch")
+        assert_shape(
+            input, input_shape, "BatchNorm backward: input shape mismatch"
+        )
         assert_dtype(input, dtype, "BatchNorm backward: input dtype mismatch")
 
         # Test gradient checking with appropriate epsilon and tolerance for dtype
