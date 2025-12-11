@@ -30,19 +30,19 @@ fn validation_step(
     data: ExTensor,
     labels: ExTensor,
 ) raises -> Float64:
-    """Execute single validation step (forward pass only, no gradients)
+    """Execute single validation step (forward pass only, no gradients).
 
     Args:
-            model_forward: Function to compute model forward pass
-            compute_loss: Function to compute loss
-            data: Input batch data
-            labels: Target labels
+            model_forward: Function to compute model forward pass.
+            compute_loss: Function to compute loss.
+            data: Input batch data.
+            labels: Target labels.
 
     Returns:
-            Loss value for this batch
+            Loss value for this batch.
 
     Raises:
-            Error if evaluation fails
+            Error: If evaluation fails.
     """
     # Forward pass (no gradient tracking)
     var predictions = model_forward(data)
@@ -67,18 +67,18 @@ fn validate(
     """Run validation loop.
 
     Args:
-            model_forward: Forward pass function
-            compute_loss: Loss computation function
-            val_loader: Validation data loader
-            compute_accuracy: Whether to compute accuracy
-            compute_confusion: Whether to compute confusion matrix
-            num_classes: Number of classes (for confusion matrix)
+            model_forward: Forward pass function.
+            compute_loss: Loss computation function.
+            val_loader: Validation data loader.
+            compute_accuracy: Whether to compute accuracy.
+            compute_confusion: Whether to compute confusion matrix.
+            num_classes: Number of classes (for confusion matrix).
 
     Returns:
-            Average validation loss
+            Average validation loss.
 
     Raises:
-            Error if validation fails
+            Error: If validation fails.
     """
     print("\nRunning validation...")
 
@@ -173,9 +173,9 @@ struct ValidationLoop:
         """Initialize validation loop.
 
         Args:
-            compute_accuracy: Whether to compute accuracy
-            compute_confusion: Whether to compute confusion matrix
-            num_classes: Number of classes (for confusion matrix)
+            compute_accuracy: Whether to compute accuracy.
+            compute_confusion: Whether to compute confusion matrix.
+            num_classes: Number of classes (for confusion matrix).
         """
         self.compute_accuracy = compute_accuracy
         self.compute_confusion = compute_confusion
@@ -191,16 +191,16 @@ struct ValidationLoop:
         """Run validation loop.
 
         Args:
-            model_forward: Forward pass function
-            compute_loss: Loss computation function
-            val_loader: Validation data loader
-            metrics: Training metrics to update
+            model_forward: Forward pass function.
+            compute_loss: Loss computation function.
+            val_loader: Validation data loader.
+            metrics: Training metrics to update.
 
         Returns:
-            Validation loss
+            Validation loss.
 
         Raises:
-            Error if validation fails
+            Error: If validation fails.
         """
         var val_loss = validate(
             model_forward,
@@ -226,20 +226,20 @@ struct ValidationLoop:
     ) raises -> Float64:
         """Run validation on subset of data.
 
-        Useful for quick validation checks during training
+        Useful for quick validation checks during training.
 
         Args:
-            model_forward: Forward pass function
-            compute_loss: Loss computation function
-            val_loader: Validation data loader (mutable for iteration)
-            max_batches: Maximum number of batches to evaluate
-            metrics: Training metrics to update
+            model_forward: Forward pass function.
+            compute_loss: Loss computation function.
+            val_loader: Validation data loader (mutable for iteration).
+            max_batches: Maximum number of batches to evaluate.
+            metrics: Training metrics to update.
 
         Returns:
-            Validation loss
+            Validation loss.
 
         Raises:
-            Error if validation fails
+            Error: If validation fails.
         """
         print(
             "\nRunning subset validation (max "

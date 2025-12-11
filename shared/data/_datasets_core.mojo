@@ -24,14 +24,14 @@ trait Dataset:
     """Base interface for all datasets.
 
     All datasets must implement __len__ and __getitem__ to provide
-    indexed access to samples
+    indexed access to samples.
     """
 
     fn __len__(self) -> Int:
         """Return the number of samples in the dataset.
 
         Returns:
-            Number of samples
+            Number of samples.
         """
         ...
 
@@ -39,13 +39,13 @@ trait Dataset:
         """Get a sample from the dataset.
 
         Args:
-            index: Index of the sample to retrieve
+            index: Index of the sample to retrieve.
 
         Returns:
-            Tuple of (data, label) tensors
+            Tuple of (data, label) tensors.
 
         Raises:
-            Error if index is out of bounds
+            Error: If index is out of bounds.
         """
         ...
 
@@ -58,8 +58,8 @@ trait Dataset:
 struct ExTensorDataset(Copyable, Dataset, Movable):
     """Dataset wrapping tensors for in-memory data.
 
-    Stores data and labels as tensors and provides indexed access
-    Suitable for small to medium datasets that fit in memory
+    Stores data and labels as tensors and provides indexed access.
+    Suitable for small to medium datasets that fit in memory.
     """
 
     var data: ExTensor
@@ -70,11 +70,11 @@ struct ExTensorDataset(Copyable, Dataset, Movable):
         """Create dataset from tensors.
 
         Args:
-            data: Data tensor of shape (N, ...)
-            labels: Label tensor of shape (N, ...)
+            data: Data tensor of shape (N, ...).
+            labels: Label tensor of shape (N, ...).
 
         Raises:
-            Error if data and labels have different first dimensions
+            Error: If data and labels have different first dimensions.
         """
         if data.shape()[0] != labels.shape()[0]:
             raise Error("Data and labels must have same number of samples")
@@ -91,13 +91,13 @@ struct ExTensorDataset(Copyable, Dataset, Movable):
         """Get sample at index.
 
         Args:
-            index: Sample index (supports negative indexing)
+            index: Sample index (supports negative indexing).
 
         Returns:
-            Tuple of (data, label) tensors
+            Tuple of (data, label) tensors.
 
         Raises:
-            Error if index is out of bounds
+            Error: If index is out of bounds.
         """
         var idx = index
         if idx < 0:
@@ -146,12 +146,12 @@ struct FileDataset(Copyable, Dataset, Movable):
         """Create dataset from file paths.
 
         Args:
-            file_paths: List of file paths to load
-            labels: List of labels corresponding to files
-            cache: Whether to cache loaded data in memory
+            file_paths: List of file paths to load.
+            labels: List of labels corresponding to files.
+            cache: Whether to cache loaded data in memory.
 
         Raises:
-            Error if file_paths and labels have different lengths
+            Error: If file_paths and labels have different lengths.
         """
         if len(file_paths) != len(labels):
             raise Error("File paths and labels must have same length")
@@ -170,13 +170,13 @@ struct FileDataset(Copyable, Dataset, Movable):
         """Load and return sample at index.
 
         Args:
-            index: Sample index (supports negative indexing)
+            index: Sample index (supports negative indexing).
 
         Returns:
-            Tuple of (data, label) tensors
+            Tuple of (data, label) tensors.
 
         Raises:
-            Error if index is out of bounds or file cannot be loaded
+            Error: If index is out of bounds or file cannot be loaded.
         """
         var idx = index
         if idx < 0:
@@ -214,22 +214,22 @@ struct FileDataset(Copyable, Dataset, Movable):
     fn _load_file(self, path: String) raises -> ExTensor:
         """Load data from file based on file extension.
 
-        Supports multiple file formats with format-specific decoders
-        Automatically detects format from file extension
+        Supports multiple file formats with format-specific decoders.
+        Automatically detects format from file extension.
 
         Args:
-            path: Path to file to load
+            path: Path to file to load.
 
         Returns:
-            Loaded data as tensor
+            Loaded data as tensor.
 
         Raises:
-            Error if file cannot be loaded or format is unsupported
+            Error: If file cannot be loaded or format is unsupported.
 
         Supported Formats:
-            - CSV files (.csv): Parsed as 2D arrays (rows x columns)
-            - Binary data (.bin): Read as raw float32 values
-            - Text data (.txt): Parsed as space/newline separated numbers
+            - CSV files (.csv): Parsed as 2D arrays (rows x columns).
+            - Binary data (.bin): Read as raw float32 values.
+            - Text data (.txt): Parsed as space/newline separated numbers.
         """
         # Determine file extension
         var ext_idx = -1
@@ -266,17 +266,17 @@ struct FileDataset(Copyable, Dataset, Movable):
     fn _load_csv(self, path: String) raises -> ExTensor:
         """Load CSV file as tensor.
 
-        Parses CSV rows and columns into a 2D tensor
-        Each row becomes one row in the output tensor
+        Parses CSV rows and columns into a 2D tensor.
+        Each row becomes one row in the output tensor.
 
         Args:
-            path: Path to CSV file
+            path: Path to CSV file.
 
         Returns:
-            2D tensor with shape [num_rows, num_columns]
+            2D tensor with shape [num_rows, num_columns].
 
         Raises:
-            Error if file cannot be read or parsed
+            Error: If file cannot be read or parsed.
         """
         # Note: Full CSV parsing would require file I/O and string parsing
         # For now, return a placeholder that represents the expected format
@@ -290,17 +290,17 @@ struct FileDataset(Copyable, Dataset, Movable):
     fn _load_binary(self, path: String) raises -> ExTensor:
         """Load binary file as tensor.
 
-        Reads raw float32 values from binary file
-        Assumes file contains consecutive Float32 values in native byte order
+        Reads raw float32 values from binary file.
+        Assumes file contains consecutive Float32 values in native byte order.
 
         Args:
-            path: Path to binary file
+            path: Path to binary file.
 
         Returns:
-            1D tensor with shape [num_elements]
+            1D tensor with shape [num_elements].
 
         Raises:
-            Error if file cannot be read
+            Error: If file cannot be read.
         """
         # Note: Full binary reading requires file I/O support
         # For now, return a placeholder
@@ -314,17 +314,17 @@ struct FileDataset(Copyable, Dataset, Movable):
     fn _load_text(self, path: String) raises -> ExTensor:
         """Load text file as tensor.
 
-        Parses space and newline separated numbers into a tensor
-        Automatically determines shape from file content
+        Parses space and newline separated numbers into a tensor.
+        Automatically determines shape from file content.
 
         Args:
-            path: Path to text file
+            path: Path to text file.
 
         Returns:
-            1D or 2D tensor depending on file content
+            1D or 2D tensor depending on file content.
 
         Raises:
-            Error if file cannot be read or contains non-numeric data
+            Error: If file cannot be read or contains non-numeric data.
         """
         # Note: Full text parsing would require file I/O and number parsing
         # For now, return a placeholder
@@ -345,14 +345,14 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
     """EMNIST Dataset wrapper for convenient dataset access.
 
     Provides a unified interface for loading different EMNIST splits with
-    automatic file path resolution and validation
+    automatic file path resolution and validation.
 
     Attributes:
-        data: Tensor containing the image data (N, 1, 28, 28)
-        labels: Tensor containing the label data (N,)
-        _len: Number of samples in the dataset
-        split: The split type loaded (balanced, byclass, bymerge, digits, letters, mnist)
-        data_dir: Directory containing the EMNIST data files
+        data: Tensor containing the image data (N, 1, 28, 28).
+        labels: Tensor containing the label data (N,).
+        _len: Number of samples in the dataset.
+        split: The split type loaded (balanced, byclass, bymerge, digits, letters, mnist).
+        data_dir: Directory containing the EMNIST data files.
     """
 
     var data: ExTensor
@@ -370,18 +370,18 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
         """Initialize EMNIST Dataset.
 
         Args:
-            data_dir: Path to directory containing EMNIST files
+            data_dir: Path to directory containing EMNIST files.
             split: Dataset split to load. Options:
-                - "balanced": ~112k training samples, ~18.8k test samples
-                - "byclass": ~814k training samples, ~135k test samples
-                - "bymerge": ~814k training samples, ~135k test samples
-                - "digits": ~60k training samples, ~10k test samples (MNIST digits only)
-                - "letters": ~103k training samples, ~17.4k test samples
-                - "mnist": Same as MNIST training set
-            train: Whether to load training (True) or test (False) split
+                - "balanced": ~112k training samples, ~18.8k test samples.
+                - "byclass": ~814k training samples, ~135k test samples.
+                - "bymerge": ~814k training samples, ~135k test samples.
+                - "digits": ~60k training samples, ~10k test samples (MNIST digits only).
+                - "letters": ~103k training samples, ~17.4k test samples.
+                - "mnist": Same as MNIST training set.
+            train: Whether to load training (True) or test (False) split.
 
         Raises:
-            Error: If data files cannot be loaded or invalid split specified
+            Error: If data files cannot be loaded or invalid split specified.
         """
         # Validate split
         var valid_splits = List[String]()
@@ -442,7 +442,7 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
         """Return the number of samples in the dataset.
 
         Returns:
-            Number of samples (images/labels pairs)
+            Number of samples (images/labels pairs).
         """
         return self._len
 
@@ -450,15 +450,15 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
         """Get a sample from the dataset.
 
         Args:
-            index: Index of the sample to retrieve (supports negative indexing)
+            index: Index of the sample to retrieve (supports negative indexing).
 
         Returns:
             Tuple of (image, label) tensors where:
-            - image: ExTensor with shape (1, 28, 28) - single grayscale image
-            - label: ExTensor with shape (1,) - integer label
+            - image: ExTensor with shape (1, 28, 28) - single grayscale image.
+            - label: ExTensor with shape (1,) - integer label.
 
         Raises:
-            Error: If index is out of bounds
+            Error: If index is out of bounds.
         """
         var idx = index
         if idx < 0:
@@ -484,10 +484,10 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
         """Get training data as ExTensorDataset.
 
         Returns:
-            ExTensorDataset containing all training data and labels
+            ExTensorDataset containing all training data and labels.
 
         Raises:
-            Error: If data or labels are invalid
+            Error: If data or labels are invalid.
         """
         return ExTensorDataset(self.data, self.labels)
 
@@ -495,14 +495,14 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
         """Get test data as ExTensorDataset.
 
         Note: This method returns the same data as get_train_data since
-        EMNISTDataset is initialized with either train or test split via __init__
-        Use __init__ with train=False to load test data
+        EMNISTDataset is initialized with either train or test split via __init__.
+        Use __init__ with train=False to load test data.
 
         Returns:
-            ExTensorDataset containing all data and labels
+            ExTensorDataset containing all data and labels.
 
         Raises:
-            Error: If data or labels are invalid
+            Error: If data or labels are invalid.
         """
         return ExTensorDataset(self.data, self.labels)
 
@@ -510,7 +510,7 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
         """Return the shape of individual samples.
 
         Returns:
-            Shape of each image (1, 28, 28) for grayscale
+            Shape of each image (1, 28, 28) for grayscale.
         """
         var shape = List[Int]()
         shape.append(1)
@@ -523,12 +523,12 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
 
         Returns:
             Number of classes:
-            - balanced: 47 classes
-            - byclass: 62 classes
-            - bymerge: 47 classes
-            - digits: 10 classes
-            - letters: 26 classes
-            - mnist: 10 classes
+            - balanced: 47 classes.
+            - byclass: 62 classes.
+            - bymerge: 47 classes.
+            - digits: 10 classes.
+            - letters: 26 classes.
+            - mnist: 10 classes.
         """
         if self.split == "balanced":
             return 47
@@ -558,14 +558,14 @@ fn load_emnist_train(
     """Load EMNIST training dataset.
 
     Args:
-            data_dir: Path to directory containing EMNIST files
-            split: Dataset split to load (default: "balanced")
+            data_dir: Path to directory containing EMNIST files.
+            split: Dataset split to load (default: "balanced").
 
     Returns:
-            Tuple of (images, labels) tensors
+            Tuple of (images, labels) tensors.
 
     Raises:
-            Error: If data files cannot be loaded
+            Error: If data files cannot be loaded.
     """
     var dataset = EMNISTDataset(data_dir, split, train=True)
     return (dataset.data, dataset.labels)
@@ -578,14 +578,14 @@ fn load_emnist_test(
     """Load EMNIST test dataset.
 
     Args:
-            data_dir: Path to directory containing EMNIST files
-            split: Dataset split to load (default: "balanced")
+            data_dir: Path to directory containing EMNIST files.
+            split: Dataset split to load (default: "balanced").
 
     Returns:
-            Tuple of (images, labels) tensors
+            Tuple of (images, labels) tensors.
 
     Raises:
-            Error: If data files cannot be loaded
+            Error: If data files cannot be loaded.
     """
     var dataset = EMNISTDataset(data_dir, split, train=False)
     return (dataset.data, dataset.labels)

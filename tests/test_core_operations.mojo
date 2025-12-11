@@ -26,8 +26,6 @@ from shared.core import (
     uniform,
     normal,
     constant,
-    # Matrix operations
-    matmul,
     # Activations
     relu,
     sigmoid,
@@ -37,6 +35,8 @@ from shared.core import (
     mean_squared_error,
     binary_cross_entropy,
 )
+# Import matmul explicitly from matrix to avoid conflict with matmul module
+from shared.core.matrix import matmul
 from shared.training.metrics import (
     AccuracyMetric,
     LossTracker,

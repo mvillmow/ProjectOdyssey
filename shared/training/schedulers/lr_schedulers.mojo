@@ -1,11 +1,11 @@
 """Learning rate scheduler implementations.
 
 This module provides implementations of common learning rate scheduling strategies:
-- StepLR: Decay learning rate at fixed intervals
-- CosineAnnealingLR: Smooth cosine decay
-- WarmupLR: Linear warmup phase
+- StepLR: Decay learning rate at fixed intervals.
+- CosineAnnealingLR: Smooth cosine decay.
+- WarmupLR: Linear warmup phase.
 
-All schedulers implement the LRScheduler trait from base.mojo
+All schedulers implement the LRScheduler trait from base.mojo.
 """
 
 from math import pi, cos
@@ -20,15 +20,15 @@ from shared.training.base import LRScheduler
 struct StepLR(Copyable, LRScheduler, Movable):
     """Step decay: reduce learning rate at fixed intervals.
 
-    Reduces the learning rate by a factor of gamma every step_size epochs
+    Reduces the learning rate by a factor of gamma every step_size epochs.
 
     Formula:
-        lr = base_lr * gamma^(epoch // step_size)
+        lr = base_lr * gamma^(epoch // step_size).
 
     Attributes:
-        base_lr: Initial learning rate
-        step_size: Number of epochs between LR reductions
-        gamma: Multiplicative factor for LR reduction
+        base_lr: Initial learning rate.
+        step_size: Number of epochs between LR reductions.
+        gamma: Multiplicative factor for LR reduction.
 
     Example:
         ```mojo
@@ -50,9 +50,9 @@ struct StepLR(Copyable, LRScheduler, Movable):
         """Initialize StepLR scheduler.
 
         Args:
-            base_lr: Initial learning rate
-            step_size: Number of epochs between LR reductions
-            gamma: Multiplicative factor for LR reduction
+            base_lr: Initial learning rate.
+            step_size: Number of epochs between LR reductions.
+            gamma: Multiplicative factor for LR reduction.
         """
         self.base_lr = base_lr
         self.step_size = step_size
@@ -62,11 +62,11 @@ struct StepLR(Copyable, LRScheduler, Movable):
         """Compute learning rate using step decay formula.
 
         Args:
-            epoch: Current epoch (0-indexed)
-            batch: Current batch (unused for epoch-based scheduler)
+            epoch: Current epoch (0-indexed).
+            batch: Current batch (unused for epoch-based scheduler).
 
         Returns:
-            Learning rate for this epoch
+            Learning rate for this epoch.
         """
         if self.step_size <= 0:
             return self.base_lr
@@ -85,15 +85,15 @@ struct CosineAnnealingLR(Copyable, LRScheduler, Movable):
     """Cosine annealing: smooth cosine decay from base_lr to eta_min.
 
     The learning rate follows a cosine curve, starting at base_lr and
-    smoothly decaying to eta_min over T_max epochs
+    smoothly decaying to eta_min over T_max epochs.
 
     Formula:
-        lr = eta_min + (base_lr - eta_min) * (1 + cos(pi * epoch / T_max)) / 2
+        lr = eta_min + (base_lr - eta_min) * (1 + cos(pi * epoch / T_max)) / 2.
 
     Attributes:
-        base_lr: Initial learning rate
-        T_max: Maximum number of epochs (period)
-        eta_min: Minimum learning rate
+        base_lr: Initial learning rate.
+        T_max: Maximum number of epochs (period).
+        eta_min: Minimum learning rate.
 
     Example:
         ```mojo
@@ -116,9 +116,9 @@ struct CosineAnnealingLR(Copyable, LRScheduler, Movable):
         """Initialize Cosine Annealing scheduler.
 
         Args:
-            base_lr: Initial learning rate
-            T_max: Maximum number of epochs (period)
-            eta_min: Minimum learning rate
+            base_lr: Initial learning rate.
+            T_max: Maximum number of epochs (period).
+            eta_min: Minimum learning rate.
         """
         self.base_lr = base_lr
         self.T_max = T_max
@@ -128,11 +128,11 @@ struct CosineAnnealingLR(Copyable, LRScheduler, Movable):
         """Compute learning rate using cosine annealing formula.
 
         Args:
-            epoch: Current epoch (0-indexed)
-            batch: Current batch (unused)
+            epoch: Current epoch (0-indexed).
+            batch: Current batch (unused).
 
         Returns:
-            Learning rate for this epoch
+            Learning rate for this epoch.
         """
         if self.T_max <= 0:
             return self.base_lr
@@ -157,15 +157,15 @@ struct WarmupLR(Copyable, LRScheduler, Movable):
     """Linear warmup: gradually increase learning rate during initial epochs.
 
     The learning rate increases linearly from 0 to base_lr over warmup_epochs,
-    then remains constant at base_lr
+    then remains constant at base_lr.
 
     Formula:
-        lr = base_lr * (epoch / warmup_epochs)  for epoch < warmup_epochs
-        lr = base_lr                            for epoch >= warmup_epochs
+        lr = base_lr * (epoch / warmup_epochs)  for epoch < warmup_epochs.
+        lr = base_lr                            for epoch >= warmup_epochs.
 
     Attributes:
-        base_lr: Target learning rate after warmup
-        warmup_epochs: Number of epochs for warmup phase
+        base_lr: Target learning rate after warmup.
+        warmup_epochs: Number of epochs for warmup phase.
 
     Example:
         ```mojo
@@ -185,8 +185,8 @@ struct WarmupLR(Copyable, LRScheduler, Movable):
         """Initialize Warmup scheduler.
 
         Args:
-            base_lr: Target learning rate after warmup
-            warmup_epochs: Number of epochs for warmup
+            base_lr: Target learning rate after warmup.
+            warmup_epochs: Number of epochs for warmup.
         """
         self.base_lr = base_lr
         self.warmup_epochs = warmup_epochs
@@ -195,11 +195,11 @@ struct WarmupLR(Copyable, LRScheduler, Movable):
         """Compute learning rate with linear warmup.
 
         Args:
-            epoch: Current epoch (0-indexed)
-            batch: Current batch (unused)
+            epoch: Current epoch (0-indexed).
+            batch: Current batch (unused).
 
         Returns:
-            Learning rate for this epoch
+            Learning rate for this epoch.
         """
         if self.warmup_epochs <= 0:
             return self.base_lr
@@ -225,16 +225,16 @@ struct ReduceLROnPlateau(Copyable, LRScheduler, Movable):
     """Reduce learning rate when metric stops improving.
 
     Monitors a metric (e.g., validation loss) and reduces the learning rate
-    by a factor when the metric has not improved for patience epochs
+    by a factor when the metric has not improved for patience epochs.
 
     Attributes:
-        base_lr: Initial learning rate
-        mode: Optimization mode (MODE_MIN=0 for loss, MODE_MAX=1 for accuracy)
-        factor: Multiplicative factor for LR reduction
-        patience: Number of epochs without improvement before reducing LR
-        best_metric: Best metric value seen so far
-        epochs_without_improvement: Counter for epochs without improvement
-        current_lr: Current learning rate (updated by step())
+        base_lr: Initial learning rate.
+        mode: Optimization mode (MODE_MIN=0 for loss, MODE_MAX=1 for accuracy).
+        factor: Multiplicative factor for LR reduction.
+        patience: Number of epochs without improvement before reducing LR.
+        best_metric: Best metric value seen so far.
+        epochs_without_improvement: Counter for epochs without improvement.
+        current_lr: Current learning rate (updated by step()).
 
     Example:
         ```mojo
@@ -267,10 +267,10 @@ struct ReduceLROnPlateau(Copyable, LRScheduler, Movable):
         """Initialize ReduceLROnPlateau scheduler.
 
         Args:
-            base_lr: Initial learning rate
-            mode: Optimization mode ("min" or "max")
-            factor: Multiplicative factor for LR reduction
-            patience: Epochs without improvement before reducing LR
+            base_lr: Initial learning rate.
+            mode: Optimization mode ("min" or "max").
+            factor: Multiplicative factor for LR reduction.
+            patience: Epochs without improvement before reducing LR.
         """
         self.base_lr = base_lr
         self.factor = factor
@@ -290,10 +290,10 @@ struct ReduceLROnPlateau(Copyable, LRScheduler, Movable):
         """Update scheduler based on metric value.
 
         Args:
-            metric: Current metric value (e.g., validation loss)
+            metric: Current metric value (e.g., validation loss).
 
         Returns:
-            New learning rate
+            New learning rate.
         """
         var improved = False
 
@@ -324,10 +324,10 @@ struct ReduceLROnPlateau(Copyable, LRScheduler, Movable):
         """Get current learning rate.
 
         Args:
-            epoch: Current epoch (unused in ReduceLROnPlateau)
-            batch: Current batch (unused)
+            epoch: Current epoch (unused in ReduceLROnPlateau).
+            batch: Current batch (unused).
 
         Returns:
-            Current learning rate
+            Current learning rate.
         """
         return self.current_lr

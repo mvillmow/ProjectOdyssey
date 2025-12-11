@@ -25,7 +25,7 @@ struct ConfigValue(Copyable, ImplicitlyCopyable, Movable):
     """Union type to hold different configuration value types.
 
     Supports common types needed for ML configurations: integers, floats,
-    strings, booleans, and lists
+    strings, booleans, and lists.
     """
 
     var value_type: String  # "int", "float", "string", "bool", "list"
@@ -111,7 +111,7 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
     """Configuration container with nested access and validation.
 
     Stores configuration as key-value pairs with support for nested
-    access using dot notation (e.g., "model.learning_rate")
+    access using dot notation (e.g., "model.learning_rate").
     """
 
     var data: Dict[String, ConfigValue]
@@ -156,21 +156,21 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Check if configuration key exists.
 
         Args:
-            key: Configuration key
+            key: Configuration key.
 
         Returns:
-            True if key exists, False otherwise
+            True if key exists, False otherwise.
         """
         return key in self.data
 
     fn has_key(self, key: String) -> Bool:
-        """Check if configuration key exists (alias for has)
+        """Check if configuration key exists (alias for has).
 
         Args:
-            key: Configuration key
+            key: Configuration key.
 
         Returns:
-            True if key exists, False otherwise
+            True if key exists, False otherwise.
         """
         return self.has(key)
 
@@ -178,14 +178,14 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Get string value with optional default.
 
         Args:
-            key: Configuration key
-            default: Value to return if key not found
+            key: Configuration key.
+            default: Value to return if key not found.
 
         Returns:
-            String value or default
+            String value or default.
 
         Raises:
-            Error: If key exists but type is not string
+            Error: If key exists but type is not string.
         """
         if key not in self.data:
             return default
@@ -204,14 +204,14 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Get integer value with optional default.
 
         Args:
-            key: Configuration key
-            default: Value to return if key not found
+            key: Configuration key.
+            default: Value to return if key not found.
 
         Returns:
-            Integer value or default
+            Integer value or default.
 
         Raises:
-            Error: If key exists but type is not int
+            Error: If key exists but type is not int.
         """
         if key not in self.data:
             return default
@@ -230,14 +230,14 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Get float value with optional default.
 
         Args:
-            key: Configuration key
-            default: Value to return if key not found
+            key: Configuration key.
+            default: Value to return if key not found.
 
         Returns:
-            Float value or default
+            Float value or default.
 
         Raises:
-            Error: If key exists but type is not float
+            Error: If key exists but type is not float.
         """
         if key not in self.data:
             return default
@@ -256,14 +256,14 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Get boolean value with optional default.
 
         Args:
-            key: Configuration key
-            default: Value to return if key not found
+            key: Configuration key.
+            default: Value to return if key not found.
 
         Returns:
-            Boolean value or default
+            Boolean value or default.
 
         Raises:
-            Error: If key exists but type is not bool
+            Error: If key exists but type is not bool.
         """
         if key not in self.data:
             return default
@@ -282,13 +282,13 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Get list value.
 
         Args:
-            key: Configuration key
+            key: Configuration key.
 
         Returns:
-            List value or empty list if not found
+            List value or empty list if not found.
 
         Raises:
-            Error: If key exists but type is not list
+            Error: If key exists but type is not list.
         """
         if key not in self.data:
             return List[String]()^
@@ -311,13 +311,13 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Get raw configuration value by key.
 
         Args:
-            key: Configuration key
+            key: Configuration key.
 
         Returns:
-            Configuration value or default ConfigValue if not found
+            Configuration value or default ConfigValue if not found.
 
         Raises:
-            Error if key access fails
+            Error: If key access fails.
         """
         if key in self.data:
             return self.data[key]
@@ -327,11 +327,11 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Get integer configuration value with default.
 
         Args:
-            key: Configuration key
-            default: Default value to return if key not found
+            key: Configuration key.
+            default: Default value to return if key not found.
 
         Returns:
-            Integer value or default
+            Integer value or default.
         """
         if not self.has(key):
             return default
@@ -344,11 +344,11 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Get float configuration value with default.
 
         Args:
-            key: Configuration key
-            default: Default value to return if key not found
+            key: Configuration key.
+            default: Default value to return if key not found.
 
         Returns:
-            Float value or default
+            Float value or default.
         """
         if not self.has(key):
             return default
@@ -361,11 +361,11 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Get string configuration value with default.
 
         Args:
-            key: Configuration key
-            default: Default value to return if key not found
+            key: Configuration key.
+            default: Default value to return if key not found.
 
         Returns:
-            String value or default
+            String value or default.
         """
         if not self.has(key):
             return default
@@ -378,11 +378,11 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Get boolean configuration value with default.
 
         Args:
-            key: Configuration key
-            default: Default value to return if key not found
+            key: Configuration key.
+            default: Default value to return if key not found.
 
         Returns:
-            Bool value or default
+            Bool value or default.
         """
         if not self.has(key):
             return default
@@ -395,10 +395,10 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Merge with another config, other takes precedence.
 
         Args:
-            other: Config to merge (overrides self)
+            other: Config to merge (overrides self).
 
         Returns:
-            New merged configuration
+            New merged configuration.
         """
         var result = Config()
 
@@ -416,10 +416,10 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Validate that all required keys are present.
 
         Args:
-            required_keys: List of required configuration keys
+            required_keys: List of required configuration keys.
 
         Raises:
-            Error if any required key is missing
+            Error: If any required key is missing.
         """
         for i in range(len(required_keys)):
             var key = required_keys[i]
@@ -430,11 +430,11 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Validate that a key has the expected type.
 
         Args:
-            key: Configuration key
-            type_name: Expected type name ("int", "float", "string", "bool", "list")
+            key: Configuration key.
+            type_name: Expected type name ("int", "float", "string", "bool", "list").
 
         Raises:
-            Error if type doesn't match.
+            Error: If type doesn't match.
         """
         if not self.has(key):
             raise Error("Key not found: " + key)
@@ -456,12 +456,12 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Validate that a numeric value is in range.
 
         Args:
-            key: Configuration key
-            min_val: Minimum allowed value
-            max_val: Maximum allowed value
+            key: Configuration key.
+            min_val: Minimum allowed value.
+            max_val: Maximum allowed value.
 
         Raises:
-            Error if value is out of range
+            Error: If value is out of range.
         """
         if not self.has(key):
             raise Error("Key not found: " + key)
@@ -491,11 +491,11 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Validate that a value is one of allowed enum values.
 
         Args:
-            key: Configuration key
-            valid_values: List of allowed values
+            key: Configuration key.
+            valid_values: List of allowed values.
 
         Raises:
-            Error if value is not in valid_values
+            Error: If value is not in valid_values.
         """
         if not self.has(key):
             raise Error("Key not found: " + key)
@@ -514,10 +514,10 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Validate that at most one of the mutually exclusive keys is set.
 
         Args:
-            keys: List of mutually exclusive keys
+            keys: List of mutually exclusive keys.
 
         Raises:
-            Error if more than one key is present
+            Error: If more than one key is present.
         """
         var count = 0
         for i in range(len(keys)):
@@ -532,7 +532,7 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Load configuration from YAML file with validation.
 
         Uses Python's PyYAML library to parse nested YAML structures and
-        flattens them into dot-notation keys for easy access
+        flattens them into dot-notation keys for easy access.
 
         Example:
             ```mojo
@@ -544,16 +544,16 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
             Results in keys:
                 "optimizer.name" = "sgd"
                 "optimizer.learning_rate" = 0.01
-        ```
+            ```
 
         Args:
-            filepath: Path to YAML file
+            filepath: Path to YAML file.
 
         Returns:
-            Loaded configuration
+            Loaded configuration.
 
         Raises:
-            Error if file not found, empty, or invalid YAML
+            Error: If file not found, empty, or invalid YAML.
         """
         var config = Config()
 
@@ -588,9 +588,9 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Recursively flatten a Python dict into dot-notation keys.
 
         Args:
-            config: Config object to populate
-            py_obj: Python object (dict, list, or primitive)
-            prefix: Current key prefix (empty for root level)
+            config: Config object to populate.
+            py_obj: Python object (dict, list, or primitive).
+            prefix: Current key prefix (empty for root level).
         """
         try:
             var builtins = Python.import_module("builtins")
@@ -649,20 +649,20 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
     fn from_json(filepath: String) raises -> Config:
         """Load configuration from JSON file with validation.
 
-        NOTE: Current implementation only supports flat key-value pairs
+        NOTE: Current implementation only supports flat key-value pairs.
         Nested objects and arrays are not yet supported. For complex configs,
         use flattened keys (e.g., "model.learning_rate" instead of nested
         {"model": {"learning_rate": 0.001}}) or consider using Python's json
-        module for parsing and converting to Config
+        module for parsing and converting to Config.
 
         Args:
-            filepath: Path to JSON file
+            filepath: Path to JSON file.
 
         Returns:
-            Loaded configuration
+            Loaded configuration.
 
         Raises:
-            Error if file not found, empty, or invalid JSON
+            Error: If file not found, empty, or invalid JSON.
         """
         # NOTE: Current implementation supports flat key-value pairs.
         # Full nested JSON parsing can be added as needed. Using basic parsing.
@@ -715,10 +715,10 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Save configuration to YAML file.
 
         Args:
-            filepath: Output file path
+            filepath: Output file path.
 
         Raises:
-            Error if file cannot be written
+            Error: If file cannot be written.
         """
         try:
             with open(filepath, "w") as f:
@@ -748,10 +748,10 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Save configuration to JSON file.
 
         Args:
-            filepath: Output file path
+            filepath: Output file path.
 
         Raises:
-            Error if file cannot be written
+            Error: If file cannot be written.
         """
         try:
             with open(filepath, "w") as f:
@@ -795,11 +795,11 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
     fn substitute_env_vars(self) -> Config:
         """Substitute environment variables in config values.
 
-        Replaces ${VAR_NAME} with environment variable values
-        Supports default syntax: ${VAR_NAME:-default}
+        Replaces ${VAR_NAME} with environment variable values.
+        Supports default syntax: ${VAR_NAME:-default}.
 
         Returns:
-            New config with substituted values
+            New config with substituted values.
         """
         var result = Config()
 
@@ -819,13 +819,13 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
     fn _substitute_env_in_string(self, value: String) -> String:
         """Helper to substitute environment variables in a string.
 
-        Replaces ${VAR} or ${VAR:-default} patterns with environment values
+        Replaces ${VAR} or ${VAR:-default} patterns with environment values.
 
         Args:
-            value: String that may contain ${VAR} patterns
+            value: String that may contain ${VAR} patterns.
 
         Returns:
-            String with substituted values
+            String with substituted values.
         """
         var result = value
 
@@ -877,10 +877,10 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """Load a predefined configuration template.
 
         Args:
-            name: Template name (e.g., "training_default", "lenet5")
+            name: Template name (e.g., "training_default", "lenet5").
 
         Returns:
-            Template configuration
+            Template configuration.
         """
         var config = Config()
 
@@ -905,23 +905,23 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
 fn load_config(filepath: String) raises -> Config:
     """Load configuration from YAML or JSON file.
 
-        Automatically detects file format based on extension (.yaml/.yml
-        for YAML, .json for JSON)
+    Automatically detects file format based on extension (.yaml/.yml
+    for YAML, .json for JSON).
 
     Args:
-            filepath: Path to configuration file
+        filepath: Path to configuration file.
 
     Returns:
-            Loaded configuration
+        Loaded configuration.
 
     Raises:
-            Error if file doesn't exist or invalid format.
+        Error: If file doesn't exist or invalid format.
 
-        Example:
-            ```mojo
-            var config = load_config("configs/lenet5.yaml")
-            var lr = config.get_float("learning_rate")
-            ```
+    Example:
+        ```mojo
+        var config = load_config("configs/lenet5.yaml")
+        var lr = config.get_float("learning_rate")
+        ```
     """
     if filepath.endswith(".yaml") or filepath.endswith(".yml"):
         return Config.from_yaml(filepath)
@@ -934,21 +934,21 @@ fn load_config(filepath: String) raises -> Config:
 fn save_config(config: Config, filepath: String) raises:
     """Save configuration to YAML or JSON file.
 
-        Automatically determines output format from file extension
+    Automatically determines output format from file extension.
 
     Args:
-            config: Configuration to save
-            filepath: Output file path
+        config: Configuration to save.
+        filepath: Output file path.
 
     Raises:
-            Error if file cannot be written
+        Error: If file cannot be written.
 
-        Example:
-            ```mojo
-            var config = Config()
-            config.set("learning_rate", 0.001)
-            save_config(config, "config.yaml")
-            ```
+    Example:
+        ```mojo
+        var config = Config()
+        config.set("learning_rate", 0.001)
+        save_config(config, "config.yaml")
+        ```
     """
     if filepath.endswith(".yaml") or filepath.endswith(".yml"):
         config.to_yaml(filepath)
@@ -966,23 +966,23 @@ fn save_config(config: Config, filepath: String) raises:
 fn merge_configs(base: Config, override: Config) -> Config:
     """Merge two configurations with override taking precedence.
 
-        Creates a new configuration that combines both inputs, with values
-        from override taking precedence over base. Useful for creating
-        experiment-specific configs that override defaults
+    Creates a new configuration that combines both inputs, with values
+    from override taking precedence over base. Useful for creating
+    experiment-specific configs that override defaults.
 
     Args:
-            base: Base configuration (defaults)
-            override: Override configuration (experiment-specific)
+        base: Base configuration (defaults).
+        override: Override configuration (experiment-specific).
 
     Returns:
-            Merged configuration
+        Merged configuration.
 
-        Example:
-            ```mojo
-            var defaults = load_config("config.yaml")
-            var experiment = load_config("config.lenet5.yaml")
-            var config = merge_configs(defaults, experiment)
-            ```
+    Example:
+        ```mojo
+        var defaults = load_config("config.yaml")
+        var experiment = load_config("config.lenet5.yaml")
+        var config = merge_configs(defaults, experiment)
+        ```
     """
     return base.merge(override)
 
@@ -1012,10 +1012,10 @@ struct ConfigValidator(Copyable, ImplicitlyCopyable, Movable):
         """Mark key as required.
 
         Args:
-            key: Configuration key
+            key: Configuration key.
 
         Returns:
-            Self for method chaining
+            Self for method chaining.
         """
         self.required_keys.append(key)
         return self.copy()
@@ -1024,11 +1024,11 @@ struct ConfigValidator(Copyable, ImplicitlyCopyable, Movable):
         """Mark key as allowed with specific type.
 
         Args:
-            key: Configuration key
-            type_name: Expected type name
+            key: Configuration key.
+            type_name: Expected type name.
 
         Returns:
-            Self for method chaining
+            Self for method chaining.
         """
         self.allowed_keys[key] = type_name
         return self.copy()
@@ -1037,10 +1037,10 @@ struct ConfigValidator(Copyable, ImplicitlyCopyable, Movable):
         """Validate configuration against rules.
 
         Args:
-            config: Configuration to validate
+            config: Configuration to validate.
 
         Returns:
-            True if valid, False otherwise
+            True if valid, False otherwise.
         """
         # Check required keys
         for i in range(len(self.required_keys)):
@@ -1054,6 +1054,6 @@ fn create_validator() -> ConfigValidator:
     """Create new configuration validator.
 
     Returns:
-            Empty validator ready for configuration
+        Empty validator ready for configuration.
     """
     return ConfigValidator()

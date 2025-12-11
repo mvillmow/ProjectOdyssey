@@ -53,12 +53,12 @@ fn _format_dtype_name(dtype: DType) -> String:
     """Format a DType into a readable string name.
 
     Args:
-            dtype: The dtype to format
+            dtype: The dtype to format.
 
     Returns:
-            String representation of the dtype name
+            String representation of the dtype name.
 
-        Note: Used internally for error messages
+        Note: Used internally for error messages.
     """
     if dtype == DType.float16:
         return "float16"
@@ -96,16 +96,16 @@ fn elementwise_unary[
 ](tensor: ExTensor) raises -> ExTensor:
     """Apply unary operation with compile-time dtype specialization.
 
-        This function is compile-time specialized for a specific dtype and operation
-        Use `dispatch_unary` for runtime dtype dispatch
+        This function is compile-time specialized for a specific dtype and operation.
+        Use `dispatch_unary` for runtime dtype dispatch.
 
     Args:
-            dtype: Compile-time dtype parameter
-            op: Unary operation function pointer
-            tensor: Input tensor
+            dtype: Compile-time dtype parameter.
+            op: Unary operation function pointer.
+            tensor: Input tensor.
 
     Returns:
-            New tensor with operation applied element-wise
+            New tensor with operation applied element-wise.
 
         Example:
             ```mojo
@@ -136,18 +136,18 @@ fn dispatch_unary[
 
         This function performs runtime dtype checking but dispatches to compile-time
         specialized versions of the operation, ensuring zero overhead compared to
-        hand-written dtype branches
+        hand-written dtype branches.
 
     Args:
-            op: Unary operation function pointer
-            tensor: Input tensor
+            op: Unary operation function pointer.
+            tensor: Input tensor.
 
     Returns:
-            New tensor with operation applied element-wise
+            New tensor with operation applied element-wise.
 
     Raises:
             Error: If tensor dtype is not supported. Error message includes the
-                   unsupported dtype and list of supported dtypes
+                   unsupported dtype and list of supported dtypes.
 
         Example:
             ```mojo
@@ -159,7 +159,7 @@ fn dispatch_unary[
 
     Note:
             Supports: float16, float32, float64, int8, int16, int32, int64,
-                      uint8, uint16, uint32, uint64
+                      uint8, uint16, uint32, uint64.
     """
     # Runtime dispatch to compile-time specialized version
     if tensor._dtype == DType.float16:
@@ -204,17 +204,17 @@ fn elementwise_binary[
 ](lhs: ExTensor, rhs: ExTensor) raises -> ExTensor:
     """Apply binary operation with compile-time dtype specialization.
 
-        This function is compile-time specialized for a specific dtype and operation
-        Use `dispatch_binary` for runtime dtype dispatch
+        This function is compile-time specialized for a specific dtype and operation.
+        Use `dispatch_binary` for runtime dtype dispatch.
 
     Args:
-            dtype: Compile-time dtype parameter
-            op: Binary operation function pointer
-            lhs: Left-hand side tensor
-            rhs: Right-hand side tensor (must have same shape as lhs)
+            dtype: Compile-time dtype parameter.
+            op: Binary operation function pointer.
+            lhs: Left-hand side tensor.
+            rhs: Right-hand side tensor (must have same shape as lhs).
 
     Returns:
-            New tensor with operation applied element-wise
+            New tensor with operation applied element-wise.
 
     Raises:
             Error: If shapes don't match.
@@ -252,19 +252,19 @@ fn dispatch_binary[
     """Runtime dispatch to compile-time specialized binary operation.
 
         This function performs runtime dtype checking but dispatches to compile-time
-        specialized versions of the operation
+        specialized versions of the operation.
 
     Args:
-            op: Binary operation function pointer
-            lhs: Left-hand side tensor
-            rhs: Right-hand side tensor
+            op: Binary operation function pointer.
+            lhs: Left-hand side tensor.
+            rhs: Right-hand side tensor.
 
     Returns:
-            New tensor with operation applied element-wise
+            New tensor with operation applied element-wise.
 
     Raises:
-            Error: If dtypes don't match or are unsupported. Error message includes.
-                   the actual dtypes and list of supported dtypes
+            Error: If dtypes don't match or are unsupported. Error message includes
+                   the actual dtypes and list of supported dtypes.
 
         Example:
             ```mojo
@@ -276,8 +276,8 @@ fn dispatch_binary[
 
     Note:
             Supports: float16, float32, float64, int8, int16, int32, int64,
-                      uint8, uint16, uint32, uint64
-            Both tensors must have matching dtypes
+                      uint8, uint16, uint32, uint64.
+            Both tensors must have matching dtypes.
     """
     # Validate dtypes match
     if lhs._dtype != rhs._dtype:
@@ -333,17 +333,17 @@ fn elementwise_scalar[
 ](tensor: ExTensor, scalar: Float64) raises -> ExTensor:
     """Apply scalar binary operation with compile-time dtype specialization.
 
-        This function applies a binary operation between a tensor and a scalar value
-        The scalar is converted to the appropriate dtype at compile time
+        This function applies a binary operation between a tensor and a scalar value.
+        The scalar is converted to the appropriate dtype at compile time.
 
     Args:
-            dtype: Compile-time dtype parameter
-            op: Binary operation function pointer
-            tensor: Input tensor
-            scalar: Scalar value (converted to appropriate dtype)
+            dtype: Compile-time dtype parameter.
+            op: Binary operation function pointer.
+            tensor: Input tensor.
+            scalar: Scalar value (converted to appropriate dtype).
 
     Returns:
-            New tensor with operation applied element-wise
+            New tensor with operation applied element-wise.
 
         Example:
             ```mojo
@@ -376,16 +376,16 @@ fn dispatch_scalar[
         converted to the tensor's dtype.
 
     Args:
-            op: Binary operation function pointer
-            tensor: Input tensor
-            scalar: Scalar value (converted to tensor's dtype)
+            op: Binary operation function pointer.
+            tensor: Input tensor.
+            scalar: Scalar value (converted to tensor's dtype).
 
     Returns:
-            New tensor with operation applied element-wise
+            New tensor with operation applied element-wise.
 
     Raises:
             Error: If tensor dtype is not supported. Error message includes the
-                   unsupported dtype and list of supported dtypes
+                   unsupported dtype and list of supported dtypes.
 
         Example:
             ```mojo
@@ -397,7 +397,7 @@ fn dispatch_scalar[
 
     Note:
             Supports: float16, float32, float64, int8, int16, int32, int64,
-                      uint8, uint16, uint32, uint64
+                      uint8, uint16, uint32, uint64.
             The scalar is automatically converted to match the tensor's dtype.
     """
     # Runtime dispatch to compile-time specialized version
@@ -446,18 +446,18 @@ fn dispatch_float_unary[
         Use this for operations like sigmoid, tanh, exp, log that only support
         floating-point dtypes. This function validates that the input tensor is
         one of the supported float types and dispatches to the appropriate
-        compile-time specialized version
+        compile-time specialized version.
 
     Args:
-            op: Unary operation function pointer
-            tensor: Input tensor (must be float16/32/64)
+            op: Unary operation function pointer.
+            tensor: Input tensor (must be float16/32/64).
 
     Returns:
-            New tensor with operation applied element-wise
+            New tensor with operation applied element-wise.
 
     Raises:
             Error: If tensor dtype is not a float type. Error message includes the
-                   actual dtype and supported float types
+                   actual dtype and supported float types.
 
         Example:
             ```mojo
@@ -469,8 +469,8 @@ fn dispatch_float_unary[
             ```
 
     Note:
-            Supports float types only: float16, float32, float64
-            For integer operations, use dispatch_unary instead
+            Supports float types only: float16, float32, float64.
+            For integer operations, use dispatch_unary instead.
     """
     # Runtime dispatch for float types only
     if tensor._dtype == DType.float16:
@@ -492,25 +492,25 @@ fn dispatch_float_binary[
 ](lhs: ExTensor, rhs: ExTensor) raises -> ExTensor:
     """Runtime dispatch for floating-point only binary operations.
 
-        Use this for operations that only support floating-point dtypes
+        Use this for operations that only support floating-point dtypes.
         This function validates that both input tensors are float types
-        and dispatches to the appropriate compile-time specialized version
+        and dispatches to the appropriate compile-time specialized version.
 
     Args:
-            op: Binary operation function pointer
-            lhs: Left-hand side tensor (must be float16/32/64)
-            rhs: Right-hand side tensor (must match lhs dtype)
+            op: Binary operation function pointer.
+            lhs: Left-hand side tensor (must be float16/32/64).
+            rhs: Right-hand side tensor (must match lhs dtype).
 
     Returns:
-            New tensor with operation applied element-wise
+            New tensor with operation applied element-wise.
 
     Raises:
-            Error: If dtypes don't match or are not float types. Error message.
-                   includes the actual dtypes
+            Error: If dtypes don't match or are not float types. Error message
+                   includes the actual dtypes.
 
     Note:
-            Supports float types only: float16, float32, float64
-            Both tensors must have matching dtypes
+            Supports float types only: float16, float32, float64.
+            Both tensors must have matching dtypes.
     """
     # Validate dtypes match
     if lhs._dtype != rhs._dtype:
@@ -543,23 +543,23 @@ fn dispatch_float_scalar[
 ](tensor: ExTensor, scalar: Float64) raises -> ExTensor:
     """Runtime dispatch for floating-point only scalar operations.
 
-        Use this for operations that only support floating-point dtypes
+        Use this for operations that only support floating-point dtypes.
         The scalar value is automatically converted to the tensor's float dtype.
 
     Args:
-            op: Binary operation function pointer
-            tensor: Input tensor (must be float16/32/64)
-            scalar: Scalar value (converted to tensor's dtype)
+            op: Binary operation function pointer.
+            tensor: Input tensor (must be float16/32/64).
+            scalar: Scalar value (converted to tensor's dtype).
 
     Returns:
-            New tensor with operation applied element-wise
+            New tensor with operation applied element-wise.
 
     Raises:
             Error: If tensor dtype is not a float type. Error message includes the
-                   actual dtype and supported float types
+                   actual dtype and supported float types.
 
     Note:
-            Supports float types only: float16, float32, float64
+            Supports float types only: float16, float32, float64.
             The scalar is automatically converted to match the tensor's float dtype.
     """
     # Runtime dispatch for float types only
@@ -597,12 +597,12 @@ fn _softmax_impl[
     before exponentiation.
 
     Args:
-        dtype: Compile-time dtype parameter
-        result: Output tensor (pre-allocated)
-        tensor: Input tensor
-        outer_size: Product of dimensions before the softmax axis
-        axis_size: Size of the softmax axis
-        axis_stride: Product of dimensions after the softmax axis
+        dtype: Compile-time dtype parameter.
+        result: Output tensor (pre-allocated).
+        tensor: Input tensor.
+        outer_size: Product of dimensions before the softmax axis.
+        axis_size: Size of the softmax axis.
+        axis_stride: Product of dimensions after the softmax axis.
     """
     from math import exp
 
@@ -686,16 +686,16 @@ fn dispatch_softmax(
     """Runtime dispatch for softmax operation.
 
     Args:
-        tensor: Input tensor
-        outer_size: Product of dimensions before the softmax axis
-        axis_size: Size of the softmax axis
-        axis_stride: Product of dimensions after the softmax axis
+        tensor: Input tensor.
+        outer_size: Product of dimensions before the softmax axis.
+        axis_size: Size of the softmax axis.
+        axis_stride: Product of dimensions after the softmax axis.
 
     Returns:
-        Softmax output tensor
+        Softmax output tensor.
 
     Raises:
-        Error: If dtype is not float16/32/64
+        Error: If dtype is not float16/32/64.
     """
     var result = ExTensor(tensor._shape, tensor._dtype)
 
@@ -732,16 +732,16 @@ fn _softmax_backward_impl[
 ) raises:
     """Compile-time specialized softmax backward implementation.
 
-    Softmax gradient: grad_input[i] = output[i] * (grad_output[i] - sum_j(grad_output[j] * output[j]))
+    Softmax gradient: grad_input[i] = output[i] * (grad_output[i] - sum_j(grad_output[j] * output[j])).
 
     Args:
-        dtype: Compile-time dtype parameter
-        result: Output gradient tensor (pre-allocated)
-        grad_output: Upstream gradient
-        output: Softmax forward output
-        outer_size: Product of dimensions before axis
-        axis_size: Size of softmax axis
-        axis_stride: Product of dimensions after axis
+        dtype: Compile-time dtype parameter.
+        result: Output gradient tensor (pre-allocated).
+        grad_output: Upstream gradient.
+        output: Softmax forward output.
+        outer_size: Product of dimensions before axis.
+        axis_size: Size of softmax axis.
+        axis_stride: Product of dimensions after axis.
     """
     var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
     var out_ptr = output._data.bitcast[Scalar[dtype]]()
@@ -792,17 +792,17 @@ fn dispatch_softmax_backward(
     """Runtime dispatch for softmax backward operation.
 
     Args:
-        grad_output: Upstream gradient
-        output: Softmax forward output
-        outer_size: Product of dimensions before axis
-        axis_size: Size of softmax axis
-        axis_stride: Product of dimensions after axis
+        grad_output: Upstream gradient.
+        output: Softmax forward output.
+        outer_size: Product of dimensions before axis.
+        axis_size: Size of softmax axis.
+        axis_stride: Product of dimensions after axis.
 
     Returns:
-        Input gradient tensor
+        Input gradient tensor.
 
     Raises:
-        Error: If dtype is not float16/32/64
+        Error: If dtype is not float16/32/64.
     """
     var result = ExTensor(output._shape, output._dtype)
 
@@ -834,14 +834,14 @@ fn _gelu_impl[
     """Compile-time specialized GELU implementation.
 
     GELU(x) = x * Phi(x) where Phi is the CDF of standard normal.
-    Exact: x * 0.5 * (1 + erf(x / sqrt(2)))
-    Approximate: 0.5 * x * (1 + tanh(sqrt(2/pi) * (x + 0.044715 * x^3)))
+    Exact: x * 0.5 * (1 + erf(x / sqrt(2))).
+    Approximate: 0.5 * x * (1 + tanh(sqrt(2/pi) * (x + 0.044715 * x^3))).
 
     Args:
-        dtype: Compile-time dtype parameter
-        result: Output tensor (pre-allocated)
-        tensor: Input tensor
-        approximate: Use tanh approximation if True
+        dtype: Compile-time dtype parameter.
+        result: Output tensor (pre-allocated).
+        tensor: Input tensor.
+        approximate: Use tanh approximation if True.
     """
     from math import exp, erf, tanh as math_tanh
 
@@ -900,14 +900,14 @@ fn dispatch_gelu(tensor: ExTensor, approximate: Bool) raises -> ExTensor:
     """Runtime dispatch for GELU activation.
 
     Args:
-        tensor: Input tensor
-        approximate: Use tanh approximation if True
+        tensor: Input tensor.
+        approximate: Use tanh approximation if True.
 
     Returns:
-        GELU output tensor
+        GELU output tensor.
 
     Raises:
-        Error: If dtype is not float16/32/64
+        Error: If dtype is not float16/32/64.
     """
     var result = ExTensor(tensor._shape, tensor._dtype)
 
@@ -934,11 +934,11 @@ fn _gelu_backward_impl[
     """Compile-time specialized GELU backward implementation.
 
     Args:
-        dtype: Compile-time dtype parameter
-        result: Output gradient tensor (pre-allocated)
-        grad_output: Upstream gradient
-        x: Input from forward pass
-        approximate: Use tanh approximation derivative if True
+        dtype: Compile-time dtype parameter.
+        result: Output gradient tensor (pre-allocated).
+        grad_output: Upstream gradient.
+        x: Input from forward pass.
+        approximate: Use tanh approximation derivative if True.
     """
     from math import exp, erf, tanh as math_tanh
 
@@ -1028,15 +1028,15 @@ fn dispatch_gelu_backward(
     """Runtime dispatch for GELU backward operation.
 
     Args:
-        grad_output: Upstream gradient
-        x: Input from forward pass
-        approximate: Use tanh approximation derivative if True
+        grad_output: Upstream gradient.
+        x: Input from forward pass.
+        approximate: Use tanh approximation derivative if True.
 
     Returns:
-        Input gradient tensor
+        Input gradient tensor.
 
     Raises:
-        Error: If dtype is not float16/32/64
+        Error: If dtype is not float16/32/64.
     """
     var result = ExTensor(x._shape, x._dtype)
 
@@ -1059,12 +1059,12 @@ fn dispatch_gelu_backward(
 fn _hard_sigmoid_impl[dtype: DType](result: ExTensor, tensor: ExTensor) raises:
     """Compile-time specialized hard_sigmoid implementation.
 
-    hard_sigmoid(x) = clip((x + 3) / 6, 0, 1)
+    hard_sigmoid(x) = clip((x + 3) / 6, 0, 1).
 
     Args:
-        dtype: Compile-time dtype parameter
-        result: Output tensor (pre-allocated)
-        tensor: Input tensor
+        dtype: Compile-time dtype parameter.
+        result: Output tensor (pre-allocated).
+        tensor: Input tensor.
     """
     var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
     var out_ptr = result._data.bitcast[Scalar[dtype]]()
@@ -1091,13 +1091,13 @@ fn dispatch_hard_sigmoid(tensor: ExTensor) raises -> ExTensor:
     """Runtime dispatch for hard_sigmoid activation.
 
     Args:
-        tensor: Input tensor
+        tensor: Input tensor.
 
     Returns:
-        hard_sigmoid output tensor
+        hard_sigmoid output tensor.
 
     Raises:
-        Error: If dtype is not float16/32/64
+        Error: If dtype is not float16/32/64.
     """
     var result = ExTensor(tensor._shape, tensor._dtype)
 
@@ -1122,13 +1122,13 @@ fn _hard_sigmoid_backward_impl[
 ](result: ExTensor, grad_output: ExTensor, x: ExTensor) raises:
     """Compile-time specialized hard_sigmoid backward implementation.
 
-    Derivative: 1/6 if -3 < x < 3, else 0
+    Derivative: 1/6 if -3 < x < 3, else 0.
 
     Args:
-        dtype: Compile-time dtype parameter
-        result: Output gradient tensor (pre-allocated)
-        grad_output: Upstream gradient
-        x: Input from forward pass
+        dtype: Compile-time dtype parameter.
+        result: Output gradient tensor (pre-allocated).
+        grad_output: Upstream gradient.
+        x: Input from forward pass.
     """
     var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
     var x_ptr = x._data.bitcast[Scalar[dtype]]()
@@ -1163,14 +1163,14 @@ fn dispatch_hard_sigmoid_backward(
     """Runtime dispatch for hard_sigmoid backward operation.
 
     Args:
-        grad_output: Upstream gradient
-        x: Input from forward pass
+        grad_output: Upstream gradient.
+        x: Input from forward pass.
 
     Returns:
-        Input gradient tensor
+        Input gradient tensor.
 
     Raises:
-        Error: If dtype is not float16/32/64
+        Error: If dtype is not float16/32/64.
     """
     var result = ExTensor(x._shape, x._dtype)
 
@@ -1193,15 +1193,15 @@ fn dispatch_hard_sigmoid_backward(
 fn _hard_swish_impl[dtype: DType](result: ExTensor, tensor: ExTensor) raises:
     """Compile-time specialized hard_swish implementation.
 
-    hard_swish(x) = x * hard_sigmoid(x) = x * clip((x + 3) / 6, 0, 1)
-                  = 0 if x <= -3
-                  = x if x >= 3
-                  = x * (x + 3) / 6 otherwise
+    hard_swish(x) = x * hard_sigmoid(x) = x * clip((x + 3) / 6, 0, 1).
+                  = 0 if x <= -3.
+                  = x if x >= 3.
+                  = x * (x + 3) / 6 otherwise.
 
     Args:
-        dtype: Compile-time dtype parameter
-        result: Output tensor (pre-allocated)
-        tensor: Input tensor
+        dtype: Compile-time dtype parameter.
+        result: Output tensor (pre-allocated).
+        tensor: Input tensor.
     """
     var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
     var out_ptr = result._data.bitcast[Scalar[dtype]]()
@@ -1235,13 +1235,13 @@ fn dispatch_hard_swish(tensor: ExTensor) raises -> ExTensor:
     """Runtime dispatch for hard_swish activation.
 
     Args:
-        tensor: Input tensor
+        tensor: Input tensor.
 
     Returns:
-        hard_swish output tensor
+        hard_swish output tensor.
 
     Raises:
-        Error: If dtype is not float16/32/64
+        Error: If dtype is not float16/32/64.
     """
     var result = ExTensor(tensor._shape, tensor._dtype)
 
@@ -1266,13 +1266,13 @@ fn _hard_swish_backward_impl[
 ](result: ExTensor, grad_output: ExTensor, x: ExTensor) raises:
     """Compile-time specialized hard_swish backward implementation.
 
-    Derivative: 0 if x <= -3, 1 if x >= 3, (2x + 3) / 6 otherwise
+    Derivative: 0 if x <= -3, 1 if x >= 3, (2x + 3) / 6 otherwise.
 
     Args:
-        dtype: Compile-time dtype parameter
-        result: Output gradient tensor (pre-allocated)
-        grad_output: Upstream gradient
-        x: Input from forward pass
+        dtype: Compile-time dtype parameter.
+        result: Output gradient tensor (pre-allocated).
+        grad_output: Upstream gradient.
+        x: Input from forward pass.
     """
     var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
     var x_ptr = x._data.bitcast[Scalar[dtype]]()
@@ -1312,14 +1312,14 @@ fn dispatch_hard_swish_backward(
     """Runtime dispatch for hard_swish backward operation.
 
     Args:
-        grad_output: Upstream gradient
-        x: Input from forward pass
+        grad_output: Upstream gradient.
+        x: Input from forward pass.
 
     Returns:
-        Input gradient tensor
+        Input gradient tensor.
 
     Raises:
-        Error: If dtype is not float16/32/64
+        Error: If dtype is not float16/32/64.
     """
     var result = ExTensor(x._shape, x._dtype)
 
@@ -1346,14 +1346,14 @@ fn _hard_tanh_impl[
 ) raises:
     """Compile-time specialized hard_tanh implementation.
 
-    hard_tanh(x) = clip(x, min_val, max_val)
+    hard_tanh(x) = clip(x, min_val, max_val).
 
     Args:
-        dtype: Compile-time dtype parameter
-        result: Output tensor (pre-allocated)
-        tensor: Input tensor
-        min_val: Minimum output value
-        max_val: Maximum output value
+        dtype: Compile-time dtype parameter.
+        result: Output tensor (pre-allocated).
+        tensor: Input tensor.
+        min_val: Minimum output value.
+        max_val: Maximum output value.
     """
     var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
     var out_ptr = result._data.bitcast[Scalar[dtype]]()
@@ -1371,15 +1371,15 @@ fn dispatch_hard_tanh(
     """Runtime dispatch for hard_tanh activation.
 
     Args:
-        tensor: Input tensor
-        min_val: Minimum output value
-        max_val: Maximum output value
+        tensor: Input tensor.
+        min_val: Minimum output value.
+        max_val: Maximum output value.
 
     Returns:
-        hard_tanh output tensor
+        hard_tanh output tensor.
 
     Raises:
-        Error: If dtype is not float16/32/64
+        Error: If dtype is not float16/32/64.
     """
     var result = ExTensor(tensor._shape, tensor._dtype)
 
@@ -1409,15 +1409,15 @@ fn _hard_tanh_backward_impl[
 ) raises:
     """Compile-time specialized hard_tanh backward implementation.
 
-    Derivative: 1 if min_val < x < max_val, else 0
+    Derivative: 1 if min_val < x < max_val, else 0.
 
     Args:
-        dtype: Compile-time dtype parameter
-        result: Output gradient tensor (pre-allocated)
-        grad_output: Upstream gradient
-        x: Input from forward pass
-        min_val: Minimum value used in forward pass
-        max_val: Maximum value used in forward pass
+        dtype: Compile-time dtype parameter.
+        result: Output gradient tensor (pre-allocated).
+        grad_output: Upstream gradient.
+        x: Input from forward pass.
+        min_val: Minimum value used in forward pass.
+        max_val: Maximum value used in forward pass.
     """
     var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
     var x_ptr = x._data.bitcast[Scalar[dtype]]()
@@ -1441,16 +1441,16 @@ fn dispatch_hard_tanh_backward(
     """Runtime dispatch for hard_tanh backward operation.
 
     Args:
-        grad_output: Upstream gradient
-        x: Input from forward pass
-        min_val: Minimum value used in forward pass
-        max_val: Maximum value used in forward pass
+        grad_output: Upstream gradient.
+        x: Input from forward pass.
+        min_val: Minimum value used in forward pass.
+        max_val: Maximum value used in forward pass.
 
     Returns:
-        Input gradient tensor
+        Input gradient tensor.
 
     Raises:
-        Error: If dtype is not float16/32/64
+        Error: If dtype is not float16/32/64.
     """
     var result = ExTensor(x._shape, x._dtype)
 

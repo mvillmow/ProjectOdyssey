@@ -47,7 +47,7 @@ fn create_temp_dir(prefix: String = "ml_odyssey_test_") raises -> String:
     """
     # Use Python's tempfile.mkdtemp for atomic directory creation
     var tempfile = Python.import_module("tempfile")
-    var temp_path = tempfile.mkdtemp(prefix=prefix)
+    var temp_path = tempfile.mkdtemp(prefix=PythonObject(prefix))
     return String(temp_path)
 
 

@@ -59,20 +59,20 @@ fn _relu_op[T: DType](x: Scalar[T]) -> Scalar[T]:
 
 
 fn relu(tensor: ExTensor) raises -> ExTensor:
-    """Apply ReLU (Rectified Linear Unit) activation: max(0, x)
+    """Apply ReLU (Rectified Linear Unit) activation: max(0, x).
 
-        ReLU zeros out negative values while preserving positive values unchanged
+        ReLU zeros out negative values while preserving positive values unchanged.
         This is the most common activation function in deep learning, promoting
-        sparse activation patterns
+        sparse activation patterns.
 
         Supported dtypes: float16, float32, float64, int8, int16, int32, int64,
-                          uint8, uint16, uint32, uint64
+                          uint8, uint16, uint32, uint64.
 
     Args:
-            tensor: Input tensor of any shape
+            tensor: Input tensor of any shape.
 
     Returns:
-            New tensor with ReLU applied element-wise
+            New tensor with ReLU applied element-wise.
 
     Examples:
             var x = ExTensor(...)  # [-2, -1, 0, 1, 2]
@@ -82,19 +82,19 @@ fn relu(tensor: ExTensor) raises -> ExTensor:
 
 
 fn leaky_relu(tensor: ExTensor, alpha: Float64 = 0.01) raises -> ExTensor:
-    """Apply Leaky ReLU activation: max(alpha*x, x)
+    """Apply Leaky ReLU activation: max(alpha*x, x).
 
         Leaky ReLU introduces a small slope for negative values to prevent
         "dying ReLU" problem where neurons can become permanently inactive.
 
-        Supported dtypes: float16, float32, float64, int8, int16, int32, int64
+        Supported dtypes: float16, float32, float64, int8, int16, int32, int64.
 
     Args:
-            tensor: Input tensor of any shape
-            alpha: Slope for negative values (default: 0.01)
+            tensor: Input tensor of any shape.
+            alpha: Slope for negative values (default: 0.01).
 
     Returns:
-            New tensor with Leaky ReLU applied element-wise
+            New tensor with Leaky ReLU applied element-wise.
 
     Examples:
             var x = ExTensor(...)           # [-2, -1, 0, 1, 2]
@@ -148,23 +148,23 @@ fn leaky_relu(tensor: ExTensor, alpha: Float64 = 0.01) raises -> ExTensor:
 
 
 fn prelu(tensor: ExTensor, alpha: ExTensor) raises -> ExTensor:
-    """Apply PReLU (Parametric ReLU) activation: max(alpha*x, x)
+    """Apply PReLU (Parametric ReLU) activation: max(alpha*x, x).
 
         PReLU is similar to Leaky ReLU but uses learnable parameters for the
         negative slope. Alpha can be a scalar or have the same shape as tensor
-        for per-element or per-channel learned slopes
+        for per-element or per-channel learned slopes.
 
-        Supported dtypes: float16, float32, float64
+        Supported dtypes: float16, float32, float64.
 
     Args:
-            tensor: Input tensor of any shape
-            alpha: Learnable slope parameter (scalar or matching shape)
+            tensor: Input tensor of any shape.
+            alpha: Learnable slope parameter (scalar or matching shape).
 
     Returns:
-            New tensor with PReLU applied element-wise
+            New tensor with PReLU applied element-wise.
 
     Raises:
-            Error: If alpha shape is incompatible with tensor shape
+            Error: If alpha shape is incompatible with tensor shape.
 
     Examples:
             var x = ExTensor(...)      # [-2, -1, 0, 1, 2]
@@ -236,22 +236,22 @@ fn _sigmoid_op[T: DType](x: Scalar[T]) -> Scalar[T]:
 
 
 fn sigmoid(tensor: ExTensor) raises -> ExTensor:
-    """Apply sigmoid activation: 1 / (1 + exp(-x))
+    """Apply sigmoid activation: 1 / (1 + exp(-x)).
 
         Sigmoid maps inputs to (0, 1) range. Uses numerically stable implementation
-        with input clipping to prevent overflow in exp() computation
+        with input clipping to prevent overflow in exp() computation.
 
         For large |x| (>20), uses approximations:
         - x > 20: sigmoid(x) = 1.0
         - x < -20: sigmoid(x) = 0.0
 
-        Supported dtypes: float16, float32, float64
+        Supported dtypes: float16, float32, float64.
 
     Args:
-            tensor: Input tensor of any shape
+            tensor: Input tensor of any shape.
 
     Returns:
-            New tensor with sigmoid applied element-wise, values in (0, 1)
+            New tensor with sigmoid applied element-wise, values in (0, 1).
 
     Examples:
             var x = ExTensor(...)  # [-2, 0, 2]
@@ -277,15 +277,15 @@ fn tanh(tensor: ExTensor) raises -> ExTensor:
     """Apply tanh (hyperbolic tangent) activation.
 
         Tanh maps inputs to (-1, 1) range. This is a numerically stable
-        implementation that leverages the math library tanh function
+        implementation that leverages the math library tanh function.
 
-        Supported dtypes: float16, float32, float64
+        Supported dtypes: float16, float32, float64.
 
     Args:
-            tensor: Input tensor of any shape
+            tensor: Input tensor of any shape.
 
     Returns:
-            New tensor with tanh applied element-wise, values in (-1, 1)
+            New tensor with tanh applied element-wise, values in (-1, 1).
 
     Examples:
             var x = ExTensor(...)  # [-2, 0, 2]
@@ -303,22 +303,22 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
     """Apply softmax activation: exp(x) / sum(exp(x)) along specified axis.
 
         Softmax converts logits to probability distribution. Uses log-sum-exp trick
-        for numerical stability by subtracting max value before exponentiation
+        for numerical stability by subtracting max value before exponentiation.
 
-        Outputs sum to 1.0 along the specified axis
+        Outputs sum to 1.0 along the specified axis.
 
-        Supported dtypes: float16, float32, float64
+        Supported dtypes: float16, float32, float64.
 
     Args:
-            tensor: Input tensor (logits)
-            axis: Axis along which to compute softmax (default: -1, last axis)
-                  Supports negative indexing: -1 means last axis
+            tensor: Input tensor (logits).
+            axis: Axis along which to compute softmax (default: -1, last axis).
+                  Supports negative indexing: -1 means last axis.
 
     Returns:
-            New tensor with softmax applied, values sum to 1.0 along axis
+            New tensor with softmax applied, values sum to 1.0 along axis.
 
     Raises:
-            Error: If axis is out of bounds
+            Error: If axis is out of bounds.
 
     Examples:
             var logits = ExTensor(...)  # [[1, 2, 3], [4, 5, 6]]
@@ -350,21 +350,21 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
 fn gelu(tensor: ExTensor, approximate: Bool = False) raises -> ExTensor:
     """Apply GELU (Gaussian Error Linear Unit) activation.
 
-        GELU provides smooth, non-linear activation used in transformers (BERT, GPT)
+        GELU provides smooth, non-linear activation used in transformers (BERT, GPT).
 
-        Exact formula: GELU(x) = x * Phi(x) = x * 0.5 * (1 + erf(x / sqrt(2)))
-        Approximate formula: GELU(x) = 0.5 * x * (1 + tanh(sqrt(2/pi) * (x + 0.044715 * x^3)))
+        Exact formula: GELU(x) = x * Phi(x) = x * 0.5 * (1 + erf(x / sqrt(2))).
+        Approximate formula: GELU(x) = 0.5 * x * (1 + tanh(sqrt(2/pi) * (x + 0.044715 * x^3))).
 
-        The approximate version is faster and was used in the original BERT implementation
+        The approximate version is faster and was used in the original BERT implementation.
 
-        Supported dtypes: float16, float32, float64
+        Supported dtypes: float16, float32, float64.
 
     Args:
-            tensor: Input tensor of any shape
-            approximate: Use tanh approximation (True) or exact erf (False)
+            tensor: Input tensor of any shape.
+            approximate: Use tanh approximation (True) or exact erf (False).
 
     Returns:
-            New tensor with GELU applied element-wise
+            New tensor with GELU applied element-wise.
 
     Examples:
             var x = ExTensor(...)     # [-2, 0, 2]
@@ -390,14 +390,14 @@ fn relu_backward(
 ) raises escaping -> ExTensor:
     """Compute gradient of ReLU activation.
 
-        ReLU gradient: dL/dx = dL/dy * (x > 0)
+        ReLU gradient: dL/dx = dL/dy * (x > 0).
 
     Args:
-            grad_output: Gradient from upstream (dL/dy)
-            x: Input tensor from forward pass
+            grad_output: Gradient from upstream (dL/dy).
+            x: Input tensor from forward pass.
 
     Returns:
-            Gradient with respect to input (dL/dx)
+            Gradient with respect to input (dL/dx).
 
     Examples:
             var x = ExTensor(...)  # Input
@@ -434,15 +434,15 @@ fn leaky_relu_backward(
 ) raises escaping -> ExTensor:
     """Compute gradient of Leaky ReLU activation.
 
-        Leaky ReLU gradient: dL/dx = dL/dy * (1 if x > 0 else alpha)
+        Leaky ReLU gradient: dL/dx = dL/dy * (1 if x > 0 else alpha).
 
     Args:
-            grad_output: Gradient from upstream (dL/dy)
-            x: Input tensor from forward pass
-            alpha: Slope for negative values (default: 0.01)
+            grad_output: Gradient from upstream (dL/dy).
+            x: Input tensor from forward pass.
+            alpha: Slope for negative values (default: 0.01).
 
     Returns:
-            Gradient with respect to input (dL/dx)
+            Gradient with respect to input (dL/dx).
     """
     if grad_output._dtype != x._dtype:
         raise Error(
@@ -510,16 +510,16 @@ fn prelu_backward(
     """Compute gradients of PReLU activation.
 
         PReLU gradients:
-        - dL/dx = dL/dy * (1 if x > 0 else alpha)
-        - dL/dalpha = sum(dL/dy * x) where x <= 0
+        - dL/dx = dL/dy * (1 if x > 0 else alpha).
+        - dL/dalpha = sum(dL/dy * x) where x <= 0.
 
     Args:
-            grad_output: Gradient from upstream (dL/dy)
-            x: Input tensor from forward pass
-            alpha: Learnable slope parameter
+            grad_output: Gradient from upstream (dL/dy).
+            x: Input tensor from forward pass.
+            alpha: Learnable slope parameter.
 
     Returns:
-            GradientPair containing (grad_input, grad_alpha)
+            GradientPair containing (grad_input, grad_alpha).
     """
     if grad_output._dtype != x._dtype or grad_output._dtype != alpha._dtype:
         raise Error("prelu_backward: all tensors must have same dtype")
@@ -559,18 +559,18 @@ fn sigmoid_backward(
 ) raises escaping -> ExTensor:
     """Compute gradient of sigmoid activation.
 
-        Sigmoid gradient: dL/dx = dL/dy * y * (1 - y)
-        where y = sigmoid(x)
+        Sigmoid gradient: dL/dx = dL/dy * y * (1 - y).
+        where y = sigmoid(x).
 
     Args:
-            grad_output: Gradient from upstream (dL/dy)
-            output: Output from forward pass (sigmoid(x))
+            grad_output: Gradient from upstream (dL/dy).
+            output: Output from forward pass (sigmoid(x)).
 
     Returns:
-            Gradient with respect to input (dL/dx)
+            Gradient with respect to input (dL/dx).
 
     Note:
-            Takes output instead of input to avoid recomputing sigmoid
+            Takes output instead of input to avoid recomputing sigmoid.
     """
     if grad_output._dtype != output._dtype:
         raise Error(
@@ -595,18 +595,18 @@ fn tanh_backward(
 ) raises escaping -> ExTensor:
     """Compute gradient of tanh activation.
 
-        Tanh gradient: dL/dx = dL/dy * (1 - y^2)
-        where y = tanh(x)
+        Tanh gradient: dL/dx = dL/dy * (1 - y^2).
+        where y = tanh(x).
 
     Args:
-            grad_output: Gradient from upstream (dL/dy)
-            output: Output from forward pass (tanh(x))
+            grad_output: Gradient from upstream (dL/dy).
+            output: Output from forward pass (tanh(x)).
 
     Returns:
-            Gradient with respect to input (dL/dx)
+            Gradient with respect to input (dL/dx).
 
     Note:
-            Takes output instead of input to avoid recomputing tanh
+            Takes output instead of input to avoid recomputing tanh.
     """
     if grad_output._dtype != output._dtype:
         raise Error(
@@ -625,18 +625,18 @@ fn gelu_backward(
 ) raises escaping -> ExTensor:
     """Compute gradient of GELU activation.
 
-        GELU gradient (exact): dL/dx = dL/dy * [Phi(x) + x*phi(x)]
-        where Phi is CDF and phi is PDF of standard normal
+        GELU gradient (exact): dL/dx = dL/dy * [Phi(x) + x*phi(x)].
+        where Phi is CDF and phi is PDF of standard normal.
 
-        GELU gradient (approximate): Uses derivative of tanh approximation
+        GELU gradient (approximate): Uses derivative of tanh approximation.
 
     Args:
-            grad_output: Gradient from upstream (dL/dy)
-            x: Input tensor from forward pass
-            approximate: Use tanh approximation (True) or exact erf (False)
+            grad_output: Gradient from upstream (dL/dy).
+            x: Input tensor from forward pass.
+            approximate: Use tanh approximation (True) or exact erf (False).
 
     Returns:
-            Gradient with respect to input (dL/dx)
+            Gradient with respect to input (dL/dx).
     """
     if grad_output._dtype != x._dtype:
         raise Error("gelu_backward: grad_output and x must have same dtype")
@@ -652,19 +652,19 @@ fn softmax_backward(
     """Compute gradient of softmax activation.
 
         Softmax gradient (along axis):
-            dL/dx_i = y_i * (dL/dy_i - sum_j(dL/dy_j * y_j))
+            dL/dx_i = y_i * (dL/dy_i - sum_j(dL/dy_j * y_j)).
 
-        where y = softmax(x) is the output from the forward pass
+        where y = softmax(x) is the output from the forward pass.
 
-        Supported dtypes: float16, float32, float64
+        Supported dtypes: float16, float32, float64.
 
     Args:
-            grad_output: Gradient from upstream (dL/dy)
-            output: Softmax output from forward pass (y = softmax(x))
-            axis: Axis along which softmax was computed (default: -1)
+            grad_output: Gradient from upstream (dL/dy).
+            output: Softmax output from forward pass (y = softmax(x)).
+            axis: Axis along which softmax was computed (default: -1).
 
     Returns:
-            Gradient with respect to input (dL/dx)
+            Gradient with respect to input (dL/dx).
 
     Raises:
             Error: If dtypes don't match or shapes incompatible.
@@ -707,22 +707,22 @@ fn softmax_backward(
 
 
 fn swish(tensor: ExTensor) raises -> ExTensor:
-    """Swish activation function (also known as SiLU - Sigmoid Linear Unit)
+    """Swish activation function (also known as SiLU - Sigmoid Linear Unit).
 
         Swish is a smooth, non-monotonic activation function that performs better
-        than ReLU in deep networks
+        than ReLU in deep networks.
 
         Formula:
-            swish(x) = x * sigmoid(x)
+            swish(x) = x * sigmoid(x).
 
     Args:
-            tensor: Input tensor of any shape
+            tensor: Input tensor of any shape.
 
     Returns:
-            Output tensor with swish applied element-wise
+            Output tensor with swish applied element-wise.
 
         Reference:
-            Ramachandran et al., "Searching for Activation Functions" (2017)
+            Ramachandran et al., "Searching for Activation Functions" (2017).
     """
     # swish(x) = x * sigmoid(x)
     var sig = sigmoid(tensor)
@@ -733,20 +733,20 @@ fn mish(tensor: ExTensor) raises -> ExTensor:
     """Mish activation function.
 
         Mish is a smooth, self-regularized non-monotonic activation function
-        that has shown improvements over ReLU and Swish in some tasks
+        that has shown improvements over ReLU and Swish in some tasks.
 
         Formula:
-            mish(x) = x * tanh(softplus(x))
-            where softplus(x) = log(1 + exp(x))
+            mish(x) = x * tanh(softplus(x)).
+            where softplus(x) = log(1 + exp(x)).
 
     Args:
-            tensor: Input tensor of any shape
+            tensor: Input tensor of any shape.
 
     Returns:
-            Output tensor with mish applied element-wise
+            Output tensor with mish applied element-wise.
 
         Reference:
-            Misra, "Mish: A Self Regularized Non-Monotonic Activation Function" (2019)
+            Misra, "Mish: A Self Regularized Non-Monotonic Activation Function" (2019).
     """
     from .elementwise import clip, abs as abs_fn, exp as tensor_exp
 
@@ -771,22 +771,22 @@ fn elu(tensor: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
     """Exponential Linear Unit (ELU) activation function.
 
         ELU has negative values which pushes mean unit activations closer to zero,
-        reducing bias shift and improving learning
+        reducing bias shift and improving learning.
 
         Formula:
-            elu(x) = x if x > 0
-            elu(x) = alpha * (exp(x) - 1) if x <= 0
+            elu(x) = x if x > 0.
+            elu(x) = alpha * (exp(x) - 1) if x <= 0.
 
     Args:
-            tensor: Input tensor of any shape
-            alpha: Scale for negative values (default: 1.0)
+            tensor: Input tensor of any shape.
+            alpha: Scale for negative values (default: 1.0).
 
     Returns:
-            Output tensor with ELU applied element-wise
+            Output tensor with ELU applied element-wise.
 
         Reference:
             Clevert et al., "Fast and Accurate Deep Network Learning by.
-            Exponential Linear Units (ELUs)" (2015)
+            Exponential Linear Units (ELUs)" (2015).
     """
     var result = zeros_like(tensor)
     var data_ptr = tensor._data
@@ -841,15 +841,15 @@ fn swish_backward(
     """Backward pass for Swish activation.
 
         The derivative of swish is:
-            d/dx[swish(x)] = sigmoid(x) + x * sigmoid(x) * (1 - sigmoid(x))
-                           = sigmoid(x) * (1 + x * (1 - sigmoid(x)))
+            d/dx[swish(x)] = sigmoid(x) + x * sigmoid(x) * (1 - sigmoid(x)).
+                           = sigmoid(x) * (1 + x * (1 - sigmoid(x))).
 
     Args:
-            grad_output: Gradient from upstream
-            x: Input from forward pass
+            grad_output: Gradient from upstream.
+            x: Input from forward pass.
 
     Returns:
-            Gradient with respect to input
+            Gradient with respect to input.
     """
     # Compute sigmoid(x)
     var sig = sigmoid(x)
@@ -869,14 +869,14 @@ fn mish_backward(
 ) raises escaping -> ExTensor:
     """Backward pass for Mish activation.
 
-        The derivative involves the derivative of tanh(softplus(x))
+        The derivative involves the derivative of tanh(softplus(x)).
 
     Args:
-            grad_output: Gradient from upstream
-            x: Input from forward pass
+            grad_output: Gradient from upstream.
+            x: Input from forward pass.
 
     Returns:
-            Gradient with respect to input
+            Gradient with respect to input.
     """
     from .elementwise import clip, abs as abs_fn, exp as tensor_exp
 
@@ -916,16 +916,16 @@ fn elu_backward(
     """Backward pass for ELU activation.
 
         The derivative is:
-            d/dx[elu(x)] = 1 if x > 0
-            d/dx[elu(x)] = alpha * exp(x) if x <= 0
+            d/dx[elu(x)] = 1 if x > 0.
+            d/dx[elu(x)] = alpha * exp(x) if x <= 0.
 
     Args:
-            grad_output: Gradient from upstream
-            x: Input from forward pass
-            alpha: Scale for negative values (must match forward pass)
+            grad_output: Gradient from upstream.
+            x: Input from forward pass.
+            alpha: Scale for negative values (must match forward pass).
 
     Returns:
-            Gradient with respect to input
+            Gradient with respect to input.
     """
     var result = zeros_like(x)
     var x_ptr = x._data
@@ -984,25 +984,25 @@ fn elu_backward(
 fn hard_sigmoid(tensor: ExTensor) raises -> ExTensor:
     """Hard Sigmoid activation function.
 
-        A piecewise linear approximation of sigmoid that is faster to compute
-        Commonly used in efficient architectures like MobileNet
+        A piecewise linear approximation of sigmoid that is faster to compute.
+        Commonly used in efficient architectures like MobileNet.
 
         Formula:
-            hard_sigmoid(x) = clip((x + 3) / 6, 0, 1)
-            = 0 if x <= -3
-            = 1 if x >= 3
-            = (x + 3) / 6 otherwise
+            hard_sigmoid(x) = clip((x + 3) / 6, 0, 1).
+            = 0 if x <= -3.
+            = 1 if x >= 3.
+            = (x + 3) / 6 otherwise.
 
-        Supported dtypes: float16, float32, float64
+        Supported dtypes: float16, float32, float64.
 
     Args:
-            tensor: Input tensor of any shape
+            tensor: Input tensor of any shape.
 
     Returns:
-            Output tensor with hard_sigmoid applied element-wise, values in [0, 1]
+            Output tensor with hard_sigmoid applied element-wise, values in [0, 1].
 
         Reference:
-            Howard et al., "Searching for MobileNetV3" (2019)
+            Howard et al., "Searching for MobileNetV3" (2019).
     """
     return dispatch_hard_sigmoid(tensor)
 
@@ -1010,25 +1010,25 @@ fn hard_sigmoid(tensor: ExTensor) raises -> ExTensor:
 fn hard_swish(tensor: ExTensor) raises -> ExTensor:
     """Hard Swish activation function.
 
-        A piecewise linear approximation of Swish using hard_sigmoid
-        Used in MobileNetV3 for efficiency
+        A piecewise linear approximation of Swish using hard_sigmoid.
+        Used in MobileNetV3 for efficiency.
 
         Formula:
-            hard_swish(x) = x * hard_sigmoid(x)
-            = 0 if x <= -3
-            = x if x >= 3
-            = x * (x + 3) / 6 otherwise
+            hard_swish(x) = x * hard_sigmoid(x).
+            = 0 if x <= -3.
+            = x if x >= 3.
+            = x * (x + 3) / 6 otherwise.
 
-        Supported dtypes: float16, float32, float64
+        Supported dtypes: float16, float32, float64.
 
     Args:
-            tensor: Input tensor of any shape
+            tensor: Input tensor of any shape.
 
     Returns:
-            Output tensor with hard_swish applied element-wise
+            Output tensor with hard_swish applied element-wise.
 
         Reference:
-            Howard et al., "Searching for MobileNetV3" (2019)
+            Howard et al., "Searching for MobileNetV3" (2019).
     """
     return dispatch_hard_swish(tensor)
 
@@ -1038,26 +1038,26 @@ fn hard_tanh(
 ) raises -> ExTensor:
     """Hard Tanh activation function.
 
-        A piecewise linear approximation of tanh that clips values to a range
+        A piecewise linear approximation of tanh that clips values to a range.
 
         Formula:
-            hard_tanh(x) = clip(x, min_val, max_val)
-            = min_val if x < min_val
-            = max_val if x > max_val
-            = x otherwise
+            hard_tanh(x) = clip(x, min_val, max_val).
+            = min_val if x < min_val.
+            = max_val if x > max_val.
+            = x otherwise.
 
-        Supported dtypes: float16, float32, float64
+        Supported dtypes: float16, float32, float64.
 
     Args:
-            tensor: Input tensor of any shape
-            min_val: Minimum output value (default: -1.0)
-            max_val: Maximum output value (default: 1.0)
+            tensor: Input tensor of any shape.
+            min_val: Minimum output value (default: -1.0).
+            max_val: Maximum output value (default: 1.0).
 
     Returns:
-            Output tensor with hard_tanh applied element-wise
+            Output tensor with hard_tanh applied element-wise.
 
         Reference:
-            Standard activation function used in various architectures
+            Standard activation function used in various architectures.
     """
     return dispatch_hard_tanh(tensor, min_val, max_val)
 
@@ -1073,15 +1073,15 @@ fn hard_sigmoid_backward(
     """Backward pass for Hard Sigmoid activation.
 
         The derivative is:
-            d/dx[hard_sigmoid(x)] = 1/6 if -3 < x < 3
-                                   = 0 otherwise
+            d/dx[hard_sigmoid(x)] = 1/6 if -3 < x < 3.
+                                   = 0 otherwise.
 
     Args:
-            grad_output: Gradient from upstream
-            x: Input from forward pass
+            grad_output: Gradient from upstream.
+            x: Input from forward pass.
 
     Returns:
-            Gradient with respect to input
+            Gradient with respect to input.
     """
     if grad_output._dtype != x._dtype:
         raise Error(
@@ -1101,18 +1101,18 @@ fn hard_swish_backward(
     """Backward pass for Hard Swish activation.
 
         The derivative is:
-            d/dx[hard_swish(x)] = 0 if x <= -3
-                                = 1 if x >= 3
-                                = (2x + 3) / 6 otherwise
+            d/dx[hard_swish(x)] = 0 if x <= -3.
+                                = 1 if x >= 3.
+                                = (2x + 3) / 6 otherwise.
 
-        This comes from: d/dx[x * (x + 3) / 6] = (2x + 3) / 6
+        This comes from: d/dx[x * (x + 3) / 6] = (2x + 3) / 6.
 
     Args:
-            grad_output: Gradient from upstream
-            x: Input from forward pass
+            grad_output: Gradient from upstream.
+            x: Input from forward pass.
 
     Returns:
-            Gradient with respect to input
+            Gradient with respect to input.
     """
     if grad_output._dtype != x._dtype:
         raise Error(
@@ -1135,17 +1135,17 @@ fn hard_tanh_backward(
     """Backward pass for Hard Tanh activation.
 
         The derivative is:
-            d/dx[hard_tanh(x)] = 1 if min_val < x < max_val
-                               = 0 otherwise
+            d/dx[hard_tanh(x)] = 1 if min_val < x < max_val.
+                               = 0 otherwise.
 
     Args:
-            grad_output: Gradient from upstream
-            x: Input from forward pass
-            min_val: Minimum value used in forward pass (default: -1.0)
-            max_val: Maximum value used in forward pass (default: 1.0)
+            grad_output: Gradient from upstream.
+            x: Input from forward pass.
+            min_val: Minimum value used in forward pass (default: -1.0).
+            max_val: Maximum value used in forward pass (default: 1.0).
 
     Returns:
-            Gradient with respect to input
+            Gradient with respect to input.
     """
     if grad_output._dtype != x._dtype:
         raise Error(

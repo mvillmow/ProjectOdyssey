@@ -36,10 +36,10 @@ struct ArgumentSpec(Copyable, Movable):
     """Specification for a single command-line argument.
 
     Attributes:
-        name: Argument name (e.g., "epochs", "batch-size")
-        arg_type: Type string ("int", "float", "string", "bool")
-        default_value: Default value as string (parsed based on arg_type)
-        is_flag: Whether this is a boolean flag (--flag with no value)
+        name: Argument name (e.g., "epochs", "batch-size").
+        arg_type: Type string ("int", "float", "string", "bool").
+        default_value: Default value as string (parsed based on arg_type).
+        is_flag: Whether this is a boolean flag (--flag with no value).
     """
 
     var name: String
@@ -57,7 +57,7 @@ struct ParsedArgs(Copyable, Movable):
     """Container for parsed command-line arguments.
 
     Stores argument values as strings internally, with typed getters
-    to retrieve values in the appropriate type
+    to retrieve values in the appropriate type.
     """
 
     var values: Dict[String, String]
@@ -70,8 +70,8 @@ struct ParsedArgs(Copyable, Movable):
         """Set an argument value.
 
         Args:
-            name: Argument name
-            value: Value as string
+            name: Argument name.
+            value: Value as string.
         """
         self.values[name] = value
 
@@ -79,10 +79,10 @@ struct ParsedArgs(Copyable, Movable):
         """Check if an argument was provided.
 
         Args:
-            name: Argument name
+            name: Argument name.
 
         Returns:
-            True if argument exists, False otherwise
+            True if argument exists, False otherwise.
         """
         return name in self.values
 
@@ -90,11 +90,11 @@ struct ParsedArgs(Copyable, Movable):
         """Get argument value as string.
 
         Args:
-            name: Argument name
-            default: Default value if not provided
+            name: Argument name.
+            default: Default value if not provided.
 
         Returns:
-            String value or default
+            String value or default.
         """
         if name in self.values:
             return self.values[name]
@@ -104,14 +104,14 @@ struct ParsedArgs(Copyable, Movable):
         """Get argument value as integer.
 
         Args:
-            name: Argument name
-            default: Default value if not provided
+            name: Argument name.
+            default: Default value if not provided.
 
         Returns:
-            Integer value or default
+            Integer value or default.
 
         Raises:
-            Error if value cannot be parsed as integer
+            Error: If value cannot be parsed as integer.
         """
         if name not in self.values:
             return default
@@ -131,14 +131,14 @@ struct ParsedArgs(Copyable, Movable):
         """Get argument value as float.
 
         Args:
-            name: Argument name
-            default: Default value if not provided
+            name: Argument name.
+            default: Default value if not provided.
 
         Returns:
-            Float64 value or default
+            Float64 value or default.
 
         Raises:
-            Error if value cannot be parsed as float
+            Error: If value cannot be parsed as float.
         """
         if name not in self.values:
             return default
@@ -158,10 +158,10 @@ struct ParsedArgs(Copyable, Movable):
         """Get boolean flag status.
 
         Args:
-            name: Argument name
+            name: Argument name.
 
         Returns:
-            True if flag was provided, False otherwise
+            True if flag was provided, False otherwise.
         """
         return self.has(name)
 
@@ -174,9 +174,9 @@ struct ParsedArgs(Copyable, Movable):
 struct ArgumentParser(Copyable, Movable):
     """Simple command-line argument parser.
 
-    Supports typed arguments with defaults and boolean flags
+    Supports typed arguments with defaults and boolean flags.
     Arguments are specified with add_argument() or add_flag(),
-    then parsed from sys.argv with parse()
+    then parsed from sys.argv with parse().
 
     Example:
         ```mojo
@@ -204,12 +204,12 @@ struct ArgumentParser(Copyable, Movable):
         """Add a typed argument specification.
 
         Args:
-            name: Argument name (e.g., "epochs", "batch-size")
-            arg_type: Type string ("int", "float", "string", "bool")
-            default: Default value as string
+            name: Argument name (e.g., "epochs", "batch-size").
+            arg_type: Type string ("int", "float", "string", "bool").
+            default: Default value as string.
 
         Raises:
-            Error if arg_type is not recognized
+            Error: If arg_type is not recognized.
         """
         # Validate type
         if (
@@ -228,10 +228,10 @@ struct ArgumentParser(Copyable, Movable):
     fn add_flag(mut self, name: String):
         """Add a boolean flag argument.
 
-        Flags are provided as --name without a value
+        Flags are provided as --name without a value.
 
         Args:
-            name: Flag name (e.g., "verbose", "debug")
+            name: Flag name (e.g., "verbose", "debug").
         """
         var spec = ArgumentSpec(
             name=name, arg_type="bool", default_value="", is_flag=True
@@ -239,13 +239,13 @@ struct ArgumentParser(Copyable, Movable):
         self.arguments[name] = spec^
 
     fn parse(self) raises -> ParsedArgs:
-        """Parse command-line arguments from sys.argv
+        """Parse command-line arguments from sys.argv.
 
         Returns:
-            ParsedArgs container with parsed values
+            ParsedArgs container with parsed values.
 
         Raises:
-            Error if argument parsing fails
+            Error: If argument parsing fails.
         """
         var result = ParsedArgs()
 
@@ -303,7 +303,7 @@ fn create_parser() raises -> ArgumentParser:
     """Create a new argument parser.
 
     Returns:
-            New ArgumentParser instance
+            New ArgumentParser instance.
     """
     return ArgumentParser()
 
@@ -328,7 +328,7 @@ fn create_training_parser() raises -> ArgumentParser:
             - verbose (flag)
 
     Returns:
-            ArgumentParser configured with ML training arguments
+            ArgumentParser configured with ML training arguments.
     """
     var parser = ArgumentParser()
 
@@ -350,11 +350,11 @@ fn validate_positive_int(value: Int, name: String) raises:
     """Validate that an integer argument is positive.
 
     Args:
-            value: Value to validate
-            name: Argument name for error messages
+            value: Value to validate.
+            name: Argument name for error messages.
 
     Raises:
-            Error if value is not positive
+            Error: If value is not positive.
     """
     if value <= 0:
         raise Error(name + " must be positive, got: " + String(value))
@@ -364,11 +364,11 @@ fn validate_positive_float(value: Float64, name: String) raises:
     """Validate that a float argument is positive.
 
     Args:
-            value: Value to validate
-            name: Argument name for error messages
+            value: Value to validate.
+            name: Argument name for error messages.
 
     Raises:
-            Error if value is not positive
+            Error: If value is not positive.
     """
     if value <= 0.0:
         raise Error(name + " must be positive, got: " + String(value))
@@ -380,13 +380,13 @@ fn validate_range_float(
     """Validate that a float argument is within a range.
 
     Args:
-            value: Value to validate
-            min_val: Minimum allowed value (inclusive)
-            max_val: Maximum allowed value (inclusive)
-            name: Argument name for error messages
+            value: Value to validate.
+            min_val: Minimum allowed value (inclusive).
+            max_val: Maximum allowed value (inclusive).
+            name: Argument name for error messages.
 
     Raises:
-            Error if value is outside the range
+            Error: If value is outside the range.
     """
     if value < min_val or value > max_val:
         raise Error(

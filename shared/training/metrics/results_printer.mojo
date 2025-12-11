@@ -33,15 +33,15 @@ fn print_training_progress(
     """Print formatted training progress during epoch.
 
         Displays current epoch, batch number, loss value, and learning rate
-        in a consistent format for monitoring training progress
+        in a consistent format for monitoring training progress.
 
     Args:
-            epoch: Current epoch number (1-indexed)
-            total_epochs: Total number of epochs
-            batch: Current batch number (1-indexed)
-            total_batches: Total number of batches in epoch
-            loss: Current batch loss value
-            learning_rate: Current learning rate (default: 0.01)
+            epoch: Current epoch number (1-indexed).
+            total_epochs: Total number of epochs.
+            batch: Current batch number (1-indexed).
+            total_batches: Total number of batches in epoch.
+            loss: Current batch loss value.
+            learning_rate: Current learning rate (default: 0.01).
 
         Example:
             ```mojo
@@ -78,15 +78,15 @@ fn print_evaluation_summary(
     """Print formatted evaluation summary after epoch.
 
         Displays training and test metrics in a clean side-by-side format
-        for easy comparison of model performance
+        for easy comparison of model performance.
 
     Args:
-            epoch: Current epoch number (1-indexed)
-            total_epochs: Total number of epochs
-            train_loss: Training loss value
-            train_accuracy: Training accuracy (0.0 to 1.0)
-            test_loss: Test/validation loss value
-            test_accuracy: Test/validation accuracy (0.0 to 1.0)
+            epoch: Current epoch number (1-indexed).
+            total_epochs: Total number of epochs.
+            train_loss: Training loss value.
+            train_accuracy: Training accuracy (0.0 to 1.0).
+            test_loss: Test/validation loss value.
+            test_accuracy: Test/validation accuracy (0.0 to 1.0).
 
         Example:
             ```mojo
@@ -131,10 +131,10 @@ fn print_per_class_accuracy(per_class_accuracies: ExTensor) raises:
     """Print per-class accuracy metrics with default numeric class labels.
 
         Displays accuracy for each class in a table format using numeric indices
-        as class labels
+        as class labels.
 
     Args:
-            per_class_accuracies: Tensor of shape [num_classes] with per-class accuracy
+            per_class_accuracies: Tensor of shape [num_classes] with per-class accuracy.
 
         Example:
             ```mojo
@@ -171,12 +171,12 @@ fn print_per_class_accuracy(
     """Print per-class accuracy metrics in formatted table.
 
         Displays accuracy for each class in a table format, with optional
-        class names for improved interpretability
+        class names for improved interpretability.
 
     Args:
-            per_class_accuracies: Tensor of shape [num_classes] with per-class accuracy
-            class_names: List of class name strings
-            column_width: Width of each column in characters (default: 15)
+            per_class_accuracies: Tensor of shape [num_classes] with per-class accuracy.
+            class_names: List of class name strings.
+            column_width: Width of each column in characters (default: 15).
 
         Example:
             ```mojo
@@ -200,8 +200,8 @@ fn print_per_class_accuracy(
             ```
 
     Note:
-            If class_names is provided, it must have same length as per_class_accuracies
-            If class_names is empty, classes are displayed as numeric indices
+            If class_names is provided, it must have same length as per_class_accuracies.
+            If class_names is empty, classes are displayed as numeric indices.
 
         Issue: #2353
     """
@@ -251,10 +251,10 @@ fn print_confusion_matrix(matrix: ExTensor) raises:
     """Print confusion matrix with default numeric class labels.
 
         Displays confusion matrix with proper alignment using numeric indices
-        as class labels
+        as class labels.
 
     Args:
-            matrix: Confusion matrix tensor of shape [num_classes, num_classes]
+            matrix: Confusion matrix tensor of shape [num_classes, num_classes].
 
         Example:
             ```mojo
@@ -276,10 +276,10 @@ fn print_confusion_matrix(matrix: ExTensor) raises:
             ```
 
     Note:
-            - Rows represent true labels
-            - Columns represent predicted labels
-            - Values are right-aligned within columns
-            - Classes displayed as numeric indices
+            - Rows represent true labels.
+            - Columns represent predicted labels.
+            - Values are right-aligned within columns.
+            - Classes displayed as numeric indices.
 
         Issue: #2353
     """
@@ -299,14 +299,14 @@ fn print_confusion_matrix(
 ) raises:
     """Print confusion matrix in formatted table.
 
-        Displays confusion matrix with proper alignment and optional class names
-        Can display raw counts or normalized values
+        Displays confusion matrix with proper alignment and optional class names.
+        Can display raw counts or normalized values.
 
     Args:
-            matrix: Confusion matrix tensor of shape [num_classes, num_classes]
-            class_names: List of class name strings
-            normalized: If True, display as percentages (default: False)
-            column_width: Width of each column in characters (default: 10)
+            matrix: Confusion matrix tensor of shape [num_classes, num_classes].
+            class_names: List of class name strings.
+            normalized: If True, display as percentages (default: False).
+            column_width: Width of each column in characters (default: 10).
 
         Example:
             ```mojo
@@ -332,10 +332,10 @@ fn print_confusion_matrix(
             ```
 
     Note:
-            - Rows represent true labels
-            - Columns represent predicted labels
-            - Values are right-aligned within columns
-            - If class_names provided, used for row/column labels
+            - Rows represent true labels.
+            - Columns represent predicted labels.
+            - Values are right-aligned within columns.
+            - If class_names provided, used for row/column labels.
 
         Issue: #2353
     """
@@ -434,14 +434,14 @@ fn print_training_summary(
     """Print final training summary with best metrics.
 
         Displays consolidated summary of training including best achieved metrics
-        and the epoch at which they occurred
+        and the epoch at which they occurred.
 
     Args:
-            total_epochs: Total number of epochs trained
-            best_train_loss: Best training loss achieved
-            best_test_loss: Best test/validation loss achieved
-            best_accuracy: Best accuracy achieved (0.0 to 1.0)
-            best_epoch: Epoch at which best accuracy was achieved
+            total_epochs: Total number of epochs trained.
+            best_train_loss: Best training loss achieved.
+            best_test_loss: Best test/validation loss achieved.
+            best_accuracy: Best accuracy achieved (0.0 to 1.0).
+            best_epoch: Epoch at which best accuracy was achieved.
 
         Example:
             ```mojo

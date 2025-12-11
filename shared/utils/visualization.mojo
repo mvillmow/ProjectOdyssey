@@ -95,17 +95,17 @@ fn plot_training_curves(
 
         Creates a figure with training and validation losses (and optionally
         accuracies) plotted against epochs. Useful for understanding model
-        convergence and detecting overfitting
+        convergence and detecting overfitting.
 
     Args:
-            train_losses: Training loss per epoch
-            val_losses: Validation loss per epoch
-            train_accs: Optional training accuracy per epoch
-            val_accs: Optional validation accuracy per epoch
-            save_path: Path to save figure (empty = display only)
+            train_losses: Training loss per epoch.
+            val_losses: Validation loss per epoch.
+            train_accs: Optional training accuracy per epoch.
+            val_accs: Optional validation accuracy per epoch.
+            save_path: Path to save figure (empty = display only).
 
     Returns:
-            True if plotting successful, False if error
+            True if plotting successful, False if error.
 
         Example:
             ```mojo
@@ -169,12 +169,12 @@ fn plot_loss_only(
     """Plot single loss curve.
 
     Args:
-            losses: Loss per epoch
-            label: Label for the line
-            save_path: Path to save figure
+            losses: Loss per epoch.
+            label: Label for the line.
+            save_path: Path to save figure.
 
     Returns:
-            True if successful
+            True if successful.
     """
     # Create JSON structure for loss plotting
     var result = String('{"type":"line_chart","title":"')
@@ -196,12 +196,12 @@ fn plot_accuracy_only(
     """Plot single accuracy curve.
 
     Args:
-            accuracies: Accuracy per epoch
-            label: Label for the line
-            save_path: Path to save figure
+            accuracies: Accuracy per epoch.
+            label: Label for the line.
+            save_path: Path to save figure.
 
     Returns:
-            True if successful
+            True if successful.
     """
     # Create JSON structure for accuracy plotting
     var result = String('{"type":"line_chart","title":"')
@@ -226,12 +226,12 @@ fn compute_confusion_matrix(
     """Compute confusion matrix from predictions.
 
     Args:
-            y_true: True labels
-            y_pred: Predicted labels
-            num_classes: Number of classes (auto-detect if 0)
+            y_true: True labels.
+            y_pred: Predicted labels.
+            num_classes: Number of classes (auto-detect if 0).
 
     Returns:
-            Confusion matrix (num_classes x num_classes)
+            Confusion matrix (num_classes x num_classes).
     """
     # Determine number of classes
     var max_class = 0
@@ -280,17 +280,17 @@ fn plot_confusion_matrix(
 
         Creates a heatmap visualization of the confusion matrix with class names
         on axes. Optionally normalizes to percentages. Useful for analyzing
-        which classes are most often confused
+        which classes are most often confused.
 
     Args:
-            y_true: True labels
-            y_pred: Predicted labels
-            class_names: Names of classes (optional)
-            normalize: Normalize to percentages (default: raw counts)
-            save_path: Path to save figure
+            y_true: True labels.
+            y_pred: Predicted labels.
+            class_names: Names of classes (optional).
+            normalize: Normalize to percentages (default: raw counts).
+            save_path: Path to save figure.
 
     Returns:
-            True if successful
+            True if successful.
 
         Example:
             ```mojo
@@ -356,10 +356,10 @@ fn normalize_confusion_matrix(matrix: List[List[Int]]) -> List[List[Float32]]:
     """Normalize confusion matrix to percentages.
 
     Args:
-            matrix: Raw confusion matrix
+            matrix: Raw confusion matrix.
 
     Returns:
-            Normalized matrix with values in [0, 1]
+            Normalized matrix with values in [0, 1].
     """
     # Create normalized matrix
     var normalized = List[List[Float32]]()
@@ -388,10 +388,10 @@ fn compute_matrix_metrics(
     """Compute accuracy, precision, recall from confusion matrix.
 
     Args:
-            matrix: Confusion matrix
+            matrix: Confusion matrix.
 
     Returns:
-            Tuple of (accuracy, precision, recall)
+            Tuple of (accuracy, precision, recall).
     """
     # Compute total samples and correct predictions
     var total = 0
@@ -454,15 +454,15 @@ fn visualize_model_architecture(
 
         Creates a diagram showing model structure with layer types, shapes,
         and connections. Useful for documentation and understanding model
-        design
+        design.
 
     Args:
-            model_name: Name of model
-            layer_info: List of layer descriptions
-            save_path: Path to save figure
+            model_name: Name of model.
+            layer_info: List of layer descriptions.
+            save_path: Path to save figure.
 
     Returns:
-            True if successful
+            True if successful.
 
         Example:
             ```mojo
@@ -499,12 +499,12 @@ fn visualize_tensor_shapes(
     """Visualize tensor shapes through layers.
 
     Args:
-            input_shape: Input tensor shape
-            layer_shapes: Shapes at each layer
-            save_path: Path to save figure
+            input_shape: Input tensor shape.
+            layer_shapes: Shapes at each layer.
+            save_path: Path to save figure.
 
     Returns:
-            True if successful
+            True if successful.
     """
     # Create JSON structure for tensor shape progression
     var result = String('{"type":"tensor_shapes","input_shape":[')
@@ -542,15 +542,15 @@ fn visualize_gradient_flow(
     """Visualize gradient flow through network.
 
         Creates a plot showing gradient magnitude at each layer, useful for
-        detecting vanishing or exploding gradients
+        detecting vanishing or exploding gradients.
 
     Args:
-            gradients: Gradient magnitudes per layer
-            layer_names: Names of layers (optional)
-            save_path: Path to save figure
+            gradients: Gradient magnitudes per layer.
+            layer_names: Names of layers (optional).
+            save_path: Path to save figure.
 
     Returns:
-            True if successful
+            True if successful.
     """
     # Create JSON structure for gradient flow plot
     var result = String('{"type":"gradient_flow","gradients":[')
@@ -579,10 +579,10 @@ fn detect_gradient_issues(gradients: List[Float32]) -> Tuple[Bool, Bool]:
     """Detect vanishing or exploding gradients.
 
     Args:
-            gradients: Gradient magnitudes per layer
+            gradients: Gradient magnitudes per layer.
 
     Returns:
-            Tuple of (has_vanishing, has_exploding)
+            Tuple of (has_vanishing, has_exploding).
     """
     # Thresholds for vanishing and exploding gradients
     var vanishing_threshold = Float32(1e-7)
@@ -611,19 +611,19 @@ fn show_images(
     nrow: Int = 8,
     save_path: String = "",
 ) -> Bool:
-    """Display grid of images (useful for dataset visualization)
+    """Display grid of images (useful for dataset visualization).
 
         Creates a grid of images from a batch. Useful for visualizing
-        training data and augmentation effects
+        training data and augmentation effects.
 
     Args:
-            images: Batch of images (as simplified list of strings/paths)
-            labels: Optional labels for each image
-            nrow: Number of images per row
-            save_path: Path to save figure
+            images: Batch of images (as simplified list of strings/paths).
+            labels: Optional labels for each image.
+            nrow: Number of images per row.
+            save_path: Path to save figure.
 
     Returns:
-            True if successful
+            True if successful.
 
         Example:
             ```mojo
@@ -670,13 +670,13 @@ fn show_augmented_images(
     """Show original and augmented versions side by side.
 
     Args:
-            original: Original images
-            augmented: Augmented versions
-            nrow: Images per row
-            save_path: Path to save figure
+            original: Original images.
+            augmented: Augmented versions.
+            nrow: Images per row.
+            save_path: Path to save figure.
 
     Returns:
-            True if successful
+            True if successful.
     """
     # Create JSON structure for augmentation comparison
     var result = String('{"type":"augmentation_comparison","nrow":')
@@ -712,12 +712,12 @@ fn visualize_feature_maps(
     """Visualize learned feature maps from a layer.
 
     Args:
-            feature_maps: Feature maps (as simplified strings)
-            layer_name: Name of layer
-            save_path: Path to save figure
+            feature_maps: Feature maps (as simplified strings).
+            layer_name: Name of layer.
+            save_path: Path to save figure.
 
     Returns:
-            True if successful
+            True if successful.
     """
     # Create JSON structure for feature map visualization
     var result = String('{"type":"feature_maps"')
@@ -745,11 +745,11 @@ fn save_figure(filepath: String, format: String = "png") -> Bool:
     """Save current matplotlib figure to file.
 
     Args:
-            filepath: Output file path
-            format: Image format (png, jpg, pdf, svg)
+            filepath: Output file path.
+            format: Image format (png, jpg, pdf, svg).
 
     Returns:
-            True if successful
+            True if successful.
     """
     # Create JSON structure for figure saving
     var result = String('{"type":"save_figure","filepath":"')

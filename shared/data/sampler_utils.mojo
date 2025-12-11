@@ -18,12 +18,12 @@ fn validate_range(
     """Validate and normalize range parameters for index generation.
 
     Args:
-            start_index: Starting index (inclusive)
-            end_index: Ending index (exclusive), -1 for end of dataset
-            data_source_len: Total length of dataset
+            start_index: Starting index (inclusive).
+            end_index: Ending index (exclusive), -1 for end of dataset.
+            data_source_len: Total length of dataset.
 
     Returns:
-            Tuple of (normalized_start, normalized_end)
+            Tuple of (normalized_start, normalized_end).
     """
     var normalized_start = max(0, start_index)
     var normalized_end: Int
@@ -40,11 +40,11 @@ fn create_sequential_indices(capacity: Int, start_index: Int = 0) -> List[Int]:
     """Create sequential indices for range iteration.
 
     Args:
-            capacity: Number of indices to generate
-            start_index: Starting value for indices
+            capacity: Number of indices to generate.
+            start_index: Starting value for indices.
 
     Returns:
-            List of sequential indices [start_index, start_index+1, ..., start_index+capacity-1]
+            List of sequential indices [start_index, start_index+1, ..., start_index+capacity-1].
     """
     var indices = List[Int](capacity=capacity)
     for i in range(capacity):
@@ -56,11 +56,11 @@ fn create_range_indices(start_index: Int, end_index: Int) -> List[Int]:
     """Create sequential indices for a range.
 
     Args:
-            start_index: Starting index (inclusive)
-            end_index: Ending index (exclusive)
+            start_index: Starting index (inclusive).
+            end_index: Ending index (exclusive).
 
     Returns:
-            List of sequential indices [start_index, start_index+1, ..., end_index-1]
+            List of sequential indices [start_index, start_index+1, ..., end_index-1].
     """
     var capacity = end_index - start_index
     var indices = List[Int](capacity=capacity)
@@ -78,7 +78,7 @@ fn set_random_seed(seed_value: Optional[Int]):
     """Set random seed if provided.
 
     Args:
-            seed_value: Optional seed value. If None, randomness is not seeded
+            seed_value: Optional seed value. If None, randomness is not seeded.
     """
     if seed_value:
         seed(seed_value.value())
@@ -93,10 +93,10 @@ fn shuffle_indices(var indices: List[Int]) -> List[Int]:
     """Shuffle indices using Fisher-Yates algorithm.
 
     Args:
-            indices: List of indices to shuffle
+            indices: List of indices to shuffle.
 
     Returns:
-            Shuffled list of indices
+            Shuffled list of indices.
     """
     var size = len(indices)
     if size <= 1:
@@ -121,11 +121,11 @@ fn sample_with_replacement(data_source_len: Int, num_samples: Int) -> List[Int]:
     """Generate indices by sampling with replacement.
 
     Args:
-            data_source_len: Size of dataset to sample from
-            num_samples: Number of samples to draw
+            data_source_len: Size of dataset to sample from.
+            num_samples: Number of samples to draw.
 
     Returns:
-            List of sampled indices (may contain duplicates)
+            List of sampled indices (may contain duplicates).
     """
     var indices = List[Int](capacity=num_samples)
     for _ in range(num_samples):
@@ -138,14 +138,14 @@ fn sample_without_replacement(
 ) -> List[Int]:
     """Generate indices by sampling without replacement.
 
-        Creates a shuffled permutation and returns first num_samples indices
+        Creates a shuffled permutation and returns first num_samples indices.
 
     Args:
-            data_source_len: Size of dataset to sample from
-            num_samples: Number of samples to draw (must be <= data_source_len)
+            data_source_len: Size of dataset to sample from.
+            num_samples: Number of samples to draw (must be <= data_source_len).
 
     Returns:
-            List of sampled indices (no duplicates)
+            List of sampled indices (no duplicates).
     """
     # Create full list of indices
     var all_indices = create_sequential_indices(data_source_len)
@@ -170,10 +170,10 @@ fn build_cumulative_weights(weights: List[Float64]) -> List[Float64]:
     """Build cumulative distribution from weights.
 
     Args:
-            weights: Normalized weight values
+            weights: Normalized weight values.
 
     Returns:
-            Cumulative sum of weights for binary search sampling
+            Cumulative sum of weights for binary search sampling.
     """
     var cumsum = List[Float64](capacity=len(weights))
     var total = Float64(0)
@@ -188,14 +188,14 @@ fn sample_index_from_distribution(
 ) -> Int:
     """Find index corresponding to random value in cumulative distribution.
 
-        Performs linear search (can be optimized to binary search for large weights)
+        Performs linear search (can be optimized to binary search for large weights).
 
     Args:
-            cumsum: Cumulative weight distribution
-            random_value: Random value in [0, 1)
+            cumsum: Cumulative weight distribution.
+            random_value: Random value in [0, 1).
 
     Returns:
-            Index in the weight distribution
+            Index in the weight distribution.
     """
     var idx = 0
     for i in range(len(cumsum)):
@@ -206,15 +206,15 @@ fn sample_index_from_distribution(
 
 
 fn renormalize_weights(var weights: List[Float64]) -> List[Float64]:
-    """Renormalize weights to sum to 1.0
+    """Renormalize weights to sum to 1.0.
 
-        Used after removing sampled elements in weighted sampling without replacement
+        Used after removing sampled elements in weighted sampling without replacement.
 
     Args:
-            weights: Weight values (may not sum to 1.0)
+            weights: Weight values (may not sum to 1.0).
 
     Returns:
-            Normalized weights
+            Normalized weights.
     """
     var total = Float64(0)
     for i in range(len(weights)):
@@ -239,9 +239,9 @@ fn generate_random_float(max_value: Int = 1000000) -> Float64:
     """Generate a random float in [0, 1) range.
 
     Args:
-            max_value: Resolution for random float (default 1M for ~6 decimal places)
+            max_value: Resolution for random float (default 1M for ~6 decimal places).
 
     Returns:
-            Random float value in [0, 1)
+            Random float value in [0, 1).
     """
     return Float64(random_si64(0, max_value - 1)) / Float64(max_value)

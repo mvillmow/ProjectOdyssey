@@ -46,21 +46,21 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         ExTensor provides a flexible tensor implementation for machine learning workloads,
         supporting arbitrary dimensions (0D scalars to N-D tensors), multiple data types,
-        and NumPy-style broadcasting for all operations
+        and NumPy-style broadcasting for all operations.
 
-        Memory Safety: Implements reference counting for safe shared ownership
+        Memory Safety: Implements reference counting for safe shared ownership.
         Copying a tensor increments the reference count, allowing views and copies
-        to safely share data. Memory is freed only when the last reference is destroyed
+        to safely share data. Memory is freed only when the last reference is destroyed.
 
         Attributes:
-            _data: UnsafePointer to raw byte storage (type-erased)
-            _shape: List storing the shape dimensions
-            _strides: List storing the stride for each dimension (in elements)
-            _dtype: The data type of tensor elements
-            _numel: Total number of elements in the tensor
-            _is_view: Whether this tensor is a view (shares data with another tensor)
-            _refcount: Shared reference count for memory management
-            _original_numel_quantized: For quantized tensors, stores original size before padding (-1 if not quantized)
+            _data: UnsafePointer to raw byte storage (type-erased).
+            _shape: List storing the shape dimensions.
+            _strides: List storing the stride for each dimension (in elements).
+            _dtype: The data type of tensor elements.
+            _numel: Total number of elements in the tensor.
+            _is_view: Whether this tensor is a view (shares data with another tensor).
+            _refcount: Shared reference count for memory management.
+            _original_numel_quantized: For quantized tensors, stores original size before padding (-1 if not quantized).
 
     Examples:
             # Create tensors
@@ -88,15 +88,15 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         """Initialize a new ExTensor with given shape and dtype.
 
         Args:
-            shape: The shape of the tensor as a vector of dimension sizes
-            dtype: The data type of tensor elements
+            shape: The shape of the tensor as a vector of dimension sizes.
+            dtype: The data type of tensor elements.
 
         Raises:
-            Error: If tensor size exceeds MAX_TENSOR_BYTES (2 GB)
+            Error: If tensor size exceeds MAX_TENSOR_BYTES (2 GB).
 
         Note:
             This is a low-level constructor. Users should prefer creation
-            functions like zeros(), ones(), full(), etc
+            functions like zeros(), ones(), full(), etc.
         """
         # Copy shape to avoid mutation issues
         self._shape = List[Int]()
@@ -151,11 +151,11 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
     fn __init__(out self, value: IntLiteral) raises:
         """Create a scalar ExTensor from an integer literal.
 
-        Enables implicit conversion from integer literals to ExTensor
-        Creates a 0D (scalar) tensor with Int64 dtype
+        Enables implicit conversion from integer literals to ExTensor.
+        Creates a 0D (scalar) tensor with Int64 dtype.
 
         Args:
-            value: Integer literal to convert
+            value: Integer literal to convert.
 
         Example:
             ```mojo
@@ -179,11 +179,11 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
     fn __init__(out self, value: FloatLiteral) raises:
         """Create a scalar ExTensor from a float literal.
 
-        Enables implicit conversion from float literals to ExTensor
-        Creates a 0D (scalar) tensor with Float64 dtype
+        Enables implicit conversion from float literals to ExTensor.
+        Creates a 0D (scalar) tensor with Float64 dtype.
 
         Args:
-            value: Float literal to convert
+            value: Float literal to convert.
 
         Example:
             ```mojo
@@ -207,11 +207,11 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
     fn __init__(out self, value: Int) raises:
         """Create a scalar ExTensor from an Int.
 
-        Enables implicit conversion from Int to ExTensor
-        Creates a 0D (scalar) tensor with Int64 dtype
+        Enables implicit conversion from Int to ExTensor.
+        Creates a 0D (scalar) tensor with Int64 dtype.
 
         Args:
-            value: Int value to convert
+            value: Int value to convert.
 
         """
         # Initialize scalar tensor (0D shape)
@@ -230,11 +230,11 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
     fn __init__(out self, value: Float64) raises:
         """Create a scalar ExTensor from a Float64.
 
-        Enables implicit conversion from Float64 to ExTensor
-        Creates a 0D (scalar) tensor with Float64 dtype
+        Enables implicit conversion from Float64 to ExTensor.
+        Creates a 0D (scalar) tensor with Float64 dtype.
 
         Args:
-            value: Float64 value to convert
+            value: Float64 value to convert.
 
         Example:
             ```mojo
@@ -255,10 +255,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         self._data.bitcast[Float64]()[] = value
 
     fn __init__(out self, var data: List[Float32]) raises:
-        """Create 1D tensor from List[Float32]
+        """Create 1D tensor from List[Float32].
 
         Args:
-            data: List of Float32 values
+            data: List of Float32 values.
 
         Example:
             ```mojo
@@ -306,10 +306,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             self._set_float32(i, data[i])
 
     fn __init__(out self, var data: List[Int]) raises:
-        """Create 1D tensor from List[Int]
+        """Create 1D tensor from List[Int].
 
         Args:
-            data: List of Int values
+            data: List of Int values.
 
         Example:
             ```mojo
@@ -359,9 +359,9 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
     fn __copyinit__(out self, existing: Self):
         """Copy constructor - creates shared ownership with reference counting.
 
-        Creates a new reference to the same underlying data
-        Increments the reference count to track shared ownership
-        This prevents double-free and enables safe view semantics
+        Creates a new reference to the same underlying data.
+        Increments the reference count to track shared ownership.
+        This prevents double-free and enables safe view semantics.
 
         """
         # Shallow copy all fields
@@ -381,8 +381,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
     fn __del__(deinit self):
         """Destructor - decrements ref count, frees if last reference.
 
-        Uses reference counting to safely manage shared ownership
-        Only frees memory when the last reference is destroyed
+        Uses reference counting to safely manage shared ownership.
+        Only frees memory when the last reference is destroyed.
 
         """
         if not self._is_view and self._refcount:
@@ -399,7 +399,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
     @staticmethod
     fn _get_dtype_size_static(dtype: DType) -> Int:
-        """Get size in bytes for a given dtype (static version for use in __init__)
+        """Get size in bytes for a given dtype (static version for use in __init__).
         """
         if dtype == DType.float16:
             return 2
@@ -422,7 +422,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         """Return the shape of the tensor.
 
         Returns:
-            A copy of the shape vector
+            A copy of the shape vector.
 
         Examples:
             ```var t = zeros([3, 4], DType.float32)
@@ -438,7 +438,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         """Return the data type of the tensor.
 
         Returns:
-            The DType of tensor elements
+            The DType of tensor elements.
         """
         return self._dtype
 
@@ -446,7 +446,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         """Return the total number of elements in the tensor.
 
         Returns:
-            The product of all dimension sizes
+            The product of all dimension sizes.
 
         Examples:
             `var t = ExTensor.zeros((3, 4), DType.float32)
@@ -457,10 +457,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
     fn num_elements(self) -> Int:
         """Return the total number of elements in the tensor.
 
-        This is an alias for numel() for API compatibility
+        This is an alias for numel() for API compatibility.
 
         Returns:
-            The product of all dimension sizes
+            The product of all dimension sizes.
 
         Examples:
             `var t = zeros([3, 4], DType.float32)
@@ -472,7 +472,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         """Return the number of dimensions (rank) of the tensor.
 
         Returns:
-            The number of dimensions
+            The number of dimensions.
 
         Examples:```
             var t = ExTensor.zeros((3, 4), DType.float32)
@@ -485,10 +485,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         """Check if the tensor has a contiguous memory layout.
 
         Returns:
-            True if the tensor is contiguous (row-major, no gaps), False otherwise
+            True if the tensor is contiguous (row-major, no gaps), False otherwise.
 
         Note:
-            Contiguous tensors enable SIMD optimizations and efficient operations
+            Contiguous tensors enable SIMD optimizations and efficient operations.
         """
         # Check if strides match row-major layout
         var expected_stride = 1
@@ -499,17 +499,17 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         return True
 
     fn reshape(self, new_shape: List[Int]) raises -> ExTensor:
-        """Reshape tensor to new shape (must have same total elements)
+        """Reshape tensor to new shape (must have same total elements).
 
-        Creates a view sharing data with the original tensor
-        Uses reference counting to ensure data remains valid
+        Creates a view sharing data with the original tensor.
+        Uses reference counting to ensure data remains valid.
 
 
         Args:
-            new_shape: The new shape for the tensor
+            new_shape: The new shape for the tensor.
 
         Returns:
-            A new tensor with the requested shape, sharing the same data
+            A new tensor with the requested shape, sharing the same data.
 
         Raises:
             Error: If the total number of elements doesn't match.
@@ -556,20 +556,20 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
     fn slice(self, start: Int, end: Int, axis: Int = 0) raises -> ExTensor:
         """Extract a slice along the specified axis.
 
-            Creates a view sharing data with the original tensor
-            Uses reference counting to ensure data remains valid
+            Creates a view sharing data with the original tensor.
+            Uses reference counting to ensure data remains valid.
 
 
             Args:
-                start: Starting index (inclusive)
-                end: Ending index (exclusive)
-                axis: Axis to slice along (default: 0, the batch dimension)
+                start: Starting index (inclusive).
+                end: Ending index (exclusive).
+                axis: Axis to slice along (default: 0, the batch dimension).
 
             Returns:
-                A new tensor containing the slice (shares memory with original)
+                A new tensor containing the slice (shares memory with original).
 
             Raises:
-                Error: If indices are out of bounds or axis is invalid
+                Error: If indices are out of bounds or axis is invalid.
 
         Example:
             ```mojo
@@ -638,13 +638,13 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         """Get element at flat index.
 
         Args:
-            index: The flat index to access
+            index: The flat index to access.
 
         Returns:
-            The value at the given index as Float32
+            The value at the given index as Float32.
 
         Raises:
-            Error: If index is out of bounds
+            Error: If index is out of bounds.
 
         Example:
             ```mojo
@@ -659,7 +659,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         return self._get_float32(index)
 
     fn _get_float64(self, index: Int) -> Float64:
-        """Internal: Get value at index as Float64 (assumes float-compatible dtype)
+        """Internal: Get value at index as Float64 (assumes float-compatible dtype).
         """
         var dtype_size = self._get_dtype_size()
         var offset = index * dtype_size
@@ -693,17 +693,17 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             ptr[] = value
 
     fn _get_float32(self, index: Int) -> Float32:
-        """Internal: Get value at index as Float32 (assumes float-compatible dtype)
+        """Internal: Get value at index as Float32 (assumes float-compatible dtype).
 
         Args:
-            index: Flat index to retrieve value from
+            index: Flat index to retrieve value from.
 
         Returns:
-            Value at index as Float32
+            Value at index as Float32.
 
         Note:
-            For Float64 and integer types, value is cast to Float32
-            For Float16, value is upcast to Float32
+            For Float64 and integer types, value is cast to Float32.
+            For Float16, value is upcast to Float32.
         """
         var dtype_size = self._get_dtype_size()
         var offset = index * dtype_size
@@ -722,16 +722,16 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             return Float32(self._get_int64(index))
 
     fn _set_float32(self, index: Int, value: Float32):
-        """Internal: Set value at index as Float32 (assumes float-compatible dtype)
+        """Internal: Set value at index as Float32 (assumes float-compatible dtype).
 
         Args:
-            index: Flat index to set value at
-            value: Float32 value to store
+            index: Flat index to set value at.
+            value: Float32 value to store.
 
         Note:
-            For Float16, value is downcast with potential precision loss
-            For Float64, value is upcast to Float64
-            For integer types, value is truncated to integer
+            For Float16, value is downcast with potential precision loss.
+            For Float64, value is upcast to Float64.
+            For integer types, value is truncated to integer.
         """
         var dtype_size = self._get_dtype_size()
         var offset = index * dtype_size
@@ -747,7 +747,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             ptr[] = value.cast[DType.float64]()
 
     fn _get_int64(self, index: Int) -> Int64:
-        """Internal: Get value at index as Int64 (assumes integer-compatible dtype)
+        """Internal: Get value at index as Int64 (assumes integer-compatible dtype).
         """
         var dtype_size = self._get_dtype_size()
         var offset = index * dtype_size
@@ -816,14 +816,14 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             ptr[] = value != 0
 
     fn _set_int32(self, index: Int, value: Int32):
-        """Internal: Set value at index as Int32 (assumes integer-compatible dtype)
+        """Internal: Set value at index as Int32 (assumes integer-compatible dtype).
 
         Args:
-            index: Flat index to set value at
-            value: Int32 value to store
+            index: Flat index to set value at.
+            value: Int32 value to store.
 
         Note:
-            Delegates to _set_int64 after casting to Int64
+            Delegates to _set_int64 after casting to Int64.
         """
         self._set_int64(index, value.cast[DType.int64]())
 
@@ -940,13 +940,13 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         This method converts a tensor of any floating-point dtype to FP8 format,
         stored as uint8. The conversion uses E4M3 encoding (1 sign bit, 4 exponent
-        bits, 3 mantissa bits) which is optimized for ML workloads
+        bits, 3 mantissa bits) which is optimized for ML workloads.
 
         Returns:
-            A new ExTensor with dtype=uint8 containing FP8-encoded values
+            A new ExTensor with dtype=uint8 containing FP8-encoded values.
 
         Raises:
-            Error: If the source tensor is not a floating-point dtype
+            Error: If the source tensor is not a floating-point dtype.
 
         Examples:
             ```var t = zeros([3, 4], DType.float32)
@@ -955,8 +955,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         Note:
             FP8 has limited range (~±240) and precision. Values outside this range
-            are clamped. This is useful for memory-efficient training/inference
-            FP16 inputs are converted to FP32 before quantization
+            are clamped. This is useful for memory-efficient training/inference.
+            FP16 inputs are converted to FP32 before quantization.
         """
         from .types.fp8 import FP8
 
@@ -1000,21 +1000,21 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         """Convert FP8-encoded tensor (uint8) back to Float32.
 
         This method interprets a uint8 tensor as FP8 E4M3 encoded values and
-        converts them back to Float32 for computation
+        converts them back to Float32 for computation.
 
         Returns:
-            A new ExTensor with dtype=float32 containing decoded values
+            A new ExTensor with dtype=float32 containing decoded values.
 
         Raises:
-            Error: If the source tensor is not uint8 dtype
+            Error: If the source tensor is not uint8 dtype.
 
         Examples:
             var fp8_t = ...  # uint8 tensor with FP8 encoding
             var float_t = fp8_t.from_fp8()  # Decode to float32
 
         Note:
-            This assumes the uint8 tensor contains valid FP8 E4M3 encoded values
-            Use this to decode tensors created by to_fp8()
+            This assumes the uint8 tensor contains valid FP8 E4M3 encoded values.
+            Use this to decode tensors created by to_fp8().
         """
         from .types.fp8 import FP8
 
@@ -1042,20 +1042,20 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         """Convert tensor values to Int8 format.
 
         Converts a tensor of any dtype to Int8 format, clamping values to the
-        range [-128, 127]
+        range [-128, 127].
 
         Returns:
-            A new ExTensor with dtype=int8 containing converted values
+            A new ExTensor with dtype=int8 containing converted values.
 
         Raises:
-            Error: If conversion is not supported for the source dtype
+            Error: If conversion is not supported for the source dtype.
 
         Examples:
             var t = zeros([3, 4], DType.float32)
             var i8_t = t.to_int8()  # Returns int8 tensor
 
         Note:
-            FP16 inputs are converted to FP32 before conversion
+            FP16 inputs are converted to FP32 before conversion.
         """
 
         # Create output tensor with int8 dtype
@@ -1111,10 +1111,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         """Convert tensor values to Int16 format.
 
         Converts a tensor of any dtype to Int16 format, clamping values to the
-        range [-32768, 32767]
+        range [-32768, 32767].
 
         Returns:
-            A new ExTensor with dtype=int16 containing converted values
+            A new ExTensor with dtype=int16 containing converted values.
         """
         var result = ExTensor(self._shape, DType.int16)
 
@@ -1163,10 +1163,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         """Convert tensor values to Int32 format.
 
         Converts a tensor of any dtype to Int32 format, clamping values to the
-        range [-2147483648, 2147483647]
+        range [-2147483648, 2147483647].
 
         Returns:
-            A new ExTensor with dtype=int32 containing converted values
+            A new ExTensor with dtype=int32 containing converted values.
         """
         var result = ExTensor(self._shape, DType.int32)
 
@@ -1210,10 +1210,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
     fn to_int64(self) raises -> ExTensor:
         """Convert tensor values to Int64 format.
 
-        Converts a tensor of any dtype to Int64 format
+        Converts a tensor of any dtype to Int64 format.
 
         Returns:
-            A new ExTensor with dtype=int64 containing converted values
+            A new ExTensor with dtype=int64 containing converted values.
         """
         var result = ExTensor(self._shape, DType.int64)
 
@@ -1259,10 +1259,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         """Convert tensor values to UInt8 format.
 
         Converts a tensor of any dtype to UInt8 format, clamping values to the
-        range [0, 255]
+        range [0, 255].
 
         Returns:
-            A new ExTensor with dtype=uint8 containing converted values
+            A new ExTensor with dtype=uint8 containing converted values.
         """
         var result = ExTensor(self._shape, DType.uint8)
 
@@ -1311,10 +1311,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         """Convert tensor values to UInt16 format.
 
         Converts a tensor of any dtype to UInt16 format, clamping values to the
-        range [0, 65535]
+        range [0, 65535].
 
         Returns:
-            A new ExTensor with dtype=uint16 containing converted values
+            A new ExTensor with dtype=uint16 containing converted values.
         """
         var result = ExTensor(self._shape, DType.uint16)
 
@@ -1360,10 +1360,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         """Convert tensor values to UInt32 format.
 
         Converts a tensor of any dtype to UInt32 format, clamping values to the
-        range [0, 4294967295]
+        range [0, 4294967295].
 
         Returns:
-            A new ExTensor with dtype=uint32 containing converted values
+            A new ExTensor with dtype=uint32 containing converted values.
         """
         var result = ExTensor(self._shape, DType.uint32)
 
@@ -1408,10 +1408,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
     fn to_uint64(self) raises -> ExTensor:
         """Convert tensor values to UInt64 format.
 
-        Converts a tensor of any dtype to UInt64 format, clamping negative values to 0
+        Converts a tensor of any dtype to UInt64 format, clamping negative values to 0.
 
         Returns:
-            A new ExTensor with dtype=uint64 containing converted values
+            A new ExTensor with dtype=uint64 containing converted values.
         """
         var result = ExTensor(self._shape, DType.uint64)
 
@@ -1462,13 +1462,13 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         This method converts a tensor of any floating-point dtype to BF8 format,
         stored as uint8. The conversion uses E5M2 encoding (1 sign bit, 5 exponent
-        bits, 2 mantissa bits) which provides larger range than FP8 E4M3
+        bits, 2 mantissa bits) which provides larger range than FP8 E4M3.
 
         Returns:
-            A new ExTensor with dtype=uint8 containing BF8-encoded values
+            A new ExTensor with dtype=uint8 containing BF8-encoded values.
 
         Raises:
-            Error: If the source tensor is not a floating-point dtype
+            Error: If the source tensor is not a floating-point dtype.
 
         Examples:
             var t = zeros([3, 4], DType.float32)
@@ -1476,10 +1476,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             var restored = bf8_t.from_bf8()  # Convert back to float32
 
         Note:
-            BF8 has larger range (~±57344) than FP8 but less precision (2 mantissa bits)
+            BF8 has larger range (~±57344) than FP8 but less precision (2 mantissa bits).
             Values outside this range are clamped. This is useful for memory-efficient
-            training/inference where range is more important than precision
-            FP16 inputs are converted to FP32 before quantization
+            training/inference where range is more important than precision.
+            FP16 inputs are converted to FP32 before quantization.
         """
         from .types.bf8 import BF8
 
@@ -1518,21 +1518,21 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         """Convert BF8-encoded tensor (uint8) back to Float32.
 
         This method interprets a uint8 tensor as BF8 E5M2 encoded values and
-        converts them back to Float32 for computation
+        converts them back to Float32 for computation.
 
         Returns:
-            A new ExTensor with dtype=float32 containing decoded values
+            A new ExTensor with dtype=float32 containing decoded values.
 
         Raises:
-            Error: If the source tensor is not uint8 dtype
+            Error: If the source tensor is not uint8 dtype.
 
         Examples:
             var bf8_t = ...  # uint8 tensor with BF8 encoding
             var float_t = bf8_t.from_bf8()  # Decode to float32
 
         Note:
-            This assumes the uint8 tensor contains valid BF8 E5M2 encoded values
-            Use this to decode tensors created by to_bf8()
+            This assumes the uint8 tensor contains valid BF8 E5M2 encoded values.
+            Use this to decode tensors created by to_bf8().
         """
         from .types.bf8 import BF8
 
@@ -1561,13 +1561,13 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         This method converts a tensor of any floating-point dtype to MXFP4 format,
         stored as uint8 blocks. Values are packed into 32-element blocks, each with
-        a shared E8M0 scale
+        a shared E8M0 scale.
 
         Returns:
-            A new ExTensor with dtype=uint8 containing MXFP4-encoded blocks
+            A new ExTensor with dtype=uint8 containing MXFP4-encoded blocks.
 
         Raises:
-            Error: If the source tensor is not a floating-point dtype
+            Error: If the source tensor is not a floating-point dtype.
 
         Examples:
             # Aligned size (32 elements = 1 block)
@@ -1601,23 +1601,23 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
                 return quantized.from_mxfp4()
 
         Error Handling:
-            - Empty tensors: Raises "requires a floating-point tensor" if dtype is not FP16/FP32/FP64
-            - NaN values: Automatically clamped to max representable value (no error)
-            - Infinity values: Automatically clamped to max representable value (no error)
-            - Non-aligned sizes: Automatically padded with zeros (no error, transparent)
-            - OOM conditions: Raises allocation error if insufficient memory for blocks
+            - Empty tensors: Raises "requires a floating-point tensor" if dtype is not FP16/FP32/FP64.
+            - NaN values: Automatically clamped to max representable value (no error).
+            - Infinity values: Automatically clamped to max representable value (no error).
+            - Non-aligned sizes: Automatically padded with zeros (no error, transparent).
+            - OOM conditions: Raises allocation error if insufficient memory for blocks.
 
         Performance:
-            - Compression ratio: 16:1 vs Float32 (17 bytes per 32 values)
-            - Time complexity: O(n) where n is number of elements
-            - Memory overhead: Temporary padding for non-aligned sizes
+            - Compression ratio: 16:1 vs Float32 (17 bytes per 32 values).
+            - Time complexity: O(n) where n is number of elements.
+            - Memory overhead: Temporary padding for non-aligned sizes.
 
         Note:
             MXFP4 uses 32-element blocks. Non-aligned tensors are padded with zeros,
             but original size is preserved in metadata. Round-trip conversion maintains
-            original tensor size
-            Memory efficiency: 17 bytes per 32 Float32 values (16:1 compression)
-            FP16 inputs are converted to FP32 before quantization
+            original tensor size.
+            Memory efficiency: 17 bytes per 32 Float32 values (16:1 compression).
+            FP16 inputs are converted to FP32 before quantization.
         """
         from .types.mxfp4 import MXFP4Block
 
@@ -1688,22 +1688,22 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         """Convert MXFP4-encoded tensor (uint8 blocks) back to Float32.
 
         This method interprets a uint8 tensor as MXFP4 blocks and converts them
-        back to Float32 for computation
+        back to Float32 for computation.
 
         Returns:
-            A new ExTensor with dtype=float32 containing decoded values
+            A new ExTensor with dtype=float32 containing decoded values.
 
         Raises:
-            Error: If the source tensor is not uint8 dtype or not block-aligned
+            Error: If the source tensor is not uint8 dtype or not block-aligned.
 
         Examples:
             var mxfp4_t = ...  # uint8 tensor with MXFP4 blocks
             var float_t = mxfp4_t.from_mxfp4()  # Decode to float32, restores original size
 
         Note:
-            This assumes the uint8 tensor contains valid MXFP4 blocks
-            Use this to decode tensors created by to_mxfp4()
-            Original tensor size is restored from metadata if available
+            This assumes the uint8 tensor contains valid MXFP4 blocks.
+            Use this to decode tensors created by to_mxfp4().
+            Original tensor size is restored from metadata if available.
         """
         from .types.mxfp4 import MXFP4Block, E8M0Scale
 
@@ -1767,13 +1767,13 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         This method converts a tensor of any floating-point dtype to NVFP4 format,
         stored as uint8 blocks. Values are packed into 16-element blocks, each with
-        a shared E4M3 scale
+        a shared E4M3 scale.
 
         Returns:
-            A new ExTensor with dtype=uint8 containing NVFP4-encoded blocks
+            A new ExTensor with dtype=uint8 containing NVFP4-encoded blocks.
 
         Raises:
-            Error: If the source tensor is not a floating-point dtype
+            Error: If the source tensor is not a floating-point dtype.
 
         Examples:
             # Aligned size (16 elements = 1 block)
@@ -1812,23 +1812,23 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
                 # NVFP4 typically has lower error due to smaller blocks (16 vs 32)
 
         Error Handling:
-            - Empty tensors: Raises "requires a floating-point tensor" if dtype is not FP16/FP32/FP64
-            - NaN values: Automatically clamped to max representable value (no error)
-            - Infinity values: Automatically clamped to max representable value (no error)
-            - Non-aligned sizes: Automatically padded with zeros (no error, transparent)
-            - OOM conditions: Raises allocation error if insufficient memory for blocks
+            - Empty tensors: Raises "requires a floating-point tensor" if dtype is not FP16/FP32/FP64.
+            - NaN values: Automatically clamped to max representable value (no error).
+            - Infinity values: Automatically clamped to max representable value (no error).
+            - Non-aligned sizes: Automatically padded with zeros (no error, transparent).
+            - OOM conditions: Raises allocation error if insufficient memory for blocks.
 
         Performance:
-            - Compression ratio: 14:1 vs Float32 (9 bytes per 16 values)
-            - Time complexity: O(n) where n is number of elements
-            - Memory overhead: Temporary padding for non-aligned sizes
-            - Accuracy: Better than MXFP4 due to smaller blocks (per Dettmers et al.)
+            - Compression ratio: 14:1 vs Float32 (9 bytes per 16 values).
+            - Time complexity: O(n) where n is number of elements.
+            - Memory overhead: Temporary padding for non-aligned sizes.
+            - Accuracy: Better than MXFP4 due to smaller blocks (per Dettmers et al.).
 
         Note:
             NVFP4 uses 16-element blocks for better accuracy. Non-aligned tensors are
-            padded with zeros, but original size is preserved in metadata
-            Memory efficiency: 9 bytes per 16 Float32 values (14:1 compression)
-            FP16 inputs are converted to FP32 before quantization
+            padded with zeros, but original size is preserved in metadata.
+            Memory efficiency: 9 bytes per 16 Float32 values (14:1 compression).
+            FP16 inputs are converted to FP32 before quantization.
         """
         from .types.nvfp4 import NVFP4Block
 
@@ -1897,22 +1897,22 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         """Convert NVFP4-encoded tensor (uint8 blocks) back to Float32.
 
         This method interprets a uint8 tensor as NVFP4 blocks and converts them
-        back to Float32 for computation
+        back to Float32 for computation.
 
         Returns:
-            A new ExTensor with dtype=float32 containing decoded values
+            A new ExTensor with dtype=float32 containing decoded values.
 
         Raises:
-            Error: If the source tensor is not uint8 dtype or not block-aligned
+            Error: If the source tensor is not uint8 dtype or not block-aligned.
 
         Examples:
             var nvfp4_t = ...  # uint8 tensor with NVFP4 blocks
             var float_t = nvfp4_t.from_nvfp4()  # Decode to float32, restores original size
 
         Note:
-            This assumes the uint8 tensor contains valid NVFP4 blocks
-            Use this to decode tensors created by to_nvfp4()
-            Original tensor size is restored from metadata if available
+            This assumes the uint8 tensor contains valid NVFP4 blocks.
+            Use this to decode tensors created by to_nvfp4().
+            Original tensor size is restored from metadata if available.
         """
         from .types.nvfp4 import NVFP4Block, E4M3Scale
 
@@ -1984,12 +1984,12 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         return subtract(other, self)
 
     fn __rmul__(self, other: ExTensor) raises -> ExTensor:
-        """Reflected multiplication: other * self (commutative, so same as __mul__)
+        """Reflected multiplication: other * self (commutative, so same as __mul__).
         """
         return self.__mul__(other)
 
     fn __rtruediv__(self, other: ExTensor) raises -> ExTensor:
-        """Reflected division: other / self (order matters: returns other / self)
+        """Reflected division: other / self (order matters: returns other / self).
         """
         from .arithmetic import divide
 
@@ -2054,7 +2054,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
     # Unary operators - operate on single tensor
     fn __neg__(self) raises -> ExTensor:
-        """Negation: `-self`"""
+        """Negation: `-self`."""
         # Create result tensor with same shape and dtype
         var result = ExTensor(self._shape, self._dtype)
 
@@ -2120,13 +2120,13 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         return result^
 
     fn __pos__(self) raises -> ExTensor:
-        """Positive: +self (returns a copy)"""
+        """Positive: +self (returns a copy)."""
         # Return a copy of the tensor using Mojo's copy semantics
         var copy = self
         return copy^
 
     fn __abs__(self) raises -> ExTensor:
-        """Absolute value: abs(self)"""
+        """Absolute value: abs(self)."""
         from .elementwise import abs
 
         return abs(self)
@@ -2141,18 +2141,18 @@ fn zeros(shape: List[Int], dtype: DType) raises -> ExTensor:
     """Create a tensor filled with zeros.
 
     Args:
-            shape: The shape of the output tensor
-            dtype: The data type of tensor elements
+            shape: The shape of the output tensor.
+            dtype: The data type of tensor elements.
 
     Returns:
-            A new ExTensor filled with zeros
+            A new ExTensor filled with zeros.
 
     Examples:
             var t = zeros([3, 4], DType.float32)
             # Creates a 3x4 tensor of float32 zeros.
 
         Performance:
-            O(n) time where n is the number of elements
+            O(n) time where n is the number of elements.
     """
     var tensor = ExTensor(shape, dtype)
     tensor._fill_zero()  # Efficiently zero out all bytes
@@ -2163,11 +2163,11 @@ fn ones(shape: List[Int], dtype: DType) raises -> ExTensor:
     """Create a tensor filled with ones.
 
     Args:
-            shape: The shape of the output tensor
-            dtype: The data type of tensor elements
+            shape: The shape of the output tensor.
+            dtype: The data type of tensor elements.
 
     Returns:
-            A new ExTensor filled with ones
+            A new ExTensor filled with ones.
 
     Examples:
             var t = ones([3, 4], DType.float32)
@@ -2192,12 +2192,12 @@ fn full(shape: List[Int], fill_value: Float64, dtype: DType) raises -> ExTensor:
     """Create a tensor filled with a specific value.
 
     Args:
-            shape: The shape of the output tensor
-            fill_value: The value to fill the tensor with
-            dtype: The data type of tensor elements
+            shape: The shape of the output tensor.
+            fill_value: The value to fill the tensor with.
+            dtype: The data type of tensor elements.
 
     Returns:
-            A new ExTensor filled with fill_value
+            A new ExTensor filled with fill_value.
 
     Examples:
             ```var t = full([3, 4], 42.0, DType.float32)
@@ -2219,18 +2219,18 @@ fn full(shape: List[Int], fill_value: Float64, dtype: DType) raises -> ExTensor:
 
 
 fn empty(shape: List[Int], dtype: DType) raises -> ExTensor:
-    """Create an uninitialized tensor (fast allocation)
+    """Create an uninitialized tensor (fast allocation).
 
     Args:
-            shape: The shape of the output tensor
-            dtype: The data type of tensor elements
+            shape: The shape of the output tensor.
+            dtype: The data type of tensor elements.
 
     Returns:
-            A new ExTensor with uninitialized memory
+            A new ExTensor with uninitialized memory.
 
         Warning:
-            The tensor contains uninitialized memory. Values are undefined until written
-            Use this for performance when you will immediately write to all elements
+            The tensor contains uninitialized memory. Values are undefined until written.
+            Use this for performance when you will immediately write to all elements.
 
     Examples:
             var t = empty([3, 4], DType.float32)
@@ -2247,13 +2247,13 @@ fn arange(
     """Create 1D tensor with evenly spaced values.
 
     Args:
-            start: Start value (inclusive)
-            stop: End value (exclusive)
-            step: Spacing between values
-            dtype: The data type of tensor elements
+            start: Start value (inclusive).
+            stop: End value (exclusive).
+            step: Spacing between values.
+            dtype: The data type of tensor elements.
 
     Returns:
-            A new 1D ExTensor with values in range [start, stop) with given step
+            A new 1D ExTensor with values in range [start, stop) with given step.
 
     Examples:
            ```
@@ -2290,13 +2290,13 @@ fn eye(n: Int, m: Int, k: Int, dtype: DType) raises -> ExTensor:
     """Create 2D tensor with ones on diagonal.
 
     Args:
-            n: Number of rows
-            m: Number of columns
-            k: Diagonal offset (0 for main diagonal, >0 for upper, <0 for lower)
-            dtype: The data type of tensor elements
+            n: Number of rows.
+            m: Number of columns.
+            k: Diagonal offset (0 for main diagonal, >0 for upper, <0 for lower).
+            dtype: The data type of tensor elements.
 
     Returns:
-            A new 2D ExTensor with ones on the k-th diagonal
+            A new 2D ExTensor with ones on the k-th diagonal.
 
     Examples:
             var t = eye(3, 3, 0, DType.float32)
@@ -2332,16 +2332,16 @@ fn eye(n: Int, m: Int, k: Int, dtype: DType) raises -> ExTensor:
 fn linspace(
     start: Float64, stop: Float64, num: Int, dtype: DType
 ) raises -> ExTensor:
-    """Create 1D tensor with evenly spaced values (inclusive)
+    """Create 1D tensor with evenly spaced values (inclusive).
 
     Args:
-            start: Start value (inclusive)
-            stop: End value (inclusive)
-            num: Number of values
-            dtype: The data type of tensor elements
+            start: Start value (inclusive).
+            stop: End value (inclusive).
+            num: Number of values.
+            dtype: The data type of tensor elements.
 
     Returns:
-            A new 1D ExTensor with num evenly spaced values
+            A new 1D ExTensor with num evenly spaced values.
 
     Examples:
             ```var t = linspace(0.0, 10.0, 11, DType.float32)
@@ -2388,10 +2388,10 @@ fn ones_like(tensor: ExTensor) raises -> ExTensor:
     """Create tensor of ones with same shape and dtype as input.
 
     Args:
-            tensor: Template tensor to match shape and dtype
+            tensor: Template tensor to match shape and dtype.
 
     Returns:
-            A new ExTensor filled with ones, same shape and dtype as input
+            A new ExTensor filled with ones, same shape and dtype as input.
 
         Example:
             ```mojo
@@ -2408,10 +2408,10 @@ fn zeros_like(tensor: ExTensor) raises -> ExTensor:
     """Create tensor of zeros with same shape and dtype as input.
 
     Args:
-            tensor: Template tensor to match shape and dtype
+            tensor: Template tensor to match shape and dtype.
 
     Returns:
-            A new ExTensor filled with zeros, same shape and dtype as input
+            A new ExTensor filled with zeros, same shape and dtype as input.
 
         Example:
             ```mojo
@@ -2428,11 +2428,11 @@ fn full_like(tensor: ExTensor, fill_value: Float64) raises -> ExTensor:
     """Create tensor filled with a value, same shape and dtype as input.
 
     Args:
-            tensor: Template tensor to match shape and dtype
-            fill_value: Value to fill the tensor with
+            tensor: Template tensor to match shape and dtype.
+            fill_value: Value to fill the tensor with.
 
     Returns:
-            A new ExTensor filled with fill_value, same shape and dtype as input
+            A new ExTensor filled with fill_value, same shape and dtype as input.
 
         Example:
             ```mojo
@@ -2449,18 +2449,18 @@ fn randn(shape: List[Int], dtype: DType, seed: Int = 0) raises -> ExTensor:
     """Create tensor filled with random values from standard normal distribution.
 
         Uses Box-Muller transform to generate normally distributed random values
-        from uniform random values. Generates values with mean=0 and std=1
+        from uniform random values. Generates values with mean=0 and std=1.
 
     Args:
-            shape: The shape of the output tensor
-            dtype: The data type of tensor elements (should be floating-point)
-            seed: Random seed for reproducibility (default: 0 uses system randomness)
+            shape: The shape of the output tensor.
+            dtype: The data type of tensor elements (should be floating-point).
+            seed: Random seed for reproducibility (default: 0 uses system randomness).
 
     Returns:
-            A new ExTensor filled with random values from N(0, 1)
+            A new ExTensor filled with random values from N(0, 1).
 
     Raises:
-            Error: If dtype is not a floating-point type
+            Error: If dtype is not a floating-point type.
 
     Examples:
             ```var t = randn([3, 4], DType.float32)
@@ -2470,8 +2470,8 @@ fn randn(shape: List[Int], dtype: DType, seed: Int = 0) raises -> ExTensor:
             # Reproducible random tensor with seed=42```
 
     Note:
-            For integer dtypes, values are generated as floats then truncated
-            Box-Muller transform generates pairs of independent normal values
+            For integer dtypes, values are generated as floats then truncated.
+            Box-Muller transform generates pairs of independent normal values.
     """
     # Verify floating-point dtype (best practice)
     if not (
@@ -2541,12 +2541,12 @@ fn calculate_max_batch_size(
     """Calculate maximum safe batch size for given sample shape.
 
     Args:
-            sample_shape: Shape of a single sample (e.g., [1, 28, 28] for MNIST)
-            dtype: Data type of the tensor
-            max_memory_bytes: Maximum memory to use for a batch (default: 500 MB)
+            sample_shape: Shape of a single sample (e.g., [1, 28, 28] for MNIST).
+            dtype: Data type of the tensor.
+            max_memory_bytes: Maximum memory to use for a batch (default: 500 MB).
 
     Returns:
-            Maximum batch size that fits in memory
+            Maximum batch size that fits in memory.
 
         Example:
             ```mojo

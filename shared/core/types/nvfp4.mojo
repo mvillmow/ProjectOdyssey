@@ -5,7 +5,7 @@ Implements NVFP4 format from the paper "Microscaling Data Formats for Deep Learn
 - Block size: 16 elements
 - Scale format: E4M3 (4-bit exponent, 3-bit mantissa)
 
-NVFP4 provides finer-grained scaling than MXFP4 with smaller block size
+NVFP4 provides finer-grained scaling than MXFP4 with smaller block size.
 Each block of 16 FP4 values shares a common E4M3 scale factor.
 
 According to the paper, E4M3 "achieves the best results" and provides
@@ -38,9 +38,9 @@ Reference:
     The paper demonstrates that microscaling (per-block scaling factors) enables
     efficient low-precision quantization (4-bit) while maintaining accuracy in
     deep learning training and inference. NVFP4 uses E4M3 scales (128 dynamic range)
-    across 16-element blocks for a balance between accuracy and memory efficiency
+    across 16-element blocks for a balance between accuracy and memory efficiency.
     The paper shows E4M3 achieves the best overall results with modest accuracy
-    improvements over the wider-range E8M0 format
+    improvements over the wider-range E8M0 format.
 """
 
 from math import isnan, isinf
@@ -60,7 +60,7 @@ struct E4M3Scale(Copyable, Movable, Representable, Stringable):
     - Max: exp=15, mantissa=7
     - No NaN/Inf (all patterns represent finite positive values)
 
-    Valid range: Similar to FP8 E4M3 format
+    Valid range: Similar to FP8 E4M3 format.
     """
 
     var value: UInt8  # Only lower 7 bits are used
@@ -69,7 +69,7 @@ struct E4M3Scale(Copyable, Movable, Representable, Stringable):
         """Initialize E4M3 scale from raw 7-bit value.
 
         Args:
-            value: 7-bit representation (default = 0x38 = exp:7, mantissa:0 = 1.0)
+            value: 7-bit representation (default = 0x38 = exp:7, mantissa:0 = 1.0).
         """
         self.value = value & 0x7F  # Mask to 7 bits
 
@@ -78,13 +78,13 @@ struct E4M3Scale(Copyable, Movable, Representable, Stringable):
         """Compute E4M3 scale from Float32 value.
 
         Args:
-            scale: Positive Float32 scale value
+            scale: Positive Float32 scale value.
 
         Returns:
-            E4M3 representation
+            E4M3 representation.
 
         Note:
-            Scale must be positive. Uses FP8 E4M3 encoding logic
+            Scale must be positive. Uses FP8 E4M3 encoding logic.
         """
         if scale <= 0.0 or isnan(scale):
             return E4M3Scale(0)  # Zero scale
@@ -138,7 +138,7 @@ struct E4M3Scale(Copyable, Movable, Representable, Stringable):
         """Convert E4M3 scale to Float32.
 
         Returns:
-            Float32 representation
+            Float32 representation.
         """
         # Extract components (7 bits total)
         var exp = (self.value >> 3) & 0xF  # 4 bits
@@ -181,7 +181,7 @@ struct E4M3Scale(Copyable, Movable, Representable, Stringable):
         """String representation showing scale value.
 
         Returns:
-            String representation
+            String representation.
         """
         var exp = (self.value >> 3) & 0xF
         var mantissa = self.value & 0x7
@@ -199,22 +199,22 @@ struct E4M3Scale(Copyable, Movable, Representable, Stringable):
         """Detailed representation.
 
         Returns:
-            Detailed string representation
+            Detailed string representation.
         """
         return self.__str__()
 
 
 struct NVFP4(Copyable, Movable, Representable, Stringable):
-    """NVFP4 individual value (E2M1 + E4M3 scale)
+    """NVFP4 individual value (E2M1 + E4M3 scale).
 
-    Acts like FP16 but stores internally as 4-bit E2M1 value plus 7-bit E4M3 scale
-    This representation is convenient but NOT space-efficient (11 bits total vs 4 bits in blocks)
+    Acts like FP16 but stores internally as 4-bit E2M1 value plus 7-bit E4M3 scale.
+    This representation is convenient but NOT space-efficient (11 bits total vs 4 bits in blocks).
 
-    For efficient storage, use NVFP4Block which amortizes the scale across 16 values
+    For efficient storage, use NVFP4Block which amortizes the scale across 16 values.
 
     Attributes:
-        value: 4-bit E2M1 encoded value
-        scale: 7-bit E4M3 scale factor
+        value: 4-bit E2M1 encoded value.
+        scale: 7-bit E4M3 scale factor.
     """
 
     var value: FP4_E2M1
@@ -226,8 +226,8 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         """Initialize NVFP4 from E2M1 value and E4M3 scale.
 
         Args:
-            value: E2M1 encoded value
-            scale: E4M3 scale factor
+            value: E2M1 encoded value.
+            scale: E4M3 scale factor.
         """
         self.value = value.copy()
         self.scale = scale.copy()
@@ -236,13 +236,13 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
     fn from_float32(x: Float32) -> Self:
         """Convert Float32 to NVFP4.
 
-        Computes optimal scale for the single value and encodes
+        Computes optimal scale for the single value and encodes.
 
         Args:
-            x: Float32 value to convert
+            x: Float32 value to convert.
 
         Returns:
-            NVFP4 representation
+            NVFP4 representation.
         """
         # Handle special cases
         if isnan(x) or isinf(x):
@@ -277,25 +277,25 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
     fn from_float32_stochastic(x: Float32, seed: UInt64) -> Self:
         """Convert Float32 to NVFP4 with stochastic rounding.
 
-        Uses stochastic rounding which is recommended for gradient quantization
+        Uses stochastic rounding which is recommended for gradient quantization.
         When a value falls between two representable FP4 values, probabilistically
-        round up or down based on distance
+        round up or down based on distance.
 
         Args:
-            x: Float32 value to convert
-            seed: Random seed for deterministic stochastic rounding
+            x: Float32 value to convert.
+            seed: Random seed for deterministic stochastic rounding.
 
         Returns:
-            NVFP4 representation with stochastic rounding
+            NVFP4 representation with stochastic rounding.
 
         Note:
-            Use this for gradients and backward computations
-            Use from_float32() for forward passes and weights
+            Use this for gradients and backward computations.
+            Use from_float32() for forward passes and weights.
 
         Example:
             ```mojo
-             Gradient value 1.25 between 1.0 and 1.5
-            # Will round to 1.5 with ~50% probability
+            # Gradient value 1.25 between 1.0 and 1.5.
+            # Will round to 1.5 with ~50% probability.
             var grad = NVFP4.from_float32_stochastic(1.25, seed=12345)
         ```
         """
@@ -334,12 +334,12 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         """Internal: Stochastic rounding helper using simple LCG.
 
         Args:
-            x: Float32 value to encode
-            scale: Scale factor
-            seed: Random seed
+            x: Float32 value to encode.
+            scale: Scale factor.
+            seed: Random seed.
 
         Returns:
-            FP4_E2M1 value with stochastic rounding
+            FP4_E2M1 value with stochastic rounding.
         """
         var scaled = x / scale
         var sign: UInt8 = 0
@@ -419,51 +419,51 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         """Convert NVFP4 to Float32.
 
         Returns:
-            Float32 representation
+            Float32 representation.
         """
         return self.value.to_float32(scale=self.scale.to_float32())
 
     fn __add__(self, other: NVFP4) -> NVFP4:
-        """Add two NVFP4 values (via Float32)
+        """Add two NVFP4 values (via Float32).
 
         Args:
-            other: Value to add
+            other: Value to add.
 
         Returns:
-            Sum as NVFP4
+            Sum as NVFP4.
         """
         return NVFP4.from_float32(self.to_float32() + other.to_float32())
 
     fn __sub__(self, other: NVFP4) -> NVFP4:
-        """Subtract two NVFP4 values (via Float32)
+        """Subtract two NVFP4 values (via Float32).
 
         Args:
-            other: Value to subtract
+            other: Value to subtract.
 
         Returns:
-            Difference as NVFP4
+            Difference as NVFP4.
         """
         return NVFP4.from_float32(self.to_float32() - other.to_float32())
 
     fn __mul__(self, other: NVFP4) -> NVFP4:
-        """Multiply two NVFP4 values (via Float32)
+        """Multiply two NVFP4 values (via Float32).
 
         Args:
-            other: Value to multiply
+            other: Value to multiply.
 
         Returns:
-            Product as NVFP4
+            Product as NVFP4.
         """
         return NVFP4.from_float32(self.to_float32() * other.to_float32())
 
     fn __truediv__(self, other: NVFP4) -> NVFP4:
-        """Divide two NVFP4 values (via Float32)
+        """Divide two NVFP4 values (via Float32).
 
         Args:
-            other: Divisor
+            other: Divisor.
 
         Returns:
-            Quotient as NVFP4
+            Quotient as NVFP4.
         """
         return NVFP4.from_float32(self.to_float32() / other.to_float32())
 
@@ -471,7 +471,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         """Negate NVFP4 value.
 
         Returns:
-            Negated value
+            Negated value.
         """
         # Flip sign bit in E2M1 value
         var neg_value = FP4_E2M1(self.value.value ^ 0b1000)
@@ -481,10 +481,10 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         """Check equality.
 
         Args:
-            other: Value to compare
+            other: Value to compare.
 
         Returns:
-            True if equal
+            True if equal.
         """
         return (
             self.value == other.value and self.scale.value == other.scale.value
@@ -494,10 +494,10 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         """Check inequality.
 
         Args:
-            other: Value to compare
+            other: Value to compare.
 
         Returns:
-            True if not equal
+            True if not equal.
         """
         return not (self == other)
 
@@ -505,10 +505,10 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         """Check less than.
 
         Args:
-            other: Value to compare
+            other: Value to compare.
 
         Returns:
-            True if self < other
+            True if self < other.
         """
         return self.to_float32() < other.to_float32()
 
@@ -516,10 +516,10 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         """Check less than or equal.
 
         Args:
-            other: Value to compare
+            other: Value to compare.
 
         Returns:
-            True if self <= other
+            True if self <= other.
         """
         return self.to_float32() <= other.to_float32()
 
@@ -527,10 +527,10 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         """Check greater than.
 
         Args:
-            other: Value to compare
+            other: Value to compare.
 
         Returns:
-            True if self > other
+            True if self > other.
         """
         return self.to_float32() > other.to_float32()
 
@@ -538,10 +538,10 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         """Check greater than or equal.
 
         Args:
-            other: Value to compare
+            other: Value to compare.
 
         Returns:
-            True if self >= other
+            True if self >= other.
         """
         return self.to_float32() >= other.to_float32()
 
@@ -549,7 +549,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         """Convert to string.
 
         Returns:
-            String representation
+            String representation.
         """
         return "NVFP4(" + String(self.to_float32()) + ")"
 
@@ -557,7 +557,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         """Get representation string.
 
         Returns:
-            Representation string
+            Representation string.
         """
         return (
             "NVFP4(value="
@@ -569,7 +569,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
 
 
 struct NVFP4Block(Copyable, Movable, Representable, Stringable):
-    """NVFP4 block storage: 16 E2M1 values + 1 E4M3 scale (9 bytes total)
+    """NVFP4 block storage: 16 E2M1 values + 1 E4M3 scale (9 bytes total).
 
     Memory layout:
     - Bytes 0-7: 16 E2M1 values (4 bits each, packed 2 per byte)
@@ -580,8 +580,8 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
     - Upper 4 bits: First E2M1 value
     - Lower 4 bits: Second E2M1 value
 
-    This provides 14:1 compression vs Float32 (9 bytes vs 64 bytes)
-    Smaller blocks (16 vs 32) provide better accuracy per the paper
+    This provides 14:1 compression vs Float32 (9 bytes vs 64 bytes).
+    Smaller blocks (16 vs 32) provide better accuracy per the paper.
 
     Example:
         ```
@@ -609,8 +609,8 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
         """Initialize NVFP4Block from packed data and scale.
 
         Args:
-            data: 8 bytes containing 16 packed E2M1 values
-            scale: E4M3 scale factor for the block
+            data: 8 bytes containing 16 packed E2M1 values.
+            scale: E4M3 scale factor for the block.
         """
         self.data = data
         self.scale = scale.copy()
@@ -620,19 +620,17 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
         """Convert 16 Float32 values to NVFP4Block.
 
         Args:
-            values: List of exactly 16 Float32 values
+            values: List of exactly 16 Float32 values.
 
         Returns:
-            NVFP4Block with optimal scale and packed E2M1 values
+            NVFP4Block with optimal scale and packed E2M1 values.
 
         Raises:
             Error: If values list doesn't contain exactly 16 elements.
 
         Note:
-        ```
             Computes optimal E4M3 scale as max(abs(values)) / 6.0
-            to fit all values in E2M1 range [0, 6]
-            ```
+            to fit all values in E2M1 range [0, 6].
         """
         if len(values) != 16:
             raise Error(
@@ -672,10 +670,10 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
         """Decode NVFP4Block to 16 Float32 values.
 
         Returns:
-            List of 16 Float32 values decoded from the block
+            List of 16 Float32 values decoded from the block.
 
         Note:
-            Decoding is lossless given the quantization that occurred during encoding
+            Decoding is lossless given the quantization that occurred during encoding.
         """
         var result = List[Float32]()
         var scale_f32 = self.scale.to_float32()
@@ -693,16 +691,16 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
         return result^
 
     fn get(self, index: Int) raises -> NVFP4:
-        """Get NVFP4 value at index (0-15)
+        """Get NVFP4 value at index (0-15).
 
         Args:
-            index: Index in range [0, 15]
+            index: Index in range [0, 15].
 
         Returns:
-            NVFP4 value at the given index
+            NVFP4 value at the given index.
 
         Raises:
-            Error: If index is out of range
+            Error: If index is out of range.
         """
         if index < 0 or index >= 16:
             raise Error("Index " + String(index) + " out of range [0, 15]")
@@ -720,14 +718,14 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
         return NVFP4(fp4_val, self.scale)
 
     fn set(mut self, index: Int, value: NVFP4) raises -> None:
-        """Set NVFP4 value at index (0-15)
+        """Set NVFP4 value at index (0-15).
 
         Args:
-            index: Index in range [0, 15]
-            value: NVFP4 value to set
+            index: Index in range [0, 15].
+            value: NVFP4 value to set.
 
         Raises:
-            Error: If index is out of range
+            Error: If index is out of range.
 
         Note:
             This updates the E2M1 value but keeps the block's shared scale.
@@ -759,7 +757,7 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
         """String representation showing scale and value count.
 
         Returns:
-            String representation
+            String representation.
         """
         return (
             "NVFP4Block(16 values, scale="
@@ -771,6 +769,6 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
         """Detailed representation.
 
         Returns:
-            Detailed string representation
+            Detailed string representation.
         """
         return "NVFP4Block(scale=" + repr(self.scale) + ", data=8 bytes)"

@@ -1,13 +1,13 @@
-"""IDX File Format Loader
+"""IDX File Format Loader.
 
-Provides functions to load data from IDX file format (used by MNIST, EMNIST, and similar datasets)
+Provides functions to load data from IDX file format (used by MNIST, EMNIST, and similar datasets).
 
 IDX File Format:
     Labels: [magic(4B)][count(4B)][label_data...]
     Images: [magic(4B)][count(4B)][rows(4B)][cols(4B)][pixel_data...]
     Images RGB: [magic(4B)][count(4B)][channels(4B)][rows(4B)][cols(4B)][pixel_data...]
 
-All integers are big-endian (network byte order)
+All integers are big-endian (network byte order).
 
 Magic Numbers:
     - 2049: Label files
@@ -26,11 +26,11 @@ fn read_uint32_be(data: UnsafePointer[UInt8], offset: Int) -> Int:
     """Read 32-bit unsigned integer in big-endian format.
 
     Args:
-            data: Pointer to byte array
-            offset: Byte offset to read from
+            data: Pointer to byte array.
+            offset: Byte offset to read from.
 
     Returns:
-            Integer value in host byte order
+            Integer value in host byte order.
     """
     var b0 = Int(data[offset])
     var b1 = Int(data[offset + 1])
@@ -44,13 +44,13 @@ fn load_idx_labels(filepath: String) raises -> ExTensor:
     """Load labels from IDX file format.
 
     Args:
-            filepath: Path to IDX labels file
+            filepath: Path to IDX labels file.
 
     Returns:
-            ExTensor of shape (num_samples,) with uint8 label values
+            ExTensor of shape (num_samples,) with uint8 label values.
 
     Raises:
-            Error: If file format is invalid or cannot be read
+            Error: If file format is invalid or cannot be read.
     """
     # Read entire file
     var content: String
@@ -91,17 +91,17 @@ fn load_idx_images(filepath: String) raises -> ExTensor:
     """Load grayscale images from IDX file format.
 
     Args:
-            filepath: Path to IDX grayscale images file
+            filepath: Path to IDX grayscale images file.
 
     Returns:
-            ExTensor of shape (num_samples, 1, rows, cols) with uint8 pixel values
+            ExTensor of shape (num_samples, 1, rows, cols) with uint8 pixel values.
 
     Raises:
-            Error: If file format is invalid or cannot be read
+            Error: If file format is invalid or cannot be read.
 
     Note:
             For single-channel (grayscale) images. Shape includes channel dimension for
-            consistency with multi-channel loaders
+            consistency with multi-channel loaders.
     """
     # Read entire file
     var content: String
@@ -148,16 +148,16 @@ fn load_idx_images_rgb(filepath: String) raises -> ExTensor:
     """Load RGB images from IDX file format.
 
     Args:
-            filepath: Path to IDX RGB images file
+            filepath: Path to IDX RGB images file.
 
     Returns:
-            ExTensor of shape (num_samples, channels, rows, cols) with uint8 pixel values
+            ExTensor of shape (num_samples, channels, rows, cols) with uint8 pixel values.
 
     Raises:
-            Error: If file format is invalid or cannot be read
+            Error: If file format is invalid or cannot be read.
 
     Note:
-            For CIFAR-10 and similar: (N, 3, 32, 32) where 3 channels are RGB
+            For CIFAR-10 and similar: (N, 3, 32, 32) where 3 channels are RGB.
     """
     # Read entire file
     var content: String
@@ -207,16 +207,16 @@ fn load_idx_images_rgb(filepath: String) raises -> ExTensor:
 
 
 fn normalize_images(mut images: ExTensor) raises -> ExTensor:
-    """Normalize uint8 images to float32 in range [0, 1]
+    """Normalize uint8 images to float32 in range [0, 1].
 
     Args:
-            images: Input images as uint8 ExTensor
+            images: Input images as uint8 ExTensor.
 
     Returns:
-            Normalized images as float32 ExTensor
+            Normalized images as float32 ExTensor.
 
     Note:
-            Converts pixel values from [0, 255] to [0.0, 1.0]
+            Converts pixel values from [0, 255] to [0.0, 1.0].
     """
     var shape = images.shape()
     var normalized = zeros(shape, DType.float32)
@@ -235,11 +235,11 @@ fn one_hot_encode(labels: ExTensor, num_classes: Int) raises -> ExTensor:
     """Convert integer labels to one-hot encoded float32 tensor.
 
     Args:
-            labels: Integer labels as uint8 ExTensor, shape (num_samples,)
-            num_classes: Total number of classes
+            labels: Integer labels as uint8 ExTensor, shape (num_samples,).
+            num_classes: Total number of classes.
 
     Returns:
-            One-hot encoded labels as float32 ExTensor, shape (num_samples, num_classes)
+            One-hot encoded labels as float32 ExTensor, shape (num_samples, num_classes).
 
         Example:
             ```mojo
@@ -279,16 +279,16 @@ fn normalize_images_rgb(mut images: ExTensor) raises -> ExTensor:
     """Normalize uint8 RGB images to float32 with ImageNet normalization.
 
     Args:
-            images: Input images as uint8 ExTensor of shape (N, 3, H, W)
+            images: Input images as uint8 ExTensor of shape (N, 3, H, W).
 
     Returns:
-            Normalized images as float32 ExTensor
+            Normalized images as float32 ExTensor.
 
     Note:
             Applies ImageNet normalization:
             - mean=[0.485, 0.456, 0.406] for RGB channels
             - std=[0.229, 0.224, 0.225] for RGB channels
-            - Converts pixel values from [0, 255] to normalized float
+            - Converts pixel values from [0, 255] to normalized float.
     """
     # ImageNet normalization parameters (R, G, B)
     # ImageNet normalization constants per channel
@@ -341,20 +341,20 @@ fn load_cifar10_batch(
     """Load a single CIFAR-10 batch (images and labels) from IDX format.
 
     Args:
-            batch_dir: Directory containing CIFAR-10 IDX files
-            batch_name: Batch name without extension (e.g., "train_batch_1", "test_batch")
+            batch_dir: Directory containing CIFAR-10 IDX files.
+            batch_name: Batch name without extension (e.g., "train_batch_1", "test_batch").
 
     Returns:
             Tuple of (images, labels):
-            - images: ExTensor of shape (N, 3, 32, 32) normalized float32
-            - labels: ExTensor of shape (N,) uint8
+            - images: ExTensor of shape (N, 3, 32, 32) normalized float32.
+            - labels: ExTensor of shape (N,) uint8.
 
     Raises:
-            Error: If batch files cannot be read
+            Error: If batch files cannot be read.
 
     Note:
-            Images are loaded from IDX RGB format and normalized using ImageNet parameters
-            Labels are kept as uint8 (class indices 0-9)
+            Images are loaded from IDX RGB format and normalized using ImageNet parameters.
+            Labels are kept as uint8 (class indices 0-9).
     """
     var images_path = batch_dir + "/" + batch_name + "_images.idx"
     var labels_path = batch_dir + "/" + batch_name + "_labels.idx"

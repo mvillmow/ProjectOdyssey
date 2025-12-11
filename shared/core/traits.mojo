@@ -37,7 +37,7 @@ trait Differentiable:
     """Components that support automatic differentiation.
 
     Implement this trait for all neural network layers and operations
-    that participate in backpropagation
+    that participate in backpropagation.
 
     Required Methods:
         forward: Compute output from input (forward pass)
@@ -72,27 +72,27 @@ trait Differentiable:
             Output tensor (batch_size, ...)
 
         Raises:
-            Error: If input shape is invalid
+            Error: If input shape is invalid.
 
         Note:
-            May cache values needed for backward pass
+            May cache values needed for backward pass.
         """
         ...
 
     fn backward(self, grad_output: ExTensor) raises -> ExTensor:
-        """Compute backward pass (input gradient)
+        """Compute backward pass (input gradient).
 
         Args:
-            grad_output: Gradient w.r.t. output (∂L/∂output)
+            grad_output: Gradient w.r.t. output (∂L/∂output).
 
         Returns:
-            Gradient w.r.t. input (∂L/∂input)
+            Gradient w.r.t. input (∂L/∂input).
 
         Raises:
-            Error: If backward called before forward
+            Error: If backward called before forward.
 
         Note:
-            Uses values cached during forward pass
+            Uses values cached during forward pass.
         """
         ...
 
@@ -101,7 +101,7 @@ trait Parameterized:
     """Components with learnable parameters.
 
     Implement this trait for layers that have weights, biases, or other
-    trainable parameters that should be updated during optimization
+    trainable parameters that should be updated during optimization.
 
     Required Methods:
         parameters: Return list of all parameter tensors
@@ -137,11 +137,11 @@ trait Parameterized:
         """Get all learnable parameters.
 
         Returns:
-            List of parameter tensors
+            List of parameter tensors.
 
         Note:
-            Order must match gradients() return order
-            Do not include non-trainable parameters (e.g., batch norm running stats)
+            Order must match gradients() return order.
+            Do not include non-trainable parameters (e.g., batch norm running stats).
         """
         ...
 
@@ -149,11 +149,11 @@ trait Parameterized:
         """Get gradients for all parameters.
 
         Returns:
-            List of gradient tensors
+            List of gradient tensors.
 
         Note:
-            Must correspond 1:1 with parameters()
-            Gradients are accumulated across mini-batches
+            Must correspond 1:1 with parameters().
+            Gradients are accumulated across mini-batches.
         """
         ...
 
@@ -161,7 +161,7 @@ trait Parameterized:
         """Reset all gradients to zero.
 
         Called at the beginning of each mini-batch to clear
-        accumulated gradients from previous iteration
+        accumulated gradients from previous iteration.
 
         Example:
             ```mojo
@@ -178,7 +178,7 @@ trait Serializable:
     """Components that can be saved and loaded.
 
     Implement this trait for models and layers that need to persist
-    state to disk (checkpointing, model saving)
+    state to disk (checkpointing, model saving).
 
     Required Methods:
         save: Write state to file
@@ -215,11 +215,11 @@ trait Serializable:
             path: File path or directory
 
         Raises:
-            Error: If write fails or path is invalid
+            Error: If write fails or path is invalid.
 
         Note:
-            Should save all state needed to restore component
-            Include metadata (shapes, dtypes, version)
+            Should save all state needed to restore component.
+            Include metadata (shapes, dtypes, version).
         """
         ...
 
@@ -227,14 +227,14 @@ trait Serializable:
         """Load component state from file.
 
         Args:
-            path: File path or directory
+            path: File path or directory.
 
         Raises:
             Error: If file doesn't exist, is corrupted, or has version mismatch.
 
         Note:
-            Should validate loaded state (shapes, dtypes)
-            Handle version migration if needed
+            Should validate loaded state (shapes, dtypes).
+            Handle version migration if needed.
         """
         ...
 
@@ -243,7 +243,7 @@ trait Composable(Differentiable):
     """Components that can be composed into pipelines.
 
     Implement this trait for layers and operations that can be
-    chained together (e.g., Sequential, Residual connections)
+    chained together (e.g., Sequential, Residual connections).
 
     Required Methods:
         compose: Chain this component with another
@@ -274,13 +274,13 @@ trait Composable(Differentiable):
         be expressed in the current Mojo type system. See issue #2401.
 
         Args:
-            other: The component to compose with this one
+            other: The component to compose with this one.
 
         Returns:
-            Composed operation result
+            Composed operation result.
 
         Raises:
-            Error: This method is not yet supported due to Mojo limitation
+            Error: This method is not yet supported due to Mojo limitation.
 
         Workaround:
             Instead of using compose(), manually chain operations:
@@ -334,7 +334,7 @@ trait Trainable:
     """Components that support training mode.
 
     Implement this trait for components that behave differently during
-    training vs. inference (e.g., Dropout, BatchNorm)
+    training vs. inference (e.g., Dropout, BatchNorm).
 
     Required Methods:
         train: Set to training mode
@@ -367,14 +367,14 @@ trait Trainable:
     fn train(mut self):
         """Set component to training mode.
 
-        Enables training-specific behavior (dropout, batch norm updates, etc.)
+        Enables training-specific behavior (dropout, batch norm updates, etc.).
         """
         ...
 
     fn eval(mut self):
         """Set component to evaluation mode.
 
-        Disables training-specific behavior for inference
+        Disables training-specific behavior for inference.
         """
         ...
 
@@ -382,7 +382,7 @@ trait Trainable:
         """Check if component is in training mode.
 
         Returns:
-            True if training, False if evaluating
+            True if training, False if evaluating.
         """
         ...
 
@@ -395,8 +395,8 @@ trait Trainable:
 trait Model:
     """Neural network model interface for generic TrainingLoop.
 
-    Defines the contract for models that can be trained using TrainingLoop
-    All neural network models should implement this trait
+    Defines the contract for models that can be trained using TrainingLoop.
+    All neural network models should implement this trait.
 
     Required Methods:
         forward: Execute forward pass
@@ -422,13 +422,13 @@ trait Model:
         """Execute forward pass through the model.
 
         Args:
-            input: Input tensor (batch_size, input_dim)
+            input: Input tensor (batch_size, input_dim).
 
         Returns:
-            Output tensor (batch_size, output_dim)
+            Output tensor (batch_size, output_dim).
 
         Raises:
-            Error: If input shape is invalid
+            Error: If input shape is invalid.
         """
         ...
 
@@ -436,10 +436,10 @@ trait Model:
         """Return list of all trainable parameters.
 
         Returns:
-            List of parameter tensors
+            List of parameter tensors.
 
         Note:
-            Used by optimizers to update weights
+            Used by optimizers to update weights.
         """
         ...
 
@@ -447,7 +447,7 @@ trait Model:
         """Reset all parameter gradients to zero.
 
         Note:
-            Should be called before each backward pass
+            Should be called before each backward pass.
         """
         ...
 
@@ -455,7 +455,7 @@ trait Model:
 trait Loss:
     """Loss function interface for generic TrainingLoop.
 
-    Defines the contract for loss functions that measure prediction error
+    Defines the contract for loss functions that measure prediction error.
 
     Required Methods:
         compute: Calculate loss between predictions and targets
@@ -473,14 +473,14 @@ trait Loss:
         """Compute loss between predictions and targets.
 
         Args:
-            pred: Model predictions (batch_size, ...)
-            target: Ground truth targets (batch_size, ...)
+            pred: Model predictions (batch_size, ...).
+            target: Ground truth targets (batch_size, ...).
 
         Returns:
-            Scalar loss value
+            Scalar loss value.
 
         Raises:
-            Error: If shapes are incompatible
+            Error: If shapes are incompatible.
         """
         ...
 
@@ -488,7 +488,7 @@ trait Loss:
 trait Optimizer:
     """Optimizer interface for generic TrainingLoop.
 
-    Defines the contract for optimization algorithms that update parameters
+    Defines the contract for optimization algorithms that update parameters.
 
     Required Methods:
         step: Update parameters based on gradients
@@ -512,10 +512,10 @@ trait Optimizer:
         """Update parameters using computed gradients.
 
         Args:
-            params: List of parameter tensors to update
+            params: List of parameter tensors to update.
 
         Note:
-            Assumes gradients are already computed
+            Assumes gradients are already computed.
         """
         ...
 
@@ -523,6 +523,6 @@ trait Optimizer:
         """Reset optimizer state.
 
         Note:
-            May be called before parameter zero_grad()
+            May be called before parameter zero_grad().
         """
         ...

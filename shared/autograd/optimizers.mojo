@@ -1,6 +1,6 @@
 """Optimizers for gradient-based parameter updates.
 
-Implements standard optimization algorithms used in neural network training
+Implements standard optimization algorithms used in neural network training.
 Each optimizer updates model parameters based on their gradients.
 
 Implemented optimizers:
@@ -31,8 +31,8 @@ Usage Pattern:
         optimizer.zero_grad(tape)
 
 Design Note:
-    This module operates on Variables (from autograd), not raw ExTensors
-    The optimizer updates Variable.data based on Variable.grad
+    This module operates on Variables (from autograd), not raw ExTensors.
+    The optimizer updates Variable.data based on Variable.grad.
 """
 
 from shared.core.extensor import ExTensor
@@ -58,9 +58,9 @@ struct SGD:
             parameter = parameter - learning_rate * gradient
 
         Attributes:
-            learning_rate: Step size for parameter updates
-            momentum: Momentum factor for accelerated gradient descent (default: 0.0)
-            velocity: Momentum accumulation for each parameter (maintained internally)
+            learning_rate: Step size for parameter updates.
+            momentum: Momentum factor for accelerated gradient descent (default: 0.0).
+            velocity: Momentum accumulation for each parameter (maintained internally).
 
     Examples:
             # Basic SGD
@@ -83,11 +83,11 @@ struct SGD:
         """Initialize SGD optimizer.
 
         Args:
-            learning_rate: Step size for gradient descent (α in literature)
-            momentum: Momentum coefficient (β in literature), range [0, 1]
-                     0 = no momentum (standard SGD)
-                     0.9 = typical momentum value
-                     Higher values give more weight to past gradients
+            learning_rate: Step size for gradient descent (α in literature).
+            momentum: Momentum coefficient (β in literature), range [0, 1].
+                     0 = no momentum (standard SGD).
+                     0.9 = typical momentum value.
+                     Higher values give more weight to past gradients.
 
         Examples:
             var opt = SGD(learning_rate=0.01)
@@ -111,16 +111,16 @@ struct SGD:
             parameter = parameter - learning_rate * gradient
 
         Args:
-            parameters: List of Variables to update (model parameters)
-            tape: The gradient tape containing computed gradients
+            parameters: List of Variables to update (model parameters).
+            tape: The gradient tape containing computed gradients.
 
         Note:
-            This assumes gradients have already been computed via backward()
-            Parameters without gradients in the tape are skipped
-            Velocity buffers are initialized on first call when momentum > 0
+            This assumes gradients have already been computed via backward().
+            Parameters without gradients in the tape are skipped.
+            Velocity buffers are initialized on first call when momentum > 0.
 
         Raises:
-            Error if any parameter has incompatible gradient shape
+            Error: Any parameter has incompatible gradient shape.
 
         Examples:
             # After backward pass
@@ -179,10 +179,10 @@ struct SGD:
         """Reset all gradients in the tape.
 
         Should be called after each optimizer step to clear gradients before
-        the next backward pass
+        the next backward pass.
 
         Args:
-            tape: The gradient tape to clear
+            tape: The gradient tape to clear.
 
         Examples:
             # Clear gradients before next iteration
@@ -203,17 +203,17 @@ struct Adam:
             θ_t = θ_{t-1} - α * m̂_t / (√v̂_t + ε)         # Update
 
         This is one of the most popular optimizers for deep learning due to its
-        adaptive learning rates and momentum properties
+        adaptive learning rates and momentum properties.
 
         Attributes:
-            learning_rate: Step size for parameter updates (default: 0.001)
-            beta1: Decay rate for first moment moving average (default: 0.9)
-            beta2: Decay rate for second moment moving average (default: 0.999)
-            epsilon: Small constant for numerical stability (default: 1e-8)
-            weight_decay: L2 regularization coefficient (default: 0.0)
-            t: Current step counter (incremented on each step)
-            m_buffers: First moment buffers per parameter ID
-            v_buffers: Second moment buffers per parameter ID
+            learning_rate: Step size for parameter updates (default: 0.001).
+            beta1: Decay rate for first moment moving average (default: 0.9).
+            beta2: Decay rate for second moment moving average (default: 0.999).
+            epsilon: Small constant for numerical stability (default: 1e-8).
+            weight_decay: L2 regularization coefficient (default: 0.0).
+            t: Current step counter (incremented on each step).
+            m_buffers: First moment buffers per parameter ID.
+            v_buffers: Second moment buffers per parameter ID.
 
     Examples:
             # Basic Adam optimizer
@@ -255,16 +255,16 @@ struct Adam:
         """Initialize Adam optimizer.
 
         Args:
-            learning_rate: Step size for gradient descent (α in literature)
-                          Typical range: [1e-4, 1e-2]
-            beta1: Decay rate for first moment (momentum) coefficient
-                  Typical value: 0.9
-            beta2: Decay rate for second moment (variance) coefficient
-                  Typical value: 0.999
-            epsilon: Small constant for numerical stability when dividing by sqrt(v_t)
-                    Typical value: 1e-8
-            weight_decay: L2 regularization coefficient
-                         Typical value: 0.0 (no regularization) or 1e-5 to 1e-3
+            learning_rate: Step size for gradient descent (α in literature).
+                          Typical range: [1e-4, 1e-2].
+            beta1: Decay rate for first moment (momentum) coefficient.
+                  Typical value: 0.9.
+            beta2: Decay rate for second moment (variance) coefficient.
+                  Typical value: 0.999.
+            epsilon: Small constant for numerical stability when dividing by sqrt(v_t).
+                    Typical value: 1e-8.
+            weight_decay: L2 regularization coefficient.
+                         Typical value: 0.0 (no regularization) or 1e-5 to 1e-3.
 
         Examples:
             var opt = Adam()  # Use defaults
@@ -286,8 +286,8 @@ struct Adam:
     ) raises:
         """Update parameters using Adam algorithm.
 
-        Performs one step of Adam optimization on all parameters with gradients
-        Internally maintains momentum (m) and variance (v) buffers per parameter
+        Performs one step of Adam optimization on all parameters with gradients.
+        Internally maintains momentum (m) and variance (v) buffers per parameter.
 
         Algorithm:
             1. Increment step counter: t = t + 1
@@ -299,16 +299,16 @@ struct Adam:
                 - Update parameter: θ_t = θ_{t-1} - α * m̂_t / (√v̂_t + ε)
 
         Args:
-            parameters: List of Variables to update (model parameters)
-            tape: The gradient tape containing computed gradients
+            parameters: List of Variables to update (model parameters).
+            tape: The gradient tape containing computed gradients.
 
         Note:
-            This assumes gradients have already been computed via backward()
-            Parameters without gradients in the tape are skipped
-            The optimizer automatically initializes momentum buffers on first encounter
+            This assumes gradients have already been computed via backward().
+            Parameters without gradients in the tape are skipped.
+            The optimizer automatically initializes momentum buffers on first encounter.
 
         Raises:
-            Error if any parameter has incompatible gradient shape
+            Error: Any parameter has incompatible gradient shape.
 
         Examples:
             # After backward pass
@@ -438,14 +438,14 @@ struct Adam:
         """Reset all gradients in the tape.
 
         Should be called after each optimizer step to clear gradients before
-        the next backward pass
+        the next backward pass.
 
         Note:
             This clears gradients but preserves the internal momentum and variance
-            buffers, which are maintained across steps
+            buffers, which are maintained across steps.
 
         Args:
-            tape: The gradient tape to clear
+            tape: The gradient tape to clear.
 
         Examples:
             # Clear gradients before next iteration
@@ -464,10 +464,10 @@ struct AdaGrad:
             θ_t = θ_{t-1} - α * g_t / (√G_t + ε)  # Parameter update
 
         Attributes:
-            learning_rate: Initial step size for parameter updates
-            epsilon: Small constant for numerical stability (default: 1e-10)
-            weight_decay: L2 regularization coefficient (default: 0.0)
-            G_buffers: Accumulated squared gradients for each parameter
+            learning_rate: Initial step size for parameter updates.
+            epsilon: Small constant for numerical stability (default: 1e-10).
+            weight_decay: L2 regularization coefficient (default: 0.0).
+            G_buffers: Accumulated squared gradients for each parameter.
 
     Examples:
             # Basic AdaGrad
@@ -495,15 +495,15 @@ struct AdaGrad:
         """Initialize AdaGrad optimizer.
 
         Args:
-            learning_rate: Step size for parameter updates (α in literature)
-                          Typical values: 0.01, 0.001
+            learning_rate: Step size for parameter updates (α in literature).
+                          Typical values: 0.01, 0.001.
             epsilon: Small constant added to accumulated gradient for numerical
-                    stability (prevents division by zero)
-                    Default: 1e-10
-            weight_decay: L2 regularization coefficient
-                         0.0 = no weight decay
-                         1e-4 = typical value for regularization
-                         Default: 0.0
+                    stability (prevents division by zero).
+                    Default: 1e-10.
+            weight_decay: L2 regularization coefficient.
+                         0.0 = no weight decay.
+                         1e-4 = typical value for regularization.
+                         Default: 0.0.
 
         Examples:
             var opt = AdaGrad(learning_rate=0.01)
@@ -524,17 +524,17 @@ struct AdaGrad:
             θ_t = θ_{t-1} - α * g_t / (√G_t + ε)
 
         Args:
-            parameters: List of Variables to update (model parameters)
-            tape: The gradient tape containing computed gradients
+            parameters: List of Variables to update (model parameters).
+            tape: The gradient tape containing computed gradients.
 
         Note:
-            This method accumulates squared gradients in G_buffers
-            Parameters without gradients in the tape are skipped
+            This method accumulates squared gradients in G_buffers.
+            Parameters without gradients in the tape are skipped.
             The G_buffers are not reset by zero_grad() - they persist
-            across optimization steps
+            across optimization steps.
 
         Raises:
-            Error if any parameter has incompatible gradient shape
+            Error: Any parameter has incompatible gradient shape.
 
         Examples:
             # After backward pass
@@ -602,14 +602,14 @@ struct AdaGrad:
         """Reset all gradients in the tape.
 
         Should be called after each optimizer step to clear gradients before
-        the next backward pass
+        the next backward pass.
 
         Note:
-            This does NOT clear the G_buffers (accumulated squared gradients)
-            AdaGrad maintains these accumulators across optimization steps
+            This does NOT clear the G_buffers (accumulated squared gradients).
+            AdaGrad maintains these accumulators across optimization steps.
 
         Args:
-            tape: The gradient tape to clear
+            tape: The gradient tape to clear.
 
         Examples:
             # Clear gradients before next iteration
@@ -622,7 +622,7 @@ struct AdaGrad:
         """Reset accumulated squared gradient buffers.
 
         Call this to clear the accumulated gradients if needed (e.g., when
-        starting a new training phase or to reduce numerical drift)
+        starting a new training phase or to reduce numerical drift).
 
         Examples:
             # Clear accumulators before new training phase
@@ -643,14 +643,14 @@ struct RMSprop:
             θ_t = θ_{t-1} - m_t                        # Apply momentum update
 
         Attributes:
-            learning_rate: Step size for parameter updates (α, default: 0.01)
-            alpha: Smoothing constant for running average (ρ, default: 0.99)
-            epsilon: Small constant for numerical stability (default: 1e-8)
-            weight_decay: L2 regularization coefficient (default: 0.0)
-            momentum: Momentum factor for accelerated updates (default: 0.0)
-            v_buffers: Running average of squared gradients per parameter (internal)
-            m_buffers: Momentum accumulation per parameter (internal, if momentum > 0)
-            has_buffer: Tracks initialized buffers per parameter ID
+            learning_rate: Step size for parameter updates (α, default: 0.01).
+            alpha: Smoothing constant for running average (ρ, default: 0.99).
+            epsilon: Small constant for numerical stability (default: 1e-8).
+            weight_decay: L2 regularization coefficient (default: 0.0).
+            momentum: Momentum factor for accelerated updates (default: 0.0).
+            v_buffers: Running average of squared gradients per parameter (internal).
+            m_buffers: Momentum accumulation per parameter (internal, if momentum > 0).
+            has_buffer: Tracks initialized buffers per parameter ID.
 
     Examples:
             # Basic RMSprop
@@ -687,11 +687,11 @@ struct RMSprop:
         """Initialize RMSprop optimizer.
 
         Args:
-            learning_rate: Step size for gradient descent
-            alpha: Smoothing constant for running average
-            epsilon: Small constant for numerical stability
-            weight_decay: L2 regularization coefficient
-            momentum: Momentum coefficient
+            learning_rate: Step size for gradient descent.
+            alpha: Smoothing constant for running average.
+            epsilon: Small constant for numerical stability.
+            weight_decay: L2 regularization coefficient.
+            momentum: Momentum coefficient.
 
         Examples:
             var opt = RMSprop()
@@ -715,11 +715,11 @@ struct RMSprop:
         """Update parameters using RMSprop algorithm.
 
         Args:
-            parameters: List of Variables to update
-            tape: The gradient tape containing computed gradients
+            parameters: List of Variables to update.
+            tape: The gradient tape containing computed gradients.
 
         Raises:
-            Error if any parameter has incompatible gradient shape
+            Error: Any parameter has incompatible gradient shape.
         """
         for i in range(len(parameters)):
             # Skip parameters that don't require gradients
@@ -818,6 +818,6 @@ struct RMSprop:
         """Reset all gradients in the tape.
 
         Args:
-            tape: The gradient tape to clear
+            tape: The gradient tape to clear.
         """
         tape.registry.clear()

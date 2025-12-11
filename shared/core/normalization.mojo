@@ -29,25 +29,25 @@ fn batch_norm2d(
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Functional 2D batch normalization.
 
-        Normalizes activations across the batch dimension for each channel
-        Returns updated running statistics (pure functional - caller must capture)
+        Normalizes activations across the batch dimension for each channel.
+        Returns updated running statistics (pure functional - caller must capture).
 
     Args:
-            x: Input tensor of shape (batch, channels, height, width)
-            gamma: Scale parameter of shape (channels,)
-            beta: Shift parameter of shape (channels,)
-            running_mean: Running mean of shape (channels,)
-            running_var: Running variance of shape (channels,)
-            training: If True, use batch statistics and update running stats
-                     If False, use running statistics
-            momentum: Momentum for running statistics update (default: 0.1)
-            epsilon: Small constant for numerical stability (default: 1e-5)
+            x: Input tensor of shape (batch, channels, height, width).
+            gamma: Scale parameter of shape (channels,).
+            beta: Shift parameter of shape (channels,).
+            running_mean: Running mean of shape (channels,).
+            running_var: Running variance of shape (channels,).
+            training: If True, use batch statistics and update running stats.
+                     If False, use running statistics.
+            momentum: Momentum for running statistics update (default: 0.1).
+            epsilon: Small constant for numerical stability (default: 1e-5).
 
     Returns:
             Tuple of (output, new_running_mean, new_running_var):
-                - output: Normalized tensor, shape (batch, channels, height, width)
-                - new_running_mean: Updated running mean, shape (channels,)
-                - new_running_var: Updated running variance, shape (channels,)
+                - output: Normalized tensor, shape (batch, channels, height, width).
+                - new_running_mean: Updated running mean, shape (channels,).
+                - new_running_var: Updated running variance, shape (channels,).
 
         Example:
             ```mojo
@@ -87,8 +87,8 @@ fn batch_norm2d(
             output = gamma * x_norm + beta
 
     Note:
-            Pure functional: caller must capture and manage all three return values
-            Running statistics are updated only during training mode
+            Pure functional: caller must capture and manage all three return values.
+            Running statistics are updated only during training mode.
     """
     var x_shape = x.shape()
     if len(x_shape) != 4:
@@ -347,22 +347,22 @@ fn batch_norm2d_backward(
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Backward pass for 2D batch normalization.
 
-        Computes gradients with respect to input, gamma, and beta parameters
+        Computes gradients with respect to input, gamma, and beta parameters.
 
     Args:
-            grad_output: Gradient w.r.t. output (batch, channels, height, width)
-            x: Original input tensor (batch, channels, height, width)
-            gamma: Scale parameter (channels,)
-            running_mean: Running mean (channels,) - used in inference mode
-            running_var: Running variance (channels,) - used in inference mode
-            training: Whether in training mode (affects gradient computation)
-            epsilon: Small constant for numerical stability (default: 1e-5)
+            grad_output: Gradient w.r.t. output (batch, channels, height, width).
+            x: Original input tensor (batch, channels, height, width).
+            gamma: Scale parameter (channels,).
+            running_mean: Running mean (channels,) - used in inference mode.
+            running_var: Running variance (channels,) - used in inference mode.
+            training: Whether in training mode (affects gradient computation).
+            epsilon: Small constant for numerical stability (default: 1e-5).
 
     Returns:
             Tuple of (grad_input, grad_gamma, grad_beta):
-                - grad_input: Gradient w.r.t. input (batch, channels, height, width)
-                - grad_gamma: Gradient w.r.t. gamma (channels,)
-                - grad_beta: Gradient w.r.t. beta (channels,)
+                - grad_input: Gradient w.r.t. input (batch, channels, height, width).
+                - grad_gamma: Gradient w.r.t. gamma (channels,).
+                - grad_beta: Gradient w.r.t. beta (channels,).
 
         Example:
             ```mojo
@@ -424,9 +424,9 @@ fn batch_norm2d_backward(
               https://kratzert.github.io/2016/02/12/understanding-the-gradient-flow-through-the-batch-normalization-layer.html
 
     Note:
-            Pure functional: returns new tensors, does not modify inputs
-            Training mode requires computing batch statistics from x
-            Inference mode uses precomputed running statistics
+            Pure functional: returns new tensors, does not modify inputs.
+            Training mode requires computing batch statistics from x.
+            Inference mode uses precomputed running statistics.
     """
     var x_shape = x.shape()
     var grad_shape = grad_output.shape()
@@ -875,17 +875,17 @@ fn layer_norm(
 ) raises -> ExTensor:
     """Functional layer normalization.
 
-        Normalizes activations across the feature dimension for each sample
+        Normalizes activations across the feature dimension for each sample.
         Unlike batch norm, this doesn't require running statistics.
 
     Args:
-            x: Input tensor of shape (batch, features) or (batch, channels, height, width)
-            gamma: Scale parameter of shape matching last dim(s)
-            beta: Shift parameter of shape matching last dim(s)
-            epsilon: Small constant for numerical stability (default: 1e-5)
+            x: Input tensor of shape (batch, features) or (batch, channels, height, width).
+            gamma: Scale parameter of shape matching last dim(s).
+            beta: Shift parameter of shape matching last dim(s).
+            epsilon: Small constant for numerical stability (default: 1e-5).
 
     Returns:
-            Normalized tensor, same shape as input
+            Normalized tensor, same shape as input.
 
         Example:
             ```mojo
@@ -910,9 +910,9 @@ fn layer_norm(
                 output[i] = gamma * x_norm[i] + beta
 
     Note:
-            - No running statistics needed (stateless)
-            - Normalizes each sample independently
-            - Commonly used in transformers and RNNs
+            - No running statistics needed (stateless).
+            - Normalizes each sample independently.
+            - Commonly used in transformers and RNNs.
     """
     var x_shape = x.shape()
 
@@ -1121,19 +1121,19 @@ fn layer_norm_backward(
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Backward pass for layer normalization.
 
-        Computes gradients with respect to input, gamma, and beta parameters
+        Computes gradients with respect to input, gamma, and beta parameters.
 
     Args:
-            grad_output: Gradient w.r.t. output, same shape as input
-            x: Original input tensor (batch, features) or (batch, channels, height, width)
-            gamma: Scale parameter matching normalized dimensions
-            epsilon: Small constant for numerical stability (default: 1e-5)
+            grad_output: Gradient w.r.t. output, same shape as input.
+            x: Original input tensor (batch, features) or (batch, channels, height, width).
+            gamma: Scale parameter matching normalized dimensions.
+            epsilon: Small constant for numerical stability (default: 1e-5).
 
     Returns:
             Tuple of (grad_input, grad_gamma, grad_beta):
-                - grad_input: Gradient w.r.t. input (same shape as input)
-                - grad_gamma: Gradient w.r.t. gamma (same shape as gamma)
-                - grad_beta: Gradient w.r.t. beta (same shape as gamma)
+                - grad_input: Gradient w.r.t. input (same shape as input).
+                - grad_gamma: Gradient w.r.t. gamma (same shape as gamma).
+                - grad_beta: Gradient w.r.t. beta (same shape as gamma).
 
         Example:
             ```mojo
@@ -1178,9 +1178,9 @@ fn layer_norm_backward(
               https://arxiv.org/abs/1607.06450
 
     Note:
-            Pure functional: returns new tensors, does not modify inputs
+            Pure functional: returns new tensors, does not modify inputs.
             Unlike batch_norm, there are no running statistics - normalization is
-            computed independently for each sample
+            computed independently for each sample.
     """
     var x_shape = x.shape()
     var grad_shape = grad_output.shape()
@@ -1714,17 +1714,17 @@ fn group_norm(
     """Functional group normalization.
 
         Normalizes activations by dividing channels into groups and normalizing
-        within each group. Works well with small batch sizes where batch norm fails
+        within each group. Works well with small batch sizes where batch norm fails.
 
     Args:
-            x: Input tensor of shape (batch, channels, height, width)
-            num_groups: Number of groups to divide channels into
-            gamma: Scale parameter of shape (channels,)
-            beta: Shift parameter of shape (channels,)
-            epsilon: Small constant for numerical stability (default: 1e-5)
+            x: Input tensor of shape (batch, channels, height, width).
+            num_groups: Number of groups to divide channels into.
+            gamma: Scale parameter of shape (channels,).
+            beta: Shift parameter of shape (channels,).
+            epsilon: Small constant for numerical stability (default: 1e-5).
 
     Returns:
-            Normalized tensor, same shape as input
+            Normalized tensor, same shape as input.
 
         Example:
             ```mojo
@@ -1744,9 +1744,9 @@ fn group_norm(
                 output = gamma * x_norm + beta
 
     Note:
-            - Channels must be divisible by num_groups
-            - No running statistics needed (stateless)
-            - Commonly used in detection and segmentation models
+            - Channels must be divisible by num_groups.
+            - No running statistics needed (stateless).
+            - Commonly used in detection and segmentation models.
     """
     var x_shape = x.shape()
     if len(x_shape) != 4:
@@ -1894,20 +1894,20 @@ fn group_norm_backward(
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Backward pass for group normalization.
 
-        Computes gradients with respect to input, gamma, and beta parameters
+        Computes gradients with respect to input, gamma, and beta parameters.
 
     Args:
-            grad_output: Gradient w.r.t. output (batch, channels, height, width)
-            x: Original input tensor (batch, channels, height, width)
-            num_groups: Number of groups channels were divided into
-            gamma: Scale parameter (channels,)
-            epsilon: Small constant for numerical stability (default: 1e-5)
+            grad_output: Gradient w.r.t. output (batch, channels, height, width).
+            x: Original input tensor (batch, channels, height, width).
+            num_groups: Number of groups channels were divided into.
+            gamma: Scale parameter (channels,).
+            epsilon: Small constant for numerical stability (default: 1e-5).
 
     Returns:
             Tuple of (grad_input, grad_gamma, grad_beta):
-                - grad_input: Gradient w.r.t. input (batch, channels, height, width)
-                - grad_gamma: Gradient w.r.t. gamma (channels,)
-                - grad_beta: Gradient w.r.t. beta (channels,)
+                - grad_input: Gradient w.r.t. input (batch, channels, height, width).
+                - grad_gamma: Gradient w.r.t. gamma (channels,).
+                - grad_beta: Gradient w.r.t. beta (channels,).
 
         Example:
             ```mojo
@@ -1925,7 +1925,7 @@ fn group_norm_backward(
             ```
 
     Note:
-            Pure functional: returns new tensors, does not modify inputs
+            Pure functional: returns new tensors, does not modify inputs.
     """
     var x_shape = x.shape()
     if len(x_shape) != 4:
@@ -2272,17 +2272,17 @@ fn instance_norm(
 ) raises -> ExTensor:
     """Functional instance normalization.
 
-        Normalizes each sample independently across spatial dimensions for each channel
-        Used in style transfer and image generation models
+        Normalizes each sample independently across spatial dimensions for each channel.
+        Used in style transfer and image generation models.
 
     Args:
-            x: Input tensor of shape (batch, channels, height, width)
-            gamma: Scale parameter of shape (channels,)
-            beta: Shift parameter of shape (channels,)
-            epsilon: Small constant for numerical stability (default: 1e-5)
+            x: Input tensor of shape (batch, channels, height, width).
+            gamma: Scale parameter of shape (channels,).
+            beta: Shift parameter of shape (channels,).
+            epsilon: Small constant for numerical stability (default: 1e-5).
 
     Returns:
-            Normalized tensor, same shape as input
+            Normalized tensor, same shape as input.
 
         Example:
             ```mojo
@@ -2301,9 +2301,9 @@ fn instance_norm(
                 output = gamma * x_norm + beta
 
     Note:
-            - No batch statistics needed (each sample normalized independently)
-            - No running statistics (stateless)
-            - Commonly used in style transfer, GANs, and image generation
+            - No batch statistics needed (each sample normalized independently).
+            - No running statistics (stateless).
+            - Commonly used in style transfer, GANs, and image generation.
     """
     var x_shape = x.shape()
     if len(x_shape) != 4:
@@ -2433,19 +2433,19 @@ fn instance_norm_backward(
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Backward pass for instance normalization.
 
-        Computes gradients with respect to input, gamma, and beta parameters
+        Computes gradients with respect to input, gamma, and beta parameters.
 
     Args:
-            grad_output: Gradient w.r.t. output (batch, channels, height, width)
-            x: Original input tensor (batch, channels, height, width)
-            gamma: Scale parameter (channels,)
-            epsilon: Small constant for numerical stability (default: 1e-5)
+            grad_output: Gradient w.r.t. output (batch, channels, height, width).
+            x: Original input tensor (batch, channels, height, width).
+            gamma: Scale parameter (channels,).
+            epsilon: Small constant for numerical stability (default: 1e-5).
 
     Returns:
             Tuple of (grad_input, grad_gamma, grad_beta):
-                - grad_input: Gradient w.r.t. input (batch, channels, height, width)
-                - grad_gamma: Gradient w.r.t. gamma (channels,)
-                - grad_beta: Gradient w.r.t. beta (channels,)
+                - grad_input: Gradient w.r.t. input (batch, channels, height, width).
+                - grad_gamma: Gradient w.r.t. gamma (channels,).
+                - grad_beta: Gradient w.r.t. beta (channels,).
 
         Example:
             ```mojo
@@ -2463,7 +2463,7 @@ fn instance_norm_backward(
             ```
 
     Note:
-            Pure functional: returns new tensors, does not modify inputs
+            Pure functional: returns new tensors, does not modify inputs.
     """
     var x_shape = x.shape()
     if len(x_shape) != 4:

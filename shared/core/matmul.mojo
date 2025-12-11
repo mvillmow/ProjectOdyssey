@@ -67,17 +67,17 @@ fn matmul_typed(a: ExTensor, b: ExTensor, mut c: ExTensor) raises:
     Achieves 3-5x speedup over baseline.
 
     Args:
-        a: First matrix (M x K)
-        b: Second matrix (K x N)
-        c: Output matrix (M x N), must be pre-allocated
+        a: First matrix (M x K).
+        b: Second matrix (K x N).
+        c: Output matrix (M x N), must be pre-allocated.
 
     Raises:
-        Error if dimensions are incompatible or dtypes don't match.
+        Error: If dimensions are incompatible or dtypes don't match.
 
     Performance:
-        - Eliminates Float64 conversion overhead from baseline
-        - Direct memory access via typed pointers
-        - Expected speedup: 3-5x over Stage 0
+        - Eliminates Float64 conversion overhead from baseline.
+        - Direct memory access via typed pointers.
+        - Expected speedup: 3-5x over Stage 0.
     """
     if a.dtype() != b.dtype() or a.dtype() != c.dtype():
         raise Error("matmul_typed: all tensors must have the same dtype")
@@ -155,18 +155,18 @@ fn matmul_simd(a: ExTensor, b: ExTensor, mut c: ExTensor) raises:
     Achieves 4-8x speedup over Stage 1, 15-40x cumulative.
 
     Args:
-        a: First matrix (M x K)
-        b: Second matrix (K x N)
-        c: Output matrix (M x N), must be pre-allocated
+        a: First matrix (M x K).
+        b: Second matrix (K x N).
+        c: Output matrix (M x N), must be pre-allocated.
 
     Raises:
-        Error if dimensions are incompatible or dtypes don't match.
+        Error: If dimensions are incompatible or dtypes don't match.
 
     Performance:
-        - Vectorizes innermost loop with SIMD instructions
-        - Contiguous access pattern in B and C matrices
-        - Automatic remainder handling for N not divisible by SIMD width
-        - Expected speedup: 4-8x over Stage 1 (15-40x cumulative)
+        - Vectorizes innermost loop with SIMD instructions.
+        - Contiguous access pattern in B and C matrices.
+        - Automatic remainder handling for N not divisible by SIMD width.
+        - Expected speedup: 4-8x over Stage 1 (15-40x cumulative).
     """
     if a.dtype() != b.dtype() or a.dtype() != c.dtype():
         raise Error("matmul_simd: all tensors must have the same dtype")
@@ -260,18 +260,18 @@ fn matmul_tiled(a: ExTensor, b: ExTensor, mut c: ExTensor) raises:
     for typical L1/L2 cache sizes (32KB-256KB).
 
     Args:
-        a: First matrix (M x K)
-        b: Second matrix (K x N)
-        c: Output matrix (M x N), must be pre-allocated
+        a: First matrix (M x K).
+        b: Second matrix (K x N).
+        c: Output matrix (M x N), must be pre-allocated.
 
     Raises:
-        Error if dimensions are incompatible or dtypes don't match.
+        Error: If dimensions are incompatible or dtypes don't match.
 
     Performance:
-        - 2D blocking for L1/L2 cache reuse
-        - SIMD vectorization within blocks
-        - Handles arbitrary matrix sizes (not just multiples of block size)
-        - Expected speedup: 3-5x over Stage 2 (50-150x cumulative)
+        - 2D blocking for L1/L2 cache reuse.
+        - SIMD vectorization within blocks.
+        - Handles arbitrary matrix sizes (not just multiples of block size).
+        - Expected speedup: 3-5x over Stage 2 (50-150x cumulative).
     """
     if a.dtype() != b.dtype() or a.dtype() != c.dtype():
         raise Error("matmul_tiled: all tensors must have the same dtype")
@@ -397,30 +397,30 @@ fn matmul_transpose(a: ExTensor, b: ExTensor, mut c: ExTensor) raises:
     """Fully optimized GEMM with transpose and register blocking.
 
     Combines all optimizations for maximum performance:
-    1. Transpose B matrix for contiguous access in both operands
-    2. Register blocking within micro-kernel (MICRO_M x MICRO_N tiles)
-    3. Cache blocking for L1/L2 reuse
-    4. SIMD vectorization
+    1. Transpose B matrix for contiguous access in both operands.
+    2. Register blocking within micro-kernel (MICRO_M x MICRO_N tiles).
+    3. Cache blocking for L1/L2 reuse.
+    4. SIMD vectorization.
 
     Args:
-        a: First matrix (M x K)
-        b: Second matrix (K x N)
-        c: Output matrix (M x N), must be pre-allocated
+        a: First matrix (M x K).
+        b: Second matrix (K x N).
+        c: Output matrix (M x N), must be pre-allocated.
 
     Raises:
-        Error if dimensions are incompatible or dtypes don't match.
+        Error: If dimensions are incompatible or dtypes don't match.
 
     Performance:
-        - Transpose B for O(1) contiguous access in both A and B^T
-        - Register blocking reduces load/store operations
-        - Amortizes transpose cost O(K*N) over O(M*K*N) compute
-        - Only transposes for matrices larger than TRANSPOSE_THRESHOLD
-        - Expected speedup: 2-3x over Stage 3 (100-400x cumulative)
+        - Transpose B for O(1) contiguous access in both A and B^T.
+        - Register blocking reduces load/store operations.
+        - Amortizes transpose cost O(K*N) over O(M*K*N) compute.
+        - Only transposes for matrices larger than TRANSPOSE_THRESHOLD.
+        - Expected speedup: 2-3x over Stage 3 (100-400x cumulative).
 
     Trade-offs:
-        - Extra O(K*N) memory for transposed B
-        - Transpose overhead amortized for large matrices
-        - Falls back to matmul_tiled for small matrices (below threshold)
+        - Extra O(K*N) memory for transposed B.
+        - Transpose overhead amortized for large matrices.
+        - Falls back to matmul_tiled for small matrices (below threshold).
     """
     if a.dtype() != b.dtype() or a.dtype() != c.dtype():
         raise Error("matmul: all tensors must have the same dtype")
@@ -689,12 +689,12 @@ fn matmul(a: ExTensor, b: ExTensor, mut c: ExTensor) raises:
     Currently delegates to matmul_tiled as it provides the best performance.
 
     Args:
-        a: First matrix (M x K)
-        b: Second matrix (K x N)
-        c: Output matrix (M x N), must be pre-allocated
+        a: First matrix (M x K).
+        b: Second matrix (K x N).
+        c: Output matrix (M x N), must be pre-allocated.
 
     Raises:
-        Error if dimensions are incompatible or dtypes don't match.
+        Error: If dimensions are incompatible or dtypes don't match.
     """
     matmul_tiled(a, b, c)
 
@@ -706,12 +706,12 @@ fn matmul_optimized(a: ExTensor, b: ExTensor, mut c: ExTensor) raises:
     implementations for small matrices where overhead outweighs benefits.
 
     Args:
-        a: First matrix (M x K)
-        b: Second matrix (K x N)
-        c: Output matrix (M x N), must be pre-allocated
+        a: First matrix (M x K).
+        b: Second matrix (K x N).
+        c: Output matrix (M x N), must be pre-allocated.
 
     Raises:
-        Error if dimensions are incompatible or dtypes don't match.
+        Error: If dimensions are incompatible or dtypes don't match.
 
     Note:
         This is the recommended entry point for optimized matrix multiplication.
@@ -731,17 +731,16 @@ fn assert_matrices_equal(
     """Compare two matrices element-wise with tolerance.
 
     Args:
-        a: First matrix
-        b: Second matrix
-        rtol: Relative tolerance (default 1e-5)
-        atol: Absolute tolerance (default 1e-8)
+        a: First matrix.
+        b: Second matrix.
+        rtol: Relative tolerance (default 1e-5).
+        atol: Absolute tolerance (default 1e-8).
 
     Raises:
-        Error if matrices have different shapes or any element differs
-        beyond tolerance.
+        Error: If matrices have different shapes or any element differs beyond tolerance.
 
     Note:
-        Uses the formula: |a - b| <= atol + rtol * |b|
+        Uses the formula: |a - b| <= atol + rtol * |b|.
         This allows larger absolute differences for larger values.
     """
     var a_shape = a.shape()
@@ -801,9 +800,9 @@ fn verify_matmul_correctness(M: Int, K: Int, N: Int) raises -> Bool:
     all produce results matching v1 within tolerance.
 
     Args:
-        M: Number of rows in A and C
-        K: Number of columns in A, rows in B
-        N: Number of columns in B and C
+        M: Number of rows in A and C.
+        K: Number of columns in A, rows in B.
+        N: Number of columns in B and C.
 
     Returns:
         True if all stages match, raises error otherwise.

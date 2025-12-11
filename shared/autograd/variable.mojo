@@ -69,17 +69,17 @@ struct Variable(Copyable, Movable):
         - requires_grad: Whether to track operations for this variable
 
         Gradients are stored in the GradientTape's registry, not in the Variable
-        itself. This allows for gradient accumulation and cleanup via the tape
+        itself. This allows for gradient accumulation and cleanup via the tape.
 
         Attributes:
-            data: The underlying ExTensor containing values
-            id: Unique identifier for gradient tracking
-            requires_grad: Flag indicating whether this Variable participates in autograd
+            data: The underlying ExTensor containing values.
+            id: Unique identifier for gradient tracking.
+            requires_grad: Flag indicating whether this Variable participates in autograd.
 
     Note:
             Operations on Variables create new Variables. The tape records which
             operations were performed and on which variables, enabling automatic
-            gradient computation
+            gradient computation.
     """
 
     var data: ExTensor
@@ -95,9 +95,9 @@ struct Variable(Copyable, Movable):
         """Initialize a Variable and register it with the tape.
 
         Args:
-            data: The tensor values to wrap (ownership transferred)
-            requires_grad: Whether to track gradients for this variable
-            tape: The gradient tape to register with
+            data: The tensor values to wrap (ownership transferred).
+            requires_grad: Whether to track gradients for this variable.
+            tape: The gradient tape to register with.
 
         Examples:
             var tape = GradientTape()
@@ -125,16 +125,16 @@ struct Variable(Copyable, Movable):
         requires_grad: Bool,
         id: Int,
     ):
-        """Initialize a Variable with explicit ID (internal use)
+        """Initialize a Variable with explicit ID (internal use).
 
         Args:
-            data: The tensor values to wrap (ownership transferred)
-            requires_grad: Whether to track gradients for this variable
-            id: Pre-assigned variable ID
+            data: The tensor values to wrap (ownership transferred).
+            requires_grad: Whether to track gradients for this variable.
+            id: Pre-assigned variable ID.
 
         Note:
             This constructor is primarily for internal use when creating
-            output Variables from operations
+            output Variables from operations.
         """
         self.data = data^
         self.requires_grad = requires_grad
@@ -145,14 +145,14 @@ struct Variable(Copyable, Movable):
 
         Triggers backward pass through the computation graph, computing gradients
         for all Variables with requires_grad=True that were used to compute this
-        Variable
+        Variable.
 
         The gradient of this Variable with respect to itself is initialized to
         ones (d_self/d_self = 1), then gradients are propagated backward through
-        the graph using the chain rule
+        the graph using the chain rule.
 
         Args:
-            tape: The gradient tape that recorded operations
+            tape: The gradient tape that recorded operations.
 
         Examples:
             var x = Variable(data, True, tape)
@@ -168,10 +168,10 @@ struct Variable(Copyable, Movable):
         """Get the underlying tensor without gradient tracking.
 
         Useful for breaking the computation graph when you want to use values
-        without tracking gradients
+        without tracking gradients.
 
         Returns:
-            The underlying ExTensor (copy)
+            The underlying ExTensor (copy).
 
         Examples:
             var x = Variable(data, True, tape)
@@ -183,7 +183,7 @@ struct Variable(Copyable, Movable):
         """Get the shape of the underlying tensor.
 
         Returns:
-            List of dimension sizes
+            List of dimension sizes.
         """
         return self.data.shape()
 
@@ -191,7 +191,7 @@ struct Variable(Copyable, Movable):
         """Get the number of elements in the tensor.
 
         Returns:
-            Total number of elements
+            Total number of elements.
         """
         return self.data.numel()
 
@@ -199,7 +199,7 @@ struct Variable(Copyable, Movable):
         """Get the data type of the underlying tensor.
 
         Returns:
-            The DType of the tensor
+            The DType of the tensor.
         """
         return self.data.dtype()
 
@@ -219,12 +219,12 @@ fn variable_add(
     """Add two Variables element-wise.
 
     Args:
-            a: First input `Variable`
-            b: Second input `Variable`
-            tape: Gradient tape for recording..
+            a: First input `Variable`.
+            b: Second input `Variable`.
+            tape: Gradient tape for recording.
 
     Returns:
-            New `Variable` containing `a + b`
+            New `Variable` containing `a + b`.
     """
     var result_data = add(a.data, b.data)
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
@@ -252,12 +252,12 @@ fn variable_subtract(
     """Subtract two Variables element-wise.
 
     Args:
-            a: First input `Variable`
-            b: Second input `Variable`
-            tape: Gradient tape for recording..
+            a: First input `Variable`.
+            b: Second input `Variable`.
+            tape: Gradient tape for recording.
 
     Returns:
-            New `Variable` containing `a - b`
+            New `Variable` containing `a - b`.
     """
     var result_data = subtract(a.data, b.data)
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
@@ -284,12 +284,12 @@ fn variable_multiply(
     """Multiply two Variables element-wise.
 
     Args:
-            a: First input `Variable`
-            b: Second input `Variable`
-            tape: Gradient tape for recording..
+            a: First input `Variable`.
+            b: Second input `Variable`.
+            tape: Gradient tape for recording.
 
     Returns:
-            New `Variable` containing `a * b`
+            New `Variable` containing `a * b`.
     """
     var result_data = multiply(a.data, b.data)
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
@@ -316,12 +316,12 @@ fn variable_divide(
     """Divide two Variables element-wise.
 
     Args:
-            a: Numerator `Variable`
-            b: Denominator `Variable`
-            tape: Gradient tape for recording..
+            a: Numerator `Variable`.
+            b: Denominator `Variable`.
+            tape: Gradient tape for recording.
 
     Returns:
-            New `Variable` containing `a / b`
+            New `Variable` containing `a / b`.
     """
     var result_data = divide(a.data, b.data)
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
@@ -348,12 +348,12 @@ fn variable_matmul(
     """Matrix multiply two Variables.
 
     Args:
-            a: First matrix `Variable`
-            b: Second matrix `Variable`
-            tape: Gradient tape for recording..
+            a: First matrix `Variable`.
+            b: Second matrix `Variable`.
+            tape: Gradient tape for recording.
 
     Returns:
-            New `Variable` containing `a @ b`
+            New `Variable` containing `a @ b`.
     """
     var result_data = matmul(a.data, b.data)
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
@@ -377,15 +377,15 @@ fn variable_sum(
     mut tape: GradientTape,
     axis: Int = -1,
 ) raises -> Variable:
-    """Sum a Variable along an axis (or all elements if axis=-1)
+    """Sum a Variable along an axis (or all elements if axis=-1).
 
     Args:
-            x: Input Variable..
-            tape: Gradient tape for recording..
-            axis: Axis to sum along (-1 for full reduction)
+            x: Input Variable.
+            tape: Gradient tape for recording.
+            axis: Axis to sum along (-1 for full reduction).
 
     Returns:
-            New Variable containing the sum
+            New Variable containing the sum.
     """
     var result_data = tensor_sum(x.data, axis)
     var result_id = tape.register_variable(x.requires_grad)
@@ -408,15 +408,15 @@ fn variable_mean(
     mut tape: GradientTape,
     axis: Int = -1,
 ) raises -> Variable:
-    """Mean of a Variable along an axis (or all elements if axis=-1)
+    """Mean of a Variable along an axis (or all elements if axis=-1).
 
     Args:
-            x: Input Variable..
-            tape: Gradient tape for recording..
-            axis: Axis to average along (-1 for full reduction)
+            x: Input Variable.
+            tape: Gradient tape for recording.
+            axis: Axis to average along (-1 for full reduction).
 
     Returns:
-            New Variable containing the mean
+            New Variable containing the mean.
     """
     var result_data = tensor_mean(x.data, axis)
     var result_id = tape.register_variable(x.requires_grad)
@@ -441,11 +441,11 @@ fn variable_relu(
     """Apply ReLU activation to a Variable.
 
     Args:
-            x: Input Variable
-            tape: Gradient tape for recording
+            x: Input Variable.
+            tape: Gradient tape for recording.
 
     Returns:
-            New Variable containing `ReLU(x)`
+            New Variable containing `ReLU(x)`.
     """
     var result_data = relu(x.data)
     var result_id = tape.register_variable(x.requires_grad)
@@ -469,11 +469,11 @@ fn variable_sigmoid(
     """Apply sigmoid activation to a Variable.
 
     Args:
-            x: Input Variable
-            tape: Gradient tape for recording
+            x: Input Variable.
+            tape: Gradient tape for recording.
 
     Returns:
-            New Variable containing `sigmoid(x)`
+            New Variable containing `sigmoid(x)`.
     """
     var result_data = sigmoid(x.data)
     var result_id = tape.register_variable(x.requires_grad)
@@ -497,11 +497,11 @@ fn variable_tanh(
     """Apply tanh activation to a Variable.
 
     Args:
-            x: Input Variable
-            tape: Gradient tape for recording
+            x: Input Variable.
+            tape: Gradient tape for recording.
 
     Returns:
-            New Variable containing `tanh(x)`
+            New Variable containing `tanh(x)`.
     """
     var result_data = tanh(x.data)
     var result_id = tape.register_variable(x.requires_grad)
@@ -525,11 +525,11 @@ fn variable_neg(
     """Negate a Variable element-wise.
 
     Args:
-            x: Input Variable
-            tape: Gradient tape for recording
+            x: Input Variable.
+            tape: Gradient tape for recording.
 
     Returns:
-            New Variable containing `-x`
+            New Variable containing `-x`.
     """
     # Create negated tensor
     var result_data = zeros_like(x.data)

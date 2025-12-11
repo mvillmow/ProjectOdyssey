@@ -1,6 +1,6 @@
 """Data transformation and augmentation utilities.
 
-This module provides transformations for preprocessing and augmenting data
+This module provides transformations for preprocessing and augmenting data.
 
 IMPORTANT LIMITATIONS:
 - Image transforms assume square images (H = W)
@@ -28,18 +28,18 @@ fn infer_image_dimensions(
 ) raises -> Tuple[Int, Int, Int]:
     """Infer image dimensions from flattened tensor.
 
-        Assumes square images: H = W = sqrt(num_elements / channels)
-        Auto-detects channels if default doesn't work (tries 3, then 1)
+        Assumes square images: H = W = sqrt(num_elements / channels).
+        Auto-detects channels if default doesn't work (tries 3, then 1).
 
     Args:
-            data: Flattened image tensor
-            channels: Number of channels (default: 3 for RGB, auto-detects if mismatch)
+            data: Flattened image tensor.
+            channels: Number of channels (default: 3 for RGB, auto-detects if mismatch).
 
     Returns:
-            Tuple of (height, width, channels)
+            Tuple of (height, width, channels).
 
     Raises:
-            Error if dimensions don't work out to square image with any supported channel count.
+            Error: If dimensions don't work out to square image with any supported channel count.
     """
     var total_elements = data.num_elements()
 
@@ -70,20 +70,20 @@ fn infer_image_dimensions(
 trait Transform(Copyable, Movable):
     """Base interface for all transforms.
 
-    Transforms modify data in-place or return transformed copies
+    Transforms modify data in-place or return transformed copies.
     """
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply the transform to data.
 
         Args:
-            data: Input tensor
+            data: Input tensor.
 
         Returns:
-            Transformed tensor
+            Transformed tensor.
 
         Raises:
-            Error if transform cannot be applied
+            Error: If transform cannot be applied.
         """
         ...
 
@@ -96,10 +96,10 @@ trait Transform(Copyable, Movable):
 struct Compose[T: Transform & Copyable & Movable](Copyable, Movable, Transform):
     """Compose multiple transforms sequentially.
 
-    Applies transforms in order, passing output of each to the next
+    Applies transforms in order, passing output of each to the next.
 
     Parameters:
-        T: Type of transforms in the composition (must implement Transform)
+        T: Type of transforms in the composition (must implement Transform).
     """
 
     var transforms: List[Self.T]
@@ -108,7 +108,7 @@ struct Compose[T: Transform & Copyable & Movable](Copyable, Movable, Transform):
         """Create composition of transforms.
 
         Args:
-            transforms: List of transforms to apply in order
+            transforms: List of transforms to apply in order.
         """
         self.transforms = transforms^
 
@@ -116,13 +116,13 @@ struct Compose[T: Transform & Copyable & Movable](Copyable, Movable, Transform):
         """Apply all transforms sequentially.
 
         Args:
-            data: Input tensor
+            data: Input tensor.
 
         Returns:
-            Transformed tensor after all transforms
+            Transformed tensor after all transforms.
 
         Raises:
-            Error if any transform cannot be applied
+            Error: If any transform cannot be applied.
         """
         var result = data
         for i in range(len(self.transforms)):
@@ -137,7 +137,7 @@ struct Compose[T: Transform & Copyable & Movable](Copyable, Movable, Transform):
         """Add a transform to the pipeline.
 
         Args:
-            transform: Transform to add
+            transform: Transform to add.
         """
         self.transforms.append(transform^)
 
@@ -154,20 +154,20 @@ alias Pipeline[T: Transform & Copyable & Movable] = Compose[T]
 struct ToExTensor(Copyable, Movable, Transform):
     """Convert data to tensor format.
 
-    Ensures data is in tensor format with appropriate dtype
+    Ensures data is in tensor format with appropriate dtype.
     """
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Convert to tensor.
 
         Args:
-            data: Input data
+            data: Input data.
 
         Returns:
-            Data as tensor
+            Data as tensor.
 
         Raises:
-            Error if conversion fails
+            Error: If conversion fails.
         """
         # Already a tensor, just return
         return data
@@ -176,7 +176,7 @@ struct ToExTensor(Copyable, Movable, Transform):
 struct Normalize(Copyable, Movable, Transform):
     """Normalize tensor with mean and standard deviation.
 
-    Applies: (x - mean) / std
+    Applies: (x - mean) / std.
     """
 
     var mean: Float64
@@ -186,8 +186,8 @@ struct Normalize(Copyable, Movable, Transform):
         """Create normalize transform.
 
         Args:
-            mean: Mean to subtract
-            std: Standard deviation to divide by
+            mean: Mean to subtract.
+            std: Standard deviation to divide by.
         """
         self.mean = mean
         self.std = std
@@ -195,16 +195,16 @@ struct Normalize(Copyable, Movable, Transform):
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Normalize tensor by subtracting mean and dividing by std.
 
-        Applies the formula: (data - mean) / std to all elements
+        Applies the formula: (data - mean) / std to all elements.
 
         Args:
-            data: Input tensor
+            data: Input tensor.
 
         Returns:
-            Normalized tensor
+            Normalized tensor.
 
         Raises:
-            Error if std is zero
+            Error: If std is zero.
         """
         if self.std == 0.0:
             raise Error("Cannot normalize with std=0")
@@ -225,7 +225,7 @@ struct Normalize(Copyable, Movable, Transform):
 struct Reshape(Copyable, Movable, Transform):
     """Reshape tensor to target shape.
 
-    Changes tensor dimensions while preserving total elements
+    Changes tensor dimensions while preserving total elements.
     """
 
     var target_shape: List[Int]
@@ -234,23 +234,23 @@ struct Reshape(Copyable, Movable, Transform):
         """Create reshape transform.
 
         Args:
-            target_shape: Target shape for tensor
+            target_shape: Target shape for tensor.
         """
         self.target_shape = target_shape^
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Reshape tensor to target shape.
 
-        Validates that the total number of elements remains the same
+        Validates that the total number of elements remains the same.
 
         Args:
-            data: Input tensor
+            data: Input tensor.
 
         Returns:
-            Reshaped tensor
+            Reshaped tensor.
 
         Raises:
-            Error if target shape has different number of elements
+            Error: If target shape has different number of elements.
         """
         # Calculate total elements in target shape
         var target_elements = 1
@@ -288,7 +288,7 @@ struct Reshape(Copyable, Movable, Transform):
 struct Resize(Copyable, Movable, Transform):
     """Resize image to target size.
 
-    Resizes spatial dimensions of image tensors
+    Resizes spatial dimensions of image tensors.
     """
 
     var size: Tuple[Int, Int]
@@ -300,8 +300,8 @@ struct Resize(Copyable, Movable, Transform):
         """Create resize transform.
 
         Args:
-            size: Target (height, width)
-            interpolation: Interpolation method
+            size: Target (height, width).
+            interpolation: Interpolation method.
         """
         self.size = size
         self.interpolation = interpolation
@@ -309,18 +309,18 @@ struct Resize(Copyable, Movable, Transform):
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Resize image tensor using bilinear interpolation.
 
-        Resizes spatial dimensions (H, W) while preserving channels (C)
-        Uses bilinear interpolation for smooth resizing
-        Assumes tensor layout: flattened (H, W, C) with channels-last
+        Resizes spatial dimensions (H, W) while preserving channels (C).
+        Uses bilinear interpolation for smooth resizing.
+        Assumes tensor layout: flattened (H, W, C) with channels-last.
 
         Args:
-            data: Input image tensor
+            data: Input image tensor.
 
         Returns:
-            Resized image tensor
+            Resized image tensor.
 
         Raises:
-            Error if operation fails
+            Error: If operation fails.
         """
         # Get image dimensions (assumes square images with H=W, C=3 by default)
         var dims = infer_image_dimensions(data, 3)
@@ -401,7 +401,7 @@ struct Resize(Copyable, Movable, Transform):
 struct CenterCrop(Copyable, Movable, Transform):
     """Crop the center of an image.
 
-    Extracts a center crop of specified size
+    Extracts a center crop of specified size.
     """
 
     var size: Tuple[Int, Int]
@@ -410,25 +410,25 @@ struct CenterCrop(Copyable, Movable, Transform):
         """Create center crop transform.
 
         Args:
-            size: Target (height, width) of crop
+            size: Target (height, width) of crop.
         """
         self.size = size
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Center crop image to target size.
 
-        Extracts a center rectangle from a 2D image tensor
-        Assumes flattened tensor with shape (H, W, C) where H = W
-        Default assumption: C = 3 (RGB); adjust for grayscale
+        Extracts a center rectangle from a 2D image tensor.
+        Assumes flattened tensor with shape (H, W, C) where H = W.
+        Default assumption: C = 3 (RGB); adjust for grayscale.
 
         Args:
-            data: Input image tensor
+            data: Input image tensor.
 
         Returns:
-            Center-cropped image tensor
+            Center-cropped image tensor.
 
         Raises:
-            Error if crop size exceeds image size
+            Error: If crop size exceeds image size.
         """
         # Determine image dimensions
         var dims = infer_image_dimensions(data, 3)
@@ -465,7 +465,7 @@ struct CenterCrop(Copyable, Movable, Transform):
 struct RandomCrop(Copyable, Movable, Transform):
     """Random crop from an image.
 
-    Extracts a random crop of specified size
+    Extracts a random crop of specified size.
     """
 
     var size: Tuple[Int, Int]
@@ -475,8 +475,8 @@ struct RandomCrop(Copyable, Movable, Transform):
         """Create random crop transform.
 
         Args:
-            size: Target (height, width) of crop
-            padding: Optional padding before cropping
+            size: Target (height, width) of crop.
+            padding: Optional padding before cropping.
         """
         self.size = size
         self.padding = padding
@@ -484,19 +484,19 @@ struct RandomCrop(Copyable, Movable, Transform):
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Random crop image to target size.
 
-        Extracts a random rectangle from a 2D image tensor
-        Assumes flattened tensor with shape (H, W, C) where H = W
-        Default assumption: C = 3 (RGB); adjust for grayscale
-        Supports optional padding for edge handling
+        Extracts a random rectangle from a 2D image tensor.
+        Assumes flattened tensor with shape (H, W, C) where H = W.
+        Default assumption: C = 3 (RGB); adjust for grayscale.
+        Supports optional padding for edge handling.
 
         Args:
-            data: Input image tensor
+            data: Input image tensor.
 
         Returns:
-            Randomly cropped image tensor
+            Randomly cropped image tensor.
 
         Raises:
-            Error if crop size exceeds padded image size
+            Error: If crop size exceeds padded image size.
         """
         # Determine image dimensions
         var dims = infer_image_dimensions(data, 3)
@@ -565,7 +565,7 @@ struct RandomCrop(Copyable, Movable, Transform):
 struct RandomHorizontalFlip(Copyable, Movable, Transform):
     """Randomly flip image horizontally.
 
-    Flips with specified probability using RandomTransformBase for probability handling
+    Flips with specified probability using RandomTransformBase for probability handling.
     """
 
     var base: RandomTransformBase
@@ -574,25 +574,25 @@ struct RandomHorizontalFlip(Copyable, Movable, Transform):
         """Create random horizontal flip transform.
 
         Args:
-            p: Probability of flipping (0.0 to 1.0)
+            p: Probability of flipping (0.0 to 1.0).
         """
         self.base = RandomTransformBase(p)
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Randomly flip image horizontally with probability p.
 
-        Flips the image along the width dimension (reverses each row)
-        Assumes flattened tensor with shape (H, W, C) where H = W
-        Default assumption: C = 3 (RGB); adjust for grayscale
+        Flips the image along the width dimension (reverses each row).
+        Assumes flattened tensor with shape (H, W, C) where H = W.
+        Default assumption: C = 3 (RGB); adjust for grayscale.
 
         Args:
-            data: Input image tensor
+            data: Input image tensor.
 
         Returns:
-            Possibly flipped image tensor
+            Possibly flipped image tensor.
 
         Raises:
-            Error if operation fails
+            Error: If operation fails.
         """
         # Check probability - don't flip if should_apply returns False
         if not self.base.should_apply():
@@ -625,7 +625,7 @@ struct RandomHorizontalFlip(Copyable, Movable, Transform):
 struct RandomVerticalFlip(Copyable, Movable, Transform):
     """Randomly flip image vertically.
 
-    Flips with specified probability using RandomTransformBase for probability handling
+    Flips with specified probability using RandomTransformBase for probability handling.
     """
 
     var base: RandomTransformBase
@@ -634,25 +634,25 @@ struct RandomVerticalFlip(Copyable, Movable, Transform):
         """Create random vertical flip transform.
 
         Args:
-            p: Probability of flipping (0.0 to 1.0)
+            p: Probability of flipping (0.0 to 1.0).
         """
         self.base = RandomTransformBase(p)
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Randomly flip image vertically with probability p.
 
-        Flips the image along the height dimension (reverses rows)
-        Assumes flattened tensor with shape (H, W, C) where H = W
-        Default assumption: C = 3 (RGB); adjust for grayscale
+        Flips the image along the height dimension (reverses rows).
+        Assumes flattened tensor with shape (H, W, C) where H = W.
+        Default assumption: C = 3 (RGB); adjust for grayscale.
 
         Args:
-            data: Input image tensor
+            data: Input image tensor.
 
         Returns:
-            Possibly flipped image tensor
+            Possibly flipped image tensor.
 
         Raises:
-            Error if operation fails
+            Error: If operation fails.
         """
         # Check probability - don't flip if should_apply returns False
         if not self.base.should_apply():
@@ -685,7 +685,7 @@ struct RandomVerticalFlip(Copyable, Movable, Transform):
 struct RandomRotation(Copyable, Movable, Transform):
     """Randomly rotate image.
 
-    Rotates within specified degree range
+    Rotates within specified degree range.
     """
 
     var degrees: Tuple[Float64, Float64]
@@ -697,8 +697,8 @@ struct RandomRotation(Copyable, Movable, Transform):
         """Create random rotation transform.
 
         Args:
-            degrees: Range of rotation degrees (min, max)
-            fill_value: Value to fill empty pixels after rotation
+            degrees: Range of rotation degrees (min, max).
+            fill_value: Value to fill empty pixels after rotation.
         """
         self.degrees = degrees
         self.fill_value = fill_value
@@ -706,18 +706,18 @@ struct RandomRotation(Copyable, Movable, Transform):
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Randomly rotate image within specified degree range.
 
-        Performs rotation around image center using nearest-neighbor sampling
-        Assumes flattened tensor with shape (H, W, C) where H = W
-        Default assumption: C = 3 (RGB); adjust for grayscale
+        Performs rotation around image center using nearest-neighbor sampling.
+        Assumes flattened tensor with shape (H, W, C) where H = W.
+        Default assumption: C = 3 (RGB); adjust for grayscale.
 
         Args:
-            data: Input image tensor
+            data: Input image tensor.
 
         Returns:
-            Rotated image tensor
+            Rotated image tensor.
 
         Raises:
-            Error if operation fails
+            Error: If operation fails.
         """
         # Generate random rotation angle in degrees range
         var angle_range = self.degrees[1] - self.degrees[0]
@@ -785,14 +785,14 @@ struct RandomRotation(Copyable, Movable, Transform):
 
 
 struct RandomErasing(Copyable, Movable, Transform):
-    """Randomly erase rectangular regions in images (Cutout augmentation)
+    """Randomly erase rectangular regions in images (Cutout augmentation).
 
-    Randomly selects a rectangle region and erases it by setting pixels to a fill value
-    Helps improve model robustness to occlusion
+    Randomly selects a rectangle region and erases it by setting pixels to a fill value.
+    Helps improve model robustness to occlusion.
 
-    Uses RandomTransformBase for probability handling
+    Uses RandomTransformBase for probability handling.
 
-    Reference: "Random Erasing Data Augmentation" (Zhong et al., 2017)
+    Reference: "Random Erasing Data Augmentation" (Zhong et al., 2017).
     """
 
     var base: RandomTransformBase  # Probability handling
@@ -810,10 +810,10 @@ struct RandomErasing(Copyable, Movable, Transform):
         """Create random erasing transform.
 
         Args:
-            p: Probability of applying erasing (0.0 to 1.0)
-            scale: Range of proportion of erased area (min, max)
-            ratio: Range of aspect ratio of erased area (min, max)
-            value: Pixel value to fill erased region with
+            p: Probability of applying erasing (0.0 to 1.0).
+            scale: Range of proportion of erased area (min, max).
+            ratio: Range of aspect ratio of erased area (min, max).
+            value: Pixel value to fill erased region with.
         """
         self.base = RandomTransformBase(p)
         self.scale = scale
@@ -824,23 +824,23 @@ struct RandomErasing(Copyable, Movable, Transform):
         """Apply random erasing with probability p.
 
         Randomly erases a rectangular region from the image by:
-        1. Checking probability to decide if erasing should occur
-        2. Calculating target erased area based on scale parameter
-        3. Determining rectangle dimensions based on aspect ratio
-        4. Randomly positioning the rectangle within image bounds
-        5. Setting all pixels in rectangle to fill value
+        1. Checking probability to decide if erasing should occur.
+        2. Calculating target erased area based on scale parameter.
+        3. Determining rectangle dimensions based on aspect ratio.
+        4. Randomly positioning the rectangle within image bounds.
+        5. Setting all pixels in rectangle to fill value.
 
-        Assumes flattened tensor with shape (H, W, C) where H = W
-        Default assumption: C = 3 (RGB); adjust for grayscale
+        Assumes flattened tensor with shape (H, W, C) where H = W.
+        Default assumption: C = 3 (RGB); adjust for grayscale.
 
         Args:
-            data: Input image tensor
+            data: Input image tensor.
 
         Returns:
-            Image with randomly erased rectangular region (or original if not applied)
+            Image with randomly erased rectangular region (or original if not applied).
 
         Raises:
-            Error if operation fails
+            Error: If operation fails.
         """
         # Step 1: Check probability - don't erase if should_apply returns False
         if not self.base.should_apply():

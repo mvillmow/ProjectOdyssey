@@ -92,9 +92,9 @@ struct SavedTensors(Copyable, Movable):
     """Container for tensors saved during forward pass for backward computation.
 
     Different operations need different tensors saved:
-    - Binary ops (add, mul): Need both inputs and output
-    - Unary ops (relu, exp): Need input and output
-    - Reductions (sum, mean): Need input tensor for gradient computation
+    - Binary ops (add, mul): Need both inputs and output.
+    - Unary ops (relu, exp): Need input and output.
+    - Reductions (sum, mean): Need input tensor for gradient computation.
     """
 
     var tensors: List[ExTensor]
@@ -162,19 +162,19 @@ struct TapeNode(Copyable, Movable):
     """Represents a single operation in the computation graph.
 
     Each node records:
-    - The operation type (e.g., "add", "multiply", "matmul")
-    - Input variable IDs that were used
-    - Output variable ID that was produced
-    - Saved tensors needed for the backward pass
+    - The operation type (e.g., "add", "multiply", "matmul").
+    - Input variable IDs that were used.
+    - Output variable ID that was produced.
+    - Saved tensors needed for the backward pass.
 
     During backward propagation, nodes are traversed in reverse topological
     order, and each node's backward function is called to compute gradients.
 
     Attributes:
-        op_type: String identifier for the operation (e.g., "add", "matmul")
-        input_ids: IDs of input Variables (for tracking dependencies)
-        output_id: ID of output Variable
-        saved_tensors: Tensors saved for backward pass
+        op_type: String identifier for the operation (e.g., "add", "matmul").
+        input_ids: IDs of input Variables (for tracking dependencies).
+        output_id: ID of output Variable.
+        saved_tensors: Tensors saved for backward pass.
     """
 
     var op_type: String
@@ -188,9 +188,9 @@ struct TapeNode(Copyable, Movable):
         """Initialize a tape node.
 
         Args:
-            op_type: String identifier for the operation
-            input_ids: IDs of input Variables
-            output_id: ID of output Variable
+            op_type: String identifier for the operation.
+            input_ids: IDs of input Variables.
+            output_id: ID of output Variable.
         """
         self.op_type = op_type
         self.input_ids = input_ids.copy()
@@ -207,10 +207,10 @@ struct TapeNode(Copyable, Movable):
         """Initialize a tape node with saved tensors.
 
         Args:
-            op_type: String identifier for the operation
-            input_ids: IDs of input Variables
-            output_id: ID of output Variable
-            saved: Saved tensors for backward pass
+            op_type: String identifier for the operation.
+            input_ids: IDs of input Variables.
+            output_id: ID of output Variable.
+            saved: Saved tensors for backward pass.
         """
         self.op_type = op_type
         self.input_ids = input_ids.copy()
@@ -251,7 +251,7 @@ struct VariableRegistry:
     """Registry mapping variable IDs to their gradient tensors.
 
     This allows the backward pass to look up and accumulate gradients
-    for variables by their ID
+    for variables by their ID.
     """
 
     var grads: List[ExTensor]
@@ -270,10 +270,10 @@ struct VariableRegistry:
         """Register a new variable and return its ID.
 
         Args:
-            requires_grad: Whether this variable requires gradients
+            requires_grad: Whether this variable requires gradients.
 
         Returns:
-            The unique ID assigned to this variable
+            The unique ID assigned to this variable.
         """
         var id = self.next_id
         self.next_id += 1
@@ -293,8 +293,8 @@ struct VariableRegistry:
         """Set or accumulate gradient for a variable.
 
         Args:
-            id: Variable ID
-            grad: Gradient tensor to set/accumulate
+            id: Variable ID.
+            grad: Gradient tensor to set/accumulate.
         """
         if id >= len(self.grads):
             return
@@ -322,10 +322,10 @@ struct VariableRegistry:
         """Get gradient for a variable.
 
         Args:
-            id: Variable ID
+            id: Variable ID.
 
         Returns:
-            The gradient tensor (or placeholder if not computed)
+            The gradient tensor (or placeholder if not computed).
         """
         if id < len(self.grads):
             return self.grads[id]
@@ -338,10 +338,10 @@ struct VariableRegistry:
         """Check if a variable has a computed gradient.
 
         Args:
-            id: Variable ID
+            id: Variable ID.
 
         Returns:
-            True if gradient has been computed
+            True if gradient has been computed.
         """
         if id < len(self.has_grad):
             return self.has_grad[id]
@@ -358,17 +358,17 @@ struct GradientTape:
 
         The tape maintains a chronological list of all operations performed on
         Variables with requires_grad=True. During backward(), the tape is traversed
-        in reverse to compute gradients via the chain rule
+        in reverse to compute gradients via the chain rule.
 
         Attributes:
-            nodes: Chronological list of recorded operations
-            enabled: Whether the tape is currently recording
-            registry: Variable registry for gradient storage
+            nodes: Chronological list of recorded operations.
+            enabled: Whether the tape is currently recording.
+            registry: Variable registry for gradient storage.
 
         Design Note:
             This uses a global tape approach (like TensorFlow's GradientTape) rather
             than per-tensor graph tracking (like PyTorch). The global tape is simpler
-            to implement but requires explicit enable/disable calls
+            to implement but requires explicit enable/disable calls.
 
     Examples:
             var tape = GradientTape()
@@ -396,7 +396,7 @@ struct GradientTape:
         """Enable recording of operations.
 
         After calling enable(), all operations on Variables with requires_grad=True
-        will be recorded in the tape
+        will be recorded in the tape.
 
         Examples:
             var tape = GradientTape()
@@ -409,7 +409,7 @@ struct GradientTape:
         """Disable recording of operations.
 
         After calling disable(), operations will not be recorded. This is useful
-        for inference or when you want to break the computation graph
+        for inference or when you want to break the computation graph.
 
         Examples:
             tape.disable()
@@ -421,7 +421,7 @@ struct GradientTape:
         """Clear all recorded operations.
 
         Resets the tape to an empty state. Should be called after backward()
-        to free memory and prepare for the next forward pass
+        to free memory and prepare for the next forward pass.
 
         Examples:
             tape.backward(loss)
@@ -434,10 +434,10 @@ struct GradientTape:
         """Register a new variable in the tape's registry.
 
         Args:
-            requires_grad: Whether this variable requires gradients
+            requires_grad: Whether this variable requires gradients.
 
         Returns:
-            Unique ID for the variable
+            Unique ID for the variable.
         """
         return self.registry.register(requires_grad)
 
@@ -451,16 +451,16 @@ struct GradientTape:
         """Record an operation in the tape.
 
         This method is called internally by Variable operations to register
-        themselves in the computation graph
+        themselves in the computation graph.
 
         Args:
-            op_type: String identifier for the operation
-            input_ids: IDs of input Variables
-            output_id: ID of output Variable
-            saved: Saved tensors for backward pass
+            op_type: String identifier for the operation.
+            input_ids: IDs of input Variables.
+            output_id: ID of output Variable.
+            saved: Saved tensors for backward pass.
 
         Note:
-            Only records if tape is enabled
+            Only records if tape is enabled.
 
         Examples:
             # Internal use by Variable operations
@@ -477,16 +477,16 @@ struct GradientTape:
         """Compute gradients by traversing tape in reverse.
 
         Applies the chain rule in reverse topological order:
-        1. Initialize gradient of final output with provided grad
+        1. Initialize gradient of final output with provided grad.
         2. For each node in reverse:
-           a. Get upstream gradient (dL/d_output)
-           b. Call backward function to get local gradients (d_output/d_inputs)
-           c. Apply chain rule: dL/d_input = dL/d_output * d_output/d_input
-           d. Accumulate gradients in input Variables
+           a. Get upstream gradient (dL/d_output).
+           b. Call backward function to get local gradients (d_output/d_inputs).
+           c. Apply chain rule: dL/d_input = dL/d_output * d_output/d_input.
+           d. Accumulate gradients in input Variables.
 
         Args:
-            output_id: ID of the output variable to backprop from
-            output_grad: Gradient of the loss with respect to output
+            output_id: ID of the output variable to backprop from.
+            output_grad: Gradient of the loss with respect to output.
 
         Examples:
             var loss = compute_loss(x)
@@ -691,13 +691,13 @@ struct GradientTape:
         """Get the computed gradient for a variable.
 
         Args:
-            var_id: The variable ID
+            var_id: The variable ID.
 
         Returns:
-            The gradient tensor
+            The gradient tensor.
 
         Raises:
-            Error if gradient not found for variable
+            Error: Gradient not found for variable.
         """
         return self.registry.get_grad(var_id)
 
@@ -827,12 +827,12 @@ struct GradientTape:
 struct NoGradContext(Copyable, Movable):
     """Context manager for disabling gradient computation.
 
-    NOTE: Full implementation blocked by Mojo limitation
-    UnsafePointer with parametric mutability is not yet supported
+    NOTE: Full implementation blocked by Mojo limitation.
+    UnsafePointer with parametric mutability is not yet supported.
 
     Workaround: Manually manage gradient tracking with requires_grad=False
     on Variables that shouldn't track gradients. Alternatively, use
-    tape.disable() / tape.enable() directly on the global tape
+    tape.disable() / tape.enable() directly on the global tape.
 
     Example (future usage when full support is available):
         with NoGradContext():
@@ -847,13 +847,13 @@ struct NoGradContext(Copyable, Movable):
         Full context manager implementation requires storing a mutable reference
         to the global gradient tape. Mojo's UnsafePointer does not yet support
         parametric mutability, making it impossible to create a context that
-        preserves the mutability state of the tape across scope boundaries
+        preserves the mutability state of the tape across scope boundaries.
 
     Related Issue: #2400
     """
 
     fn __init__(out self):
-        """Initialize NoGradContext (stub)
+        """Initialize NoGradContext (stub).
 
         This is a stub implementation. The full context manager is blocked
         by Mojo's UnsafePointer parametric mutability limitation.
@@ -861,7 +861,7 @@ struct NoGradContext(Copyable, Movable):
         pass
 
     fn __enter__(mut self):
-        """Enter no-grad context (stub)
+        """Enter no-grad context (stub).
 
         TODO(#2400): Implement gradient tracking disable when Mojo supports
         UnsafePointer with parametric mutability. For now, use:
@@ -870,7 +870,7 @@ struct NoGradContext(Copyable, Movable):
         pass
 
     fn __exit__(mut self):
-        """Exit no-grad context (stub)
+        """Exit no-grad context (stub).
 
         TODO(#2400): Implement gradient tracking restore when Mojo supports
         UnsafePointer with parametric mutability. For now, use:

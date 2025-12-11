@@ -20,20 +20,20 @@ from .extensor import ExTensor
 
 
 fn is_contiguous(tensor: ExTensor) -> Bool:
-    """Check if tensor data is contiguous in memory (row-major C order)
+    """Check if tensor data is contiguous in memory (row-major C order).
 
         A tensor is contiguous if elements are laid out sequentially in memory
-        with no gaps. This is true when strides match C-order (row-major) layout
+        with no gaps. This is true when strides match C-order (row-major) layout.
 
     Args:
-            tensor: The tensor to check
+            tensor: The tensor to check.
 
     Returns:
-            True if tensor is contiguous in memory, False otherwise
+            True if tensor is contiguous in memory, False otherwise.
 
     Note:
             Contiguous tensors can be efficiently copied with memcpy instead of
-            element-by-element copying
+            element-by-element copying.
     """
     var shape = tensor.shape()
     var ndim = len(shape)
@@ -60,17 +60,17 @@ fn as_contiguous(tensor: ExTensor) raises -> ExTensor:
     """Convert tensor to contiguous memory layout if needed.
 
         If the tensor is already contiguous, returns a copy. If it's a view with
-        non-contiguous strides, creates a new contiguous copy
+        non-contiguous strides, creates a new contiguous copy.
 
     Args:
-            tensor: The tensor to make contiguous
+            tensor: The tensor to make contiguous.
 
     Returns:
-            A new contiguous tensor with the same data
+            A new contiguous tensor with the same data.
 
     Note:
             This function always copies data. For zero-copy operations, check
-            is_contiguous() first
+            is_contiguous() first.
     """
     if is_contiguous(tensor):
         # Already contiguous - just copy
@@ -98,28 +98,28 @@ fn as_contiguous(tensor: ExTensor) raises -> ExTensor:
 
 
 fn view(tensor: ExTensor, new_shape: List[Int]) raises -> ExTensor:
-    """Create a zero-copy view of tensor with new shape (if compatible)
+    """Create a zero-copy view of tensor with new shape (if compatible).
 
         Attempts to create a view with different shape while preserving the
         underlying data and strides. Returns a view if possible, otherwise raises
-        an error
+        an error.
 
         This is more strict than reshape() which always copies. view() only succeeds
-        if the new shape is compatible with the current stride pattern
+        if the new shape is compatible with the current stride pattern.
 
     Args:
-            tensor: Input tensor
-            new_shape: Target shape
+            tensor: Input tensor.
+            new_shape: Target shape.
 
     Returns:
-            A new ExTensor sharing the same data with different shape/strides
+            A new ExTensor sharing the same data with different shape/strides.
 
     Raises:
-            Error if reshape cannot be done as a view (would require data movement)
+            Error: If reshape cannot be done as a view (would require data movement).
 
     Note:
             This is an advanced function. Most code should use reshape() which
-            handles all cases by copying if necessary
+            handles all cases by copying if necessary.
 
     Examples:
             # View works for compatible reshapes
@@ -150,14 +150,14 @@ fn reshape(tensor: ExTensor, new_shape: List[Int]) raises -> ExTensor:
     """Reshape tensor to new shape.
 
     Args:
-            tensor: Input tensor
-            new_shape: Target shape (must have same total number of elements)
+            tensor: Input tensor.
+            new_shape: Target shape (must have same total number of elements).
 
     Returns:
-            A new tensor with the specified shape
+            A new tensor with the specified shape.
 
     Raises:
-            Error if new shape has different number of elements
+            Error: If new shape has different number of elements.
 
     Examples:
             # Reshape 1D to 2D
@@ -227,14 +227,14 @@ fn squeeze(tensor: ExTensor, dim: Int = -999) raises -> ExTensor:
     """Remove size-1 dimensions.
 
     Args:
-            tensor: Input tensor
-            dim: Specific dimension to squeeze (optional, default squeezes all size-1 dims)
+            tensor: Input tensor.
+            dim: Specific dimension to squeeze (optional, default squeezes all size-1 dims).
 
     Returns:
-            Tensor with size-1 dimensions removed
+            Tensor with size-1 dimensions removed.
 
     Raises:
-            Error if specified dim is not size 1
+            Error: If specified dim is not size 1.
 
     Examples:
             # Squeeze all size-1 dims
@@ -288,11 +288,11 @@ fn unsqueeze(tensor: ExTensor, dim: Int) raises -> ExTensor:
     """Add a size-1 dimension at specified position.
 
     Args:
-            tensor: Input tensor
-            dim: Position to insert new dimension (supports negative indexing)
+            tensor: Input tensor.
+            dim: Position to insert new dimension (supports negative indexing).
 
     Returns:
-            Tensor with additional size-1 dimension
+            Tensor with additional size-1 dimension.
 
     Examples:
             var a = ones([3, 4], DType.float32)  # Shape (3, 4)
@@ -327,11 +327,11 @@ fn expand_dims(tensor: ExTensor, dim: Int) raises -> ExTensor:
     """Alias for unsqueeze(). Add a size-1 dimension at specified position.
 
     Args:
-            tensor: Input tensor
-            dim: Position to insert new dimension
+            tensor: Input tensor.
+            dim: Position to insert new dimension.
 
     Returns:
-            Tensor with additional size-1 dimension
+            Tensor with additional size-1 dimension.
     """
     return unsqueeze(tensor, dim)
 
@@ -340,10 +340,10 @@ fn flatten(tensor: ExTensor) raises -> ExTensor:
     """Flatten tensor to 1D.
 
     Args:
-            tensor: Input tensor
+            tensor: Input tensor.
 
     Returns:
-            1D tensor with all elements in row-major (C) order
+            1D tensor with all elements in row-major (C) order.
 
     Examples:
             var a = ones([3, 4], DType.float32)  # Shape (3, 4)
@@ -358,16 +358,16 @@ fn flatten(tensor: ExTensor) raises -> ExTensor:
 
 @always_inline
 fn ravel(tensor: ExTensor) raises -> ExTensor:
-    """Flatten tensor to 1D (alias for flatten)
+    """Flatten tensor to 1D (alias for flatten).
 
-        Note: Our implementation now uses zero-copy views for contiguous tensors
-        If the tensor is contiguous, ravel() returns a view. Otherwise, it copies
+        Note: Our implementation now uses zero-copy views for contiguous tensors.
+        If the tensor is contiguous, ravel() returns a view. Otherwise, it copies.
 
     Args:
-            tensor: Input tensor
+            tensor: Input tensor.
 
     Returns:
-            1D tensor with all elements (may be a view if contiguous)
+            1D tensor with all elements (may be a view if contiguous).
 
     Examples:
             var a = ones([2, 3], DType.float32)  # Contiguous
@@ -387,14 +387,14 @@ fn concatenate(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
     """Concatenate tensors along an existing axis.
 
     Args:
-            tensors: Vector of tensors to concatenate
-            axis: Axis along which to concatenate (default 0)
+            tensors: Vector of tensors to concatenate.
+            axis: Axis along which to concatenate (default 0).
 
     Returns:
-            Concatenated tensor
+            Concatenated tensor.
 
     Raises:
-            Error if tensors have incompatible shapes
+            Error: If tensors have incompatible shapes.
 
     Examples:
             var a = ones([2, 3], DType.float32)  # 2x3
@@ -483,14 +483,14 @@ fn stack(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
     """Stack tensors along a new axis.
 
     Args:
-            tensors: Vector of tensors to stack (must have identical shapes)
-            axis: Position of new axis (default 0)
+            tensors: Vector of tensors to stack (must have identical shapes).
+            axis: Position of new axis (default 0).
 
     Returns:
-            Stacked tensor with one additional dimension
+            Stacked tensor with one additional dimension.
 
     Raises:
-            Error if tensors have different shapes
+            Error: If tensors have different shapes.
 
     Examples:
             var a = ones([2, 3], DType.float32)  # 2x3
@@ -556,19 +556,19 @@ fn conv2d_output_shape(
     """Compute output dimensions for 2D convolution.
 
         Calculates the spatial output dimensions (height, width) of a 2D convolution
-        operation given input dimensions, kernel size, stride, padding, and dilation
+        operation given input dimensions, kernel size, stride, padding, and dilation.
 
     Args:
-            input_h: Input height in pixels
-            input_w: Input width in pixels
-            kernel_h: Kernel height in pixels
-            kernel_w: Kernel width in pixels
-            stride: Convolution stride (same for both dimensions)
-            padding: Zero-padding added to input (same for all sides)
-            dilation: Dilation factor for kernel (default: 1 for standard convolution)
+            input_h: Input height in pixels.
+            input_w: Input width in pixels.
+            kernel_h: Kernel height in pixels.
+            kernel_w: Kernel width in pixels.
+            stride: Convolution stride (same for both dimensions).
+            padding: Zero-padding added to input (same for all sides).
+            dilation: Dilation factor for kernel (default: 1 for standard convolution).
 
     Returns:
-            Tuple of (output_height, output_width)
+            Tuple of (output_height, output_width).
 
         Formula:
             output_h = (input_h + 2*padding - dilation*(kernel_h - 1) - 1) // stride + 1
@@ -599,17 +599,17 @@ fn pool_output_shape(
     """Compute output dimensions for 2D pooling.
 
         Calculates the spatial output dimensions (height, width) of a 2D pooling
-        operation given input dimensions, kernel size, stride, and padding
+        operation given input dimensions, kernel size, stride, and padding.
 
     Args:
-            input_h: Input height in pixels
-            input_w: Input width in pixels
-            kernel_size: Pooling window size (square, same for both dimensions)
-            stride: Pooling stride (same for both dimensions)
-            padding: Zero-padding added to input (same for all sides)
+            input_h: Input height in pixels.
+            input_w: Input width in pixels.
+            kernel_size: Pooling window size (square, same for both dimensions).
+            stride: Pooling stride (same for both dimensions).
+            padding: Zero-padding added to input (same for all sides).
 
     Returns:
-            Tuple of (output_height, output_width)
+            Tuple of (output_height, output_width).
 
         Formula:
             output_h = (input_h + 2*padding - kernel_size) // stride + 1
@@ -632,15 +632,15 @@ fn flatten_size(height: Int, width: Int, channels: Int) -> Int:
 
         Calculates the total number of elements in a flattened tensor from
         4D spatial dimensions. Used to determine input size for dense/linear layers
-        following convolutional or pooling layers
+        following convolutional or pooling layers.
 
     Args:
-            height: Spatial height dimension
-            width: Spatial width dimension
-            channels: Number of channels
+            height: Spatial height dimension.
+            width: Spatial width dimension.
+            channels: Number of channels.
 
     Returns:
-            Total number of elements: height * width * channels
+            Total number of elements: height * width * channels.
 
     Examples:
             # After final pooling layer in CNN
@@ -657,16 +657,16 @@ fn flatten_to_2d(tensor: ExTensor) raises -> ExTensor:
     """Flatten a 4D tensor to 2D, preserving the batch dimension.
 
         Commonly used before fully connected layers in CNNs to reshape
-        (batch, channels, height, width) to (batch, channels * height * width)
+        (batch, channels, height, width) to (batch, channels * height * width).
 
     Args:
-            tensor: Input tensor of shape (batch, channels, height, width)
+            tensor: Input tensor of shape (batch, channels, height, width).
 
     Returns:
-            Tensor of shape (batch, channels * height * width)
+            Tensor of shape (batch, channels * height * width).
 
     Raises:
-            Error if input tensor is not 4D
+            Error: If input tensor is not 4D.
 
     Examples:
             # After pooling layer, flatten before FC layer
@@ -712,19 +712,19 @@ fn transposed_conv2d_output_shape(
 
         Calculates the spatial output dimensions (height, width) of a 2D transposed
         convolution (deconvolution) operation. Transposed convolution upsamples the
-        input and is commonly used in decoder networks and generative models
+        input and is commonly used in decoder networks and generative models.
 
     Args:
-            input_h: Input height in pixels
-            input_w: Input width in pixels
-            kernel_h: Kernel height in pixels
-            kernel_w: Kernel width in pixels
-            stride: Convolution stride (same for both dimensions)
-            padding: Padding applied to input (same for all sides)
-            output_padding: Additional padding added to output (default: 0)
+            input_h: Input height in pixels.
+            input_w: Input width in pixels.
+            kernel_h: Kernel height in pixels.
+            kernel_w: Kernel width in pixels.
+            stride: Convolution stride (same for both dimensions).
+            padding: Padding applied to input (same for all sides).
+            output_padding: Additional padding added to output (default: 0).
 
     Returns:
-            Tuple of (output_height, output_width)
+            Tuple of (output_height, output_width).
 
         Formula:
             output_h = (input_h - 1) * stride - 2 * padding + kernel_h + output_padding
@@ -748,14 +748,14 @@ fn global_avgpool_output_shape(
     """Compute output shape for global average pooling.
 
         Global average pooling reduces each channel to a single value by averaging
-        all spatial dimensions. The output has shape (batch, channels, 1, 1)
+        all spatial dimensions. The output has shape (batch, channels, 1, 1).
 
     Args:
-            batch: Batch size
-            channels: Number of channels
+            batch: Batch size.
+            channels: Number of channels.
 
     Returns:
-            Tuple of (batch, channels, 1, 1)
+            Tuple of (batch, channels, 1, 1).
 
     Examples:
             # Global average pooling on feature map
@@ -771,14 +771,14 @@ fn linear_output_shape(batch_size: Int, out_features: Int) -> Tuple[Int, Int]:
     """Compute output shape for linear/dense layer.
 
         Linear layers transform input features to output features. The output
-        shape is (batch_size, out_features)
+        shape is (batch_size, out_features).
 
     Args:
-            batch_size: Number of samples in the batch
-            out_features: Number of output features (neurons)
+            batch_size: Number of samples in the batch.
+            out_features: Number of output features (neurons).
 
     Returns:
-            Tuple of (batch_size, out_features)
+            Tuple of (batch_size, out_features).
 
     Examples:
             # Classification head: 512 features -> 10 classes

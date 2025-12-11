@@ -22,8 +22,8 @@ struct CallbackSignal(Copyable, ImplicitlyCopyable, Movable):
     """Signal returned by callbacks to control training flow.
 
     Values:
-        CONTINUE (0): Continue training normally
-        STOP (1): Stop training immediately
+        CONTINUE (0): Continue training normally.
+        STOP (1): Stop training immediately.
     """
 
     var value: Int
@@ -32,7 +32,7 @@ struct CallbackSignal(Copyable, ImplicitlyCopyable, Movable):
         """Initialize callback signal.
 
         Args:
-            value: Signal value (0=CONTINUE, 1=STOP)
+            value: Signal value (0=CONTINUE, 1=STOP).
         """
         self.value = value
 
@@ -45,18 +45,18 @@ alias STOP = CallbackSignal(1)
 struct TrainingState(Copyable, Movable):
     """Training state passed to callbacks.
 
-    This struct provides callbacks with access to training metrics and control
-    It uses borrowed references to avoid ownership issues
+    This struct provides callbacks with access to training metrics and control.
+    It uses borrowed references to avoid ownership issues.
 
     Lifecycle:
-        Created at training start, updated each epoch/batch, destroyed at end
+        Created at training start, updated each epoch/batch, destroyed at end.
 
     Fields:
-        epoch: Current epoch number (0-indexed)
-        batch: Current batch number within epoch (0-indexed)
-        metrics: Dictionary of metric name -> value
-        learning_rate: Current learning rate
-        should_stop: Flag set by callbacks to request training stop
+        epoch: Current epoch number (0-indexed).
+        batch: Current batch number within epoch (0-indexed).
+        metrics: Dictionary of metric name -> value.
+        learning_rate: Current learning rate.
+        should_stop: Flag set by callbacks to request training stop.
 
     Example:
         ```mojo
@@ -81,9 +81,9 @@ struct TrainingState(Copyable, Movable):
         """Initialize training state.
 
         Args:
-            epoch: Current epoch number
-            batch: Current batch number
-            learning_rate: Current learning rate
+            epoch: Current epoch number.
+            batch: Current batch number.
+            learning_rate: Current learning rate.
         """
         self.epoch = epoch
         self.batch = batch
@@ -95,29 +95,29 @@ struct TrainingState(Copyable, Movable):
 trait Callback:
     """Callback interface for training lifecycle hooks.
 
-    Callbacks receive training events at specific points in the training loop
-    They can monitor metrics, save checkpoints, or request early stopping
+    Callbacks receive training events at specific points in the training loop.
+    They can monitor metrics, save checkpoints, or request early stopping.
 
     Lifecycle Event Order:
-        1. on_train_begin()        # Once at training start
+        1. on_train_begin()        # Once at training start.
         2. For each epoch:
-            a. on_epoch_begin()    # Start of epoch
+            a. on_epoch_begin()    # Start of epoch.
             b. For each batch:
-                i.  on_batch_begin()   # Before forward pass
-                ii. on_batch_end()     # After backward pass and optimizer step
-            c. on_epoch_end()      # After validation (if any)
+                i.  on_batch_begin()   # Before forward pass.
+                ii. on_batch_end()     # After backward pass and optimizer step.
+            c. on_epoch_end()      # After validation (if any).
         3. on_train_end()          # Once at training end.
 
     State Modification:
-        - Callbacks can READ all fields of TrainingState
-        - Callbacks can WRITE metrics dictionary (add new metrics)
-        - Callbacks can SET should_stop flag (request early stopping)
-        - Callbacks CANNOT modify model/optimizer directly (no references provided)
+        - Callbacks can READ all fields of TrainingState.
+        - Callbacks can WRITE metrics dictionary (add new metrics).
+        - Callbacks can SET should_stop flag (request early stopping).
+        - Callbacks CANNOT modify model/optimizer directly (no references provided).
 
     Return Values:
-        - Most hooks return CallbackSignal (CONTINUE or STOP)
-        - STOP signal triggers graceful training shutdown
-        - Multiple callbacks: first STOP signal takes precedence
+        - Most hooks return CallbackSignal (CONTINUE or STOP).
+        - STOP signal triggers graceful training shutdown.
+        - Multiple callbacks: first STOP signal takes precedence.
 
     Example:
         ```mojo
@@ -132,10 +132,10 @@ trait Callback:
         """Called once at the start of training.
 
         Args:
-            state: Training state (epoch=0, batch=0, empty metrics)
+            state: Training state (epoch=0, batch=0, empty metrics).
 
         Returns:
-            CallbackSignal (CONTINUE or STOP)
+            CallbackSignal (CONTINUE or STOP).
         """
         ...
 
@@ -143,10 +143,10 @@ trait Callback:
         """Called once at the end of training.
 
         Args:
-            state: Final training state with complete metrics history
+            state: Final training state with complete metrics history.
 
         Returns:
-            CallbackSignal (ignored, training already ending)
+            CallbackSignal (ignored, training already ending).
         """
         ...
 
@@ -154,23 +154,23 @@ trait Callback:
         """Called at the start of each epoch.
 
         Args:
-            state: Training state (epoch set, batch=0, previous epoch metrics)
+            state: Training state (epoch set, batch=0, previous epoch metrics).
 
         Returns:
-            CallbackSignal (CONTINUE or STOP)
+            CallbackSignal (CONTINUE or STOP).
         """
         ...
 
     fn on_epoch_end(
         mut self, mut state: TrainingState
     ) raises -> CallbackSignal:
-        """Called at the end of each epoch (after validation)
+        """Called at the end of each epoch (after validation).
 
         Args:
-            state: Training state with current epoch metrics (train_loss, val_loss, etc.)
+            state: Training state with current epoch metrics (train_loss, val_loss, etc.).
 
         Returns:
-            CallbackSignal (CONTINUE or STOP)
+            CallbackSignal (CONTINUE or STOP).
         """
         ...
 
@@ -178,21 +178,21 @@ trait Callback:
         """Called at the start of each batch.
 
         Args:
-            state: Training state (epoch, batch set)
+            state: Training state (epoch, batch set).
 
         Returns:
-            CallbackSignal (CONTINUE or STOP)
+            CallbackSignal (CONTINUE or STOP).
         """
         ...
 
     fn on_batch_end(mut self, mut state: TrainingState) -> CallbackSignal:
-        """Called at the end of each batch (after optimizer step)
+        """Called at the end of each batch (after optimizer step).
 
         Args:
-            state: Training state (may include batch metrics like batch_loss)
+            state: Training state (may include batch metrics like batch_loss).
 
         Returns:
-            CallbackSignal (CONTINUE or STOP)
+            CallbackSignal (CONTINUE or STOP).
         """
         ...
 
@@ -205,19 +205,19 @@ trait Callback:
 trait LRScheduler:
     """Learning rate scheduler interface.
 
-    Schedulers compute learning rates based on training progress
+    Schedulers compute learning rates based on training progress.
     They do NOT modify the optimizer directly - the training loop
-    is responsible for calling get_lr() and updating the optimizer
+    is responsible for calling get_lr() and updating the optimizer.
 
     Integration Pattern:
-        1. Training loop calls scheduler.get_lr(epoch, batch)
-        2. Training loop sets optimizer.learning_rate = new_lr
-        3. Scheduler is stateless (pure function of epoch/batch)
+        1. Training loop calls scheduler.get_lr(epoch, batch).
+        2. Training loop sets optimizer.learning_rate = new_lr.
+        3. Scheduler is stateless (pure function of epoch/batch).
 
     Scheduler Types:
-        - Step decay: Reduce LR at fixed intervals
-        - Cosine annealing: Smooth cosine decay
-        - Warmup: Linear increase then constant
+        - Step decay: Reduce LR at fixed intervals.
+        - Cosine annealing: Smooth cosine decay.
+        - Warmup: Linear increase then constant.
 
     Example:
         ```mojo
@@ -236,16 +236,16 @@ trait LRScheduler:
         """Compute learning rate for given epoch and batch.
 
         Args:
-            epoch: Current epoch number (0-indexed)
-            batch: Current batch number within epoch (0-indexed)
+            epoch: Current epoch number (0-indexed).
+            batch: Current batch number within epoch (0-indexed).
 
         Returns:
-            Learning rate to use for this step
+            Learning rate to use for this step.
 
         Notes:
-            - Schedulers should be deterministic (same inputs -> same output)
-            - epoch and batch are 0-indexed
-            - batch parameter is optional (defaults to 0 for epoch-based schedulers)
+            - Schedulers should be deterministic (same inputs -> same output).
+            - epoch and batch are 0-indexed.
+            - batch parameter is optional (defaults to 0 for epoch-based schedulers).
         """
         ...
 
@@ -256,17 +256,17 @@ trait LRScheduler:
 
 
 fn has_nan_or_inf(tensor: ExTensor) -> Bool:
-    """Check if tensor contains NaN or Inf values (numerical instability detection)
+    """Check if tensor contains NaN or Inf values (numerical instability detection).
 
         Detects numerical instability in gradients during training by checking for:
-        - NaN (Not a Number) values indicating undefined operations
-        - Inf (positive or negative infinity) indicating overflow
+        - NaN (Not a Number) values indicating undefined operations.
+        - Inf (positive or negative infinity) indicating overflow.
 
     Args:
-            tensor: Tensor to check for numerical instability
+            tensor: Tensor to check for numerical instability.
 
     Returns:
-            True if tensor contains any NaN or Inf values, False otherwise
+            True if tensor contains any NaN or Inf values, False otherwise.
 
         Example:
             ```mojo
@@ -277,21 +277,21 @@ fn has_nan_or_inf(tensor: ExTensor) -> Bool:
             ```
 
     Note:
-            - Works with all tensor dtypes (float32, float64, float16, integer types)
-            - Integer tensors cannot have NaN/Inf and will always return False
-            - Used for gradient validation during training
+            - Works with all tensor dtypes (float32, float64, float16, integer types).
+            - Integer tensors cannot have NaN/Inf and will always return False.
+            - Used for gradient validation during training.
     """
     return has_nan(tensor) or has_inf(tensor)
 
 
 fn is_valid_loss(loss: Float64) raises -> Bool:
-    """Check if loss value is valid (not NaN or inf)
+    """Check if loss value is valid (not NaN or inf).
 
     Args:
-            loss: Loss value to check
+            loss: Loss value to check.
 
     Returns:
-            True if loss is finite (not NaN, not inf), False otherwise
+            True if loss is finite (not NaN, not inf), False otherwise.
 
         Example:
             ```mojo
@@ -301,7 +301,7 @@ fn is_valid_loss(loss: Float64) raises -> Bool:
             ```
 
     Note:
-            Uses has_nan_or_inf internally for consistency with gradient validation
+            Uses has_nan_or_inf internally for consistency with gradient validation.
     """
     # Create a single-element tensor for loss value
     var shape = List[Int]()
@@ -323,16 +323,16 @@ fn compute_gradient_norm(
 
         Computes the global norm of all gradients in a parameter list using either
         L1 or L2 norm. Used for:
-        - Gradient clipping (by computing norm to clip by)
-        - Training diagnostics (monitoring gradient magnitude)
-        - Exploding gradient detection (norm > threshold)
+        - Gradient clipping (by computing norm to clip by).
+        - Training diagnostics (monitoring gradient magnitude).
+        - Exploding gradient detection (norm > threshold).
 
     Args:
-            parameters: List of gradient tensors to compute norm over
-            norm_type: Type of norm to compute ("L2" or "L1"). Defaults to "L2"
+            parameters: List of gradient tensors to compute norm over.
+            norm_type: Type of norm to compute ("L2" or "L1"). Defaults to "L2".
 
     Returns:
-            Global norm of all gradients as Float64
+            Global norm of all gradients as Float64.
 
         Example:
             ```mojo
@@ -343,13 +343,13 @@ fn compute_gradient_norm(
             ```
 
         Notes:
-            - L2 norm: sqrt(sum of all gradient elements squared)
-            - L1 norm: sum of absolute values of all gradient elements
-            - Returns 0.0 for empty parameter list
-            - Aggregates norms across all tensors in the list
+            - L2 norm: sqrt(sum of all gradient elements squared).
+            - L1 norm: sum of absolute values of all gradient elements.
+            - Returns 0.0 for empty parameter list.
+            - Aggregates norms across all tensors in the list.
 
         Reference:
-            Used in Gradient Clipping by Global Norm (arXiv:1308.0850)
+            Used in Gradient Clipping by Global Norm (arXiv:1308.0850).
     """
     var total_norm_sq = Float64(0.0)
     var total_abs_norm = Float64(0.0)
@@ -402,11 +402,11 @@ fn clip_gradients(
     """Clip gradients by global norm to prevent exploding gradients.
 
     Args:
-            gradients: List of gradient values
-            max_norm: Maximum allowed gradient norm
+            gradients: List of gradient values.
+            max_norm: Maximum allowed gradient norm.
 
     Returns:
-            Clipped gradients with norm <= max_norm
+            Clipped gradients with norm <= max_norm.
 
         Example:
             ```mojo
@@ -414,9 +414,9 @@ fn clip_gradients(
             ```
 
     Note:
-            This is a legacy function that works with lists of Float64
+            This is a legacy function that works with lists of Float64.
             For tensor-based gradient clipping, use compute_gradient_norm()
-            with ExTensor parameters instead
+            with ExTensor parameters instead.
     """
     # Compute L2 norm of the gradient list
     var norm_sq = Float64(0.0)

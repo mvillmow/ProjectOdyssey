@@ -1,16 +1,16 @@
 """Attention mechanisms for transformer architectures.
 
-This module provides pure functional implementations of attention operations
+This module provides pure functional implementations of attention operations.
 All operations are stateless - caller manages parameters and state.
 
 The core operation is scaled dot-product attention:
     Attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) * V
 
 Where:
-    Q: Query tensor of shape (batch, seq_len, d_k)
-    K: Key tensor of shape (batch, seq_len, d_k)
-    V: Value tensor of shape (batch, seq_len, d_v)
-    d_k: Key dimension (used for scaling)
+    Q: Query tensor of shape (batch, seq_len, d_k).
+    K: Key tensor of shape (batch, seq_len, d_k).
+    V: Value tensor of shape (batch, seq_len, d_v).
+    d_k: Key dimension (used for scaling).
 """
 
 from shared.core.extensor import ExTensor, zeros, zeros_like, ones
@@ -29,7 +29,7 @@ fn scaled_dot_product_attention(
 ) raises -> ExTensor:
     """Scaled dot-product attention without mask.
 
-    See scaled_dot_product_attention_masked for version with mask support
+    See scaled_dot_product_attention_masked for version with mask support.
     """
     var empty_shape = List[Int]()
     var empty_mask = zeros(empty_shape, DType.float32)
@@ -47,19 +47,19 @@ fn scaled_dot_product_attention_masked(
 ) raises -> ExTensor:
     """Scaled dot-product attention.
 
-        Computes attention weights from query-key similarity and applies them to values
-        This is the fundamental building block of transformer architectures
+        Computes attention weights from query-key similarity and applies them to values.
+        This is the fundamental building block of transformer architectures.
 
     Args:
-            query: Query tensor of shape (batch, seq_len, d_k) or (batch, heads, seq_len, d_k)
-            key: Key tensor of shape (batch, seq_len, d_k) or (batch, heads, seq_len, d_k)
-            value: Value tensor of shape (batch, seq_len, d_v) or (batch, heads, seq_len, d_v)
+            query: Query tensor of shape (batch, seq_len, d_k) or (batch, heads, seq_len, d_k).
+            key: Key tensor of shape (batch, seq_len, d_k) or (batch, heads, seq_len, d_k).
+            value: Value tensor of shape (batch, seq_len, d_v) or (batch, heads, seq_len, d_v).
             mask: Optional attention mask. Use large negative values (-1e9) for positions
-                   to ignore. Shape: (batch, seq_len, seq_len) or (batch, heads, seq_len, seq_len)
-            dropout_p: Dropout probability (not applied in this implementation)
+                   to ignore. Shape: (batch, seq_len, seq_len) or (batch, heads, seq_len, seq_len).
+            dropout_p: Dropout probability (not applied in this implementation).
 
     Returns:
-            Attention output of shape (batch, seq_len, d_v) or (batch, heads, seq_len, d_v)
+            Attention output of shape (batch, seq_len, d_v) or (batch, heads, seq_len, d_v).
 
         Example:
             ```mojo
@@ -76,12 +76,12 @@ fn scaled_dot_product_attention_masked(
             ```
 
         Formula:
-            Attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) * V
+            Attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) * V.
 
     Note:
-            - The scaling factor sqrt(d_k) prevents dot products from growing too large
-            - Masking is applied before softmax (additive masking)
-            - For causal (autoregressive) attention, use a lower-triangular mask
+            - The scaling factor sqrt(d_k) prevents dot products from growing too large.
+            - Masking is applied before softmax (additive masking).
+            - For causal (autoregressive) attention, use a lower-triangular mask.
     """
     var q_shape = query.shape()
     var k_shape = key.shape()
@@ -90,9 +90,7 @@ fn scaled_dot_product_attention_masked(
     # Support both 3D (batch, seq, dim) and 4D (batch, heads, seq, dim) inputs
     var ndim = len(q_shape)
     if ndim != 3 and ndim != 4:
-        raise Error(
-            "scaled_dot_product_attention: query must be 3D or 4D tensor"
-        )
+        raise Error("Error: query must be 3D or 4D tensor.")
 
     # Get d_k for scaling (last dimension of query/key)
     var d_k = q_shape[ndim - 1]
@@ -117,7 +115,7 @@ fn scaled_dot_product_attention_masked(
         for i in range(numel):
             scale_ptr.bitcast[Float64]()[i] = scale
     else:
-        raise Error("scaled_dot_product_attention: only float32/64 supported")
+        raise Error("Error: only float32/64 supported.")
 
     var scaled_scores = multiply(scores, scale_tensor)
 
@@ -169,22 +167,22 @@ fn scaled_dot_product_attention_backward_masked(
 ) raises -> GradientTriple:
     """Backward pass for scaled dot-product attention.
 
-        Computes gradients with respect to query, key, and value tensors
+        Computes gradients with respect to query, key, and value tensors.
 
     Args:
-            grad_output: Gradient w.r.t. attention output
-            query: Original query tensor
-            key: Original key tensor
-            value: Original value tensor
-            attention_weights: Attention weights from forward pass (after softmax)
-            mask: Optional attention mask (same as forward pass)
+            grad_output: Gradient w.r.t. attention output.
+            query: Original query tensor.
+            key: Original key tensor.
+            value: Original value tensor.
+            attention_weights: Attention weights from forward pass (after softmax).
+            mask: Optional attention mask (same as forward pass).
 
     Returns:
-            GradientTriple containing gradients for query, key, and value
+            GradientTriple containing gradients for query, key, and value.
             Field mapping for backward results:
-                - grad_input  -> gradient w.r.t. query
-                - grad_weights -> gradient w.r.t. key
-                - grad_bias  -> gradient w.r.t. value
+                - grad_input  -> gradient w.r.t. query.
+                - grad_weights -> gradient w.r.t. key.
+                - grad_bias  -> gradient w.r.t. value.
 
         Example:
             ```mojo
@@ -206,8 +204,8 @@ fn scaled_dot_product_attention_backward_masked(
             ```
 
     Note:
-            Caller must save attention_weights from forward pass for use in backward
-            Pure functional: returns new tensors, does not modify inputs
+            Caller must save attention_weights from forward pass for use in backward.
+            Pure functional: returns new tensors, does not modify inputs.
     """
     var q_shape = query.shape()
     var ndim = len(q_shape)
@@ -239,7 +237,7 @@ fn scaled_dot_product_attention_backward_masked(
         for i in range(numel):
             scale_ptr.bitcast[Float64]()[i] = scale
     else:
-        raise Error("attention backward: only float32/64 supported")
+        raise Error("Error: only float32/64 supported.")
 
     var grad_scores = multiply(grad_softmax, scale_tensor)
 
@@ -258,8 +256,8 @@ fn _softmax_backward(
 ) raises -> ExTensor:
     """Internal helper for softmax backward pass.
 
-    Computes gradient through softmax: d_softmax/d_input = s * (g - sum(g * s))
-    where s = softmax_output and g = grad_output
+    Computes gradient through softmax: d_softmax/d_input = s * (g - sum(g * s)).
+    where s = softmax_output and g = grad_output.
     """
     var shape = grad_output.shape()
     var result = zeros_like(grad_output)
@@ -308,7 +306,7 @@ fn _softmax_backward(
                 result_ptr.bitcast[Float64]()[offset + i] = s * (g - dot_sum)
 
     else:
-        raise Error("_softmax_backward: only float32/64 supported")
+        raise Error("Error: only float32/64 supported.")
 
     return result
 
@@ -319,14 +317,14 @@ fn create_causal_mask(
     """Create a causal (lower-triangular) attention mask.
 
         Returns a mask where positions that should be ignored have large negative
-        values (-1e9) and valid positions have 0
+        values (-1e9) and valid positions have 0.
 
     Args:
-            seq_len: Sequence length for the mask
-            dtype: Data type for the mask tensor
+            seq_len: Sequence length for the mask.
+            dtype: Data type for the mask tensor.
 
     Returns:
-            Mask tensor of shape (seq_len, seq_len) suitable for attention
+            Mask tensor of shape (seq_len, seq_len) suitable for attention.
 
         Example:
             ```mojo
@@ -337,8 +335,8 @@ fn create_causal_mask(
             ```
 
     Note:
-            The mask is designed for additive masking before softmax
-            Position (i, j) is masked (set to -1e9) if j > i (future position)
+            The mask is designed for additive masking before softmax.
+            Position (i, j) is masked (set to -1e9) if j > i (future position).
     """
     var shape = List[Int]()
     shape.append(seq_len)
@@ -367,7 +365,7 @@ fn create_causal_mask(
                     mask_ptr.bitcast[Float64]()[idx] = neg_inf
 
     else:
-        raise Error("create_causal_mask: only float32/64 supported")
+        raise Error("Error: only float32/64 supported.")
 
     return mask
 
@@ -380,7 +378,7 @@ fn create_causal_mask(
 struct MultiHeadAttentionWeights(Movable):
     """Container for multi-head attention weight matrices.
 
-    Holds the projection matrices for Q, K, V and output projection
+    Holds the projection matrices for Q, K, V and output projection.
     """
 
     var wq: ExTensor  # Query projection: (d_model, d_model)
@@ -410,7 +408,7 @@ struct MultiHeadAttentionWeights(Movable):
 struct MultiHeadAttentionResult(Movable):
     """Result container for multi_head_attention.
 
-    Contains output and attention weights for visualization/analysis
+    Contains output and attention weights for visualization/analysis.
     """
 
     var output: ExTensor
@@ -434,7 +432,7 @@ fn multi_head_attention(
 ) raises -> MultiHeadAttentionResult:
     """Multi-head attention mechanism without mask.
 
-    See multi_head_attention_masked for version with mask support
+    See multi_head_attention_masked for version with mask support.
     """
     var empty_shape = List[Int]()
     var empty_mask = zeros(empty_shape, DType.float32)
@@ -455,20 +453,20 @@ fn multi_head_attention_masked(
 
         Projects inputs through multiple attention heads in parallel, then
         concatenates and projects the results. This is the core mechanism in
-        transformer architectures
+        transformer architectures.
 
     Args:
-            query: Query tensor of shape (batch, seq_len, d_model)
-            key: Key tensor of shape (batch, seq_len, d_model)
-            value: Value tensor of shape (batch, seq_len, d_model)
-            weights: MultiHeadAttentionWeights containing Wq, Wk, Wv, Wo
-            num_heads: Number of attention heads
-            mask: Optional attention mask
+            query: Query tensor of shape (batch, seq_len, d_model).
+            key: Key tensor of shape (batch, seq_len, d_model).
+            value: Value tensor of shape (batch, seq_len, d_model).
+            weights: MultiHeadAttentionWeights containing Wq, Wk, Wv, Wo.
+            num_heads: Number of attention heads.
+            mask: Optional attention mask.
 
     Returns:
             MultiHeadAttentionResult containing:
-                - output: Attended output of shape (batch, seq_len, d_model)
-                - attention_weights: Attention weights for visualization
+                - output: Attended output of shape (batch, seq_len, d_model).
+                - attention_weights: Attention weights for visualization.
 
         Example:
             ```mojo
@@ -485,27 +483,23 @@ fn multi_head_attention_masked(
             ```
 
         Formula:
-            MultiHead(Q, K, V) = Concat(head_1, ..., head_h) * Wo
-            where head_i = Attention(Q * Wq_i, K * Wk_i, V * Wv_i)
+            MultiHead(Q, K, V) = Concat(head_1, ..., head_h) * Wo.
+            where head_i = Attention(Q * Wq_i, K * Wk_i, V * Wv_i).
 
     Note:
-            - d_model must be divisible by num_heads
-            - Each head operates on d_k = d_model / num_heads dimensions
+            - d_model must be divisible by num_heads.
+            - Each head operates on d_k = d_model / num_heads dimensions.
     """
     var q_shape = query.shape()
     if len(q_shape) != 3:
-        raise Error(
-            "multi_head_attention: query must be 3D (batch, seq, d_model)"
-        )
+        raise Error("Error: query must be 3D (batch, seq, d_model).")
 
     var batch = q_shape[0]
     var seq_len = q_shape[1]
     var d_model = q_shape[2]
 
     if d_model % num_heads != 0:
-        raise Error(
-            "multi_head_attention: d_model must be divisible by num_heads"
-        )
+        raise Error("Error: d_model must be divisible by num_heads.")
 
     var d_k = d_model // num_heads
 
@@ -568,9 +562,9 @@ fn multi_head_attention_masked(
 fn _reshape_for_heads(
     x: ExTensor, batch: Int, seq_len: Int, num_heads: Int, d_k: Int
 ) raises -> ExTensor:
-    """Reshape from (batch, seq, d_model) to (batch, num_heads, seq, d_k)
+    """Reshape from (batch, seq, d_model) to (batch, num_heads, seq, d_k).
 
-    Internal helper for multi-head attention
+    Internal helper for multi-head attention.
     """
     # x shape: (batch, seq_len, d_model) where d_model = num_heads * d_k
     # Target: (batch, num_heads, seq_len, d_k)
@@ -629,9 +623,9 @@ fn _reshape_for_heads(
 fn _reshape_from_heads(
     x: ExTensor, batch: Int, seq_len: Int, num_heads: Int, d_k: Int
 ) raises -> ExTensor:
-    """Reshape from (batch, num_heads, seq, d_k) to (batch, seq, d_model)
+    """Reshape from (batch, num_heads, seq, d_k) to (batch, seq, d_model).
 
-    Internal helper for multi-head attention
+    Internal helper for multi-head attention.
     """
     # x shape: (batch, num_heads, seq_len, d_k)
     # Target: (batch, seq_len, d_model) where d_model = num_heads * d_k
@@ -689,7 +683,7 @@ fn _reshape_from_heads(
 struct MultiHeadAttentionBackwardResult(Movable):
     """Result container for multi_head_attention_backward.
 
-    Contains gradients for all inputs and weight matrices
+    Contains gradients for all inputs and weight matrices.
     """
 
     var grad_query: ExTensor
@@ -739,23 +733,23 @@ fn multi_head_attention_backward(
 ) raises -> MultiHeadAttentionBackwardResult:
     """Backward pass for multi-head attention.
 
-        Computes gradients with respect to all inputs and weight matrices
+        Computes gradients with respect to all inputs and weight matrices.
 
     Args:
-            grad_output: Gradient w.r.t. output (batch, seq_len, d_model)
-            query: Original query tensor (batch, seq_len, d_model)
-            key: Original key tensor (batch, seq_len, d_model)
-            value: Original value tensor (batch, seq_len, d_model)
-            weights: MultiHeadAttentionWeights used in forward pass
-            attention_weights: Attention weights from forward pass
-            num_heads: Number of attention heads
+            grad_output: Gradient w.r.t. output (batch, seq_len, d_model).
+            query: Original query tensor (batch, seq_len, d_model).
+            key: Original key tensor (batch, seq_len, d_model).
+            value: Original value tensor (batch, seq_len, d_model).
+            weights: MultiHeadAttentionWeights used in forward pass.
+            attention_weights: Attention weights from forward pass.
+            num_heads: Number of attention heads.
 
     Returns:
-            MultiHeadAttentionBackwardResult containing gradients for all inputs/weights
+            MultiHeadAttentionBackwardResult containing gradients for all inputs/weights.
 
     Note:
-            Caller must save attention_weights from forward pass
-            Pure functional: returns new tensors, does not modify inputs
+            Caller must save attention_weights from forward pass.
+            Pure functional: returns new tensors, does not modify inputs.
     """
     var q_shape = query.shape()
     var batch = q_shape[0]

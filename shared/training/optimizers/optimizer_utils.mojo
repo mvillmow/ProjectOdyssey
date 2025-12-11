@@ -24,19 +24,19 @@ from shared.core.arithmetic_simd import multiply_simd
 fn initialize_optimizer_state(
     param_shapes: List[List[Int]], num_states: Int, dtype: DType = DType.float32
 ) raises -> List[List[ExTensor]]:
-    """Initialize multiple state buffers for optimizer (e.g., momentum, moments)
+    """Initialize multiple state buffers for optimizer (e.g., momentum, moments).
 
-        Creates num_states lists of zero-initialized tensors for each parameter shape
-        This is useful for initializing all required state tensors for an optimizer
+        Creates num_states lists of zero-initialized tensors for each parameter shape.
+        This is useful for initializing all required state tensors for an optimizer.
 
     Args:
-            param_shapes: List of parameter shapes to create state buffers for
-            num_states: Number of state buffers to create per parameter
-            dtype: Data type for state tensors (default: float32)
+            param_shapes: List of parameter shapes to create state buffers for.
+            num_states: Number of state buffers to create per parameter.
+            dtype: Data type for state tensors (default: float32).
 
     Returns:
             List of state buffer lists. Each element is a list of ExTensor states
-            for a single parameter
+            for a single parameter.
 
         Example:
             ```mojo
@@ -51,8 +51,8 @@ fn initialize_optimizer_state(
             ```
 
     Note:
-            For SGD with momentum, use num_states=1 (one velocity buffer per param)
-            For Adam variants, use num_states=2 (m and v buffers per param)
+            For SGD with momentum, use num_states=1 (one velocity buffer per param).
+            For Adam variants, use num_states=2 (m and v buffers per param).
     """
     from shared.core.extensor import zeros
 
@@ -80,14 +80,14 @@ fn initialize_optimizer_state_from_params(
     """Initialize multiple state buffers for optimizer from existing parameters.
 
         Convenience function that extracts shapes from parameter tensors and creates
-        matching state buffers with the same dtype as each parameter
+        matching state buffers with the same dtype as each parameter.
 
     Args:
-            params: List of parameter tensors to base state initialization on
-            num_states: Number of state buffers to create per parameter
+            params: List of parameter tensors to base state initialization on.
+            num_states: Number of state buffers to create per parameter.
 
     Returns:
-            List of state buffer lists with matching shapes and dtypes
+            List of state buffer lists with matching shapes and dtypes.
 
         Example:
             ```mojo
@@ -123,14 +123,14 @@ fn compute_weight_decay_term(
     """Compute L2 regularization term: weight_decay * params.
 
         Returns a tensor that represents the weight decay contribution to the
-        effective gradient. This is used in coupled weight decay (as in Adam)
+        effective gradient. This is used in coupled weight decay (as in Adam).
 
     Args:
-            params: Model parameters
-            weight_decay: L2 regularization coefficient
+            params: Model parameters.
+            weight_decay: L2 regularization coefficient.
 
     Returns:
-            Tensor of same shape as params containing weight_decay * params
+            Tensor of same shape as params containing weight_decay * params.
 
         Example:
             ```mojo
@@ -142,21 +142,21 @@ fn compute_weight_decay_term(
     Note:
             This computes the "coupled" weight decay used in Adam.
             For "decoupled" weight decay (AdamW), apply decay directly to params
-            after the gradient-based update
+            after the gradient-based update.
     """
     var wd_tensor = full_like(params, weight_decay)
     return multiply_simd(wd_tensor, params)
 
 
 fn apply_weight_decay(mut params: ExTensor, weight_decay: Float64) raises:
-    """Apply L2 regularization directly to parameters (in-place)
+    """Apply L2 regularization directly to parameters (in-place).
 
-        This performs decoupled weight decay: params = params * (1 - weight_decay)
-        Used in AdamW and other decoupled weight decay schemes
+        This performs decoupled weight decay: params = params * (1 - weight_decay).
+        Used in AdamW and other decoupled weight decay schemes.
 
     Args:
-            params: Model parameters to regularize (modified in-place)
-            weight_decay: L2 regularization coefficient
+            params: Model parameters to regularize (modified in-place).
+            weight_decay: L2 regularization coefficient.
 
         Example:
             ```mojo
@@ -166,8 +166,8 @@ fn apply_weight_decay(mut params: ExTensor, weight_decay: Float64) raises:
             ```
 
     Note:
-            This modifies the params tensor in-place
-            Typically applied AFTER gradient-based updates
+            This modifies the params tensor in-place.
+            Typically applied AFTER gradient-based updates.
     """
     if weight_decay < 0.0 or weight_decay > 1.0:
         raise Error(
@@ -189,14 +189,14 @@ fn apply_weight_decay(mut params: ExTensor, weight_decay: Float64) raises:
 fn scale_tensor(tensor: ExTensor, scale: Float64) raises -> ExTensor:
     """Multiply tensor by scalar value.
 
-        Returns a new tensor containing tensor * scale
+        Returns a new tensor containing tensor * scale.
 
     Args:
-            tensor: Input tensor
-            scale: Scalar multiplier
+            tensor: Input tensor.
+            scale: Scalar multiplier.
 
     Returns:
-            New tensor of same shape and dtype as input, with all elements scaled
+            New tensor of same shape and dtype as input, with all elements scaled.
 
         Example:
             ```mojo
@@ -210,13 +210,13 @@ fn scale_tensor(tensor: ExTensor, scale: Float64) raises -> ExTensor:
 
 
 fn scale_tensor_inplace(mut tensor: ExTensor, scale: Float64) raises:
-    """Multiply tensor by scalar value (in-place)
+    """Multiply tensor by scalar value (in-place).
 
-        Modifies the tensor in-place by multiplying all elements by scale
+        Modifies the tensor in-place by multiplying all elements by scale.
 
     Args:
-            tensor: Input tensor (modified in-place)
-            scale: Scalar multiplier
+            tensor: Input tensor (modified in-place).
+            scale: Scalar multiplier.
 
         Example:
             ```mojo
@@ -233,13 +233,13 @@ fn scale_tensor_inplace(mut tensor: ExTensor, scale: Float64) raises:
 fn compute_tensor_norm(tensor: ExTensor) raises -> Float64:
     """Compute L2 norm (Euclidean norm) of a tensor.
 
-        Returns sqrt(sum(tensor^2))
+        Returns sqrt(sum(tensor^2)).
 
     Args:
-            tensor: Input tensor
+            tensor: Input tensor.
 
     Returns:
-            L2 norm of the tensor as Float64
+            L2 norm of the tensor as Float64.
 
         Example:
             ```mojo
@@ -249,7 +249,7 @@ fn compute_tensor_norm(tensor: ExTensor) raises -> Float64:
             ```
 
     Note:
-            This is useful for gradient clipping and adaptive learning rates
+            This is useful for gradient clipping and adaptive learning rates.
     """
     var norm_squared = 0.0
 
@@ -263,14 +263,14 @@ fn compute_tensor_norm(tensor: ExTensor) raises -> Float64:
 fn compute_global_norm(tensors: List[ExTensor]) raises -> Float64:
     """Compute global L2 norm across multiple tensors.
 
-        Returns sqrt(sum over all tensors of sum(tensor^2))
-        This is useful for gradient clipping across all parameters
+        Returns sqrt(sum over all tensors of sum(tensor^2)).
+        This is useful for gradient clipping across all parameters.
 
     Args:
-            tensors: List of input tensors
+            tensors: List of input tensors.
 
     Returns:
-            Global L2 norm as Float64
+            Global L2 norm as Float64.
 
         Example:
             ```mojo
@@ -283,7 +283,7 @@ fn compute_global_norm(tensors: List[ExTensor]) raises -> Float64:
             ```
 
     Note:
-            For empty list, returns 0.0
+            For empty list, returns 0.0.
     """
     if len(tensors) == 0:
         return 0.0
@@ -301,13 +301,13 @@ fn compute_global_norm(tensors: List[ExTensor]) raises -> Float64:
 
 
 fn normalize_tensor_to_unit_norm(mut tensor: ExTensor) raises:
-    """Normalize tensor to unit L2 norm (in-place)
+    """Normalize tensor to unit L2 norm (in-place).
 
-        Modifies the tensor in-place so that its L2 norm becomes 1.0
-        If the tensor has zero norm, it remains unchanged (no division by zero)
+        Modifies the tensor in-place so that its L2 norm becomes 1.0.
+        If the tensor has zero norm, it remains unchanged (no division by zero).
 
     Args:
-            tensor: Input tensor (modified in-place)
+            tensor: Input tensor (modified in-place).
 
         Example:
             ```mojo
@@ -317,7 +317,7 @@ fn normalize_tensor_to_unit_norm(mut tensor: ExTensor) raises:
             ```
 
     Note:
-            Safe against division by zero - if norm is 0, tensor is unchanged
+            Safe against division by zero - if norm is 0, tensor is unchanged.
     """
     var norm = compute_tensor_norm(tensor)
 
@@ -327,21 +327,21 @@ fn normalize_tensor_to_unit_norm(mut tensor: ExTensor) raises:
 
 
 fn clip_tensor_norm(mut tensor: ExTensor, max_norm: Float64) raises -> Float64:
-    """Clip tensor norm if it exceeds max_norm (in-place)
+    """Clip tensor norm if it exceeds max_norm (in-place).
 
         If the L2 norm of the tensor exceeds max_norm, scales all elements
-        down proportionally to bring the norm to exactly max_norm
-        Preserves the direction of the tensor
+        down proportionally to bring the norm to exactly max_norm.
+        Preserves the direction of the tensor.
 
     Args:
-            tensor: Input tensor (modified in-place if norm exceeds max_norm)
-            max_norm: Maximum allowed L2 norm
+            tensor: Input tensor (modified in-place if norm exceeds max_norm).
+            max_norm: Maximum allowed L2 norm.
 
     Returns:
-            Original L2 norm before clipping
+            Original L2 norm before clipping.
 
     Raises:
-            Error: If max_norm is negative
+            Error: If max_norm is negative.
 
         Example:
             ```mojo
@@ -352,7 +352,7 @@ fn clip_tensor_norm(mut tensor: ExTensor, max_norm: Float64) raises -> Float64:
             ```
 
     Note:
-            This is the standard approach for gradient clipping in RNNs
+            This is the standard approach for gradient clipping in RNNs.
     """
     if max_norm < 0.0:
         raise Error("max_norm must be non-negative, got: " + String(max_norm))
@@ -369,20 +369,20 @@ fn clip_tensor_norm(mut tensor: ExTensor, max_norm: Float64) raises -> Float64:
 fn clip_global_norm(
     mut tensors: List[ExTensor], max_norm: Float64
 ) raises -> Float64:
-    """Clip global L2 norm across all tensors (in-place)
+    """Clip global L2 norm across all tensors (in-place).
 
         If the global L2 norm (computed across all tensors) exceeds max_norm,
-        scales all elements in all tensors down proportionally
+        scales all elements in all tensors down proportionally.
 
     Args:
-            tensors: List of tensors to clip (modified in-place if needed)
-            max_norm: Maximum allowed global L2 norm
+            tensors: List of tensors to clip (modified in-place if needed).
+            max_norm: Maximum allowed global L2 norm.
 
     Returns:
-            Original global L2 norm before clipping
+            Original global L2 norm before clipping.
 
     Raises:
-            Error: If max_norm is negative or tensors list is empty
+            Error: If max_norm is negative or tensors list is empty.
 
         Example:
             ```mojo
@@ -395,7 +395,7 @@ fn clip_global_norm(
             ```
 
     Note:
-            This is recommended for gradient clipping in recurrent networks
+            This is recommended for gradient clipping in recurrent networks.
     """
     if max_norm < 0.0:
         raise Error("max_norm must be non-negative, got: " + String(max_norm))
@@ -420,20 +420,20 @@ fn apply_bias_correction(
     """Apply bias correction to exponential moving average.
 
         Used in adaptive optimizers (Adam, RMSprop, etc.) to correct for bias
-        in the initial estimates when using exponential moving averages
+        in the initial estimates when using exponential moving averages.
 
-        Formula: corrected = estimate / (1 - decay^timestep)
+        Formula: corrected = estimate / (1 - decay^timestep).
 
     Args:
-            estimate: The exponential moving average estimate
-            decay: Decay factor (beta for momentum, typically 0.9 or 0.999)
-            timestep: Current timestep (starts at 1)
+            estimate: The exponential moving average estimate.
+            decay: Decay factor (beta for momentum, typically 0.9 or 0.999).
+            timestep: Current timestep (starts at 1).
 
     Returns:
-            Bias-corrected estimate with same shape and dtype as input
+            Bias-corrected estimate with same shape and dtype as input.
 
     Raises:
-            Error: If timestep <= 0 or decay not in [0, 1)
+            Error: If timestep <= 0 or decay not in [0, 1).
 
         Example:
             ```mojo
@@ -447,7 +447,7 @@ fn apply_bias_correction(
 
     Note:
             The correction factor (1 - decay^t) accounts for the bias in early
-            timesteps. As t increases, the correction becomes negligible
+            timesteps. As t increases, the correction becomes negligible.
     """
     if timestep <= 0:
         raise Error("timestep must be positive, got: " + String(timestep))
@@ -479,13 +479,13 @@ fn validate_optimizer_state(
     """Validate that optimizer state matches parameter shapes.
 
         Checks that:
-        - Number of state lists matches number of parameters
-        - Each state tensor shape matches corresponding parameter shape
-        - All tensors are non-empty
+        - Number of state lists matches number of parameters.
+        - Each state tensor shape matches corresponding parameter shape.
+        - All tensors are non-empty.
 
     Args:
-            params: List of parameter tensors
-            states: List of state buffer lists from optimizer
+            params: List of parameter tensors.
+            states: List of state buffer lists from optimizer.
 
     Raises:
             Error: If state dimensions don't match parameters.

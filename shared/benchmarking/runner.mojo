@@ -33,10 +33,10 @@ struct BenchmarkConfig(Copyable, Movable):
     """Configuration for benchmarking operations.
 
     Attributes:
-        warmup_iters: Number of warmup iterations before measurement
-        measure_iters: Number of measurement iterations
-        compute_percentiles: Whether to compute p50, p95, p99
-        report_throughput: Whether to report items per second
+        warmup_iters: Number of warmup iterations before measurement.
+        measure_iters: Number of measurement iterations.
+        compute_percentiles: Whether to compute p50, p95, p99.
+        report_throughput: Whether to report items per second.
     """
 
     var warmup_iters: Int
@@ -52,25 +52,25 @@ struct BenchmarkConfig(Copyable, Movable):
 
 @fieldwise_init
 struct BenchmarkStatistics(Copyable, ImplicitlyCopyable, Movable):
-    """Results from a benchmark run with statistical analysis (High-Level API)
+    """Results from a benchmark run with statistical analysis (High-Level API).
 
     Contains timing statistics, percentiles, and throughput metrics for a
-    benchmarked operation. Suitable for detailed performance reporting
+    benchmarked operation. Suitable for detailed performance reporting.
 
     Note: This was renamed from BenchmarkResult to avoid namespace collision
     with the low-level BenchmarkResult in result.mojo. See Issue #2457.
 
     Attributes:
-        mean_latency_ms: Mean execution time in milliseconds
-        std_dev_ms: Standard deviation in milliseconds
-        p50_ms: 50th percentile (median) latency in milliseconds
-        p95_ms: 95th percentile latency in milliseconds
-        p99_ms: 99th percentile latency in milliseconds
-        min_latency_ms: Minimum latency in milliseconds
-        max_latency_ms: Maximum latency in milliseconds
-        throughput: Operations per second (ops/sec)
-        iterations: Total measurement iterations
-        warmup_iterations: Warmup iterations performed
+        mean_latency_ms: Mean execution time in milliseconds.
+        std_dev_ms: Standard deviation in milliseconds.
+        p50_ms: 50th percentile (median) latency in milliseconds.
+        p95_ms: 95th percentile latency in milliseconds.
+        p99_ms: 99th percentile latency in milliseconds.
+        min_latency_ms: Minimum latency in milliseconds.
+        max_latency_ms: Maximum latency in milliseconds.
+        throughput: Operations per second (ops/sec).
+        iterations: Total measurement iterations.
+        warmup_iterations: Warmup iterations performed.
     """
 
     var mean_latency_ms: Float64
@@ -94,11 +94,11 @@ fn _compute_percentile(data: List[Float64], percentile: Float64) -> Float64:
     """Compute percentile from sorted data.
 
     Args:
-            data: Sorted list of values
-            percentile: Percentile to compute (0-100)
+            data: Sorted list of values.
+            percentile: Percentile to compute (0-100).
 
     Returns:
-            Percentile value
+            Percentile value.
     """
     if len(data) == 0:
         return 0.0
@@ -125,7 +125,7 @@ fn _sort_ascending(mut data: List[Float64]):
     """Simple bubble sort for small lists.
 
     Args:
-            data: List to sort in-place
+            data: List to sort in-place.
     """
     var n = len(data)
     for i in range(n):
@@ -146,7 +146,7 @@ fn _get_time_ns() -> Int:
         - Windows: QueryPerformanceCounter()
 
     Returns:
-            Time in nanoseconds as Int
+            Time in nanoseconds as Int.
     """
     return Int(perf_counter_ns())
 
@@ -155,10 +155,10 @@ fn _ns_to_ms(ns: Int) -> Float64:
     """Convert nanoseconds to milliseconds.
 
     Args:
-            ns: Time in nanoseconds
+            ns: Time in nanoseconds.
 
     Returns:
-            Time in milliseconds as Float64
+            Time in milliseconds as Float64.
     """
     return Float64(ns) / 1_000_000.0
 
@@ -179,19 +179,19 @@ fn benchmark_function(
         Executes a function multiple times with warmup iterations, then
         measures timing statistics across measurement iterations using high-
         resolution timers. Computes mean, standard deviation, percentiles,
-        and throughput
+        and throughput.
 
     Args:
-            func: Function to benchmark (takes no args, returns nothing)
-            warmup_iters: Number of warmup iterations (default 10)
-            measure_iters: Number of measurement iterations (default 100)
-            compute_percentiles: Whether to compute percentiles (default True)
+            func: Function to benchmark (takes no args, returns nothing).
+            warmup_iters: Number of warmup iterations (default 10).
+            measure_iters: Number of measurement iterations (default 100).
+            compute_percentiles: Whether to compute percentiles (default True).
 
     Returns:
-            BenchmarkStatistics with timing statistics (latencies in milliseconds)
+            BenchmarkStatistics with timing statistics (latencies in milliseconds).
 
     Raises:
-            Error if benchmarking fails
+            Error: If benchmarking fails.
 
         Example:
            ```mojo
@@ -287,7 +287,7 @@ struct BenchmarkRunner(Movable):
 
     Provides fine-grained iteration timing collection via the low-level
     BenchmarkResult struct from the result module. Useful for detailed
-    performance analysis and percentile computation
+    performance analysis and percentile computation.
 
     Example:
        ```mojo
@@ -310,8 +310,8 @@ struct BenchmarkRunner(Movable):
         """Initialize a benchmark runner.
 
         Args:
-            name: Descriptive name for the benchmarked operation
-            warmup_iters: Number of warmup iterations (default 10)
+            name: Descriptive name for the benchmarked operation.
+            warmup_iters: Number of warmup iterations (default 10).
         """
         self.name = name
         self.warmup_iters = warmup_iters
@@ -321,10 +321,10 @@ struct BenchmarkRunner(Movable):
         """Run warmup iterations.
 
         Args:
-            func: Function to run during warmup phase
+            func: Function to run during warmup phase.
 
         Raises:
-            Error if func raises during warmup
+            Error: If func raises during warmup.
         """
         for _ in range(self.warmup_iters):
             func()
@@ -333,7 +333,7 @@ struct BenchmarkRunner(Movable):
         """Record a single iteration's execution time.
 
         Args:
-            time_ns: Execution time in nanoseconds
+            time_ns: Execution time in nanoseconds.
         """
         self.result.record(time_ns)
 
@@ -341,7 +341,7 @@ struct BenchmarkRunner(Movable):
         """Get mean execution time in milliseconds.
 
         Returns:
-            Mean time in milliseconds
+            Mean time in milliseconds.
         """
         return self.result.mean() / 1_000_000.0
 
@@ -349,7 +349,7 @@ struct BenchmarkRunner(Movable):
         """Get standard deviation of execution times in milliseconds.
 
         Returns:
-            Standard deviation in milliseconds
+            Standard deviation in milliseconds.
         """
         return self.result.std() / 1_000_000.0
 
@@ -357,7 +357,7 @@ struct BenchmarkRunner(Movable):
         """Get minimum execution time in milliseconds.
 
         Returns:
-            Minimum time in milliseconds
+            Minimum time in milliseconds.
         """
         return self.result.min_time() / 1_000_000.0
 
@@ -365,7 +365,7 @@ struct BenchmarkRunner(Movable):
         """Get maximum execution time in milliseconds.
 
         Returns:
-            Maximum time in milliseconds
+            Maximum time in milliseconds.
         """
         return self.result.max_time() / 1_000_000.0
 
@@ -373,7 +373,7 @@ struct BenchmarkRunner(Movable):
         """Get total number of iterations recorded.
 
         Returns:
-            Number of iterations
+            Number of iterations.
         """
         return self.result.iterations
 
@@ -389,8 +389,8 @@ fn print_benchmark_report(
     """Print formatted benchmark report.
 
     Args:
-            result: BenchmarkStatistics from benchmark_function()
-            name: Name of benchmarked operation (default "Benchmark")
+            result: BenchmarkStatistics from benchmark_function().
+            name: Name of benchmarked operation (default "Benchmark").
     """
     print("")
     print("=" * 70)
@@ -429,11 +429,11 @@ fn print_benchmark_summary(
 ):
     """Print summary table of multiple benchmark results.
 
-        Useful for comparing performance across multiple functions
+        Useful for comparing performance across multiple functions.
 
     Args:
-            results: List of BenchmarkStatistics objects
-            names: Optional list of operation names (defaults to "Op 1", "Op 2", etc.)
+            results: List of BenchmarkStatistics objects.
+            names: Optional list of operation names (defaults to "Op 1", "Op 2", etc.).
     """
     print("")
     print("=" * 100)
@@ -491,13 +491,13 @@ fn create_benchmark_config(
     """Create a benchmark configuration.
 
     Args:
-            warmup_iters: Warmup iterations (default 10)
-            measure_iters: Measurement iterations (default 100)
-            compute_percentiles: Compute percentiles (default True)
-            report_throughput: Report throughput (default True)
+            warmup_iters: Warmup iterations (default 10).
+            measure_iters: Measurement iterations (default 100).
+            compute_percentiles: Compute percentiles (default True).
+            report_throughput: Report throughput (default True).
 
     Returns:
-            BenchmarkConfig with specified settings
+            BenchmarkConfig with specified settings.
     """
     return BenchmarkConfig(
         warmup_iters=warmup_iters,
@@ -523,9 +523,9 @@ alias BenchmarkResult = BenchmarkStatistics
 
 
 struct LegacyBenchmarkConfig(Copyable, Movable):
-    """Legacy benchmark configuration (backwards compatible)
+    """Legacy benchmark configuration (backwards compatible).
 
-    Matches the old benchmarks/framework.mojo API
+    Matches the old benchmarks/framework.mojo API.
     """
 
     var warmup_iterations: Int
@@ -539,17 +539,17 @@ struct LegacyBenchmarkConfig(Copyable, Movable):
         """Initialize benchmark configuration.
 
         Args:
-            warmup: Warmup iterations (default: 100)
-            iterations: Measurement iterations (default: 1000)
+            warmup: Warmup iterations (default: 100).
+            iterations: Measurement iterations (default: 1000).
         """
         self.warmup_iterations = warmup
         self.measure_iterations = iterations
 
 
 struct LegacyBenchmarkResult(Copyable, Movable):
-    """Legacy benchmark result with microsecond units (backwards compatible)
+    """Legacy benchmark result with microsecond units (backwards compatible).
 
-    Matches the old benchmarks/framework.mojo API with field names in microseconds
+    Matches the old benchmarks/framework.mojo API with field names in microseconds.
     """
 
     var name: String
@@ -602,22 +602,22 @@ fn benchmark_operation(
         warmup=100, iterations=1000
     ),
 ) raises -> LegacyBenchmarkResult:
-    """Run operation multiple times and collect statistics (legacy API)
+    """Run operation multiple times and collect statistics (legacy API).
 
         Performs warmup phase for JIT compilation, then measures operation
         execution time across multiple iterations. Computes mean, standard
-        deviation, percentiles, and throughput
+        deviation, percentiles, and throughput.
 
         This function provides backwards compatibility with the old
-        benchmarks/framework.mojo API
+        benchmarks/framework.mojo API.
 
     Args:
-            name: Descriptive name for the operation
-            operation: Function to benchmark (should be self-contained)
-            config: Benchmark configuration (warmup, iterations)
+            name: Descriptive name for the operation.
+            operation: Function to benchmark (should be self-contained).
+            config: Benchmark configuration (warmup, iterations).
 
     Returns:
-            LegacyBenchmarkResult with timing statistics in microseconds
+            LegacyBenchmarkResult with timing statistics in microseconds.
     """
     # Use the new benchmark_function internally
     var result = benchmark_function(

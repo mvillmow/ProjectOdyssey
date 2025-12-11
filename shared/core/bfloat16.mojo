@@ -38,7 +38,7 @@ struct BFloat16:
     enabling simple conversion: truncate Float32's lower 16 bits.
 
     Attributes:
-        bits: uint16 storage for BF16 representation
+        bits: uint16 storage for BF16 representation.
     """
 
     var bits: UInt16
@@ -55,7 +55,7 @@ struct BFloat16:
         """Initialize BFloat16 from raw bits.
 
         Args:
-            bits: Raw uint16 bit representation
+            bits: Raw uint16 bit representation.
         """
         self.bits = bits
 
@@ -68,14 +68,14 @@ struct BFloat16:
     fn from_float32(value: Float32) -> BFloat16:
         """Convert Float32 to BFloat16 using rounding.
 
-         Uses round-to-nearest-even (RNE) for proper IEEE 754 rounding
-         This is the recommended conversion method
+         Uses round-to-nearest-even (RNE) for proper IEEE 754 rounding.
+         This is the recommended conversion method.
 
          Args:
-             value: Float32 value to convert
+             value: Float32 value to convert.
 
          Returns:
-             BFloat16 representation
+             BFloat16 representation.
 
          Example:
         ```mojo
@@ -132,13 +132,13 @@ struct BFloat16:
         """Convert Float32 to BFloat16 using simple truncation.
 
          Faster than rounding but less accurate. Use only when performance
-         is critical and slight accuracy loss is acceptable
+         is critical and slight accuracy loss is acceptable.
 
          Args:
-             value: Float32 value to convert
+             value: Float32 value to convert.
 
          Returns:
-             BFloat16 representation
+             BFloat16 representation.
 
          Example:
         ```mojo
@@ -162,10 +162,10 @@ struct BFloat16:
         """Convert BFloat16 to Float32.
 
         Conversion is exact (no rounding needed) since we're expanding
-        mantissa bits (7 -> 23) by zero-padding
+        mantissa bits (7 -> 23) by zero-padding.
 
         Returns:
-            Float32 representation
+            Float32 representation.
 
         Example:
         ```mojo
@@ -187,10 +187,10 @@ struct BFloat16:
     fn to_float64(self) -> Float64:
         """Convert BFloat16 to Float64.
 
-        Goes through Float32 conversion first
+        Goes through Float32 conversion first.
 
         Returns:
-            Float64 representation
+            Float64 representation.
         """
         return Float64(self.to_float32())
 
@@ -227,7 +227,7 @@ struct BFloat16:
         """Check if value is NaN.
 
         Returns:
-            True if NaN, False otherwise
+            True if NaN, False otherwise.
         """
         # NaN: exponent = 0xFF, mantissa != 0
         var exponent = (self.bits >> 7) & 0xFF
@@ -235,10 +235,10 @@ struct BFloat16:
         return exponent == 0xFF and mantissa != 0
 
     fn is_inf(self) -> Bool:
-        """Check if value is infinity (positive or negative)
+        """Check if value is infinity (positive or negative).
 
         Returns:
-            True if infinity, False otherwise
+            True if infinity, False otherwise.
         """
         # Inf: exponent = 0xFF, mantissa = 0
         var exponent = (self.bits >> 7) & 0xFF
@@ -246,10 +246,10 @@ struct BFloat16:
         return exponent == 0xFF and mantissa == 0
 
     fn is_finite(self) -> Bool:
-        """Check if value is finite (not NaN or infinity)
+        """Check if value is finite (not NaN or infinity).
 
         Returns:
-            True if finite, False otherwise
+            True if finite, False otherwise.
         """
         return not (self.is_nan() or self.is_inf())
 
@@ -261,10 +261,10 @@ struct BFloat16:
         """Add two BFloat16 values.
 
         Args:
-            other: Value to add
+            other: Value to add.
 
         Returns:
-            Sum as BFloat16
+            Sum as BFloat16.
         """
         var a = self.to_float32()
         var b = other.to_float32()
@@ -274,10 +274,10 @@ struct BFloat16:
         """Subtract two BFloat16 values.
 
         Args:
-            other: Value to subtract
+            other: Value to subtract.
 
         Returns:
-            Difference as BFloat16
+            Difference as BFloat16.
         """
         var a = self.to_float32()
         var b = other.to_float32()
@@ -287,10 +287,10 @@ struct BFloat16:
         """Multiply two BFloat16 values.
 
         Args:
-            other: Value to multiply
+            other: Value to multiply.
 
         Returns:
-            Product as BFloat16
+            Product as BFloat16.
         """
         var a = self.to_float32()
         var b = other.to_float32()
@@ -300,10 +300,10 @@ struct BFloat16:
         """Divide two BFloat16 values.
 
         Args:
-            other: Divisor
+            other: Divisor.
 
         Returns:
-            Quotient as BFloat16
+            Quotient as BFloat16.
         """
         var a = self.to_float32()
         var b = other.to_float32()
@@ -313,7 +313,7 @@ struct BFloat16:
         """Negate BFloat16 value.
 
         Returns:
-            Negated value
+            Negated value.
         """
         # Flip sign bit
         return BFloat16(self.bits ^ 0x8000)
@@ -326,10 +326,10 @@ struct BFloat16:
         """Check equality.
 
         Args:
-            other: Value to compare
+            other: Value to compare.
 
         Returns:
-            True if equal
+            True if equal.
         """
         # NaN != NaN
         if self.is_nan() or other.is_nan():
@@ -340,10 +340,10 @@ struct BFloat16:
         """Check inequality.
 
         Args:
-            other: Value to compare
+            other: Value to compare.
 
         Returns:
-            True if not equal
+            True if not equal.
         """
         return not (self == other)
 
@@ -351,10 +351,10 @@ struct BFloat16:
         """Check less than.
 
         Args:
-            other: Value to compare
+            other: Value to compare.
 
         Returns:
-            True if self < other
+            True if self < other.
         """
         return self.to_float32() < other.to_float32()
 
@@ -362,10 +362,10 @@ struct BFloat16:
         """Check less than or equal.
 
         Args:
-            other: Value to compare
+            other: Value to compare.
 
         Returns:
-            True if self <= other
+            True if self <= other.
         """
         return self.to_float32() <= other.to_float32()
 
@@ -373,10 +373,10 @@ struct BFloat16:
         """Check greater than.
 
         Args:
-            other: Value to compare
+            other: Value to compare.
 
         Returns:
-            True if self > other
+            True if self > other.
         """
         return self.to_float32() > other.to_float32()
 
@@ -384,10 +384,10 @@ struct BFloat16:
         """Check greater than or equal.
 
         Args:
-            other: Value to compare
+            other: Value to compare.
 
         Returns:
-            True if self >= other
+            True if self >= other.
         """
         return self.to_float32() >= other.to_float32()
 
@@ -399,7 +399,7 @@ struct BFloat16:
         """Convert to string.
 
         Returns:
-            String representation
+            String representation.
         """
         return "BFloat16(" + String(self.to_float32()) + ")"
 
@@ -407,7 +407,7 @@ struct BFloat16:
         """Get representation string.
 
         Returns:
-            Representation string
+            Representation string.
         """
         return self.__str__()
 
@@ -420,20 +420,20 @@ struct BFloat16:
 fn print_bfloat16_bits(value: BFloat16):
     """Print BFloat16 value and its bit representation.
 
-        Shows sign, exponent, and mantissa bits for debugging
+    Shows sign, exponent, and mantissa bits for debugging.
 
     Args:
-            value: BFloat16 value to print
+        value: BFloat16 value to print.
 
-        Example:
-           ```mojo
-            var bf16 = BFloat16.from_float32(3.14159)
-            print_bfloat16_bits(bf16)
-            # Output:
-            # BFloat16: 3.140625
-            # Bits: 0100000010010010
-            # Sign: 0, Exponent: 10000000 (128), Mantissa: 1001001
-            ```
+    Example:
+        ```mojo
+        var bf16 = BFloat16.from_float32(3.14159)
+        print_bfloat16_bits(bf16)
+        # Output:
+        # BFloat16: 3.140625
+        # Bits: 0100000010010010
+        # Sign: 0, Exponent: 10000000 (128), Mantissa: 1001001
+        ```
     """
     print("BFloat16: " + String(value.to_float32()))
 

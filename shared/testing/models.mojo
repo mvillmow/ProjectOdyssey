@@ -61,9 +61,9 @@ struct SimpleCNN(Copyable, Movable):
         Output: (batch_size, num_classes)
 
     Attributes:
-        in_channels: Number of input channels
-        out_channels: Number of output channels from first conv layer
-        num_classes: Number of output classes
+        in_channels: Number of input channels.
+        out_channels: Number of output channels from first conv layer.
+        num_classes: Number of output classes.
     """
 
     var in_channels: Int
@@ -79,9 +79,9 @@ struct SimpleCNN(Copyable, Movable):
         """Initialize simple CNN.
 
         Args:
-            in_channels: Number of input channels (default: 1 for MNIST-like)
-            out_channels: Number of output channels from first conv (default: 8)
-            num_classes: Number of output classes (default: 10)
+            in_channels: Number of input channels (default: 1 for MNIST-like).
+            out_channels: Number of output channels from first conv (default: 8).
+            num_classes: Number of output classes (default: 10).
 
         Example:
             ```mojo
@@ -97,10 +97,10 @@ struct SimpleCNN(Copyable, Movable):
         """Get output shape for given batch size.
 
         Args:
-            batch_size: Number of samples in batch
+            batch_size: Number of samples in batch.
 
         Returns:
-            Output shape (batch_size, num_classes)
+            Output shape (batch_size, num_classes).
         """
         var shape = List[Int]()
         shape.append(batch_size)
@@ -108,20 +108,20 @@ struct SimpleCNN(Copyable, Movable):
         return shape^
 
     fn forward(self, input: ExTensor) raises -> ExTensor:
-        """Forward pass (simplified for testing)
+        """Forward pass (simplified for testing).
 
-        Creates output tensor with correct shape filled with dummy values
-        In real implementation, this would include conv, pool, fc layers
+        Creates output tensor with correct shape filled with dummy values.
+        In real implementation, this would include conv, pool, fc layers.
 
         Args:
-            input: Input tensor (batch_size, in_channels, height, width)
+            input: Input tensor (batch_size, in_channels, height, width).
 
         Returns:
-            Output tensor (batch_size, num_classes)
+            Output tensor (batch_size, num_classes).
 
         Note:
             This is a placeholder for testing. Real implementations should
-            contain actual neural network operations
+            contain actual neural network operations.
         """
         var batch_size = input._shape[0]
         var output_shape = self.get_output_shape(batch_size)
@@ -153,8 +153,8 @@ struct LinearModel(Copyable, Movable):
         Output: (batch_size, out_features)
 
     Attributes:
-        in_features: Input feature dimension
-        out_features: Output feature dimension
+        in_features: Input feature dimension.
+        out_features: Output feature dimension.
     """
 
     var in_features: Int
@@ -164,8 +164,8 @@ struct LinearModel(Copyable, Movable):
         """Initialize linear model.
 
         Args:
-            in_features: Input dimension
-            out_features: Output dimension
+            in_features: Input dimension.
+            out_features: Output dimension.
 
         Example:
             ```mojo
@@ -180,10 +180,10 @@ struct LinearModel(Copyable, Movable):
         """Get output shape for given batch size.
 
         Args:
-            batch_size: Number of samples in batch
+            batch_size: Number of samples in batch.
 
         Returns:
-            Output shape (batch_size, out_features)
+            Output shape (batch_size, out_features).
         """
         var shape = List[Int]()
         shape.append(batch_size)
@@ -193,18 +193,18 @@ struct LinearModel(Copyable, Movable):
     fn forward(self, input: ExTensor) raises -> ExTensor:
         """Forward pass.
 
-        Creates output tensor with correct shape filled with zeros
-        In real implementation, this would compute y = xW^T + b
+        Creates output tensor with correct shape filled with zeros.
+        In real implementation, this would compute y = xW^T + b.
 
         Args:
-            input: Input tensor (batch_size, in_features)
+            input: Input tensor (batch_size, in_features).
 
         Returns:
-            Output tensor (batch_size, out_features)
+            Output tensor (batch_size, out_features).
 
         Note:
             This is a placeholder for testing. Real implementations should
-            contain actual linear transformation: y = matmul(input, weights^T) + bias
+            contain actual linear transformation: y = matmul(input, weights^T) + bias.
         """
         var batch_size = input._shape[0]
         var output_shape = self.get_output_shape(batch_size)
@@ -223,12 +223,12 @@ struct MockLayer:
     """Minimal mock layer for testing.
 
     Provides a simple layer that performs identity transformation
-    or scaled transformation for testing purposes
+    or scaled transformation for testing purposes.
 
     Attributes:
-        input_dim: Input feature dimension
-        output_dim: Output feature dimension
-        scale: Scale factor applied to inputs
+        input_dim: Input feature dimension.
+        output_dim: Output feature dimension.
+        scale: Scale factor applied to inputs.
     """
 
     var input_dim: Int
@@ -241,9 +241,9 @@ struct MockLayer:
         """Initialize mock layer.
 
         Args:
-            input_dim: Input dimension
-            output_dim: Output dimension
-            scale: Scale factor for transformation (default: 1.0)
+            input_dim: Input dimension.
+            output_dim: Output dimension.
+            scale: Scale factor for transformation (default: 1.0).
 
         Example:
             ```mojo
@@ -251,8 +251,8 @@ struct MockLayer:
         ```
 
         Note:
-            This is a simplified layer for testing - not a real neural network layer
-            It performs a simple scaled identity or zero-padding transformation
+            This is a simplified layer for testing - not a real neural network layer.
+            It performs a simple scaled identity or zero-padding transformation.
         """
         self.input_dim = input_dim
         self.output_dim = output_dim
@@ -262,10 +262,10 @@ struct MockLayer:
         """Forward pass through mock layer.
 
         Args:
-            input: Input tensor (flat list of size input_dim)
+            input: Input tensor (flat list of size input_dim).
 
         Returns:
-            Output tensor (flat list of size output_dim)
+            Output tensor (flat list of size output_dim).
 
         Example:
             ```mojo
@@ -276,9 +276,9 @@ struct MockLayer:
         ```
 
         Note:
-            If output_dim < input_dim: truncates and scales
-            If output_dim > input_dim: pads with zeros after scaling
-            If output_dim == input_dim: scales all elements
+            If output_dim < input_dim: truncates and scales.
+            If output_dim > input_dim: pads with zeros after scaling.
+            If output_dim == input_dim: scales all elements.
         """
         var output = List[Float32](capacity=self.output_dim)
 
@@ -300,7 +300,7 @@ struct MockLayer:
         """Get number of trainable parameters.
 
         Returns:
-            Number of parameters (for testing parameter counting)
+            Number of parameters (for testing parameter counting).
 
         Example:
             ```mojo
@@ -309,7 +309,7 @@ struct MockLayer:
         ```
 
         Note:
-            Returns input_dim * output_dim to simulate weight matrix size
+            Returns input_dim * output_dim to simulate weight matrix size.
         """
         return self.input_dim * self.output_dim
 
@@ -320,17 +320,17 @@ struct MockLayer:
 
 
 struct SimpleLinearModel:
-    """Simple linear model (single layer)
+    """Simple linear model (single layer).
 
     Provides a minimal single-layer linear model for testing basic
-    forward passes and training workflows
+    forward passes and training workflows.
 
     Attributes:
-        input_dim: Input feature dimension
-        output_dim: Output dimension
-        weights: Model weights (flattened weight matrix)
-        bias: Model bias
-        use_bias: Whether to use bias
+        input_dim: Input feature dimension.
+        output_dim: Output dimension.
+        weights: Model weights (flattened weight matrix).
+        bias: Model bias.
+        use_bias: Whether to use bias.
     """
 
     var input_dim: Int
@@ -349,10 +349,10 @@ struct SimpleLinearModel:
         """Initialize simple linear model.
 
         Args:
-            input_dim: Input dimension
-            output_dim: Output dimension
-            use_bias: Whether to use bias (default: True)
-            init_value: Initial weight/bias value (default: 0.1)
+            input_dim: Input dimension.
+            output_dim: Output dimension.
+            use_bias: Whether to use bias (default: True).
+            init_value: Initial weight/bias value (default: 0.1).
 
         Example:
             ```mojo
@@ -365,8 +365,8 @@ struct SimpleLinearModel:
         ```
 
         Note:
-            Weights are initialized to constant value for predictable testing
-            For random initialization, use create_random_weights() after creation
+            Weights are initialized to constant value for predictable testing.
+            For random initialization, use create_random_weights() after creation.
         """
         self.input_dim = input_dim
         self.output_dim = output_dim
@@ -385,13 +385,13 @@ struct SimpleLinearModel:
                 self.bias.append(init_value)
 
     fn forward(self, input: List[Float32]) -> List[Float32]:
-        """Forward pass: output = weights @ input + bias
+        """Forward pass: output = weights @ input + bias.
 
         Args:
-            input: Input tensor (flat list of size input_dim)
+            input: Input tensor (flat list of size input_dim).
 
         Returns:
-            Output tensor (flat list of size output_dim)
+            Output tensor (flat list of size output_dim).
 
         Example:
             ```mojo
@@ -402,8 +402,8 @@ struct SimpleLinearModel:
         ```
 
         Note:
-            Performs matrix-vector multiplication: y = W @ x + b
-            where W is output_dim x input_dim weight matrix
+            Performs matrix-vector multiplication: y = W @ x + b.
+            where W is output_dim x input_dim weight matrix.
         """
         var output = List[Float32](capacity=self.output_dim)
 
@@ -426,7 +426,7 @@ struct SimpleLinearModel:
         """Get total number of parameters.
 
         Returns:
-            Total parameters (weights + bias)
+            Total parameters (weights + bias).
 
         Example:
             ```mojo
@@ -448,12 +448,12 @@ struct SimpleLinearModel:
 struct Parameter(Copyable, Movable):
     """Trainable parameter with data and gradient.
 
-    Wraps an ExTensor for the parameter data with an associated gradient tensor
-    Used in model layers to track trainable weights and biases
+    Wraps an ExTensor for the parameter data with an associated gradient tensor.
+    Used in model layers to track trainable weights and biases.
 
     Attributes:
-        data: The parameter tensor (weights or bias)
-        grad: The gradient tensor for backpropagation
+        data: The parameter tensor (weights or bias).
+        grad: The gradient tensor for backpropagation.
     """
 
     var data: ExTensor
@@ -463,10 +463,10 @@ struct Parameter(Copyable, Movable):
         """Initialize parameter with data tensor and zero gradient.
 
         Args:
-            data: The parameter tensor
+            data: The parameter tensor.
 
         Raises:
-            Error: If gradient tensor cannot be created
+            Error: If gradient tensor cannot be created.
 
         Example:
             ```mojo
@@ -481,7 +481,7 @@ struct Parameter(Copyable, Movable):
         """Get the shape of the parameter.
 
         Returns:
-            Shape of the parameter tensor
+            Shape of the parameter tensor.
 
         Example:
             ```mojo
@@ -498,22 +498,22 @@ struct Parameter(Copyable, Movable):
 
 
 struct SimpleMLP(Copyable, Model, Movable):
-    """Simple multi-layer perceptron (2-3 layers)
+    """Simple multi-layer perceptron (2-3 layers).
 
     Provides a minimal MLP for testing multi-layer forward passes,
-    training loops, and model composition
+    training loops, and model composition.
 
     Attributes:
-        input_dim: Input dimension
-        hidden_dim: Hidden layer dimension
-        output_dim: Output dimension
-        num_hidden_layers: Number of hidden layers (1 or 2)
-        layer1_weights: First layer weights
-        layer1_bias: First layer bias
-        layer2_weights: Second layer weights (hidden to hidden or hidden to output)
-        layer2_bias: Second layer bias
-        layer3_weights: Third layer weights (only if num_hidden_layers=2)
-        layer3_bias: Third layer bias (only if num_hidden_layers=2)
+        input_dim: Input dimension.
+        hidden_dim: Hidden layer dimension.
+        output_dim: Output dimension.
+        num_hidden_layers: Number of hidden layers (1 or 2).
+        layer1_weights: First layer weights.
+        layer1_bias: First layer bias.
+        layer2_weights: Second layer weights (hidden to hidden or hidden to output).
+        layer2_bias: Second layer bias.
+        layer3_weights: Third layer weights (only if num_hidden_layers=2).
+        layer3_bias: Third layer bias (only if num_hidden_layers=2).
     """
 
     var input_dim: Int
@@ -538,11 +538,11 @@ struct SimpleMLP(Copyable, Model, Movable):
         """Initialize simple MLP.
 
         Args:
-            input_dim: Input dimension
-            hidden_dim: Hidden layer dimension
-            output_dim: Output dimension
-            num_hidden_layers: Number of hidden layers (1 or 2, default: 1)
-            init_value: Initial weight/bias value (default: 0.1)
+            input_dim: Input dimension.
+            hidden_dim: Hidden layer dimension.
+            output_dim: Output dimension.
+            num_hidden_layers: Number of hidden layers (1 or 2, default: 1).
+            init_value: Initial weight/bias value (default: 0.1).
 
         Example:
             ```mojo
@@ -614,10 +614,10 @@ struct SimpleMLP(Copyable, Model, Movable):
         """Forward pass through MLP.
 
         Args:
-            input: Input tensor
+            input: Input tensor.
 
         Returns:
-            Output tensor
+            Output tensor.
 
         Example:
             ```mojo
@@ -628,7 +628,7 @@ struct SimpleMLP(Copyable, Model, Movable):
         ```
 
         Note:
-            Uses ReLU activation between layers: ReLU(x) = max(0, x)
+            Uses ReLU activation between layers: ReLU(x) = max(0, x).
         """
         # Layer 1: input -> hidden
         var hidden1 = self._linear_forward(
@@ -676,13 +676,13 @@ struct SimpleMLP(Copyable, Model, Movable):
         """Forward pass through MLP with ExTensor input.
 
         Args:
-            input: Input ExTensor
+            input: Input ExTensor.
 
         Returns:
-            Output ExTensor
+            Output ExTensor.
 
         Raises:
-            Error: If tensor conversion fails
+            Error: If tensor conversion fails.
 
         Example:
             ```mojo
@@ -693,8 +693,8 @@ struct SimpleMLP(Copyable, Model, Movable):
         ```
 
         Note:
-            This is the Model trait implementation that accepts ExTensor
-            Uses ReLU activation between layers: ReLU(x) = max(0, x)
+            This is the Model trait implementation that accepts ExTensor.
+            Uses ReLU activation between layers: ReLU(x) = max(0, x).
         """
         # Extract Float32 values from ExTensor
         var input_list = List[Float32]()
@@ -745,7 +745,7 @@ struct SimpleMLP(Copyable, Model, Movable):
         """Get total number of parameters.
 
         Returns:
-            Total parameters across all layers
+            Total parameters across all layers.
         """
         var total = len(self.layer1_weights) + len(self.layer1_bias)
         total += len(self.layer2_weights) + len(self.layer2_bias)
@@ -757,7 +757,7 @@ struct SimpleMLP(Copyable, Model, Movable):
         """Get flattened weights as ExTensor.
 
         Returns:
-            ExTensor containing all weights flattened
+            ExTensor containing all weights flattened.
 
         Example:
             ```mojo
@@ -794,7 +794,7 @@ struct SimpleMLP(Copyable, Model, Movable):
         """Get list of parameter tensors.
 
         Returns:
-            List of ExTensor objects containing weights and biases
+            List of ExTensor objects containing weights and biases.
 
         Example:
             ```mojo
@@ -871,7 +871,7 @@ struct SimpleMLP(Copyable, Model, Movable):
         """Export weights as state dictionary.
 
         Returns:
-            Dictionary mapping parameter names to their tensor values
+            Dictionary mapping parameter names to their tensor values.
 
         Example:
             ```mojo
@@ -880,7 +880,7 @@ struct SimpleMLP(Copyable, Model, Movable):
         ```
 
         Note:
-            Returns owned Dict with ownership transfer to avoid copy errors
+            Returns owned Dict with ownership transfer to avoid copy errors.
         """
         var state = Dict[String, ExTensor]()
 
@@ -936,7 +936,7 @@ struct SimpleMLP(Copyable, Model, Movable):
         """Load weights from state dictionary.
 
         Args:
-            state: Dictionary mapping parameter names to their tensor values
+            state: Dictionary mapping parameter names to their tensor values.
 
         Example:
             ```mojo
@@ -945,7 +945,7 @@ struct SimpleMLP(Copyable, Model, Movable):
         ```
 
         Note:
-            This is a placeholder implementation for now
+            This is a placeholder implementation for now.
         """
         # Placeholder for weight loading
         pass

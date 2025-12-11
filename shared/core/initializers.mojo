@@ -38,13 +38,13 @@ fn _fill_uniform_scaled[
 ](result: ExTensor, scale: Float64, offset: Float64) raises:
     """Fill tensor with scaled uniform random values: offset + random() * scale.
 
-        This is a dtype-generic helper that eliminates dtype branching
-        random_float64() returns [0, 1), which is transformed to [offset, offset+scale)
+        This is a dtype-generic helper that eliminates dtype branching.
+        random_float64() returns [0, 1), which is transformed to [offset, offset+scale).
 
     Args:
-            result: Tensor to fill (must be pre-allocated)
-            scale: Scale factor for random values
-            offset: Offset to add to scaled values
+            result: Tensor to fill (must be pre-allocated).
+            scale: Scale factor for random values.
+            offset: Offset to add to scaled values.
     """
     var ptr = result._data.bitcast[Scalar[dtype]]()
     for i in range(result._numel):
@@ -58,13 +58,13 @@ fn _fill_normal_boxmuller[
 ](result: ExTensor, mean: Float64, std: Float64) raises:
     """Fill tensor with normal random values using Box-Muller transform.
 
-        This is a dtype-generic helper that eliminates dtype branching
-        Generates pairs of normal random values using Box-Muller transform
+        This is a dtype-generic helper that eliminates dtype branching.
+        Generates pairs of normal random values using Box-Muller transform.
 
     Args:
-            result: Tensor to fill (must be pre-allocated)
-            mean: Mean of normal distribution
-            std: Standard deviation of normal distribution
+            result: Tensor to fill (must be pre-allocated).
+            mean: Mean of normal distribution.
+            std: Standard deviation of normal distribution.
     """
     var ptr = result._data.bitcast[Scalar[dtype]]()
     var i = 0
@@ -95,11 +95,11 @@ fn _fill_normal_boxmuller[
 fn _fill_constant[dtype: DType](result: ExTensor, value: Float64) raises:
     """Fill tensor with constant value.
 
-        This is a dtype-generic helper that eliminates dtype branching
+        This is a dtype-generic helper that eliminates dtype branching.
 
     Args:
-            result: Tensor to fill (must be pre-allocated)
-            value: Constant value to fill with
+            result: Tensor to fill (must be pre-allocated).
+            value: Constant value to fill with.
     """
     var ptr = result._data.bitcast[Scalar[dtype]]()
     var val = Scalar[dtype](value)
@@ -122,31 +122,31 @@ fn xavier_uniform(
     """Initialize weights using Xavier/Glorot uniform distribution.
 
         Draws samples from uniform distribution U(-a, a) where:
-            a = sqrt(6 / (fan_in + fan_out))
+            a = sqrt(6 / (fan_in + fan_out)).
 
         This initialization maintains variance of activations and gradients across
-        layers for networks using sigmoid or tanh activations
+        layers for networks using sigmoid or tanh activations.
 
         Mathematical derivation:
-        - For uniform U(-a, a), variance is a²/3
-        - Target variance: 2/(fan_in + fan_out)
-        - Therefore: a²/3 = 2/(fan_in + fan_out)
-        - Solving: a = sqrt(6/(fan_in + fan_out))
+        - For uniform U(-a, a), variance is a²/3.
+        - Target variance: 2/(fan_in + fan_out).
+        - Therefore: a²/3 = 2/(fan_in + fan_out).
+        - Solving: a = sqrt(6/(fan_in + fan_out)).
 
-        Supported dtypes: float16, float32, float64
+        Supported dtypes: float16, float32, float64.
 
     Args:
-            fan_in: Number of input units to the layer
-            fan_out: Number of output units from the layer
-            shape: Shape of weight tensor to initialize
-            dtype: Data type (default: float32)
-            seed_val: Random seed for reproducibility (-1 for random seed)
+            fan_in: Number of input units to the layer.
+            fan_out: Number of output units from the layer.
+            shape: Shape of weight tensor to initialize.
+            dtype: Data type (default: float32).
+            seed_val: Random seed for reproducibility (-1 for random seed).
 
     Returns:
-            Initialized weight tensor with Xavier uniform distribution
+            Initialized weight tensor with Xavier uniform distribution.
 
     Raises:
-            Error: If fan_in or fan_out are not positive
+            Error: If fan_in or fan_out are not positive.
 
     Examples:
             # Fully connected layer: 784 inputs -> 128 outputs
@@ -156,8 +156,8 @@ fn xavier_uniform(
             var w = xavier_uniform(100, 50, [100, 50], seed_val=42)
 
         References:
-            Glorot & Bengio (2010): "Understanding the difficulty of training.
-            deep feedforward neural networks"
+            Glorot & Bengio (2010): "Understanding the difficulty of training
+            deep feedforward neural networks".
     """
     if fan_in <= 0 or fan_out <= 0:
         raise Error("xavier_uniform: fan_in and fan_out must be positive")
@@ -199,31 +199,31 @@ fn xavier_normal(
     """Initialize weights using Xavier/Glorot normal distribution.
 
         Draws samples from normal distribution N(0, std²) where:
-            std = sqrt(2 / (fan_in + fan_out))
+            std = sqrt(2 / (fan_in + fan_out)).
 
         This initialization maintains variance of activations and gradients across
-        layers for networks using sigmoid or tanh activations
+        layers for networks using sigmoid or tanh activations.
 
         Mathematical derivation:
-        - For normal N(0, σ²), variance is σ²
-        - Target variance: 2/(fan_in + fan_out)
-        - Therefore: σ² = 2/(fan_in + fan_out)
-        - Standard deviation: σ = sqrt(2/(fan_in + fan_out))
+        - For normal N(0, σ²), variance is σ².
+        - Target variance: 2/(fan_in + fan_out).
+        - Therefore: σ² = 2/(fan_in + fan_out).
+        - Standard deviation: σ = sqrt(2/(fan_in + fan_out)).
 
-        Supported dtypes: float16, float32, float64
+        Supported dtypes: float16, float32, float64.
 
     Args:
-            fan_in: Number of input units to the layer
-            fan_out: Number of output units from the layer
-            shape: Shape of weight tensor to initialize
-            dtype: Data type (default: float32)
-            seed_val: Random seed for reproducibility (-1 for random seed)
+            fan_in: Number of input units to the layer.
+            fan_out: Number of output units from the layer.
+            shape: Shape of weight tensor to initialize.
+            dtype: Data type (default: float32).
+            seed_val: Random seed for reproducibility (-1 for random seed).
 
     Returns:
-            Initialized weight tensor with Xavier normal distribution
+            Initialized weight tensor with Xavier normal distribution.
 
     Raises:
-            Error: If fan_in or fan_out are not positive
+            Error: If fan_in or fan_out are not positive.
 
     Examples:
             # Fully connected layer: 784 inputs -> 128 outputs
@@ -233,8 +233,8 @@ fn xavier_normal(
             var w = xavier_normal(100, 50, [100, 50], seed_val=42)
 
         References:
-            Glorot & Bengio (2010): "Understanding the difficulty of training.
-            deep feedforward neural networks"
+            Glorot & Bengio (2010): "Understanding the difficulty of training
+            deep feedforward neural networks".
     """
     if fan_in <= 0 or fan_out <= 0:
         raise Error("xavier_normal: fan_in and fan_out must be positive")
@@ -284,34 +284,34 @@ fn kaiming_uniform(
     """Initialize weights using Kaiming/He uniform distribution.
 
         Draws samples from uniform distribution U(-a, a) where:
-            a = sqrt(6 / fan)  (fan depends on fan_mode)
+            a = sqrt(6 / fan)  (fan depends on fan_mode).
 
         This initialization is designed for networks with ReLU activations, which
         kill half the activations (output 0 for negative inputs). The gain factor
-        accounts for this to maintain variance
+        accounts for this to maintain variance.
 
         Mathematical derivation:
-        - For uniform U(-a, a), variance is a²/3
-        - Target variance for ReLU: 2/fan (not 2/(fan_in + fan_out) like Xavier)
-        - Therefore: a²/3 = 2/fan
-        - Solving: a = sqrt(6/fan)
+        - For uniform U(-a, a), variance is a²/3.
+        - Target variance for ReLU: 2/fan (not 2/(fan_in + fan_out) like Xavier).
+        - Therefore: a²/3 = 2/fan.
+        - Solving: a = sqrt(6/fan).
 
-        Supported dtypes: float16, float32, float64
+        Supported dtypes: float16, float32, float64.
 
     Args:
-            fan_in: Number of input units to the layer
-            fan_out: Number of output units from the layer
-            shape: Shape of weight tensor to initialize
+            fan_in: Number of input units to the layer.
+            fan_out: Number of output units from the layer.
+            shape: Shape of weight tensor to initialize.
             fan_mode: "fan_in" (default) or "fan_out" for fan calculation.
-            dtype: Data type (default: float32)
-            seed_val: Random seed for reproducibility (-1 for random seed)
+            dtype: Data type (default: float32).
+            seed_val: Random seed for reproducibility (-1 for random seed).
 
     Returns:
-            Initialized weight tensor with Kaiming uniform distribution
+            Initialized weight tensor with Kaiming uniform distribution.
 
     Raises:
-            Error: If fan_in or fan_out are not positive
-            Error: If fan_mode is not "fan_in" or "fan_out"
+            Error: If fan_in or fan_out are not positive.
+            Error: If fan_mode is not "fan_in" or "fan_out".
 
     Examples:
             # Fully connected layer: 784 inputs -> 128 outputs (using fan_in)
@@ -324,8 +324,8 @@ fn kaiming_uniform(
             var w_repro = kaiming_uniform(100, 50, [100, 50], seed_val=42)
 
         References:
-            He et al. (2015): "Delving Deep into Rectifiers: Surpassing Human-Level.
-            Performance on ImageNet Classification"
+            He et al. (2015): "Delving Deep into Rectifiers: Surpassing Human-Level
+            Performance on ImageNet Classification".
 
         Issue: #263-267 - Kaiming/He initialization.
     """
@@ -379,33 +379,33 @@ fn kaiming_normal(
     """Initialize weights using Kaiming/He normal distribution.
 
         Draws samples from normal distribution N(0, std²) where:
-            std = sqrt(2 / fan)  (fan depends on fan_mode)
+            std = sqrt(2 / fan)  (fan depends on fan_mode).
 
         This initialization is designed for networks with ReLU activations, which
-        kill half the activations. The variance scaling accounts for this effect
+        kill half the activations. The variance scaling accounts for this effect.
 
         Mathematical derivation:
-        - For normal N(0, σ²), variance is σ²
-        - Target variance for ReLU: 2/fan
-        - Therefore: σ² = 2/fan
-        - Standard deviation: σ = sqrt(2/fan)
+        - For normal N(0, σ²), variance is σ².
+        - Target variance for ReLU: 2/fan.
+        - Therefore: σ² = 2/fan.
+        - Standard deviation: σ = sqrt(2/fan).
 
-        Supported dtypes: float16, float32, float64
+        Supported dtypes: float16, float32, float64.
 
     Args:
-            fan_in: Number of input units to the layer
-            fan_out: Number of output units from the layer
-            shape: Shape of weight tensor to initialize
+            fan_in: Number of input units to the layer.
+            fan_out: Number of output units from the layer.
+            shape: Shape of weight tensor to initialize.
             fan_mode: "fan_in" (default) or "fan_out" for fan calculation.
-            dtype: Data type (default: float32)
-            seed_val: Random seed for reproducibility (-1 for random seed)
+            dtype: Data type (default: float32).
+            seed_val: Random seed for reproducibility (-1 for random seed).
 
     Returns:
-            Initialized weight tensor with Kaiming normal distribution
+            Initialized weight tensor with Kaiming normal distribution.
 
     Raises:
-            Error: If fan_in or fan_out are not positive
-            Error: If fan_mode is not "fan_in" or "fan_out"
+            Error: If fan_in or fan_out are not positive.
+            Error: If fan_mode is not "fan_in" or "fan_out".
 
     Examples:
             # Fully connected layer: 784 inputs -> 128 outputs
@@ -418,8 +418,8 @@ fn kaiming_normal(
             var w_repro = kaiming_normal(100, 50, [100, 50], seed_val=42)
 
         References:
-            He et al. (2015): "Delving Deep into Rectifiers: Surpassing Human-Level.
-            Performance on ImageNet Classification"
+            He et al. (2015): "Delving Deep into Rectifiers: Surpassing Human-Level
+            Performance on ImageNet Classification".
 
         Issue: #263-267 - Kaiming/He initialization.
     """
@@ -476,21 +476,21 @@ fn uniform(
 ) raises -> ExTensor:
     """Initialize weights using uniform distribution.
 
-        Draws samples from uniform distribution U(low, high) with configurable bounds
-        This is a basic initializer useful for biases, embeddings, or custom schemes
+        Draws samples from uniform distribution U(low, high) with configurable bounds.
+        This is a basic initializer useful for biases, embeddings, or custom schemes.
 
     Args:
-            shape: Shape of tensor to initialize
-            low: Lower bound of uniform distribution (default: -0.1)
-            high: Upper bound of uniform distribution (default: 0.1)
-            dtype: Data type (default: float32)
-            seed_val: Random seed for reproducibility (-1 for random seed)
+            shape: Shape of tensor to initialize.
+            low: Lower bound of uniform distribution (default: -0.1).
+            high: Upper bound of uniform distribution (default: 0.1).
+            dtype: Data type (default: float32).
+            seed_val: Random seed for reproducibility (-1 for random seed).
 
     Returns:
-            Initialized tensor with uniform distribution
+            Initialized tensor with uniform distribution.
 
     Raises:
-            Error: If low >= high
+            Error: If low >= high.
 
     Examples:
             # Default range [-0.1, 0.1]
@@ -540,23 +540,23 @@ fn normal(
 ) raises -> ExTensor:
     """Initialize weights using normal (Gaussian) distribution.
 
-        Draws samples from normal distribution N(mean, std²) with configurable parameters
-        This is a basic initializer useful for biases, embeddings, or custom schemes
+        Draws samples from normal distribution N(mean, std²) with configurable parameters.
+        This is a basic initializer useful for biases, embeddings, or custom schemes.
 
-        Uses Box-Muller transform to generate normal distribution from uniform samples
+        Uses Box-Muller transform to generate normal distribution from uniform samples.
 
     Args:
-            shape: Shape of tensor to initialize
-            mean: Mean of normal distribution (default: 0.0)
-            std: Standard deviation of normal distribution (default: 0.01)
-            dtype: Data type (default: float32)
-            seed_val: Random seed for reproducibility (-1 for random seed)
+            shape: Shape of tensor to initialize.
+            mean: Mean of normal distribution (default: 0.0).
+            std: Standard deviation of normal distribution (default: 0.01).
+            dtype: Data type (default: float32).
+            seed_val: Random seed for reproducibility (-1 for random seed).
 
     Returns:
-            Initialized tensor with normal distribution
+            Initialized tensor with normal distribution.
 
     Raises:
-            Error: If std <= 0
+            Error: If std <= 0.
 
     Examples:
             # Default: N(0, 0.01)
@@ -601,16 +601,16 @@ fn constant(
 ) raises -> ExTensor:
     """Initialize tensor with constant value.
 
-        Fills all elements with the specified constant value
-        Useful for specific initialization strategies (ones, custom bias values, etc.)
+        Fills all elements with the specified constant value.
+        Useful for specific initialization strategies (ones, custom bias values, etc.).
 
     Args:
-            shape: Shape of tensor to initialize
-            value: Constant value to fill tensor with
-            dtype: Data type (default: float32)
+            shape: Shape of tensor to initialize.
+            value: Constant value to fill tensor with.
+            dtype: Data type (default: float32).
 
     Returns:
-            Tensor filled with constant value
+            Tensor filled with constant value.
 
     Examples:
             # Initialize with ones
@@ -656,10 +656,10 @@ fn he_uniform(
 ) raises -> ExTensor:
     """Alias for kaiming_uniform.
 
-    He and Kaiming refer to the same initialization method (Kaiming He is the author)
+    He and Kaiming refer to the same initialization method (Kaiming He is the author).
     This alias provides compatibility with code that uses 'he_uniform' naming.
 
-    See kaiming_uniform() for full documentation
+    See kaiming_uniform() for full documentation.
     """
     return kaiming_uniform(fan_in, fan_out, shape, fan_mode, dtype, seed_val)
 
@@ -674,10 +674,10 @@ fn he_normal(
 ) raises -> ExTensor:
     """Alias for kaiming_normal.
 
-    He and Kaiming refer to the same initialization method (Kaiming He is the author)
+    He and Kaiming refer to the same initialization method (Kaiming He is the author).
     This alias provides compatibility with code that uses 'he_normal' naming.
 
-    See kaiming_normal() for full documentation
+    See kaiming_normal() for full documentation.
     """
     return kaiming_normal(fan_in, fan_out, shape, fan_mode, dtype, seed_val)
 
@@ -693,19 +693,19 @@ fn he_uniform(
     """Convenience overload that computes fan_in/fan_out from shape.
 
         For conv weights [out_channels, in_channels, kH, kW]:
-            fan_in = in_channels * kH * kW
-            fan_out = out_channels * kH * kW
+            fan_in = in_channels * kH * kW.
+            fan_out = out_channels * kH * kW.
 
         For linear weights [out_features, in_features]:
-            fan_in = in_features
-            fan_out = out_features
+            fan_in = in_features.
+            fan_out = out_features.
 
     Args:
-            shape: Tensor shape (2D for linear, 4D for conv)
-            dtype: Data type for the tensor
+            shape: Tensor shape (2D for linear, 4D for conv).
+            dtype: Data type for the tensor.
 
     Returns:
-            Initialized tensor
+            Initialized tensor.
     """
     var fan_in: Int
     var fan_out: Int
@@ -736,19 +736,19 @@ fn xavier_uniform(
     """Convenience overload that computes fan_in/fan_out from shape.
 
         For conv weights [out_channels, in_channels, kH, kW]:
-            fan_in = in_channels * kH * kW
-            fan_out = out_channels * kH * kW
+            fan_in = in_channels * kH * kW.
+            fan_out = out_channels * kH * kW.
 
         For linear weights [out_features, in_features]:
-            fan_in = in_features
-            fan_out = out_features
+            fan_in = in_features.
+            fan_out = out_features.
 
     Args:
-            shape: Tensor shape (2D for linear, 4D for conv)
-            dtype: Data type for the tensor
+            shape: Tensor shape (2D for linear, 4D for conv).
+            dtype: Data type for the tensor.
 
     Returns:
-            Initialized tensor
+            Initialized tensor.
     """
     var fan_in: Int
     var fan_out: Int

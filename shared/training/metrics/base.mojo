@@ -6,10 +6,10 @@ and MetricCollection for managing multiple metrics in training pipelines.
 Coordination: #293-297
 
 Design principles:
-- Consistent API across all metric types
-- Efficient batch updates
-- State management for incremental computation
-- Type-safe metric collection
+- Consistent API across all metric types.
+- Efficient batch updates.
+- State management for incremental computation.
+- Type-safe metric collection.
 """
 
 from collections import List
@@ -20,29 +20,29 @@ trait Metric:
     """Base interface for all training metrics.
 
     All metrics must implement:
-    - update(): Update metric state with new predictions/labels
-    - compute(): Compute final metric value(s)
-    - reset(): Clear metric state for new epoch
+    - update(): Update metric state with new predictions/labels.
+    - compute(): Compute final metric value(s).
+    - reset(): Clear metric state for new epoch.
 
-    This ensures consistent API across accuracy, loss, confusion matrix, etc
+    This ensures consistent API across accuracy, loss, confusion matrix, etc.
     """
 
     fn update(mut self, predictions: ExTensor, labels: ExTensor) raises:
         """Update metric state with a batch of predictions and labels.
 
         Args:
-            predictions: Model predictions (logits or class indices)
-            labels: Ground truth labels
+            predictions: Model predictions (logits or class indices).
+            labels: Ground truth labels.
 
         Raises:
-            Error if shapes are incompatible or values are invalid
+            Error: If shapes are incompatible or values are invalid.
         """
         ...
 
     fn reset(mut self):
         """Reset metric state for a new epoch or evaluation run.
 
-        Clears all accumulated statistics to start fresh
+        Clears all accumulated statistics to start fresh.
         """
         ...
 
@@ -51,7 +51,7 @@ struct MetricResult(Copyable, Movable):
     """Result from metric computation.
 
     Can represent scalar metrics (accuracy, loss) or tensor metrics
-    (per-class accuracy, confusion matrix)
+    (per-class accuracy, confusion matrix).
     """
 
     var name: String
@@ -77,10 +77,10 @@ struct MetricResult(Copyable, Movable):
         """Get scalar value.
 
         Returns:
-            Scalar value
+            Scalar value.
 
         Raises:
-            Error if metric is not scalar
+            Error: If metric is not scalar.
         """
         if not self.is_scalar:
             raise Error("Metric '" + self.name + "' is not scalar")
@@ -90,10 +90,10 @@ struct MetricResult(Copyable, Movable):
         """Get tensor value.
 
         Returns:
-            Tensor value (copy)
+            Tensor value (copy).
 
         Raises:
-            Error if metric is scalar
+            Error: If metric is scalar.
         """
         if self.is_scalar:
             raise Error("Metric '" + self.name + "' is not tensor")
@@ -105,10 +105,10 @@ struct MetricCollection(Sized):
     """Collection of metrics for training/evaluation.
 
     Manages multiple metrics with a unified interface:
-    - Batch updates to all metrics
-    - Compute all metrics at once
-    - Reset all metrics together
-    - Name-based metric access
+    - Batch updates to all metrics.
+    - Compute all metrics at once.
+    - Reset all metrics together.
+    - Name-based metric access.
 
     Example:
         ```mojo
@@ -140,8 +140,8 @@ struct MetricCollection(Sized):
         """Add a metric to the collection.
 
         Args:
-            name: Unique name for the metric
-            metric: Metric instance implementing Metric trait
+            name: Unique name for the metric.
+            metric: Metric instance implementing Metric trait.
         """
         # Check for duplicate names
         for i in range(self.num_metrics):
@@ -155,10 +155,10 @@ struct MetricCollection(Sized):
         self.num_metrics += 1
 
     fn __len__(self) -> Int:
-        """Get number of metrics in collection (Sized trait)
+        """Get number of metrics in collection (Sized trait).
 
         Returns:
-            Number of metrics
+            Number of metrics.
         """
         return self.num_metrics
 
@@ -166,7 +166,7 @@ struct MetricCollection(Sized):
         """Get number of metrics in collection.
 
         Returns:
-            Number of metrics
+            Number of metrics.
         """
         return self.num_metrics
 
@@ -174,7 +174,7 @@ struct MetricCollection(Sized):
         """Get names of all metrics.
 
         Returns:
-            Copy of metric names vector
+            Copy of metric names vector.
         """
         return List[String](self.metric_names)
 
@@ -182,10 +182,10 @@ struct MetricCollection(Sized):
         """Check if metric exists in collection.
 
         Args:
-            name: Metric name
+            name: Metric name.
 
         Returns:
-            True if metric exists
+            True if metric exists.
         """
         for i in range(self.num_metrics):
             if self.metric_names[i] == name:
@@ -197,10 +197,10 @@ fn create_metric_summary(results: List[MetricResult]) -> String:
     """Create human-readable summary of metric results.
 
     Args:
-            results: Vector of metric results
+            results: Vector of metric results.
 
     Returns:
-            Formatted string with all metrics
+            Formatted string with all metrics.
 
         Example output:
             Metrics Summary:
@@ -231,7 +231,7 @@ fn create_metric_summary(results: List[MetricResult]) -> String:
 struct MetricLogger:
     """Logger for tracking metric history across epochs.
 
-    Stores metric values over time for analysis and visualization
+    Stores metric values over time for analysis and visualization.
     """
 
     var metric_names: List[String]
@@ -250,8 +250,8 @@ struct MetricLogger:
         """Log metrics for an epoch.
 
         Args:
-            epoch: Epoch number
-            metrics: Metric results to log
+            epoch: Epoch number.
+            metrics: Metric results to log.
         """
         # First epoch: initialize history
         if self.num_epochs == 0:
@@ -275,13 +275,13 @@ struct MetricLogger:
         """Get history for a specific metric.
 
         Args:
-            metric_name: Name of metric
+            metric_name: Name of metric.
 
         Returns:
-            Vector of metric values across epochs
+            Vector of metric values across epochs.
 
         Raises:
-            Error if metric not found
+            Error: If metric not found.
         """
         for i in range(self.num_metrics):
             if self.metric_names[i] == metric_name:
@@ -294,13 +294,13 @@ struct MetricLogger:
         """Get latest value for a metric.
 
         Args:
-            metric_name: Name of metric
+            metric_name: Name of metric.
 
         Returns:
-            Latest metric value
+            Latest metric value.
 
         Raises:
-            Error if metric not found or no history
+            Error: If metric not found or no history.
         """
         var history = self.get_history(metric_name)
         if len(history) == 0:
@@ -313,14 +313,14 @@ struct MetricLogger:
         """Get best value for a metric.
 
         Args:
-            metric_name: Name of metric
-            maximize: If True, return maximum value; if False, return minimum
+            metric_name: Name of metric.
+            maximize: If True, return maximum value; if False, return minimum.
 
         Returns:
-            Best metric value
+            Best metric value.
 
         Raises:
-            Error if metric not found or no history
+            Error: If metric not found or no history.
         """
         var history = self.get_history(metric_name)
         if len(history) == 0:

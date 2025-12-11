@@ -46,10 +46,10 @@ struct PrecisionMode(Copyable, ImplicitlyCopyable, Movable, Stringable):
     """Precision mode enumeration.
 
     Supported modes:
-    - FP32: Full precision (32-bit float)
-    - FP16: Half precision (16-bit float)
-    - BF16: Brain float (16-bit, wider exponent range)
-    - FP8: Quarter precision (8-bit float, E4M3 format)
+    - FP32: Full precision (32-bit float).
+    - FP16: Half precision (16-bit float).
+    - BF16: Brain float (16-bit, wider exponent range).
+    - FP8: Quarter precision (8-bit float, E4M3 format).
     """
 
     var value: Int
@@ -82,23 +82,23 @@ struct PrecisionConfig(Copyable, Movable):
     """Central configuration for multi-precision training.
 
     Manages precision settings including:
-    - Compute dtype: Precision used for forward/backward passes
-    - Storage dtype: Precision for storing model weights
-    - Master dtype: Precision for optimizer state (always FP32)
-    - Gradient scaling: Automatic scaling for reduced precision
+    - Compute dtype: Precision used for forward/backward passes.
+    - Storage dtype: Precision for storing model weights.
+    - Master dtype: Precision for optimizer state (always FP32).
+    - Gradient scaling: Automatic scaling for reduced precision.
 
     The config provides utilities for:
-    - Casting tensors between precisions
-    - Managing gradient scaling
-    - Tracking training metrics (overflow detection)
+    - Casting tensors between precisions.
+    - Managing gradient scaling.
+    - Tracking training metrics (overflow detection).
 
     Attributes:
-        mode: Precision mode (FP32, FP16, BF16, FP8)
-        compute_dtype: DType for computations
-        storage_dtype: DType for weight storage
-        master_dtype: DType for optimizer (always float32)
-        use_gradient_scaler: Whether to use gradient scaling
-        scaler: GradientScaler for loss/gradient scaling
+        mode: Precision mode (FP32, FP16, BF16, FP8).
+        compute_dtype: DType for computations.
+        storage_dtype: DType for weight storage.
+        master_dtype: DType for optimizer (always float32).
+        use_gradient_scaler: Whether to use gradient scaling.
+        scaler: GradientScaler for loss/gradient scaling.
 
     Example:
         ```mojo
@@ -136,11 +136,11 @@ struct PrecisionConfig(Copyable, Movable):
         """Initialize precision configuration.
 
         Args:
-            mode: Precision mode (FP32, FP16, BF16, FP8)
-            compute_dtype: DType for forward/backward passes
-            storage_dtype: DType for model weights
-            use_gradient_scaler: Enable gradient scaling (required for FP16)
-            initial_scale: Initial loss scale for gradient scaler
+            mode: Precision mode (FP32, FP16, BF16, FP8).
+            compute_dtype: DType for forward/backward passes.
+            storage_dtype: DType for model weights.
+            use_gradient_scaler: Enable gradient scaling (required for FP16).
+            initial_scale: Initial loss scale for gradient scaler.
         """
         self.mode = mode
         self.compute_dtype = compute_dtype
@@ -155,10 +155,10 @@ struct PrecisionConfig(Copyable, Movable):
     fn fp32() -> PrecisionConfig:
         """Create FP32 (full precision) configuration.
 
-        No gradient scaling needed for FP32 training
+        No gradient scaling needed for FP32 training.
 
         Returns:
-            PrecisionConfig with FP32 settings
+            PrecisionConfig with FP32 settings.
         """
         return PrecisionConfig(
             mode=PrecisionMode.FP32,
@@ -171,13 +171,13 @@ struct PrecisionConfig(Copyable, Movable):
     fn fp16(initial_scale: Float32 = 65536.0) -> PrecisionConfig:
         """Create FP16 (half precision) configuration.
 
-        Uses gradient scaling to prevent underflow in FP16
+        Uses gradient scaling to prevent underflow in FP16.
 
         Args:
-            initial_scale: Initial loss scale (default: 2^16)
+            initial_scale: Initial loss scale (default: 2^16).
 
         Returns:
-            PrecisionConfig with FP16 settings
+            PrecisionConfig with FP16 settings.
         """
         return PrecisionConfig(
             mode=PrecisionMode.FP16,
@@ -191,27 +191,27 @@ struct PrecisionConfig(Copyable, Movable):
     fn bf16(initial_scale: Float32 = 65536.0) -> PrecisionConfig:
         """Create BF16 (brain float) configuration.
 
-        BF16 has wider exponent range than FP16, reducing overflow risk
-        Still uses gradient scaling for safety
+        BF16 has wider exponent range than FP16, reducing overflow risk.
+        Still uses gradient scaling for safety.
 
         Args:
-            initial_scale: Initial loss scale (default: 2^16)
+            initial_scale: Initial loss scale (default: 2^16).
                           BF16 has wider range than FP16, so slightly lower
-                          initial scale can be used, but 2^16 is safe default
+                          initial scale can be used, but 2^16 is safe default.
 
         Returns:
-            PrecisionConfig with BF16 settings
+            PrecisionConfig with BF16 settings.
 
         Note:
-            Currently uses FP16 as BF16 is not natively supported in Mojo v0.25.7
+            Currently uses FP16 as BF16 is not natively supported in Mojo v0.25.7.
             When Mojo adds native BF16 support, this will automatically use it
-            via the bfloat16_dtype alias in dtype_utils.mojo
+            via the bfloat16_dtype alias in dtype_utils.mojo.
 
         BF16 Characteristics (when natively supported):
-            - 1 sign + 8 exponent + 7 mantissa = 16 bits
-            - Range: ~1e-38 to 3.4e38 (same as FP32)
-            - Precision: ~2 decimal digits (less than FP16)
-            - Better for large models due to wider exponent range
+            - 1 sign + 8 exponent + 7 mantissa = 16 bits.
+            - Range: ~1e-38 to 3.4e38 (same as FP32).
+            - Precision: ~2 decimal digits (less than FP16).
+            - Better for large models due to wider exponent range.
         """
         # NOTE: bfloat16_dtype aliases to float16_dtype until Mojo supports BF16
         return PrecisionConfig(
@@ -226,33 +226,33 @@ struct PrecisionConfig(Copyable, Movable):
     fn fp8(initial_scale: Float32 = 65536.0) -> PrecisionConfig:
         """Create FP8 (quarter precision) configuration.
 
-        FP8 has very limited range, requires aggressive scaling and monitoring
-        Uses FP16 for storage to reduce quantization noise
+        FP8 has very limited range, requires aggressive scaling and monitoring.
+        Uses FP16 for storage to reduce quantization noise.
 
         Args:
-            initial_scale: Initial loss scale (default: 2^16 = 65536.0)
+            initial_scale: Initial loss scale (default: 2^16 = 65536.0).
                           FP8 has much smaller range than FP16, so gradient
                           overflows are more likely. Higher initial scale (2^16+)
-                          is recommended to prevent early overflows
+                          is recommended to prevent early overflows.
 
         Returns:
-            PrecisionConfig with FP8 settings
+            PrecisionConfig with FP8 settings.
 
         Note:
-            FP8 compute is experimental and currently uses FP16 as a fallback
-            When Mojo adds native FP8 support, this will use true FP8 compute
+            FP8 compute is experimental and currently uses FP16 as a fallback.
+            When Mojo adds native FP8 support, this will use true FP8 compute.
 
         FP8 Characteristics (E4M3 format when available):
-            - 1 sign + 4 exponent + 3 mantissa = 8 bits
-            - Range: ~1.5e-4 to 448 (very limited)
-            - Precision: ~1 decimal digit (very low)
-            - Requires: Aggressive gradient scaling, tight clipping, lower LR
-            - Use Cases: Very large models (>1GB), memory-constrained training
+            - 1 sign + 4 exponent + 3 mantissa = 8 bits.
+            - Range: ~1.5e-4 to 448 (very limited).
+            - Precision: ~1 decimal digit (very low).
+            - Requires: Aggressive gradient scaling, tight clipping, lower LR.
+            - Use Cases: Very large models (>1GB), memory-constrained training.
 
         Current Implementation:
-            - Compute: FP16 (fallback, will use FP8 when available)
-            - Storage: FP16 (reduces quantization noise vs pure FP8)
-            - Scaling: Recommended initial_scale >= 2^16 for stability
+            - Compute: FP16 (fallback, will use FP8 when available).
+            - Storage: FP16 (reduces quantization noise vs pure FP8).
+            - Scaling: Recommended initial_scale >= 2^16 for stability.
         """
         # FP8 for compute, FP16 for storage (reduces quantization noise)
         return PrecisionConfig(
@@ -268,13 +268,13 @@ struct PrecisionConfig(Copyable, Movable):
         """Create PrecisionConfig from string name.
 
         Args:
-            precision_str: Precision name ("fp32", "fp16", "bf16", "fp8")
+            precision_str: Precision name ("fp32", "fp16", "bf16", "fp8").
 
         Returns:
-            PrecisionConfig for the specified precision
+            PrecisionConfig for the specified precision.
 
         Raises:
-            Error: If precision_str is not recognized
+            Error: If precision_str is not recognized.
         """
         if precision_str == "fp32":
             return PrecisionConfig.fp32()
@@ -295,10 +295,10 @@ struct PrecisionConfig(Copyable, Movable):
         """Cast tensor to compute precision.
 
         Args:
-            tensor: Input tensor (any dtype)
+            tensor: Input tensor (any dtype).
 
         Returns:
-            Tensor cast to compute_dtype
+            Tensor cast to compute_dtype.
         """
         if tensor.dtype() == self.compute_dtype:
             return tensor
@@ -308,10 +308,10 @@ struct PrecisionConfig(Copyable, Movable):
         """Cast tensor to storage precision.
 
         Args:
-            tensor: Input tensor (any dtype)
+            tensor: Input tensor (any dtype).
 
         Returns:
-            Tensor cast to storage_dtype
+            Tensor cast to storage_dtype.
         """
         if tensor.dtype() == self.storage_dtype:
             return tensor
@@ -321,24 +321,24 @@ struct PrecisionConfig(Copyable, Movable):
         """Cast tensor to master (FP32) precision.
 
         Args:
-            tensor: Input tensor (any dtype)
+            tensor: Input tensor (any dtype).
 
         Returns:
-            Tensor cast to float32
+            Tensor cast to float32.
         """
         return convert_to_fp32_master(tensor)
 
     fn scale_loss(self, loss: ExTensor) raises -> ExTensor:
         """Scale loss for mixed precision training.
 
-        For FP32, returns loss unchanged
-        For reduced precision, applies gradient scaler
+        For FP32, returns loss unchanged.
+        For reduced precision, applies gradient scaler.
 
         Args:
-            loss: Unscaled loss tensor
+            loss: Unscaled loss tensor.
 
         Returns:
-            Scaled loss tensor
+            Scaled loss tensor.
         """
         if not self.use_gradient_scaler:
             return loss
@@ -347,39 +347,39 @@ struct PrecisionConfig(Copyable, Movable):
     fn unscale_gradients(self, gradients: ExTensor) raises -> ExTensor:
         """Unscale gradients after backward pass.
 
-        For FP32, returns gradients unchanged
-        For reduced precision, applies inverse of gradient scaler
+        For FP32, returns gradients unchanged.
+        For reduced precision, applies inverse of gradient scaler.
 
         Args:
-            gradients: Scaled gradients from backward pass
+            gradients: Scaled gradients from backward pass.
 
         Returns:
-            Unscaled gradients ready for optimizer
+            Unscaled gradients ready for optimizer.
         """
         if not self.use_gradient_scaler:
             return gradients
         return self.scaler.unscale_gradients(gradients)
 
     fn check_gradients(self, gradients: ExTensor) raises -> Bool:
-        """Check if gradients are valid (no NaN/Inf)
+        """Check if gradients are valid (no NaN/Inf).
 
         Args:
-            gradients: Gradient tensor to check
+            gradients: Gradient tensor to check.
 
         Returns:
-            True if gradients are finite, False if NaN/Inf detected
+            True if gradients are finite, False if NaN/Inf detected.
         """
         return check_gradients_finite(gradients)
 
     fn step(mut self, grads_valid: Bool):
         """Update scaler state after training step.
 
-        Call after each training step to update gradient scaler
-        If gradients were valid, may increase scale
-        If gradients overflowed, reduces scale
+        Call after each training step to update gradient scaler.
+        If gradients were valid, may increase scale.
+        If gradients overflowed, reduces scale.
 
         Args:
-            grads_valid: True if gradients were finite, False if overflow
+            grads_valid: True if gradients were finite, False if overflow.
         """
         self._step_count += 1
         if not self.use_gradient_scaler:
@@ -395,7 +395,7 @@ struct PrecisionConfig(Copyable, Movable):
         """Get current gradient scale factor.
 
         Returns:
-            Current loss scale value
+            Current loss scale value.
         """
         return self.scaler.get_scale()
 
@@ -403,7 +403,7 @@ struct PrecisionConfig(Copyable, Movable):
         """Get number of gradient overflows detected.
 
         Returns:
-            Number of steps skipped due to overflow
+            Number of steps skipped due to overflow.
         """
         return self._overflow_count
 
@@ -411,7 +411,7 @@ struct PrecisionConfig(Copyable, Movable):
         """Get total number of training steps.
 
         Returns:
-            Total number of steps (including overflows)
+            Total number of steps (including overflows).
         """
         return self._step_count
 
@@ -419,10 +419,10 @@ struct PrecisionConfig(Copyable, Movable):
         """Check if master weights are needed.
 
         Returns True for reduced precision training where
-        FP32 master weights are needed for optimizer stability
+        FP32 master weights are needed for optimizer stability.
 
         Returns:
-            True if mode is FP16, BF16, or FP8
+            True if mode is FP16, BF16, or FP8.
         """
         return self.mode != PrecisionMode.FP32
 
@@ -431,14 +431,14 @@ struct PrecisionConfig(Copyable, Movable):
     ) raises -> ExTensor:
         """Clip gradients by global norm.
 
-        Useful for preventing gradient explosion in mixed precision
+        Useful for preventing gradient explosion in mixed precision.
 
         Args:
-            gradients: Gradient tensor
-            max_norm: Maximum allowed gradient norm
+            gradients: Gradient tensor.
+            max_norm: Maximum allowed gradient norm.
 
         Returns:
-            Clipped gradients
+            Clipped gradients.
         """
         return clip_gradients_by_norm(gradients, max_norm)
 
