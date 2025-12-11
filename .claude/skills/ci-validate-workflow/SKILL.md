@@ -140,5 +140,5 @@ git commit -m "ci: update workflow"
 ## References
 
 - GitHub Actions docs: <https://docs.github.com/en/actions>
-- Workflow syntax: <https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions>
+- Workflow syntax: <https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax>
 - Related skill: `ci-fix-failures` for debugging failures
