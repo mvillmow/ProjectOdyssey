@@ -152,6 +152,31 @@ fn test_parsed_args_multiple_values() raises:
     print("PASS: test_parsed_args_multiple_values")
 
 
+fn test_parser_populates_defaults() raises:
+    """Test that parser.parse() populates defaults from argument specs (Issue #2585).
+    """
+    var parser = ArgumentParser()
+    parser.add_argument("epochs", "int", "100")
+    parser.add_argument("lr", "float", "0.001")
+    parser.add_argument("output", "string", "model.weights")
+
+    # Parse with empty command line (no arguments provided)
+    # Defaults should be populated in result
+    var result = parser.parse()
+
+    # Verify defaults are present
+    assert_true(result.has("epochs"))
+    assert_true(result.has("lr"))
+    assert_true(result.has("output"))
+
+    assert_equal(result.get_int("epochs"), 100)
+    var lr = result.get_float("lr")
+    assert_true(lr > 0.0009 and lr < 0.0011)
+    assert_equal(result.get_string("output"), "model.weights")
+
+    print("PASS: test_parser_populates_defaults")
+
+
 fn main() raises:
     """Run all argument parser tests."""
     print("")
@@ -172,6 +197,7 @@ fn main() raises:
     test_argument_parser_invalid_type()
     test_argument_defaults()
     test_parsed_args_multiple_values()
+    test_parser_populates_defaults()
 
     print("")
     print("=" * 70)

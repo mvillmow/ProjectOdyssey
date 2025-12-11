@@ -252,9 +252,10 @@ struct ArgumentParser(Copyable, Movable):
         # Initialize with defaults (using ref for non-copyable dict entries)
         for ref item in self.arguments.items():
             var name = item.key
+            var spec = item.value
             # Access value fields directly to avoid implicit copy
-            if not item.value.is_flag and len(item.value.default_value) > 0:
-                result.set(name, item.value.default_value)
+            if not item.value.is_flag and len(spec.default_value) > 0:
+                result.set(name, spec.default_value)
 
         # Parse sys.argv
         var args = argv()
