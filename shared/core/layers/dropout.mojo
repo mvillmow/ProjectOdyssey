@@ -17,29 +17,29 @@ from random import random_float64
 struct DropoutLayer(Copyable, Movable):
     """Dropout layer for regularization.
 
-        Dropout randomly sets input elements to zero during training to prevent
-        co-adaptation and reduce overfitting. The remaining elements are scaled
-        by 1/(1-p) where p is the dropout rate, ensuring expected value is preserved
+    Dropout randomly sets input elements to zero during training to prevent
+    co-adaptation and reduce overfitting. The remaining elements are scaled
+    by 1/(1-p) where p is the dropout rate, ensuring expected value is preserved.
 
-        During inference (training=False), the layer is disabled and passes input
-        through unchanged
+    During inference (training=False), the layer is disabled and passes input
+    through unchanged.
 
-        Attributes:
-            dropout_rate: Probability of dropping each element (default: 0.5)
-            training: Whether layer is in training mode (default: False)
+    Attributes:
+        dropout_rate: Probability of dropping each element (default: 0.5)
+        training: Whether layer is in training mode (default: False)
 
-    Examples:
-            ```mojo
-            var layer = DropoutLayer(0.5)
-            layer.set_training(True)  # Enable dropout for training.
+    Example:
+        ```mojo
+        var layer = DropoutLayer(0.5)
+        layer.set_training(True)  # Enable dropout for training
 
-            var input = randn([4, 10], DType.float32)
-            var output = layer.forward(input)
+        var input = randn([4, 10], DType.float32)
+        var output = layer.forward(input)
 
-            # Backward pass
-            var grad_output = randn(output.shape(), DType.float32)
-            var grad_input = layer.backward(grad_output, layer.last_mask)
-            ```
+        # Backward pass
+        var grad_output = randn(output.shape(), DType.float32)
+        var grad_input = layer.backward(grad_output, layer.last_mask)
+        ```
     """
 
     var dropout_rate: Float32

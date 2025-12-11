@@ -15,6 +15,7 @@ Note:
     For integer types, use Mojo's built-in types (Int8, Int16, etc.)
 
 Example:
+    ```mojo
     from shared.core.types import FP8, BF8, FP4_E2M1, MXFP4, NVFP4
 
     # Work with FP8 values

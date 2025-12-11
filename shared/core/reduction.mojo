@@ -20,18 +20,18 @@ fn sum(
     """Sum tensor elements along an axis.
 
     Args:
-            tensor: Input tensor
-            axis: Axis to reduce (-1 for all axes)
-            keepdims: Whether to keep reduced dimensions as size 1
+        tensor: Input tensor.
+        axis: Axis to reduce (-1 for all axes).
+        keepdims: Whether to keep reduced dimensions as size 1.
 
     Returns:
-            A new tensor with sum along specified axis
+        A new tensor with sum along specified axis.
 
     Examples:
-        ```
-            var t = ones([3, 4], DType.float32)
-            var s = sum(t, axis=-1)  # Sum all elements -> scalar 12.0
-            var row_sums = sum(t, axis=1)  # Sum along rows -> shape (3,)
+        ```mojo
+        var t = ones([3, 4], DType.float32)
+        var s = sum(t, axis=-1)  # Sum all elements -> scalar 12.0
+        var row_sums = sum(t, axis=1)  # Sum along rows -> shape (3,)
         ```
     """
     if axis == -1:
@@ -111,17 +111,17 @@ fn mean(
     """Compute mean of tensor elements along an axis.
 
     Args:
-            tensor: Input tensor
-            axis: Axis to reduce (-1 for all axes)
-            keepdims: Whether to keep reduced dimensions as size 1
+        tensor: Input tensor.
+        axis: Axis to reduce (-1 for all axes).
+        keepdims: Whether to keep reduced dimensions as size 1.
 
     Returns:
-            A new tensor with mean along specified axis
+        A new tensor with mean along specified axis.
 
     Examples:
-        ```
-            var t = ones([3, 4], DType.float32)
-            var m = mean(t)  # Mean of all elements -> scalar 1.0
+        ```mojo
+        var t = ones([3, 4], DType.float32)
+        var m = mean(t)  # Mean of all elements -> scalar 1.0
         ```
     """
     if axis == -1:
@@ -162,17 +162,17 @@ fn max_reduce(
     """Find maximum of tensor elements along an axis.
 
     Args:
-            tensor: Input tensor
-            axis: Axis to reduce (-1 for all axes)
-            keepdims: Whether to keep reduced dimensions as size 1
+        tensor: Input tensor.
+        axis: Axis to reduce (-1 for all axes).
+        keepdims: Whether to keep reduced dimensions as size 1.
 
     Returns:
-            A new tensor with maximum along specified axis
+        A new tensor with maximum along specified axis.
 
     Examples:
-        ```
-            var t = arange(0.0, 12.0, 1.0, DType.float32)
-            var m = max_reduce(t)  # Maximum element -> scalar 11.0
+        ```mojo
+        var t = arange(0.0, 12.0, 1.0, DType.float32)
+        var m = max_reduce(t)  # Maximum element -> scalar 11.0
         ```
     """
     if axis == -1:
@@ -258,17 +258,17 @@ fn min_reduce(
     """Find minimum of tensor elements along an axis.
 
     Args:
-            tensor: Input tensor
-            axis: Axis to reduce (-1 for all axes)
-            keepdims: Whether to keep reduced dimensions as size 1
+        tensor: Input tensor.
+        axis: Axis to reduce (-1 for all axes).
+        keepdims: Whether to keep reduced dimensions as size 1.
 
     Returns:
-            A new tensor with minimum along specified axis
+        A new tensor with minimum along specified axis.
 
     Examples:
-        ```
-            var t = arange(0.0, 12.0, 1.0, DType.float32)
-            var m = min_reduce(t)  # Minimum element -> scalar 0.0
+        ```mojo
+        var t = arange(0.0, 12.0, 1.0, DType.float32)
+        var m = min_reduce(t)  # Minimum element -> scalar 0.0
         ```
     """
     if axis == -1:
@@ -358,33 +358,33 @@ fn sum_backward(
 ) raises -> ExTensor:
     """Compute gradient for sum reduction.
 
-        For Y = sum(X, axis), given ∂L/∂Y, computes:
-            ∂L/∂X = broadcast(∂L/∂Y, input_shape)
+    For Y = sum(X, axis), given ∂L/∂Y, computes:
+        ∂L/∂X = broadcast(∂L/∂Y, input_shape)
 
-        The gradient broadcasts the reduced gradient back to the original input shape
-        Each element of the input contributes equally to the sum, so gradient is 1
+    The gradient broadcasts the reduced gradient back to the original input shape.
+    Each element of the input contributes equally to the sum, so gradient is 1.
 
     Args:
-            grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor
-            x: Original input tensor before reduction
-            axis: Axis along which sum was computed (-1 for all axes)
+        grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor.
+        x: Original input tensor before reduction.
+        axis: Axis along which sum was computed (-1 for all axes).
 
     Returns:
-            Gradient w.r.t. input (∂L/∂X) - broadcast back to input_shape
+        Gradient w.r.t. input (∂L/∂X) - broadcast back to input_shape.
 
     Examples:
-        ```
-            # Sum all elements
-            var x = ones([3, 4], DType.float32)
-            var y = sum(x, axis=-1)  # Scalar
-            var grad_y = ones(List[Int](), DType.float32)  # Scalar gradient
-            var grad_x = sum_backward(grad_y, x, axis=-1)  # Shape (3, 4)
+        ```mojo
+        # Sum all elements
+        var x = ones([3, 4], DType.float32)
+        var y = sum(x, axis=-1)  # Scalar
+        var grad_y = ones(List[Int](), DType.float32)  # Scalar gradient
+        var grad_x = sum_backward(grad_y, x, axis=-1)  # Shape (3, 4)
 
-            # Sum along specific axis
-            var x2 = ones([3, 4], DType.float32)
-            var y2 = sum(x2, axis=1)  # Shape (3,)
-            var grad_y2 = ones(List[Int](), DType.float32)
-            var grad_x2 = sum_backward(grad_y2, x2, axis=1)  # Shape (3, 4)
+        # Sum along specific axis
+        var x2 = ones([3, 4], DType.float32)
+        var y2 = sum(x2, axis=1)  # Shape (3,)
+        var grad_y2 = ones(List[Int](), DType.float32)
+        var grad_x2 = sum_backward(grad_y2, x2, axis=1)  # Shape (3, 4)
         ```
     """
     # Create result tensor with input shape
@@ -438,29 +438,29 @@ fn mean_backward(
 ) raises -> ExTensor:
     """Compute gradient for mean reduction.
 
-        For Y = mean(X, axis), given ∂L/∂Y, computes:
-            ∂L/∂X = broadcast(∂L/∂Y, input_shape) / N
+    For Y = mean(X, axis), given ∂L/∂Y, computes:
+        ∂L/∂X = broadcast(∂L/∂Y, input_shape) / N
 
-        where N is the number of elements that were averaged
+    Where N is the number of elements that were averaged.
 
-        Similar to sum_backward, but scaled by 1/N since each input element
-        contributes 1/N to the mean
+    Similar to sum_backward, but scaled by 1/N since each input element
+    contributes 1/N to the mean.
 
     Args:
-            grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor
-            x: Original input tensor before reduction
-            axis: Axis along which mean was computed (-1 for all axes)
+        grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor.
+        x: Original input tensor before reduction.
+        axis: Axis along which mean was computed (-1 for all axes).
 
     Returns:
-            Gradient w.r.t. input (∂L/∂X) - broadcast and scaled
+        Gradient w.r.t. input (∂L/∂X) - broadcast and scaled.
 
     Examples:
-        ```
-            var x = ones([3, 4], DType.float32)
-            var y = mean(x, axis=-1)  # Scalar mean
-            var grad_y = ones(List[Int](), DType.float32)
-            var grad_x = mean_backward(grad_y, x, axis=-1)
-            # Each element gets gradient / 12
+        ```mojo
+        var x = ones([3, 4], DType.float32)
+        var y = mean(x, axis=-1)  # Scalar mean
+        var grad_y = ones(List[Int](), DType.float32)
+        var grad_x = mean_backward(grad_y, x, axis=-1)
+        # Each element gets gradient / 12
         ```
     """
     # First get the sum backward (broadcasts gradient)
@@ -492,35 +492,35 @@ fn max_reduce_backward(
 ) raises -> ExTensor:
     """Compute gradient for max reduction.
 
-        For Y = max_reduce(X, axis), given ∂L/∂Y, computes:
-            ∂L/∂X - Gradient flows only to maximum element(s)
+    For Y = max_reduce(X, axis), given ∂L/∂Y, computes:
+        ∂L/∂X - Gradient flows only to maximum element(s)
 
-        If multiple elements are maximum, gradient is split equally among them
-        This is the standard behavior for max pooling backward pass
+    If multiple elements are maximum, gradient is split equally among them.
+    This is the standard behavior for max pooling backward pass.
 
     Args:
-            grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor
-            x: Input from forward pass (before reduction)
-            axis: Axis along which max was computed (-1 for all axes)
+        grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor.
+        x: Input from forward pass (before reduction).
+        axis: Axis along which max was computed (-1 for all axes).
 
     Returns:
-            Gradient w.r.t. input (∂L/∂X)
+        Gradient w.r.t. input (∂L/∂X).
 
     Examples:
-        ```
-            # Max over all elements
-            var x = tensor([1.0, 3.0, 2.0, 3.0])  # Two max values at indices 1, 3
-            var y = max_reduce(x, axis=-1)  # Scalar: 3.0
-            var grad_y = ones([])  # Gradient: 1.0
-            var grad_x = max_reduce_backward(grad_y, x, axis=-1)
-            # grad_x = [0.0, 0.5, 0.0, 0.5]  # Split equally between the two 3.0s
+        ```mojo
+        # Max over all elements
+        var x = tensor([1.0, 3.0, 2.0, 3.0])  # Two max values at indices 1, 3
+        var y = max_reduce(x, axis=-1)  # Scalar: 3.0
+        var grad_y = ones([])  # Gradient: 1.0
+        var grad_x = max_reduce_backward(grad_y, x, axis=-1)
+        # grad_x = [0.0, 0.5, 0.0, 0.5]  # Split equally between the two 3.0s
 
-            # Max along axis
-            var x2 = tensor([[1.0, 3.0], [2.0, 1.0]])
-            var y2 = max_reduce(x2, axis=1)  # [3.0, 2.0]
-            var grad_y2 = ones([2])
-            var grad_x2 = max_reduce_backward(grad_y2, x2, axis=1)
-            # grad_x2 = [[0.0, 1.0], [1.0, 0.0]]
+        # Max along axis
+        var x2 = tensor([[1.0, 3.0], [2.0, 1.0]])
+        var y2 = max_reduce(x2, axis=1)  # [3.0, 2.0]
+        var grad_y2 = ones([2])
+        var grad_x2 = max_reduce_backward(grad_y2, x2, axis=1)
+        # grad_x2 = [[0.0, 1.0], [1.0, 0.0]]
         ```
     """
     var result = ExTensor(x.shape(), x.dtype())
@@ -621,27 +621,27 @@ fn min_reduce_backward(
 ) raises -> ExTensor:
     """Compute gradient for min reduction.
 
-        For Y = min_reduce(X, axis), given ∂L/∂Y, computes:
-            ∂L/∂X - Gradient flows only to minimum element(s)
+    For Y = min_reduce(X, axis), given ∂L/∂Y, computes:
+        ∂L/∂X - Gradient flows only to minimum element(s)
 
-        If multiple elements are minimum, gradient is split equally among them
-        This is analogous to max pooling but for minimum values
+    If multiple elements are minimum, gradient is split equally among them.
+    This is analogous to max pooling but for minimum values.
 
     Args:
-            grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor
-            x: Input from forward pass (before reduction)
-            axis: Axis along which min was computed (-1 for all axes)
+        grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor.
+        x: Input from forward pass (before reduction).
+        axis: Axis along which min was computed (-1 for all axes).
 
     Returns:
-            Gradient w.r.t. input (∂L/∂X)
+        Gradient w.r.t. input (∂L/∂X).
 
     Examples:
-        ```
-            var x = tensor([3.0, 1.0, 2.0, 1.0])  # Two min values at indices 1, 3
-            var y = min_reduce(x, axis=-1)  # Scalar: 1.0
-            var grad_y = ones([])  # Gradient: 1.0
-            var grad_x = min_reduce_backward(grad_y, x, axis=-1)
-            # grad_x = [0.0, 0.5, 0.0, 0.5]  # Split equally between the two 1.0s
+        ```mojo
+        var x = tensor([3.0, 1.0, 2.0, 1.0])  # Two min values at indices 1, 3
+        var y = min_reduce(x, axis=-1)  # Scalar: 1.0
+        var grad_y = ones([])  # Gradient: 1.0
+        var grad_x = min_reduce_backward(grad_y, x, axis=-1)
+        # grad_x = [0.0, 0.5, 0.0, 0.5]  # Split equally between the two 1.0s
         ```
     """
     var result = ExTensor(x.shape(), x.dtype())

@@ -14,25 +14,25 @@ from shared.core.activation import relu, relu_backward
 
 
 struct ReLULayer(Copyable, Movable):
-    """ReLU activation layer: y = max(0, x)
+    """ReLU activation layer: y = max(0, x).
 
-        A simple activation layer that applies the Rectified Linear Unit (ReLU)
-        function element-wise. ReLU is the most common activation in deep learning,
-        promoting sparse activation patterns by zeroing negative values
+    A simple activation layer that applies the Rectified Linear Unit (ReLU)
+    function element-wise. ReLU is the most common activation in deep learning,
+    promoting sparse activation patterns by zeroing negative values.
 
-        Attributes:
-            No learnable parameters
+    Attributes:
+        No learnable parameters.
 
-    Examples:
-            ```mojo
-            var layer = ReLULayer()
-            var input = randn([4, 10], DType.float32)
-            var output = layer.forward(input)
+    Example:
+        ```mojo
+        var layer = ReLULayer()
+        var input = randn([4, 10], DType.float32)
+        var output = layer.forward(input)
 
-            # Backward pass
-            var grad_output = randn(output.shape(), DType.float32)
-            var grad_input = layer.backward(grad_output, input)
-            ```
+        # Backward pass
+        var grad_output = randn(output.shape(), DType.float32)
+        var grad_input = layer.backward(grad_output, input)
+        ```
     """
 
     fn __init__(out self):

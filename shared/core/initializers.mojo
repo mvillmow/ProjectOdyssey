@@ -38,13 +38,13 @@ fn _fill_uniform_scaled[
 ](result: ExTensor, scale: Float64, offset: Float64) raises:
     """Fill tensor with scaled uniform random values: offset + random() * scale.
 
-        This is a dtype-generic helper that eliminates dtype branching
-        random_float64() returns [0, 1), which is transformed to [offset, offset+scale)
+    This is a dtype-generic helper that eliminates dtype branching.
+    random_float64() returns [0, 1), which is transformed to [offset, offset+scale).
 
     Args:
-            result: Tensor to fill (must be pre-allocated)
-            scale: Scale factor for random values
-            offset: Offset to add to scaled values
+        result: Tensor to fill (must be pre-allocated).
+        scale: Scale factor for random values.
+        offset: Offset to add to scaled values.
     """
     var ptr = result._data.bitcast[Scalar[dtype]]()
     for i in range(result._numel):
@@ -58,13 +58,13 @@ fn _fill_normal_boxmuller[
 ](result: ExTensor, mean: Float64, std: Float64) raises:
     """Fill tensor with normal random values using Box-Muller transform.
 
-        This is a dtype-generic helper that eliminates dtype branching
-        Generates pairs of normal random values using Box-Muller transform
+    This is a dtype-generic helper that eliminates dtype branching.
+    Generates pairs of normal random values using Box-Muller transform.
 
     Args:
-            result: Tensor to fill (must be pre-allocated)
-            mean: Mean of normal distribution
-            std: Standard deviation of normal distribution
+        result: Tensor to fill (must be pre-allocated).
+        mean: Mean of normal distribution.
+        std: Standard deviation of normal distribution.
     """
     var ptr = result._data.bitcast[Scalar[dtype]]()
     var i = 0
@@ -95,11 +95,11 @@ fn _fill_normal_boxmuller[
 fn _fill_constant[dtype: DType](result: ExTensor, value: Float64) raises:
     """Fill tensor with constant value.
 
-        This is a dtype-generic helper that eliminates dtype branching
+    This is a dtype-generic helper that eliminates dtype branching.
 
     Args:
-            result: Tensor to fill (must be pre-allocated)
-            value: Constant value to fill with
+        result: Tensor to fill (must be pre-allocated).
+        value: Constant value to fill with.
     """
     var ptr = result._data.bitcast[Scalar[dtype]]()
     var val = Scalar[dtype](value)

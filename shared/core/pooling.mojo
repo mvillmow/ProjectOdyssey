@@ -20,36 +20,36 @@ fn maxpool2d(
 ) raises -> ExTensor:
     """Functional 2D max pooling with selectable implementation.
 
-        Pure function - no internal state. Downsamples spatial dimensions by
-        taking maximum value in each kernel_size x kernel_size window
+    Pure function - no internal state. Downsamples spatial dimensions by
+    taking maximum value in each kernel_size x kernel_size window.
 
     Args:
-            x: Input tensor of shape (batch, channels, height, width)
-            kernel_size: Size of the pooling window
-            stride: Stride for pooling (default: kernel_size if 0)
-            padding: Zero-padding added to input (default: 0)
-            method: Implementation method - "direct" (default), "optimized" (future)
+        x: Input tensor of shape (batch, channels, height, width).
+        kernel_size: Size of the pooling window.
+        stride: Stride for pooling (default: kernel_size if 0).
+        padding: Zero-padding added to input (default: 0).
+        method: Implementation method - "direct" (default), "optimized" (future).
 
     Returns:
-            Output tensor of shape (batch, channels, out_height, out_width)
-            where:
-                stride_actual = kernel_size if stride == 0 else stride
-                out_height = (height + 2*padding - kernel_size) / stride_actual + 1
-                out_width = (width + 2*padding - kernel_size) / stride_actual + 1
+        Output tensor of shape (batch, channels, out_height, out_width)
+        where:
+            stride_actual = kernel_size if stride == 0 else stride
+            out_height = (height + 2*padding - kernel_size) / stride_actual + 1
+            out_width = (width + 2*padding - kernel_size) / stride_actual + 1
 
-        Example:
-            ```mojo
-            from shared.core import ExTensor, maxpool2d
+    Example:
+        ```mojo
+        from shared.core import ExTensor, maxpool2d
 
-            # Pure function call - no state to manage
-            var pooled = maxpool2d(input, kernel_size=2, stride=2)
+        # Pure function call - no state to manage
+        var pooled = maxpool2d(input, kernel_size=2, stride=2)
 
-            # Or select implementation method
-            var pooled = maxpool2d(input, kernel_size=2, stride=2, method="direct")
-            ```
+        # Or select implementation method
+        var pooled = maxpool2d(input, kernel_size=2, stride=2, method="direct")
+        ```
 
     Raises:
-            Error: If tensor shapes are incompatible or method is unsupported
+        Error: If tensor shapes are incompatible or method is unsupported.
     """
     if method != "direct":
         raise Error("Only 'direct' method is currently supported for maxpool2d")
@@ -139,32 +139,32 @@ fn avgpool2d(
 ) raises -> ExTensor:
     """Functional 2D average pooling with selectable implementation.
 
-        Pure function - no internal state. Downsamples spatial dimensions by
-        taking average value in each kernel_size x kernel_size window
+    Pure function - no internal state. Downsamples spatial dimensions by
+    taking average value in each kernel_size x kernel_size window.
 
     Args:
-            x: Input tensor of shape (batch, channels, height, width)
-            kernel_size: Size of the pooling window
-            stride: Stride for pooling (default: kernel_size if 0)
-            padding: Zero-padding added to input (default: 0)
-            method: Implementation method - "direct" (default), "optimized" (future)
+        x: Input tensor of shape (batch, channels, height, width).
+        kernel_size: Size of the pooling window.
+        stride: Stride for pooling (default: kernel_size if 0).
+        padding: Zero-padding added to input (default: 0).
+        method: Implementation method - "direct" (default), "optimized" (future).
 
     Returns:
-            Output tensor of shape (batch, channels, out_height, out_width)
+        Output tensor of shape (batch, channels, out_height, out_width).
 
-        Example:
-            ```mojo
-            from shared.core import ExTensor, avgpool2d
+    Example:
+        ```mojo
+        from shared.core import ExTensor, avgpool2d
 
-            # Pure function call - no state to manage
-            var pooled = avgpool2d(input, kernel_size=2, stride=2)
+        # Pure function call - no state to manage
+        var pooled = avgpool2d(input, kernel_size=2, stride=2)
 
-            # Or select implementation method
-            var pooled = avgpool2d(input, kernel_size=2, stride=2, method="direct")
-            ```
+        # Or select implementation method
+        var pooled = avgpool2d(input, kernel_size=2, stride=2, method="direct")
+        ```
 
     Raises:
-            Error: If tensor shapes are incompatible or method is unsupported
+        Error: If tensor shapes are incompatible or method is unsupported.
     """
     if method != "direct":
         raise Error("Only 'direct' method is currently supported for avgpool2d")
@@ -252,29 +252,29 @@ fn avgpool2d(
 fn global_avgpool2d(x: ExTensor, method: String = "direct") raises -> ExTensor:
     """Functional global average pooling with selectable implementation.
 
-        Pure function that reduces spatial dimensions (H, W) to (1, 1) by
-        averaging all values in each channel
+    Pure function that reduces spatial dimensions (H, W) to (1, 1) by
+    averaging all values in each channel.
 
     Args:
-            x: Input tensor of shape (batch, channels, height, width)
-            method: Implementation method - "direct" (default), "optimized" (future)
+        x: Input tensor of shape (batch, channels, height, width).
+        method: Implementation method - "direct" (default), "optimized" (future).
 
     Returns:
-            Output tensor of shape (batch, channels, 1, 1)
+        Output tensor of shape (batch, channels, 1, 1).
 
-        Example:
-            ```mojo
-            from shared.core import ExTensor, global_avgpool2d
+    Example:
+        ```mojo
+        from shared.core import ExTensor, global_avgpool2d
 
-            # Pure function call
-            var pooled = global_avgpool2d(input)  # (B, C, H, W) -> Tuple[B, C, 1, 1]
+        # Pure function call
+        var pooled = global_avgpool2d(input)  # (B, C, H, W) -> Tuple[B, C, 1, 1]
 
-            # Or select implementation method
-            var pooled = global_avgpool2d(input, method="direct")
-            ```
+        # Or select implementation method
+        var pooled = global_avgpool2d(input, method="direct")
+        ```
 
     Raises:
-            Error: If tensor shapes are incompatible or method is unsupported
+        Error: If tensor shapes are incompatible or method is unsupported.
     """
     if method != "direct":
         raise Error(
@@ -336,38 +336,38 @@ fn maxpool2d_backward(
 ) raises -> ExTensor:
     """Backward pass for 2D max pooling.
 
-        Computes gradient with respect to input. Routes gradients only to the
-        positions that had the maximum value in the forward pass
+    Computes gradient with respect to input. Routes gradients only to the
+    positions that had the maximum value in the forward pass.
 
     Args:
-            grad_output: Gradient w.r.t. output, shape (batch, channels, out_H, out_W)
-            x: Input from forward pass, shape (batch, channels, in_H, in_W)
-            kernel_size: Size of the pooling window used in forward pass
-            stride: Stride used in forward pass (0 means use kernel_size)
-            padding: Padding used in forward pass
-            method: Implementation method (must match forward pass)
+        grad_output: Gradient w.r.t. output, shape (batch, channels, out_H, out_W).
+        x: Input from forward pass, shape (batch, channels, in_H, in_W).
+        kernel_size: Size of the pooling window used in forward pass.
+        stride: Stride used in forward pass (0 means use kernel_size).
+        padding: Padding used in forward pass.
+        method: Implementation method (must match forward pass).
 
     Returns:
-            grad_input: Gradient w.r.t. input, shape (batch, channels, in_H, in_W)
+        grad_input: Gradient w.r.t. input, shape (batch, channels, in_H, in_W).
 
-        Example:
-            ```mojo
-            from shared.core import maxpool2d, maxpool2d_backward
+    Example:
+        ```mojo
+        from shared.core import maxpool2d, maxpool2d_backward
 
-            # Forward pass
-            var output = maxpool2d(x, kernel_size=2, stride=2)
-            # ... compute loss and grad_output ...
+        # Forward pass
+        var output = maxpool2d(x, kernel_size=2, stride=2)
+        # ... compute loss and grad_output ...
 
-            # Backward pass
-            var grad_x = maxpool2d_backward(grad_output, x, kernel_size=2, stride=2)
-            ```
+        # Backward pass
+        var grad_x = maxpool2d_backward(grad_output, x, kernel_size=2, stride=2)
+        ```
 
     Note:
-            This implementation recomputes the argmax positions from the forward pass
-            In a stateful implementation, these would be cached
+        This implementation recomputes the argmax positions from the forward pass.
+        In a stateful implementation, these would be cached.
 
     Raises:
-            Error if tensor shapes are incompatible or method is unsupported
+        Error if tensor shapes are incompatible or method is unsupported.
     """
     if method != "direct":
         raise Error(
@@ -467,34 +467,34 @@ fn avgpool2d_backward(
 ) raises -> ExTensor:
     """Backward pass for 2D average pooling.
 
-        Computes gradient with respect to input. Distributes gradients equally
-        to all positions in the pooling window
+    Computes gradient with respect to input. Distributes gradients equally
+    to all positions in the pooling window.
 
     Args:
-            grad_output: Gradient w.r.t. output, shape (batch, channels, out_H, out_W)
-            x: Input from forward pass, shape (batch, channels, in_H, in_W)
-            kernel_size: Size of the pooling window used in forward pass
-            stride: Stride used in forward pass (0 means use kernel_size)
-            padding: Padding used in forward pass
-            method: Implementation method (must match forward pass)
+        grad_output: Gradient w.r.t. output, shape (batch, channels, out_H, out_W).
+        x: Input from forward pass, shape (batch, channels, in_H, in_W).
+        kernel_size: Size of the pooling window used in forward pass.
+        stride: Stride used in forward pass (0 means use kernel_size).
+        padding: Padding used in forward pass.
+        method: Implementation method (must match forward pass).
 
     Returns:
-            grad_input: Gradient w.r.t. input, shape (batch, channels, in_H, in_W)
+        grad_input: Gradient w.r.t. input, shape (batch, channels, in_H, in_W).
 
-        Example:
-            ```mojo
-            from shared.core import avgpool2d, avgpool2d_backward
+    Example:
+        ```mojo
+        from shared.core import avgpool2d, avgpool2d_backward
 
-            # Forward pass
-            var output = avgpool2d(x, kernel_size=2, stride=2)
-            # ... compute loss and grad_output ...
+        # Forward pass
+        var output = avgpool2d(x, kernel_size=2, stride=2)
+        # ... compute loss and grad_output ...
 
-            # Backward pass
-            var grad_x = avgpool2d_backward(grad_output, x, kernel_size=2, stride=2)
-            ```
+        # Backward pass
+        var grad_x = avgpool2d_backward(grad_output, x, kernel_size=2, stride=2)
+        ```
 
     Raises:
-            Error if tensor shapes are incompatible or method is unsupported
+        Error if tensor shapes are incompatible or method is unsupported.
     """
     if method != "direct":
         raise Error(
@@ -589,31 +589,31 @@ fn global_avgpool2d_backward(
 ) raises -> ExTensor:
     """Backward pass for global average pooling.
 
-        Computes gradient with respect to input. Distributes gradients equally
-        to all spatial positions
+    Computes gradient with respect to input. Distributes gradients equally
+    to all spatial positions.
 
     Args:
-            grad_output: Gradient w.r.t. output, shape (batch, channels, 1, 1)
-            x: Input from forward pass, shape (batch, channels, height, width)
-            method: Implementation method (must match forward pass)
+        grad_output: Gradient w.r.t. output, shape (batch, channels, 1, 1).
+        x: Input from forward pass, shape (batch, channels, height, width).
+        method: Implementation method (must match forward pass).
 
     Returns:
-            grad_input: Gradient w.r.t. input, shape (batch, channels, height, width)
+        grad_input: Gradient w.r.t. input, shape (batch, channels, height, width).
 
-        Example:
-            ```mojo
-            from shared.core import global_avgpool2d, global_avgpool2d_backward
+    Example:
+        ```mojo
+        from shared.core import global_avgpool2d, global_avgpool2d_backward
 
-            # Forward pass
-            var output = global_avgpool2d(x)
-            # ... compute loss and grad_output ...
+        # Forward pass
+        var output = global_avgpool2d(x)
+        # ... compute loss and grad_output ...
 
-            # Backward pass
-            var grad_x = global_avgpool2d_backward(grad_output, x)
-            ```
+        # Backward pass
+        var grad_x = global_avgpool2d_backward(grad_output, x)
+        ```
 
     Raises:
-            Error if tensor shapes are incompatible or method is unsupported
+        Error if tensor shapes are incompatible or method is unsupported.
     """
     if method != "direct":
         raise Error(

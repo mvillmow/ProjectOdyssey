@@ -17,17 +17,19 @@ fn argmax(tensor: ExTensor) raises -> Int:
     """Find the index of the maximum value in a flattened tensor.
 
     Args:
-            tensor: Input tensor
+        tensor: Input tensor
 
     Returns:
-            The linear index of the maximum element
+        The linear index of the maximum element
 
     Raises:
-            Error: If tensor is empty
+        Error: If tensor is empty
 
     Examples:
-            var t = arange(0.0, 10.0, 1.0, DType.float32)
-            var idx = argmax(t)  # Returns 9
+        ```mojo
+        var t = arange(0.0, 10.0, 1.0, DType.float32)
+        var idx = argmax(t)  # Returns 9
+        ```
     """
     if tensor.numel() == 0:
         raise Error("argmax: tensor is empty")
@@ -48,18 +50,20 @@ fn argmax(tensor: ExTensor, axis: Int) raises -> ExTensor:
     """Find indices of maximum values along an axis.
 
     Args:
-            tensor: Input tensor
-            axis: Axis along which to find argmax
+        tensor: Input tensor
+        axis: Axis along which to find argmax
 
     Returns:
-            A tensor of indices (dtype: int64) with reduced dimensions
+        A tensor of indices (dtype: int64) with reduced dimensions
 
     Raises:
-            Error: If axis is out of bounds
+        Error: If axis is out of bounds
 
     Examples:
-            var t = ones([3, 4], DType.float32)
-            var indices = argmax(t, axis=1)  # Shape: [3]
+        ```mojo
+        var t = ones([3, 4], DType.float32)
+        var indices = argmax(t, axis=1)  # Shape: [3]
+        ```
     """
     if axis < 0 or axis >= tensor.dim():
         raise Error(
@@ -147,18 +151,20 @@ fn top_k_indices(tensor: ExTensor, k: Int) raises -> List[Int]:
     """Find indices of the k largest values in a flattened tensor.
 
     Args:
-            tensor: Input tensor
-            k: Number of top values to find
+        tensor: Input tensor
+        k: Number of top values to find
 
     Returns:
-            List of indices sorted by their values (descending)
+        List of indices sorted by their values (descending)
 
     Raises:
-            Error: If k is invalid or tensor is empty
+        Error: If k is invalid or tensor is empty
 
     Examples:
-            var t = arange(0.0, 10.0, 1.0, DType.float32)
-            var indices = top_k_indices(t, 3)  # Returns [9, 8, 7]
+        ```mojo
+        var t = arange(0.0, 10.0, 1.0, DType.float32)
+        var indices = top_k_indices(t, 3)  # Returns [9, 8, 7]
+        ```
     """
     if k < 0:
         raise Error("top_k_indices: k must be non-negative, got " + String(k))
@@ -208,20 +214,22 @@ fn top_k(tensor: ExTensor, k: Int) raises -> Tuple[ExTensor, List[Int]]:
     """Find the k largest values and their indices in a flattened tensor.
 
     Args:
-            tensor: Input tensor
-            k: Number of top values to find
+        tensor: Input tensor
+        k: Number of top values to find
 
     Returns:
-            A tuple containing:
-            - A tensor of top k values (shape: [k])
-            - A list of their corresponding indices
+        A tuple containing:
+        - A tensor of top k values (shape: [k])
+        - A list of their corresponding indices
 
     Raises:
-            Error: If k is invalid or tensor is empty
+        Error: If k is invalid or tensor is empty
 
     Examples:
-            var t = arange(0.0, 10.0, 1.0, DType.float32)
-            var (values, indices) = top_k(t, 3)  # Values: [10.0, 9.0, 8.0], Indices: [9, 8, 7]
+        ```mojo
+        var t = arange(0.0, 10.0, 1.0, DType.float32)
+        var (values, indices) = top_k(t, 3)  # Values: [10.0, 9.0, 8.0], Indices: [9, 8, 7]
+        ```
     """
     var indices = top_k_indices(tensor, k)
 
@@ -242,18 +250,20 @@ fn argsort(tensor: ExTensor, descending: Bool = False) raises -> List[Int]:
     """Return indices that would sort the tensor.
 
     Args:
-            tensor: Input tensor
-            descending: If True, sort in descending order. If False, ascending
+        tensor: Input tensor
+        descending: If True, sort in descending order. If False, ascending
 
     Returns:
-            List of indices that sort the tensor
+        List of indices that sort the tensor
 
     Raises:
-            Error: If tensor is empty
+        Error: If tensor is empty
 
     Examples:
-            var t = arange(5.0, 0.0, -1.0, DType.float32)  # [5, 4, 3, 2, 1]
-            var idx = argsort(t, descending=False)  # Returns [4, 3, 2, 1, 0] for ascending
+        ```mojo
+        var t = arange(5.0, 0.0, -1.0, DType.float32)  # [5, 4, 3, 2, 1]
+        var idx = argsort(t, descending=False)  # Returns [4, 3, 2, 1, 0] for ascending
+        ```
     """
     if tensor.numel() == 0:
         raise Error("argsort: tensor is empty")

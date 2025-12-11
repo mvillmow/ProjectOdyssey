@@ -21,13 +21,13 @@ fn _broadcast_binary[
     """Apply binary operation with broadcasting and compile-time dtype specialization.
 
         This helper eliminates 200+ lines of duplicated broadcasting code and removes
-        dtype conversion overhead by using compile-time specialization
+        dtype conversion overhead by using compile-time specialization.
 
     Args:
-            dtype: Compile-time dtype parameter
-            op: Binary operation function (e.g., add, subtract, multiply, divide)
-            a: First tensor
-            b: Second tensor
+            dtype: Compile-time dtype parameter.
+            op: Binary operation function (e.g., add, subtract, multiply, divide).
+            a: First tensor.
+            b: Second tensor.
 
         Example:
            ```mojo
@@ -38,7 +38,7 @@ fn _broadcast_binary[
             ```
 
     Returns:
-            Result tensor with operation applied element-wise with broadcasting
+            Result tensor with operation applied element-wise with broadcasting.
     """
     # Compute broadcast shape
     var result_shape = broadcast_shapes(a.shape(), b.shape())
@@ -96,15 +96,15 @@ fn _dispatch_broadcast_binary[
     """Runtime dispatch to compile-time specialized broadcasting binary operation.
 
         This dispatcher performs runtime dtype checking but dispatches to compile-time
-        specialized versions, ensuring zero overhead compared to hand-written dtype branches
+        specialized versions, ensuring zero overhead compared to hand-written dtype branches.
 
     Args:
-            op: Binary operation function pointer
-            a: First tensor
-            b: Second tensor
+            op: Binary operation function pointer.
+            a: First tensor.
+            b: Second tensor.
 
     Returns:
-            Result tensor with operation applied with broadcasting
+            Result tensor with operation applied with broadcasting.
 
     Raises:
             Error: If dtypes don't match or are unsupported.
@@ -144,17 +144,17 @@ fn add(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise addition with broadcasting.
 
     Args:
-            a: First tensor
-            b: Second tensor
+            a: First tensor.
+            b: Second tensor.
 
     Returns:
-            A new tensor containing a + b
+            A new tensor containing a + b.
 
     Raises:
             Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
-            ```
+            ```mojo
             var a = zeros(List[Int](), DType.float32)
             var b = ones(List[Int](), DType.float32)
             var c = add(a, b)  # Shape (3, 4), all ones
@@ -179,17 +179,17 @@ fn subtract(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise subtraction with broadcasting.
 
     Args:
-            a: First tensor
-            b: Second tensor
+            a: First tensor.
+            b: Second tensor.
 
     Returns:
-            A new tensor containing a - b
+            A new tensor containing a - b.
 
     Raises:
             Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
-            ```
+            ```mojo
             var a = ones(List[Int](), DType.float32)
             var b = ones(List[Int](), DType.float32)
             var c = subtract(a, b)  # Shape (3, 4), all zeros
@@ -213,17 +213,17 @@ fn multiply(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise multiplication with broadcasting.
 
     Args:
-            a: First tensor
-            b: Second tensor
+            a: First tensor.
+            b: Second tensor.
 
     Returns:
-            A new tensor containing a * b
+            A new tensor containing a * b.
 
     Raises:
             Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
-            ```
+            ```mojo
             var a = full(List[Int](), 2.0, DType.float32)
             var b = full(List[Int](), 3.0, DType.float32)
             var c = multiply(a, b)  # Shape (3, 4), all 6.0
@@ -246,11 +246,11 @@ fn divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise division with broadcasting.
 
     Args:
-            a: First tensor (numerator)
-            b: Second tensor (denominator)
+            a: First tensor (numerator).
+            b: Second tensor (denominator).
 
     Returns:
-            A new tensor containing a / b
+            A new tensor containing a / b.
 
     Raises:
             Error if shapes are not broadcast-compatible or dtypes don't match.
@@ -262,7 +262,7 @@ fn divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
             - 0.0 / 0.0 -> NaN
 
     Examples:
-            ```
+            ```mojo
             var a = full(List[Int](), 6.0, DType.float32)
             var b = full(List[Int](), 2.0, DType.float32)
             var c = divide(a, b)  # Shape (3, 4), all 3.0
@@ -285,11 +285,11 @@ fn floor_divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise floor division with broadcasting.
 
     Args:
-            a: First tensor (numerator)
-            b: Second tensor (denominator)
+            a: First tensor (numerator).
+            b: Second tensor (denominator).
 
     Returns:
-            A new tensor containing a // b (floor division)
+            A new tensor containing a // b (floor division).
 
     Raises:
             Error if shapes are not broadcast-compatible or dtypes don't match.
@@ -301,7 +301,7 @@ fn floor_divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
             - 0.0 // 0.0 -> NaN
 
     Examples:
-            ```
+            ```mojo
             var a = full(List[Int](), 7.0, DType.float32)
             var b = full(List[Int](), 2.0, DType.float32)
             var c = floor_divide(a, b)  # Shape (3, 4), all 3.0
@@ -338,17 +338,17 @@ fn modulo(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise modulo with broadcasting.
 
     Args:
-            a: First tensor
-            b: Second tensor (modulus)
+            a: First tensor.
+            b: Second tensor (modulus).
 
     Returns:
-            A new tensor containing a % b
+            A new tensor containing a % b.
 
     Raises:
             Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
-            ```
+            ```mojo
             var a = full(List[Int](), 7.0, DType.int32)
             var b = full(List[Int](), 3.0, DType.int32)
             var c = modulo(a, b)  # Shape (3, 4), all 1
@@ -383,17 +383,17 @@ fn power(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise exponentiation with broadcasting.
 
     Args:
-            a: Base tensor
-            b: Exponent tensor
+            a: Base tensor.
+            b: Exponent tensor.
 
     Returns:
-            A new tensor containing a ** b
+            A new tensor containing a ** b.
 
     Raises:
             Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
-            ```
+            ```mojo
             var a = full(List[Int](), 2.0, DType.float32)
             var b = full(List[Int](), 3.0, DType.float32)
             var c = power(a, b)  # Shape (3, 4), all 8.0
@@ -406,8 +406,8 @@ fn power(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
     Note:
             Uses ** operator which delegates to Mojo's built-in power implementation.
-            For integer exponents, this uses efficient repeated squaring
-            For fractional exponents, this uses exp(b * log(a))
+            For integer exponents, this uses efficient repeated squaring.
+            For fractional exponents, this uses exp(b * log(a)).
     """
 
     @always_inline
@@ -429,17 +429,17 @@ fn _reduce_broadcast_dims(
     """Reduce gradient from broadcast shape back to original shape.
 
         When forward pass broadcasts input from original_shape to grad.shape(),
-        backward pass must sum gradient back to original_shape
+        backward pass must sum gradient back to original_shape.
 
     Args:
-            grad: Gradient tensor (broadcast shape)
-            original_shape: Original input shape before broadcasting
+            grad: Gradient tensor (broadcast shape).
+            original_shape: Original input shape before broadcasting.
 
     Returns:
-            Reduced gradient matching original_shape
+            Reduced gradient matching original_shape.
 
     Examples:
-            ```
+            ```mojo
             # Broadcasting (3, 1, 5) → (3, 4, 5)
             var grad = ones([3, 4, 5])  # Gradient from loss
             var original = [3, 1, 5]    # Original input shape
@@ -491,18 +491,18 @@ fn add_backward(
             ∂L/∂B = ∂L/∂C (summed over broadcasted dimensions)
 
         Handles broadcasting: If input was broadcast to output shape, gradient
-        is summed back to the original input shape
+        is summed back to the original input shape.
 
     Args:
-            grad_output: Gradient from upstream (∂L/∂C)
-            a: First input from forward pass (A)
-            b: Second input from forward pass (B)
+            grad_output: Gradient from upstream (∂L/∂C).
+            a: First input from forward pass (A).
+            b: Second input from forward pass (B).
 
     Returns:
-            GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs
+            GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
 
     Examples:
-            ```
+            ```mojo
             # No broadcasting
             var a = ones(List[Int](), DType.float32)
             var b = ones(List[Int](), DType.float32)
@@ -537,15 +537,15 @@ fn subtract_backward(
             ∂L/∂A = ∂L/∂C (reduced for broadcasting)
             ∂L/∂B = -∂L/∂C (negated and reduced for broadcasting)
 
-        The gradient for B is negated since ∂(A-B)/∂B = -1
+        The gradient for B is negated since ∂(A-B)/∂B = -1.
 
     Args:
-            grad_output: Gradient from upstream (∂L/∂C)
-            a: First input from forward pass (A)
-            b: Second input from forward pass (B)
+            grad_output: Gradient from upstream (∂L/∂C).
+            a: First input from forward pass (A).
+            b: Second input from forward pass (B).
 
     Returns:
-            GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs
+            GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
     """
     # Gradient for A passes through unchanged (but reduced for broadcasting)
     var grad_a = _reduce_broadcast_dims(grad_output, a.shape())
@@ -572,15 +572,15 @@ fn multiply_backward(
             ∂L/∂B = ∂L/∂C * A  (reduced for broadcasting)
 
     Args:
-            grad_output: Gradient from upstream (∂L/∂C)
-            a: First input from forward pass (A)
-            b: Second input from forward pass (B)
+            grad_output: Gradient from upstream (∂L/∂C).
+            a: First input from forward pass (A).
+            b: Second input from forward pass (B).
 
     Returns:
-            GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs
+            GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
 
     Examples:
-            ```
+            ```mojo
             var a = ones(List[Int](), DType.float32)
             var b = ones(List[Int](), DType.float32)
             var c = multiply(a, b)
@@ -610,18 +610,18 @@ fn divide_backward(
             ∂L/∂A = ∂L/∂C / B  (quotient rule numerator)
             ∂L/∂B = -∂L/∂C * A / B²  (quotient rule denominator)
 
-        Includes numerical stability: adds small epsilon to prevent division by zero
+        Includes numerical stability: adds small epsilon to prevent division by zero.
 
     Args:
-            grad_output: Gradient from upstream (∂L/∂C)
-            a: First input from forward pass (A)
-            b: Second input from forward pass (B)
+            grad_output: Gradient from upstream (∂L/∂C).
+            a: First input from forward pass (A).
+            b: Second input from forward pass (B).
 
     Returns:
-            GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs
+            GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
 
     Examples:
-            ```
+            ```mojo
             var a = ones(List[Int](), DType.float32)
             var b = full(List[Int](), 2.0, DType.float32)
             var c = divide(a, b)
@@ -632,7 +632,7 @@ fn divide_backward(
             ```
 
         Numerical Stability:
-            Uses epsilon = 1e-10 to prevent division by zero in b²
+            Uses epsilon = 1e-10 to prevent division by zero in b².
     """
     alias EPSILON = 1e-10
 

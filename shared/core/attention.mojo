@@ -259,7 +259,14 @@ fn _softmax_backward(
     """Internal helper for softmax backward pass.
 
     Computes gradient through softmax: d_softmax/d_input = s * (g - sum(g * s))
-    where s = softmax_output and g = grad_output
+    where s = softmax_output and g = grad_output.
+
+    Args:
+        grad_output: Gradient from upstream operations.
+        softmax_output: Softmax output from forward pass.
+
+    Returns:
+        Gradient with respect to softmax input.
     """
     var shape = grad_output.shape()
     var result = zeros_like(grad_output)
@@ -380,7 +387,13 @@ fn create_causal_mask(
 struct MultiHeadAttentionWeights(Movable):
     """Container for multi-head attention weight matrices.
 
-    Holds the projection matrices for Q, K, V and output projection
+    Holds the projection matrices for Q, K, V and output projection.
+
+    Attributes:
+        wq: Query projection weight matrix (d_model, d_model).
+        wk: Key projection weight matrix (d_model, d_model).
+        wv: Value projection weight matrix (d_model, d_model).
+        wo: Output projection weight matrix (d_model, d_model).
     """
 
     var wq: ExTensor  # Query projection: (d_model, d_model)
@@ -410,7 +423,11 @@ struct MultiHeadAttentionWeights(Movable):
 struct MultiHeadAttentionResult(Movable):
     """Result container for multi_head_attention.
 
-    Contains output and attention weights for visualization/analysis
+    Contains output and attention weights for visualization/analysis.
+
+    Attributes:
+        output: Attention output tensor.
+        attention_weights: Attention weight matrix for visualization.
     """
 
     var output: ExTensor
@@ -568,9 +585,19 @@ fn multi_head_attention_masked(
 fn _reshape_for_heads(
     x: ExTensor, batch: Int, seq_len: Int, num_heads: Int, d_k: Int
 ) raises -> ExTensor:
-    """Reshape from (batch, seq, d_model) to (batch, num_heads, seq, d_k)
+    """Reshape from (batch, seq, d_model) to (batch, num_heads, seq, d_k).
 
-    Internal helper for multi-head attention
+    Internal helper for multi-head attention.
+
+    Args:
+        x: Input tensor of shape (batch, seq_len, d_model).
+        batch: Batch size.
+        seq_len: Sequence length.
+        num_heads: Number of attention heads.
+        d_k: Dimension per head (d_model / num_heads).
+
+    Returns:
+        Reshaped tensor of shape (batch, num_heads, seq_len, d_k).
     """
     # x shape: (batch, seq_len, d_model) where d_model = num_heads * d_k
     # Target: (batch, num_heads, seq_len, d_k)
@@ -629,9 +656,19 @@ fn _reshape_for_heads(
 fn _reshape_from_heads(
     x: ExTensor, batch: Int, seq_len: Int, num_heads: Int, d_k: Int
 ) raises -> ExTensor:
-    """Reshape from (batch, num_heads, seq, d_k) to (batch, seq, d_model)
+    """Reshape from (batch, num_heads, seq, d_k) to (batch, seq, d_model).
 
-    Internal helper for multi-head attention
+    Internal helper for multi-head attention.
+
+    Args:
+        x: Input tensor of shape (batch, num_heads, seq_len, d_k).
+        batch: Batch size.
+        seq_len: Sequence length.
+        num_heads: Number of attention heads.
+        d_k: Dimension per head.
+
+    Returns:
+        Reshaped tensor of shape (batch, seq_len, d_model) where d_model = num_heads * d_k.
     """
     # x shape: (batch, num_heads, seq_len, d_k)
     # Target: (batch, seq_len, d_model) where d_model = num_heads * d_k
@@ -689,7 +726,16 @@ fn _reshape_from_heads(
 struct MultiHeadAttentionBackwardResult(Movable):
     """Result container for multi_head_attention_backward.
 
-    Contains gradients for all inputs and weight matrices
+    Contains gradients for all inputs and weight matrices.
+
+    Attributes:
+        grad_query: Gradient with respect to query tensor.
+        grad_key: Gradient with respect to key tensor.
+        grad_value: Gradient with respect to value tensor.
+        grad_wq: Gradient with respect to query projection weights.
+        grad_wk: Gradient with respect to key projection weights.
+        grad_wv: Gradient with respect to value projection weights.
+        grad_wo: Gradient with respect to output projection weights.
     """
 
     var grad_query: ExTensor

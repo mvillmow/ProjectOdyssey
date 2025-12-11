@@ -15,6 +15,7 @@ Key characteristics:
 - Requires external scale factor for proper representation
 
 Example:
+    ```mojo
     from shared.core.types.fp4 import FP4_E2M1
 
     # E2M1 is typically used within block structures
@@ -46,19 +47,19 @@ from math import isnan, isinf
 struct FP4_E2M1(Copyable, Movable, Representable, Stringable):
     """4-bit floating point number in E2M1 format.
 
-        Memory layout (4 bits stored in UInt8):
-        - Bit 3: Sign bit
-        - Bits 2-1: Exponent (2 bits, bias = 1)
-        - Bit 0: Mantissa (1 bit)
+    Memory layout (4 bits stored in UInt8):
+    - Bit 3: Sign bit
+    - Bits 2-1: Exponent (2 bits, bias = 1)
+    - Bit 0: Mantissa (1 bit)
 
-        Special values:
-        - Zero: exp=0, mantissa=0
-        - Max normal: exp=2, mantissa=1 (value = 6.0 before scaling)
-        - Min normal: exp=1, mantissa=0 (value = 1.0 before scaling)
+    Special values:
+    - Zero: exp=0, mantissa=0
+    - Max normal: exp=2, mantissa=1 (value = 6.0 before scaling)
+    - Min normal: exp=1, mantissa=0 (value = 1.0 before scaling)
 
     Note:
-            E2M1 values are meaningless without a block-level scale factor
-            Use MXFP4 or NVFP4 for complete block-based representations
+        E2M1 values are meaningless without a block-level scale factor.
+        Use MXFP4 or NVFP4 for complete block-based representations.
     """
 
     var value: UInt8  # Only lower 4 bits are used
@@ -198,10 +199,10 @@ struct FP4_E2M1(Copyable, Movable, Representable, Stringable):
         return result
 
     fn __str__(self) -> String:
-        """String representation showing FP4 value as Float32 (unscaled)
+        """String representation showing FP4 value as Float32 (unscaled).
 
         Returns:
-            String representation
+            String representation.
         """
         return "FP4_E2M1(" + String(self.to_float32(scale=1.0)) + ")"
 

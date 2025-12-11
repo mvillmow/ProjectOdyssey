@@ -33,36 +33,36 @@ fn normalize_rgb(
 ) raises -> ExTensor:
     """Normalize RGB images with per-channel mean and standard deviation.
 
-        Applies normalization to RGB images using the formula:
-            normalized = (pixel / 255.0 - mean) / std
+    Applies normalization to RGB images using the formula:
+        normalized = (pixel / 255.0 - mean) / std
 
-        This is commonly used with ImageNet statistics for transfer learning
+    This is commonly used with ImageNet statistics for transfer learning.
 
     Args:
-            images: Input uint8 tensor of shape (N, 3, H, W)
-            mean: Mean values for R, G, B channels (e.g., (0.485, 0.456, 0.406))
-            std: Std deviation values for R, G, B channels (e.g., (0.229, 0.224, 0.225))
+        images: Input uint8 tensor of shape (N, 3, H, W).
+        mean: Mean values for R, G, B channels (e.g., (0.485, 0.456, 0.406)).
+        std: Std deviation values for R, G, B channels (e.g., (0.229, 0.224, 0.225)).
 
     Returns:
-            Normalized float32 tensor of shape (N, 3, H, W)
+        Normalized float32 tensor of shape (N, 3, H, W).
 
     Raises:
-            Error: If input is not 4D or doesn't have 3 channels.
+        Error: If input is not 4D or doesn't have 3 channels.
 
-        Example:
-            ```mojo
-            from shared.core.normalize_ops import normalize_rgb
+    Example:
+        ```mojo
+        from shared.core.normalize_ops import normalize_rgb
 
-            # ImageNet normalization
-            var mean = (Float32(0.485), Float32(0.456), Float32(0.406))
-            var std = (Float32(0.229), Float32(0.224), Float32(0.225))
-            var normalized = normalize_rgb(images, mean, std)
-            ```
+        # ImageNet normalization
+        var mean = (Float32(0.485), Float32(0.456), Float32(0.406))
+        var std = (Float32(0.229), Float32(0.224), Float32(0.225))
+        var normalized = normalize_rgb(images, mean, std)
+        ```
 
     Note:
-            - Input must be uint8 [0, 255]
-            - Output is float32 with normalized values
-            - Common for CIFAR-10, ImageNet, and other RGB datasets
+        - Input must be uint8 [0, 255]
+        - Output is float32 with normalized values
+        - Common for CIFAR-10, ImageNet, and other RGB datasets
     """
     var shape = images.shape()
     if len(shape) != 4:

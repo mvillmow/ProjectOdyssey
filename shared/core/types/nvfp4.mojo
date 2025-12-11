@@ -18,6 +18,7 @@ Key characteristics:
 - Use case: Memory-efficient ML training with better accuracy than MXFP4
 
 Example:
+    ```mojo
     from shared.core.types.nvfp4 import NVFP4, NVFP4Block
 
     # Individual value (stores both E2M1 and scale for convenience)
@@ -29,18 +30,18 @@ Example:
     ```
 
 Reference:
-    Tim Dettmers, Nolan Miller, Deepak Kapur, Luke Zettlemoyer
+    Tim Dettmers, Nolan Miller, Deepak Kapur, Luke Zettlemoyer.
     "Microscaling Data Formats for Deep Learning."
-    arXiv preprint arXiv:2310.10537, 2023
+    arXiv preprint arXiv:2310.10537, 2023.
     https://arxiv.org/abs/2310.10537
     https://doi.org/10.48550/arXiv.2310.10537
 
     The paper demonstrates that microscaling (per-block scaling factors) enables
     efficient low-precision quantization (4-bit) while maintaining accuracy in
     deep learning training and inference. NVFP4 uses E4M3 scales (128 dynamic range)
-    across 16-element blocks for a balance between accuracy and memory efficiency
+    across 16-element blocks for a balance between accuracy and memory efficiency.
     The paper shows E4M3 achieves the best overall results with modest accuracy
-    improvements over the wider-range E8M0 format
+    improvements over the wider-range E8M0 format.
 """
 
 from math import isnan, isinf
@@ -60,7 +61,7 @@ struct E4M3Scale(Copyable, Movable, Representable, Stringable):
     - Max: exp=15, mantissa=7
     - No NaN/Inf (all patterns represent finite positive values)
 
-    Valid range: Similar to FP8 E4M3 format
+    Valid range: Similar to FP8 E4M3 format.
     """
 
     var value: UInt8  # Only lower 7 bits are used
@@ -569,7 +570,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
 
 
 struct NVFP4Block(Copyable, Movable, Representable, Stringable):
-    """NVFP4 block storage: 16 E2M1 values + 1 E4M3 scale (9 bytes total)
+    """NVFP4 block storage: 16 E2M1 values + 1 E4M3 scale (9 bytes total).
 
     Memory layout:
     - Bytes 0-7: 16 E2M1 values (4 bits each, packed 2 per byte)
@@ -580,11 +581,11 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
     - Upper 4 bits: First E2M1 value
     - Lower 4 bits: Second E2M1 value
 
-    This provides 14:1 compression vs Float32 (9 bytes vs 64 bytes)
-    Smaller blocks (16 vs 32) provide better accuracy per the paper
+    This provides 14:1 compression vs Float32 (9 bytes vs 64 bytes).
+    Smaller blocks (16 vs 32) provide better accuracy per the paper.
 
     Example:
-        ```
+        ```mojo
         from collections import List
 
         # Create block from Float32 array

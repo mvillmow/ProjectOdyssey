@@ -44,38 +44,38 @@ fn conv2d(
     stride: Int = 1,
     padding: Int = 0,
 ) raises -> ExTensor:
-    """Functional 2D convolution using direct convolution: y = conv2d(x, kernel) + bias
+    """Functional 2D convolution using direct convolution: y = conv2d(x, kernel) + bias.
 
-        Pure function - caller manages kernel and bias. No internal state
-        Uses direct convolution algorithm (not im2col)
+    Pure function - caller manages kernel and bias. No internal state.
+    Uses direct convolution algorithm (not im2col).
 
     Args:
-            x: Input tensor of shape (batch, in_channels, height, width)
-            kernel: Convolution kernels of shape (out_channels, in_channels, kH, kW)
-            bias: Bias vector of shape (out_channels,)
-            stride: Stride for convolution (default: 1)
-            padding: Zero-padding added to input (default: 0)
+        x: Input tensor of shape (batch, in_channels, height, width).
+        kernel: Convolution kernels of shape (out_channels, in_channels, kH, kW).
+        bias: Bias vector of shape (out_channels,).
+        stride: Stride for convolution (default: 1).
+        padding: Zero-padding added to input (default: 0).
 
     Returns:
-            Output tensor of shape (batch, out_channels, out_height, out_width)
-            where:
-                out_height = (height + 2*padding - kH) // stride + 1
-                out_width = (width + 2*padding - kW) // stride + 1
+        Output tensor of shape (batch, out_channels, out_height, out_width)
+        where:
+            out_height = (height + 2*padding - kH) // stride + 1
+            out_width = (width + 2*padding - kW) // stride + 1
 
-        Example:
-            ```mojo
-            from shared.core import ExTensor, conv2d, zeros, he_uniform
+    Example:
+        ```mojo
+        from shared.core import ExTensor, conv2d, zeros, he_uniform
 
-            # Caller manages state
-            var kernel = he_uniform((16, 3, 3, 3), DType.float32)  # 16 filters, 3x3
-            var bias = zeros(16, DType.float32)
+        # Caller manages state
+        var kernel = he_uniform((16, 3, 3, 3), DType.float32)  # 16 filters, 3x3
+        var bias = zeros(16, DType.float32)
 
-            # Pure function call
-            var output = conv2d(input, kernel, bias, stride=1, padding=1)
-            ```
+        # Pure function call
+        var output = conv2d(input, kernel, bias, stride=1, padding=1)
+        ```
 
     Raises:
-            Error: If tensor shapes are incompatible
+        Error: If tensor shapes are incompatible.
     """
     # Get input dimensions
     var x_shape = x.shape()
@@ -188,22 +188,22 @@ fn conv2d(
 fn conv2d_no_bias(
     x: ExTensor, kernel: ExTensor, stride: Int = 1, padding: Int = 0
 ) raises -> ExTensor:
-    """Functional 2D convolution without bias: y = conv2d(x, kernel)
+    """Functional 2D convolution without bias: y = conv2d(x, kernel).
 
-        Pure function for convolution with no bias term
-        Uses direct convolution algorithm
+    Pure function for convolution with no bias term.
+    Uses direct convolution algorithm.
 
     Args:
-            x: Input tensor of shape (batch, in_channels, height, width)
-            kernel: Convolution kernels of shape (out_channels, in_channels, kH, kW)
-            stride: Stride for convolution (default: 1)
-            padding: Zero-padding added to input (default: 0)
+        x: Input tensor of shape (batch, in_channels, height, width).
+        kernel: Convolution kernels of shape (out_channels, in_channels, kH, kW).
+        stride: Stride for convolution (default: 1).
+        padding: Zero-padding added to input (default: 0).
 
     Returns:
-            Output tensor of shape (batch, out_channels, out_height, out_width)
+        Output tensor of shape (batch, out_channels, out_height, out_width).
 
     Raises:
-            Error: If tensor shapes are incompatible
+        Error: If tensor shapes are incompatible.
     """
     # Create zero bias
     var k_shape = kernel.shape()
@@ -224,45 +224,45 @@ fn conv2d_backward(
 ) raises -> Conv2dBackwardResult:
     """Backward pass for 2D convolution.
 
-        Computes gradients with respect to input, kernel, and bias
+    Computes gradients with respect to input, kernel, and bias.
 
-        Math:
-            Given: y = conv2d(x, kernel, bias, stride, padding)
-            This function computes:
-            - grad_input: Gradient w.r.t. input
-            - grad_kernel: Gradient w.r.t. kernel
-            - grad_bias: Gradient w.r.t. bias
+    Math:
+        Given: y = conv2d(x, kernel, bias, stride, padding)
+        This function computes:
+        - grad_input: Gradient w.r.t. input
+        - grad_kernel: Gradient w.r.t. kernel
+        - grad_bias: Gradient w.r.t. bias
 
     Args:
-            grad_output: Gradient w.r.t. output, shape (batch, out_channels, out_H, out_W)
-            x: Input from forward pass, shape (batch, in_channels, in_H, in_W)
-            kernel: Kernel from forward pass, shape (out_channels, in_channels, kH, kW)
-            stride: Stride used in forward pass
-            padding: Padding used in forward pass
+        grad_output: Gradient w.r.t. output, shape (batch, out_channels, out_H, out_W).
+        x: Input from forward pass, shape (batch, in_channels, in_H, in_W).
+        kernel: Kernel from forward pass, shape (out_channels, in_channels, kH, kW).
+        stride: Stride used in forward pass.
+        padding: Padding used in forward pass.
 
     Returns:
-            Conv2dBackwardResult containing:
-                - grad_input: Gradient w.r.t. input, shape (batch, in_channels, in_H, in_W)
-                - grad_kernel: Gradient w.r.t. kernel, shape (out_channels, in_channels, kH, kW)
-                - grad_bias: Gradient w.r.t. bias, shape (out_channels,)
+        Conv2dBackwardResult containing:
+            - grad_input: Gradient w.r.t. input, shape (batch, in_channels, in_H, in_W)
+            - grad_kernel: Gradient w.r.t. kernel, shape (out_channels, in_channels, kH, kW)
+            - grad_bias: Gradient w.r.t. bias, shape (out_channels,)
 
-        Example:
-            ```mojo
-            from shared.core import conv2d, conv2d_backward
+    Example:
+        ```mojo
+        from shared.core import conv2d, conv2d_backward
 
-            # Forward pass
-            var output = conv2d(x, kernel, bias, stride, padding)
-            # ... compute loss and grad_output ...
+        # Forward pass
+        var output = conv2d(x, kernel, bias, stride, padding)
+        # ... compute loss and grad_output ...
 
-            # Backward pass
-            var result = conv2d_backward(grad_output, x, kernel, stride, padding)
-            var grad_x = result.grad_input
-            var grad_k = result.grad_weights
-            var grad_b = result.grad_bias
-            ```
+        # Backward pass
+        var result = conv2d_backward(grad_output, x, kernel, stride, padding)
+        var grad_x = result.grad_input
+        var grad_k = result.grad_weights
+        var grad_b = result.grad_bias
+        ```
 
     Raises:
-            Error if tensor shapes are incompatible
+        Error if tensor shapes are incompatible.
     """
     # Get dimensions
     var x_shape = x.shape()
@@ -455,17 +455,17 @@ fn conv2d_no_bias_backward(
     """Backward pass for 2D convolution without bias.
 
     Args:
-            grad_output: Gradient w.r.t. output
-            x: Input from forward pass
-            kernel: Kernel from forward pass
-            stride: Stride used in forward pass
-            padding: Padding used in forward pass
+        grad_output: Gradient w.r.t. output.
+        x: Input from forward pass.
+        kernel: Kernel from forward pass.
+        stride: Stride used in forward pass.
+        padding: Padding used in forward pass.
 
     Returns:
-            Conv2dNoBiasBackwardResult containing grad_input and grad_kernel
+        Conv2dNoBiasBackwardResult containing grad_input and grad_kernel.
 
     Raises:
-            Error if tensor shapes are incompatible
+        Error if tensor shapes are incompatible.
     """
     var result = conv2d_backward(grad_output, x, kernel, stride, padding)
     # Copy needed fields before result is destroyed (ExTensor is ImplicitlyCopyable)
@@ -481,37 +481,37 @@ fn depthwise_conv2d(
     stride: Int = 1,
     padding: Int = 0,
 ) raises -> ExTensor:
-    """Functional depthwise 2D convolution: y = depthwise_conv2d(x, kernel) + bias
+    """Functional depthwise 2D convolution: y = depthwise_conv2d(x, kernel) + bias.
 
-        Each input channel is convolved with its own filter (no cross-channel mixing)
-        Used in efficient architectures like MobileNet and EfficientNet
+    Each input channel is convolved with its own filter (no cross-channel mixing).
+    Used in efficient architectures like MobileNet and EfficientNet.
 
     Args:
-            x: Input tensor of shape (batch, channels, height, width)
-            kernel: Depthwise kernels of shape (channels, 1, kH, kW)
-            bias: Bias vector of shape (channels,)
-            stride: Stride for convolution (default: 1)
-            padding: Zero-padding added to input (default: 0)
+        x: Input tensor of shape (batch, channels, height, width).
+        kernel: Depthwise kernels of shape (channels, 1, kH, kW).
+        bias: Bias vector of shape (channels,).
+        stride: Stride for convolution (default: 1).
+        padding: Zero-padding added to input (default: 0).
 
     Returns:
-            Output tensor of shape (batch, channels, out_height, out_width)
-            where:
-                out_height = (height + 2*padding - kH) // stride + 1
-                out_width = (width + 2*padding - kW) // stride + 1
+        Output tensor of shape (batch, channels, out_height, out_width)
+        where:
+            out_height = (height + 2*padding - kH) // stride + 1
+            out_width = (width + 2*padding - kW) // stride + 1
 
-        Example:
-            ```mojo
-            from shared.core import depthwise_conv2d, zeros, he_uniform
+    Example:
+        ```mojo
+        from shared.core import depthwise_conv2d, zeros, he_uniform
 
-            # Depthwise kernel: one 3x3 filter per channel
-            var kernel = he_uniform((32, 1, 3, 3), DType.float32)  # 32 channels
-            var bias = zeros(32, DType.float32)
+        # Depthwise kernel: one 3x3 filter per channel
+        var kernel = he_uniform((32, 1, 3, 3), DType.float32)  # 32 channels
+        var bias = zeros(32, DType.float32)
 
-            var output = depthwise_conv2d(input, kernel, bias, stride=1, padding=1)
-            ```
+        var output = depthwise_conv2d(input, kernel, bias, stride=1, padding=1)
+        ```
 
     Raises:
-            Error: If tensor shapes are incompatible
+        Error: If tensor shapes are incompatible.
     """
     # Get input dimensions
     var x_shape = x.shape()
@@ -626,16 +626,16 @@ fn depthwise_conv2d_no_bias(
     """Functional depthwise 2D convolution without bias.
 
     Args:
-            x: Input tensor of shape (batch, channels, height, width)
-            kernel: Depthwise kernels of shape (channels, 1, kH, kW)
-            stride: Stride for convolution (default: 1)
-            padding: Zero-padding added to input (default: 0)
+        x: Input tensor of shape (batch, channels, height, width).
+        kernel: Depthwise kernels of shape (channels, 1, kH, kW).
+        stride: Stride for convolution (default: 1).
+        padding: Zero-padding added to input (default: 0).
 
     Returns:
-            Output tensor of shape (batch, channels, out_height, out_width)
+        Output tensor of shape (batch, channels, out_height, out_width).
 
     Raises:
-            Error: If tensor shapes are incompatible
+        Error: If tensor shapes are incompatible.
     """
     var x_shape = x.shape()
     var channels = x_shape[1]
@@ -655,38 +655,38 @@ fn depthwise_conv2d_backward(
 ) raises -> DepthwiseConv2dBackwardResult:
     """Backward pass for depthwise 2D convolution.
 
-        Computes gradients with respect to input, kernel, and bias
+    Computes gradients with respect to input, kernel, and bias.
 
     Args:
-            grad_output: Gradient w.r.t. output, shape (batch, channels, out_H, out_W)
-            x: Input from forward pass, shape (batch, channels, in_H, in_W)
-            kernel: Kernel from forward pass, shape (channels, 1, kH, kW)
-            stride: Stride used in forward pass
-            padding: Padding used in forward pass
+        grad_output: Gradient w.r.t. output, shape (batch, channels, out_H, out_W).
+        x: Input from forward pass, shape (batch, channels, in_H, in_W).
+        kernel: Kernel from forward pass, shape (channels, 1, kH, kW).
+        stride: Stride used in forward pass.
+        padding: Padding used in forward pass.
 
     Returns:
-            DepthwiseConv2dBackwardResult containing:
-                - grad_input: Gradient w.r.t. input, shape (batch, channels, in_H, in_W)
-                - grad_kernel: Gradient w.r.t. kernel, shape (channels, 1, kH, kW)
-                - grad_bias: Gradient w.r.t. bias, shape (channels,)
+        DepthwiseConv2dBackwardResult containing:
+            - grad_input: Gradient w.r.t. input, shape (batch, channels, in_H, in_W)
+            - grad_kernel: Gradient w.r.t. kernel, shape (channels, 1, kH, kW)
+            - grad_bias: Gradient w.r.t. bias, shape (channels,)
 
-        Example:
-            ```mojo
-            from shared.core import depthwise_conv2d, depthwise_conv2d_backward
+    Example:
+        ```mojo
+        from shared.core import depthwise_conv2d, depthwise_conv2d_backward
 
-            # Forward pass
-            var output = depthwise_conv2d(x, kernel, bias, stride, padding)
-            # ... compute loss and grad_output ...
+        # Forward pass
+        var output = depthwise_conv2d(x, kernel, bias, stride, padding)
+        # ... compute loss and grad_output ...
 
-            # Backward pass
-            var result = depthwise_conv2d_backward(grad_output, x, kernel, stride, padding)
-            var grad_x = result.grad_input
-            var grad_k = result.grad_weights
-            var grad_b = result.grad_bias
-            ```
+        # Backward pass
+        var result = depthwise_conv2d_backward(grad_output, x, kernel, stride, padding)
+        var grad_x = result.grad_input
+        var grad_k = result.grad_weights
+        var grad_b = result.grad_bias
+        ```
 
     Raises:
-            Error if tensor shapes are incompatible
+        Error if tensor shapes are incompatible.
     """
     # Get dimensions
     var x_shape = x.shape()
@@ -835,17 +835,17 @@ fn depthwise_conv2d_no_bias_backward(
     """Backward pass for depthwise 2D convolution without bias.
 
     Args:
-            grad_output: Gradient w.r.t. output
-            x: Input from forward pass
-            kernel: Kernel from forward pass
-            stride: Stride used in forward pass
-            padding: Padding used in forward pass
+        grad_output: Gradient w.r.t. output.
+        x: Input from forward pass.
+        kernel: Kernel from forward pass.
+        stride: Stride used in forward pass.
+        padding: Padding used in forward pass.
 
     Returns:
-            DepthwiseConv2dNoBiasBackwardResult containing grad_input and grad_kernel
+        DepthwiseConv2dNoBiasBackwardResult containing grad_input and grad_kernel.
 
     Raises:
-            Error if tensor shapes are incompatible
+        Error if tensor shapes are incompatible.
     """
     var result = depthwise_conv2d_backward(
         grad_output, x, kernel, stride, padding
@@ -873,47 +873,47 @@ fn depthwise_separable_conv2d(
 ) raises -> ExTensor:
     """Depthwise separable 2D convolution.
 
-        Combines depthwise and pointwise convolutions for efficient mobile architectures
-        Used extensively in MobileNet, EfficientNet, and other efficient networks
+    Combines depthwise and pointwise convolutions for efficient mobile architectures.
+    Used extensively in MobileNet, EfficientNet, and other efficient networks.
 
-        The operation consists of two stages:
-        1. Depthwise conv: Each input channel is convolved with its own filter
-        2. Pointwise conv: 1x1 convolution to combine/project channels
+    The operation consists of two stages:
+    1. Depthwise conv: Each input channel is convolved with its own filter
+    2. Pointwise conv: 1x1 convolution to combine/project channels
 
     Args:
-            x: Input tensor of shape (batch, in_channels, height, width)
-            depthwise_kernel: Depthwise filter of shape (in_channels, 1, kH, kW)
-            pointwise_kernel: Pointwise filter of shape (out_channels, in_channels, 1, 1)
-            bias: Bias tensor of shape (out_channels,)
-            stride: Stride for depthwise convolution (default: 1)
-            padding: Padding for depthwise convolution (default: 0)
+        x: Input tensor of shape (batch, in_channels, height, width).
+        depthwise_kernel: Depthwise filter of shape (in_channels, 1, kH, kW).
+        pointwise_kernel: Pointwise filter of shape (out_channels, in_channels, 1, 1).
+        bias: Bias tensor of shape (out_channels,).
+        stride: Stride for depthwise convolution (default: 1).
+        padding: Padding for depthwise convolution (default: 0).
 
     Returns:
-            Output tensor of shape (batch, out_channels, out_height, out_width)
+        Output tensor of shape (batch, out_channels, out_height, out_width).
 
-        Example:
-            ```mojo
-            from shared.core import depthwise_separable_conv2d
+    Example:
+        ```mojo
+        from shared.core import depthwise_separable_conv2d
 
-            # Input: (batch=1, channels=32, H=28, W=28)
-            # Depthwise: (32, 1, 3, 3) - one 3x3 filter per channel
-            # Pointwise: (64, 32, 1, 1) - project to 64 channels
+        # Input: (batch=1, channels=32, H=28, W=28)
+        # Depthwise: (32, 1, 3, 3) - one 3x3 filter per channel
+        # Pointwise: (64, 32, 1, 1) - project to 64 channels
 
-            var output = depthwise_separable_conv2d(
-                x, depthwise_kernel, pointwise_kernel, bias,
-                stride=1, padding=1
-            )
-            # output shape: (1, 64, 28, 28)
-            ```
+        var output = depthwise_separable_conv2d(
+            x, depthwise_kernel, pointwise_kernel, bias,
+            stride=1, padding=1
+        )
+        # output shape: (1, 64, 28, 28)
+        ```
 
-        Formula:
-            intermediate = depthwise_conv2d(x, depthwise_kernel)
-            output = conv2d_1x1(intermediate, pointwise_kernel) + bias
+    Formula:
+        intermediate = depthwise_conv2d(x, depthwise_kernel)
+        output = conv2d_1x1(intermediate, pointwise_kernel) + bias
 
     Note:
-            This is more efficient than standard convolution:
-            - Standard: out_channels * in_channels * kH * kW multiplications
-            - Separable: in_channels * kH * kW + out_channels * in_channels multiplications
+        This is more efficient than standard convolution:
+        - Standard: out_channels * in_channels * kH * kW multiplications
+        - Separable: in_channels * kH * kW + out_channels * in_channels multiplications
     """
     # Stage 1: Depthwise convolution
     var depthwise_output = depthwise_conv2d_no_bias(
@@ -938,14 +938,14 @@ fn depthwise_separable_conv2d_no_bias(
     """Depthwise separable 2D convolution without bias.
 
     Args:
-            x: Input tensor of shape (batch, in_channels, height, width)
-            depthwise_kernel: Depthwise filter of shape (in_channels, 1, kH, kW)
-            pointwise_kernel: Pointwise filter of shape (out_channels, in_channels, 1, 1)
-            stride: Stride for depthwise convolution (default: 1)
-            padding: Padding for depthwise convolution (default: 0)
+        x: Input tensor of shape (batch, in_channels, height, width).
+        depthwise_kernel: Depthwise filter of shape (in_channels, 1, kH, kW).
+        pointwise_kernel: Pointwise filter of shape (out_channels, in_channels, 1, 1).
+        stride: Stride for depthwise convolution (default: 1).
+        padding: Padding for depthwise convolution (default: 0).
 
     Returns:
-            Output tensor of shape (batch, out_channels, out_height, out_width)
+        Output tensor of shape (batch, out_channels, out_height, out_width).
     """
     # Stage 1: Depthwise convolution
     var depthwise_output = depthwise_conv2d_no_bias(
@@ -970,25 +970,25 @@ fn depthwise_separable_conv2d_backward(
 ) raises -> DepthwiseSeparableConv2dBackwardResult:
     """Backward pass for depthwise separable 2D convolution.
 
-        Computes gradients with respect to input and both kernels
+    Computes gradients with respect to input and both kernels.
 
     Args:
-            grad_output: Gradient w.r.t. output (batch, out_channels, out_H, out_W)
-            x: Original input tensor (batch, in_channels, H, W)
-            depthwise_kernel: Depthwise filter (in_channels, 1, kH, kW)
-            pointwise_kernel: Pointwise filter (out_channels, in_channels, 1, 1)
-            stride: Stride used in forward pass
-            padding: Padding used in forward pass
+        grad_output: Gradient w.r.t. output (batch, out_channels, out_H, out_W).
+        x: Original input tensor (batch, in_channels, H, W).
+        depthwise_kernel: Depthwise filter (in_channels, 1, kH, kW).
+        pointwise_kernel: Pointwise filter (out_channels, in_channels, 1, 1).
+        stride: Stride used in forward pass.
+        padding: Padding used in forward pass.
 
     Returns:
-            DepthwiseSeparableConv2dBackwardResult containing:
-                - grad_input: Gradient w.r.t. input
-                - grad_depthwise_kernel: Gradient w.r.t. depthwise kernel
-                - grad_pointwise_kernel: Gradient w.r.t. pointwise kernel
-                - grad_bias: Gradient w.r.t. bias (sum over batch and spatial dims)
+        DepthwiseSeparableConv2dBackwardResult containing:
+            - grad_input: Gradient w.r.t. input
+            - grad_depthwise_kernel: Gradient w.r.t. depthwise kernel
+            - grad_pointwise_kernel: Gradient w.r.t. pointwise kernel
+            - grad_bias: Gradient w.r.t. bias (sum over batch and spatial dims)
 
     Note:
-            Pure functional: returns new tensors, does not modify inputs
+        Pure functional: returns new tensors, does not modify inputs.
     """
     # Recompute intermediate activation for backward
     var depthwise_output = depthwise_conv2d_no_bias(
@@ -1026,15 +1026,15 @@ fn depthwise_separable_conv2d_no_bias_backward(
     """Backward pass for depthwise separable 2D convolution without bias.
 
     Args:
-            grad_output: Gradient w.r.t. output
-            x: Original input tensor
-            depthwise_kernel: Depthwise filter
-            pointwise_kernel: Pointwise filter
-            stride: Stride used in forward pass
-            padding: Padding used in forward pass
+        grad_output: Gradient w.r.t. output.
+        x: Original input tensor.
+        depthwise_kernel: Depthwise filter.
+        pointwise_kernel: Pointwise filter.
+        stride: Stride used in forward pass.
+        padding: Padding used in forward pass.
 
     Returns:
-            DepthwiseSeparableConv2dNoBiasBackwardResult containing gradients
+        DepthwiseSeparableConv2dNoBiasBackwardResult containing gradients.
     """
     # Recompute intermediate activation
     var depthwise_output = depthwise_conv2d_no_bias(

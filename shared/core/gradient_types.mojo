@@ -14,17 +14,19 @@ from .extensor import ExTensor
 struct GradientPair(Copyable, Movable):
     """Container for gradients from binary operations.
 
-        Used for backward functions that compute gradients with respect to
-        two inputs (e.g., add_backward, multiply_backward)
+    Used for backward functions that compute gradients with respect to
+    two inputs (e.g., add_backward, multiply_backward).
 
-        Attributes:
-            grad_a: Gradient with respect to first input
-            grad_b: Gradient with respect to second input
+    Attributes:
+        grad_a: Gradient with respect to first input
+        grad_b: Gradient with respect to second input
 
     Examples:
-            var grads = add_backward(grad_output, a_shape, b_shape)
-            var grad_a = grads.grad_a
-            var grad_b = grads.grad_b
+        ```mojo
+        var grads = add_backward(grad_output, a_shape, b_shape)
+        var grad_a = grads.grad_a
+        var grad_b = grads.grad_b
+        ```
     """
 
     var grad_a: ExTensor
@@ -44,19 +46,21 @@ struct GradientPair(Copyable, Movable):
 struct GradientTriple(Copyable, Movable):
     """Container for gradients from ternary operations.
 
-        Used for backward functions that compute gradients with respect to
-        three inputs (e.g., linear_backward, conv2d_backward)
+    Used for backward functions that compute gradients with respect to
+    three inputs (e.g., linear_backward, conv2d_backward).
 
-        Attributes:
-            grad_input: Gradient with respect to input activation
-            grad_weights: Gradient with respect to weights
-            grad_bias: Gradient with respect to bias
+    Attributes:
+        grad_input: Gradient with respect to input activation
+        grad_weights: Gradient with respect to weights
+        grad_bias: Gradient with respect to bias
 
     Examples:
-            var grads = linear_backward(grad_output, x, weights)
-            var grad_input = grads.grad_input
-            var grad_weights = grads.grad_weights
-            var grad_bias = grads.grad_bias
+        ```mojo
+        var grads = linear_backward(grad_output, x, weights)
+        var grad_input = grads.grad_input
+        var grad_weights = grads.grad_weights
+        var grad_bias = grads.grad_bias
+        ```
     """
 
     var grad_input: ExTensor
@@ -84,21 +88,23 @@ struct GradientTriple(Copyable, Movable):
 struct GradientQuad(Copyable, Movable):
     """Container for gradients from quaternary operations.
 
-        Used for backward functions that compute gradients with respect to
-        four inputs (reserved for future use in complex backward passes)
+    Used for backward functions that compute gradients with respect to
+    four inputs (reserved for future use in complex backward passes).
 
-        Attributes:
-            grad_a: Gradient with respect to first input
-            grad_b: Gradient with respect to second input
-            grad_c: Gradient with respect to third input
-            grad_d: Gradient with respect to fourth input
+    Attributes:
+        grad_a: Gradient with respect to first input
+        grad_b: Gradient with respect to second input
+        grad_c: Gradient with respect to third input
+        grad_d: Gradient with respect to fourth input
 
     Examples:
-            var grads = complex_backward(grad_output, a, b, c, d)
-            var grad_a = grads.grad_a
-            var grad_b = grads.grad_b
-            var grad_c = grads.grad_c
-            var grad_d = grads.grad_d
+        ```mojo
+        var grads = complex_backward(grad_output, a, b, c, d)
+        var grad_a = grads.grad_a
+        var grad_b = grads.grad_b
+        var grad_c = grads.grad_c
+        var grad_d = grads.grad_d
+        ```
     """
 
     var grad_a: ExTensor
