@@ -25,7 +25,6 @@ from python import Python
 
 fn create_temp_dir(prefix: String = "ml_odyssey_test_") raises -> String:
     """Create temporary directory for testing.
-    WARNING: NOT YET IMPLEMENTED - Placeholder interface only.
 
     Creates a unique temporary directory in the system temp location
     with a timestamp-based name for uniqueness.
@@ -46,26 +45,14 @@ fn create_temp_dir(prefix: String = "ml_odyssey_test_") raises -> String:
         Directory is NOT automatically cleaned up - use cleanup_temp_dir()
         in test teardown or try/finally block.
     """
-    # Generate unique directory name with timestamp
-    var time_module = Python.import_module("time")
-    var timestamp = Int(time_module.time())
-    var dir_name = prefix + String(timestamp)
-
-    # Use /tmp on Unix-like systems
-    # TODO: Support Windows temp directory when needed
-    var temp_path = "/tmp/" + dir_name
-
-    # Create directory
-    # TODO: Use Path.mkdir() when available in Mojo stdlib
-    # For now, this is a placeholder for the interface
-    # Actual implementation will require filesystem operations
-
-    return temp_path
+    # Use Python's tempfile.mkdtemp for atomic directory creation
+    var tempfile = Python.import_module("tempfile")
+    var temp_path = tempfile.mkdtemp(prefix=prefix)
+    return String(temp_path)
 
 
 fn cleanup_temp_dir(path: String) raises:
     """Remove temporary directory and all contents.
-    WARNING: NOT YET IMPLEMENTED - Placeholder interface only.
 
     Recursively removes directory and all files/subdirectories.
 
@@ -90,15 +77,17 @@ fn cleanup_temp_dir(path: String) raises:
         This permanently deletes the directory and all contents.
         Be careful not to call on non-temporary directories.
     """
-    # TODO: Implement recursive directory removal
-    # This requires filesystem operations from Mojo stdlib
-    # For now, placeholder for interface documentation
+    # Validation
     if len(path) == 0:
         raise Error("Cannot cleanup empty path")
 
     # Basic safety check - only remove paths in /tmp
     if not path.startswith("/tmp/"):
         raise Error("cleanup_temp_dir only works with /tmp paths for safety")
+
+    # Use Python's shutil.rmtree for recursive directory removal
+    var shutil = Python.import_module("shutil")
+    shutil.rmtree(path)
 
 
 fn temp_file_path(directory: String, filename: String) -> String:
@@ -131,7 +120,6 @@ fn temp_file_path(directory: String, filename: String) -> String:
 
 fn create_mock_config(path: String, content: String) raises:
     """Create mock configuration file.
-    WARNING: NOT YET IMPLEMENTED - Placeholder interface only.
 
     Writes a configuration file (YAML or JSON) to the specified path.
 
@@ -163,20 +151,21 @@ fn create_mock_config(path: String, content: String) raises:
         This doesn't validate YAML/JSON syntax - it just writes the string.
         Use config_fixtures.mojo for pre-validated config templates.
     """
-    # TODO: Implement file writing
-    # This requires file I/O operations from Mojo stdlib
-    # For now, placeholder for interface documentation
+    # Validation
     if len(path) == 0:
         raise Error("Path cannot be empty")
     if len(content) == 0:
         raise Error("Content cannot be empty")
+
+    # Write content to file using builtin open()
+    with open(path, "w") as f:
+        f.write(content)
 
 
 fn create_mock_checkpoint(
     path: String, num_params: Int = 100, random_seed: Int = 42
 ) raises:
     """Create mock model checkpoint file.
-    WARNING: NOT YET IMPLEMENTED - Placeholder interface only.
 
     Creates a simple checkpoint file with mock parameter data.
 
@@ -199,17 +188,26 @@ fn create_mock_checkpoint(
         This creates a simplified checkpoint format for testing.
         Not compatible with production checkpoint formats.
     """
-    # TODO: Implement checkpoint file creation
-    # Will need to serialize mock parameters to file
+    # Validation
     if len(path) == 0:
         raise Error("Path cannot be empty")
     if num_params <= 0:
         raise Error("num_params must be positive")
 
+    # Create simplified checkpoint format matching shared/utils/io.mojo:86-125
+    var content = "EPOCH:0\n"
+    content += "LOSS:0.0\n"
+    content += "ACCURACY:0.0\n"
+    content += "META:num_params=" + String(num_params) + "\n"
+    content += "META:seed=" + String(random_seed)
+
+    # Write checkpoint to file
+    with open(path, "w") as f:
+        f.write(content)
+
 
 fn create_mock_text_file(path: String, num_lines: Int = 10) raises:
     """Create mock text file with sample lines.
-    WARNING: NOT YET IMPLEMENTED - Placeholder interface only.
 
     Args:
         path: Full path where file should be created.
@@ -225,10 +223,22 @@ fn create_mock_text_file(path: String, num_lines: Int = 10) raises:
         create_mock_text_file(data_path, num_lines=100)
         ```
     """
+    # Validation
     if len(path) == 0:
         raise Error("Path cannot be empty")
     if num_lines <= 0:
         raise Error("num_lines must be positive")
+
+    # Generate content in "Line 1\nLine 2\n..." format
+    var content = ""
+    for i in range(1, num_lines + 1):
+        if i > 1:
+            content += "\n"
+        content += "Line " + String(i)
+
+    # Write content to file
+    with open(path, "w") as f:
+        f.write(content)
 
 
 # ============================================================================
@@ -238,7 +248,6 @@ fn create_mock_text_file(path: String, num_lines: Int = 10) raises:
 
 fn get_test_data_path(filename: String) -> String:
     """Resolve path to test data file.
-    WARNING: NOT YET IMPLEMENTED - Placeholder interface only.
 
     Returns absolute path to a file in the test data directory.
     Useful for loading reference data, images, etc.
@@ -260,8 +269,7 @@ fn get_test_data_path(filename: String) -> String:
         Create subdirectories as needed: `images/`, `tensors/`, `models/`, `reference/`.
     """
     # Get test fixtures directory
-    # TODO: Implement proper path resolution relative to test file
-    # For now, assumes tests run from repository root
+    # Assumes tests run from repository root
     var fixtures_dir = "tests/shared/fixtures/"
     return fixtures_dir + filename
 
@@ -288,7 +296,6 @@ fn get_fixtures_dir() -> String:
 
 fn file_exists(path: String) -> Bool:
     """Check if file exists at path.
-    WARNING: NOT YET IMPLEMENTED - Placeholder interface only.
 
     Args:
         path: Path to check.
@@ -308,15 +315,17 @@ fn file_exists(path: String) -> Bool:
     Note:
         Returns False for directories - only checks for files.
     """
-    # TODO: Implement file existence check
-    # Requires filesystem operations from Mojo stdlib
-    # For now, placeholder that returns False
-    return False
+    # Try to open file for reading - if successful, it exists
+    try:
+        with open(path, "r") as f:
+            _ = f.read()  # Attempt to read (confirms it's a file)
+        return True
+    except:
+        return False
 
 
 fn dir_exists(path: String) -> Bool:
     """Check if directory exists at path.
-    WARNING: NOT YET IMPLEMENTED - Placeholder interface only.
 
     Args:
         path: Path to check.
@@ -331,8 +340,14 @@ fn dir_exists(path: String) -> Bool:
             temp_dir = create_temp_dir()
         ```
     """
-    # TODO: Implement directory existence check
-    return False
+    # Use Python os.path.isdir() to check if directory exists
+    try:
+        var python = Python.import_module("os.path")
+        var result = python.isdir(path)
+        return Bool(result)
+    except:
+        # Fall back to False if Python interop fails
+        return False
 
 
 # ============================================================================
