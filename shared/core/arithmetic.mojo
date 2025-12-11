@@ -1,6 +1,6 @@
 """Arithmetic operations for ExTensor with broadcasting support.
 
-Implements element-wise arithmetic operations following NumPy-style broadcasting
+Implements element-wise arithmetic operations following NumPy-style broadcasting.
 """
 
 from collections import List
@@ -151,7 +151,7 @@ fn add(a: ExTensor, b: ExTensor) raises -> ExTensor:
             A new tensor containing a + b.
 
     Raises:
-            Error if shapes are not broadcast-compatible or dtypes don't match.
+            Error: If shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
             ```mojo
@@ -186,7 +186,7 @@ fn subtract(a: ExTensor, b: ExTensor) raises -> ExTensor:
             A new tensor containing a - b.
 
     Raises:
-            Error if shapes are not broadcast-compatible or dtypes don't match.
+            Error: If shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
             ```mojo
@@ -220,7 +220,7 @@ fn multiply(a: ExTensor, b: ExTensor) raises -> ExTensor:
             A new tensor containing a * b.
 
     Raises:
-            Error if shapes are not broadcast-compatible or dtypes don't match.
+            Error: If shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
             ```mojo
@@ -253,7 +253,7 @@ fn divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
             A new tensor containing a / b.
 
     Raises:
-            Error if shapes are not broadcast-compatible or dtypes don't match.
+            Error: If shapes are not broadcast-compatible or dtypes don't match.
 
     Note:
             Division by zero follows IEEE 754 semantics for floating-point types:
@@ -292,7 +292,7 @@ fn floor_divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
             A new tensor containing a // b (floor division).
 
     Raises:
-            Error if shapes are not broadcast-compatible or dtypes don't match.
+            Error: If shapes are not broadcast-compatible or dtypes don't match.
 
     Note:
             Division by zero follows IEEE 754 semantics for floating-point types:
@@ -345,7 +345,7 @@ fn modulo(a: ExTensor, b: ExTensor) raises -> ExTensor:
             A new tensor containing a % b.
 
     Raises:
-            Error if shapes are not broadcast-compatible or dtypes don't match.
+            Error: If shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
             ```mojo
@@ -390,7 +390,7 @@ fn power(a: ExTensor, b: ExTensor) raises -> ExTensor:
             A new tensor containing a ** b.
 
     Raises:
-            Error if shapes are not broadcast-compatible or dtypes don't match.
+            Error: If shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
             ```mojo

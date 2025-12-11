@@ -255,10 +255,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         self._data.bitcast[Float64]()[] = value
 
     fn __init__(out self, var data: List[Float32]) raises:
-        """Create 1D tensor from List[Float32]
+        """Create 1D tensor from List[Float32].
 
         Args:
-            data: List of Float32 values
+            data: List of Float32 values.
 
         Example:
             ```mojo
@@ -306,10 +306,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             self._set_float32(i, data[i])
 
     fn __init__(out self, var data: List[Int]) raises:
-        """Create 1D tensor from List[Int]
+        """Create 1D tensor from List[Int].
 
         Args:
-            data: List of Int values
+            data: List of Int values.
 
         Example:
             ```mojo
@@ -399,7 +399,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
     @staticmethod
     fn _get_dtype_size_static(dtype: DType) -> Int:
-        """Get size in bytes for a given dtype (static version for use in __init__)
+        """Get size in bytes for a given dtype (static version for use in __init__).
         """
         if dtype == DType.float16:
             return 2
@@ -499,17 +499,17 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         return True
 
     fn reshape(self, new_shape: List[Int]) raises -> ExTensor:
-        """Reshape tensor to new shape (must have same total elements)
+        """Reshape tensor to new shape (must have same total elements).
 
-        Creates a view sharing data with the original tensor
-        Uses reference counting to ensure data remains valid
+        Creates a view sharing data with the original tensor.
+        Uses reference counting to ensure data remains valid.
 
 
         Args:
-            new_shape: The new shape for the tensor
+            new_shape: The new shape for the tensor.
 
         Returns:
-            A new tensor with the requested shape, sharing the same data
+            A new tensor with the requested shape, sharing the same data.
 
         Raises:
             Error: If the total number of elements doesn't match.
@@ -556,20 +556,20 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
     fn slice(self, start: Int, end: Int, axis: Int = 0) raises -> ExTensor:
         """Extract a slice along the specified axis.
 
-            Creates a view sharing data with the original tensor
-            Uses reference counting to ensure data remains valid
+            Creates a view sharing data with the original tensor.
+            Uses reference counting to ensure data remains valid.
 
 
             Args:
-                start: Starting index (inclusive)
-                end: Ending index (exclusive)
-                axis: Axis to slice along (default: 0, the batch dimension)
+                start: Starting index (inclusive).
+                end: Ending index (exclusive).
+                axis: Axis to slice along (default: 0, the batch dimension).
 
             Returns:
-                A new tensor containing the slice (shares memory with original)
+                A new tensor containing the slice (shares memory with original).
 
             Raises:
-                Error: If indices are out of bounds or axis is invalid
+                Error: If indices are out of bounds or axis is invalid.
 
         Example:
             ```mojo
@@ -659,7 +659,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         return self._get_float32(index)
 
     fn _get_float64(self, index: Int) -> Float64:
-        """Internal: Get value at index as Float64 (assumes float-compatible dtype)
+        """Internal: Get value at index as Float64 (assumes float-compatible dtype).
         """
         var dtype_size = self._get_dtype_size()
         var offset = index * dtype_size
@@ -693,17 +693,17 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             ptr[] = value
 
     fn _get_float32(self, index: Int) -> Float32:
-        """Internal: Get value at index as Float32 (assumes float-compatible dtype)
+        """Internal: Get value at index as Float32 (assumes float-compatible dtype).
 
         Args:
-            index: Flat index to retrieve value from
+            index: Flat index to retrieve value from.
 
         Returns:
-            Value at index as Float32
+            Value at index as Float32.
 
         Note:
-            For Float64 and integer types, value is cast to Float32
-            For Float16, value is upcast to Float32
+            For Float64 and integer types, value is cast to Float32.
+            For Float16, value is upcast to Float32.
         """
         var dtype_size = self._get_dtype_size()
         var offset = index * dtype_size
@@ -722,16 +722,16 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             return Float32(self._get_int64(index))
 
     fn _set_float32(self, index: Int, value: Float32):
-        """Internal: Set value at index as Float32 (assumes float-compatible dtype)
+        """Internal: Set value at index as Float32 (assumes float-compatible dtype).
 
         Args:
-            index: Flat index to set value at
-            value: Float32 value to store
+            index: Flat index to set value at.
+            value: Float32 value to store.
 
         Note:
-            For Float16, value is downcast with potential precision loss
-            For Float64, value is upcast to Float64
-            For integer types, value is truncated to integer
+            For Float16, value is downcast with potential precision loss.
+            For Float64, value is upcast to Float64.
+            For integer types, value is truncated to integer.
         """
         var dtype_size = self._get_dtype_size()
         var offset = index * dtype_size
@@ -747,7 +747,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             ptr[] = value.cast[DType.float64]()
 
     fn _get_int64(self, index: Int) -> Int64:
-        """Internal: Get value at index as Int64 (assumes integer-compatible dtype)
+        """Internal: Get value at index as Int64 (assumes integer-compatible dtype).
         """
         var dtype_size = self._get_dtype_size()
         var offset = index * dtype_size
@@ -816,14 +816,14 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             ptr[] = value != 0
 
     fn _set_int32(self, index: Int, value: Int32):
-        """Internal: Set value at index as Int32 (assumes integer-compatible dtype)
+        """Internal: Set value at index as Int32 (assumes integer-compatible dtype).
 
         Args:
-            index: Flat index to set value at
-            value: Int32 value to store
+            index: Flat index to set value at.
+            value: Int32 value to store.
 
         Note:
-            Delegates to _set_int64 after casting to Int64
+            Delegates to _set_int64 after casting to Int64.
         """
         self._set_int64(index, value.cast[DType.int64]())
 
@@ -848,85 +848,85 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
     # ========================================================================
 
     fn __add__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise addition: a + b"""
+        """Element-wise addition: a + b."""
         from .arithmetic import add
 
         return add(self, other)
 
     fn __sub__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise subtraction: a - b"""
+        """Element-wise subtraction: a - b."""
         from .arithmetic import subtract
 
         return subtract(self, other)
 
     fn __mul__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise multiplication: `a * b`"""
+        """Element-wise multiplication: `a * b`."""
         from .arithmetic import multiply
 
         return multiply(self, other)
 
     fn __truediv__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise division: `a / b`"""
+        """Element-wise division: `a / b`."""
         from .arithmetic import divide
 
         return divide(self, other)
 
     fn __floordiv__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise floor division: `a // b`"""
+        """Element-wise floor division: `a // b`."""
         from .arithmetic import floor_divide
 
         return floor_divide(self, other)
 
     fn __mod__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise modulo: `a % b`"""
+        """Element-wise modulo: `a % b`."""
         from .arithmetic import modulo
 
         return modulo(self, other)
 
     fn __pow__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise power: `a ** b`"""
+        """Element-wise power: `a ** b`."""
         from .arithmetic import power
 
         return power(self, other)
 
     fn __matmul__(self, other: ExTensor) raises -> ExTensor:
-        """Matrix multiplication: `a @ b`"""
+        """Matrix multiplication: `a @ b`."""
         from .matrix import matmul
 
         return matmul(self, other)
 
     fn __eq__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise equality: `a == b`"""
+        """Element-wise equality: `a == b`."""
         from .comparison import equal
 
         return equal(self, other)
 
     fn __ne__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise inequality: `a != b`"""
+        """Element-wise inequality: `a != b`."""
         from .comparison import not_equal
 
         return not_equal(self, other)
 
     fn __lt__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise less than: `a < b`"""
+        """Element-wise less than: `a < b`."""
         from .comparison import less
 
         return less(self, other)
 
     fn __le__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise less or equal: `a <= b`"""
+        """Element-wise less or equal: `a <= b`."""
         from .comparison import less_equal
 
         return less_equal(self, other)
 
     fn __gt__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise greater than: `a > b`"""
+        """Element-wise greater than: `a > b`."""
         from .comparison import greater
 
         return greater(self, other)
 
     fn __ge__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise greater or equal: `a >= b`"""
+        """Element-wise greater or equal: `a >= b`."""
         from .comparison import greater_equal
 
         return greater_equal(self, other)
@@ -1972,25 +1972,21 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
     # Reflected operators - enable reversed operand order (e.g., 2 + tensor)
     # These are called when the left operand doesn't support the operation
     fn __radd__(self, other: ExTensor) raises -> ExTensor:
-        """Reflected addition: `other + self` (commutative, so same as __add__).
-        """
+        """Reflected addition: `other + self` (commutative, so same as __add__)."""
         return self.__add__(other)
 
     fn __rsub__(self, other: ExTensor) raises -> ExTensor:
-        """Reflected subtraction: `other - self` (order matters: returns other - self).
-        """
+        """Reflected subtraction: `other - self` (order matters: returns other - self)."""
         from .arithmetic import subtract
 
         return subtract(other, self)
 
     fn __rmul__(self, other: ExTensor) raises -> ExTensor:
-        """Reflected multiplication: other * self (commutative, so same as __mul__)
-        """
+        """Reflected multiplication: other * self (commutative, so same as __mul__)."""
         return self.__mul__(other)
 
     fn __rtruediv__(self, other: ExTensor) raises -> ExTensor:
-        """Reflected division: other / self (order matters: returns other / self)
-        """
+        """Reflected division: other / self (order matters: returns other / self)."""
         from .arithmetic import divide
 
         return divide(other, self)
@@ -2054,7 +2050,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
     # Unary operators - operate on single tensor
     fn __neg__(self) raises -> ExTensor:
-        """Negation: `-self`"""
+        """Negation: `-self`."""
         # Create result tensor with same shape and dtype
         var result = ExTensor(self._shape, self._dtype)
 
@@ -2120,13 +2116,13 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         return result^
 
     fn __pos__(self) raises -> ExTensor:
-        """Positive: +self (returns a copy)"""
+        """Positive: +self (returns a copy)."""
         # Return a copy of the tensor using Mojo's copy semantics
         var copy = self
         return copy^
 
     fn __abs__(self) raises -> ExTensor:
-        """Absolute value: abs(self)"""
+        """Absolute value: abs(self)."""
         from .elementwise import abs
 
         return abs(self)
@@ -2141,18 +2137,18 @@ fn zeros(shape: List[Int], dtype: DType) raises -> ExTensor:
     """Create a tensor filled with zeros.
 
     Args:
-            shape: The shape of the output tensor
-            dtype: The data type of tensor elements
+            shape: The shape of the output tensor.
+            dtype: The data type of tensor elements.
 
     Returns:
-            A new ExTensor filled with zeros
+            A new ExTensor filled with zeros.
 
     Examples:
             var t = zeros([3, 4], DType.float32)
             # Creates a 3x4 tensor of float32 zeros.
 
         Performance:
-            O(n) time where n is the number of elements
+            O(n) time where n is the number of elements.
     """
     var tensor = ExTensor(shape, dtype)
     tensor._fill_zero()  # Efficiently zero out all bytes
@@ -2163,11 +2159,11 @@ fn ones(shape: List[Int], dtype: DType) raises -> ExTensor:
     """Create a tensor filled with ones.
 
     Args:
-            shape: The shape of the output tensor
-            dtype: The data type of tensor elements
+            shape: The shape of the output tensor.
+            dtype: The data type of tensor elements.
 
     Returns:
-            A new ExTensor filled with ones
+            A new ExTensor filled with ones.
 
     Examples:
             var t = ones([3, 4], DType.float32)
@@ -2192,12 +2188,12 @@ fn full(shape: List[Int], fill_value: Float64, dtype: DType) raises -> ExTensor:
     """Create a tensor filled with a specific value.
 
     Args:
-            shape: The shape of the output tensor
-            fill_value: The value to fill the tensor with
-            dtype: The data type of tensor elements
+            shape: The shape of the output tensor.
+            fill_value: The value to fill the tensor with.
+            dtype: The data type of tensor elements.
 
     Returns:
-            A new ExTensor filled with fill_value
+            A new ExTensor filled with fill_value.
 
     Examples:
             ```var t = full([3, 4], 42.0, DType.float32)
@@ -2219,18 +2215,18 @@ fn full(shape: List[Int], fill_value: Float64, dtype: DType) raises -> ExTensor:
 
 
 fn empty(shape: List[Int], dtype: DType) raises -> ExTensor:
-    """Create an uninitialized tensor (fast allocation)
+    """Create an uninitialized tensor (fast allocation).
 
     Args:
-            shape: The shape of the output tensor
-            dtype: The data type of tensor elements
+            shape: The shape of the output tensor.
+            dtype: The data type of tensor elements.
 
     Returns:
-            A new ExTensor with uninitialized memory
+            A new ExTensor with uninitialized memory.
 
         Warning:
-            The tensor contains uninitialized memory. Values are undefined until written
-            Use this for performance when you will immediately write to all elements
+            The tensor contains uninitialized memory. Values are undefined until written.
+            Use this for performance when you will immediately write to all elements.
 
     Examples:
             var t = empty([3, 4], DType.float32)
@@ -2247,13 +2243,13 @@ fn arange(
     """Create 1D tensor with evenly spaced values.
 
     Args:
-            start: Start value (inclusive)
-            stop: End value (exclusive)
-            step: Spacing between values
-            dtype: The data type of tensor elements
+            start: Start value (inclusive).
+            stop: End value (exclusive).
+            step: Spacing between values.
+            dtype: The data type of tensor elements.
 
     Returns:
-            A new 1D ExTensor with values in range [start, stop) with given step
+            A new 1D ExTensor with values in range [start, stop) with given step.
 
     Examples:
            ```
@@ -2290,13 +2286,13 @@ fn eye(n: Int, m: Int, k: Int, dtype: DType) raises -> ExTensor:
     """Create 2D tensor with ones on diagonal.
 
     Args:
-            n: Number of rows
-            m: Number of columns
-            k: Diagonal offset (0 for main diagonal, >0 for upper, <0 for lower)
-            dtype: The data type of tensor elements
+            n: Number of rows.
+            m: Number of columns.
+            k: Diagonal offset (0 for main diagonal, >0 for upper, <0 for lower).
+            dtype: The data type of tensor elements.
 
     Returns:
-            A new 2D ExTensor with ones on the k-th diagonal
+            A new 2D ExTensor with ones on the k-th diagonal.
 
     Examples:
             var t = eye(3, 3, 0, DType.float32)
@@ -2332,16 +2328,16 @@ fn eye(n: Int, m: Int, k: Int, dtype: DType) raises -> ExTensor:
 fn linspace(
     start: Float64, stop: Float64, num: Int, dtype: DType
 ) raises -> ExTensor:
-    """Create 1D tensor with evenly spaced values (inclusive)
+    """Create 1D tensor with evenly spaced values (inclusive).
 
     Args:
-            start: Start value (inclusive)
-            stop: End value (inclusive)
-            num: Number of values
-            dtype: The data type of tensor elements
+            start: Start value (inclusive).
+            stop: End value (inclusive).
+            num: Number of values.
+            dtype: The data type of tensor elements.
 
     Returns:
-            A new 1D ExTensor with num evenly spaced values
+            A new 1D ExTensor with num evenly spaced values.
 
     Examples:
             ```var t = linspace(0.0, 10.0, 11, DType.float32)
@@ -2388,10 +2384,10 @@ fn ones_like(tensor: ExTensor) raises -> ExTensor:
     """Create tensor of ones with same shape and dtype as input.
 
     Args:
-            tensor: Template tensor to match shape and dtype
+            tensor: Template tensor to match shape and dtype.
 
     Returns:
-            A new ExTensor filled with ones, same shape and dtype as input
+            A new ExTensor filled with ones, same shape and dtype as input.
 
         Example:
             ```mojo
@@ -2408,10 +2404,10 @@ fn zeros_like(tensor: ExTensor) raises -> ExTensor:
     """Create tensor of zeros with same shape and dtype as input.
 
     Args:
-            tensor: Template tensor to match shape and dtype
+            tensor: Template tensor to match shape and dtype.
 
     Returns:
-            A new ExTensor filled with zeros, same shape and dtype as input
+            A new ExTensor filled with zeros, same shape and dtype as input.
 
         Example:
             ```mojo
@@ -2428,11 +2424,11 @@ fn full_like(tensor: ExTensor, fill_value: Float64) raises -> ExTensor:
     """Create tensor filled with a value, same shape and dtype as input.
 
     Args:
-            tensor: Template tensor to match shape and dtype
-            fill_value: Value to fill the tensor with
+            tensor: Template tensor to match shape and dtype.
+            fill_value: Value to fill the tensor with.
 
     Returns:
-            A new ExTensor filled with fill_value, same shape and dtype as input
+            A new ExTensor filled with fill_value, same shape and dtype as input.
 
         Example:
             ```mojo
@@ -2449,18 +2445,18 @@ fn randn(shape: List[Int], dtype: DType, seed: Int = 0) raises -> ExTensor:
     """Create tensor filled with random values from standard normal distribution.
 
         Uses Box-Muller transform to generate normally distributed random values
-        from uniform random values. Generates values with mean=0 and std=1
+        from uniform random values. Generates values with mean=0 and std=1.
 
     Args:
-            shape: The shape of the output tensor
-            dtype: The data type of tensor elements (should be floating-point)
-            seed: Random seed for reproducibility (default: 0 uses system randomness)
+            shape: The shape of the output tensor.
+            dtype: The data type of tensor elements (should be floating-point).
+            seed: Random seed for reproducibility (default: 0 uses system randomness).
 
     Returns:
-            A new ExTensor filled with random values from N(0, 1)
+            A new ExTensor filled with random values from N(0, 1).
 
     Raises:
-            Error: If dtype is not a floating-point type
+            Error: If dtype is not a floating-point type.
 
     Examples:
             ```var t = randn([3, 4], DType.float32)
@@ -2470,8 +2466,8 @@ fn randn(shape: List[Int], dtype: DType, seed: Int = 0) raises -> ExTensor:
             # Reproducible random tensor with seed=42```
 
     Note:
-            For integer dtypes, values are generated as floats then truncated
-            Box-Muller transform generates pairs of independent normal values
+            For integer dtypes, values are generated as floats then truncated.
+            Box-Muller transform generates pairs of independent normal values.
     """
     # Verify floating-point dtype (best practice)
     if not (
@@ -2541,12 +2537,12 @@ fn calculate_max_batch_size(
     """Calculate maximum safe batch size for given sample shape.
 
     Args:
-            sample_shape: Shape of a single sample (e.g., [1, 28, 28] for MNIST)
-            dtype: Data type of the tensor
-            max_memory_bytes: Maximum memory to use for a batch (default: 500 MB)
+            sample_shape: Shape of a single sample (e.g., [1, 28, 28] for MNIST).
+            dtype: Data type of the tensor.
+            max_memory_bytes: Maximum memory to use for a batch (default: 500 MB).
 
     Returns:
-            Maximum batch size that fits in memory
+            Maximum batch size that fits in memory.
 
         Example:
             ```mojo

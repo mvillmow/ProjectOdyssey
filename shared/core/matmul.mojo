@@ -67,9 +67,9 @@ fn matmul_typed(a: ExTensor, b: ExTensor, mut c: ExTensor) raises:
     Achieves 3-5x speedup over baseline.
 
     Args:
-        a: First matrix (M x K)
-        b: Second matrix (K x N)
-        c: Output matrix (M x N), must be pre-allocated
+        a: First matrix (M x K).
+        b: Second matrix (K x N).
+        c: Output matrix (M x N), must be pre-allocated.
 
     Raises:
         Error if dimensions are incompatible or dtypes don't match.
@@ -155,9 +155,9 @@ fn matmul_simd(a: ExTensor, b: ExTensor, mut c: ExTensor) raises:
     Achieves 4-8x speedup over Stage 1, 15-40x cumulative.
 
     Args:
-        a: First matrix (M x K)
-        b: Second matrix (K x N)
-        c: Output matrix (M x N), must be pre-allocated
+        a: First matrix (M x K).
+        b: Second matrix (K x N).
+        c: Output matrix (M x N), must be pre-allocated.
 
     Raises:
         Error if dimensions are incompatible or dtypes don't match.
@@ -260,9 +260,9 @@ fn matmul_tiled(a: ExTensor, b: ExTensor, mut c: ExTensor) raises:
     for typical L1/L2 cache sizes (32KB-256KB).
 
     Args:
-        a: First matrix (M x K)
-        b: Second matrix (K x N)
-        c: Output matrix (M x N), must be pre-allocated
+        a: First matrix (M x K).
+        b: Second matrix (K x N).
+        c: Output matrix (M x N), must be pre-allocated.
 
     Raises:
         Error if dimensions are incompatible or dtypes don't match.
@@ -403,9 +403,9 @@ fn matmul_transpose(a: ExTensor, b: ExTensor, mut c: ExTensor) raises:
     4. SIMD vectorization
 
     Args:
-        a: First matrix (M x K)
-        b: Second matrix (K x N)
-        c: Output matrix (M x N), must be pre-allocated
+        a: First matrix (M x K).
+        b: Second matrix (K x N).
+        c: Output matrix (M x N), must be pre-allocated.
 
     Raises:
         Error if dimensions are incompatible or dtypes don't match.
@@ -689,9 +689,9 @@ fn matmul(a: ExTensor, b: ExTensor, mut c: ExTensor) raises:
     Currently delegates to matmul_tiled as it provides the best performance.
 
     Args:
-        a: First matrix (M x K)
-        b: Second matrix (K x N)
-        c: Output matrix (M x N), must be pre-allocated
+        a: First matrix (M x K).
+        b: Second matrix (K x N).
+        c: Output matrix (M x N), must be pre-allocated.
 
     Raises:
         Error if dimensions are incompatible or dtypes don't match.
@@ -706,9 +706,9 @@ fn matmul_optimized(a: ExTensor, b: ExTensor, mut c: ExTensor) raises:
     implementations for small matrices where overhead outweighs benefits.
 
     Args:
-        a: First matrix (M x K)
-        b: Second matrix (K x N)
-        c: Output matrix (M x N), must be pre-allocated
+        a: First matrix (M x K).
+        b: Second matrix (K x N).
+        c: Output matrix (M x N), must be pre-allocated.
 
     Raises:
         Error if dimensions are incompatible or dtypes don't match.
@@ -731,10 +731,10 @@ fn assert_matrices_equal(
     """Compare two matrices element-wise with tolerance.
 
     Args:
-        a: First matrix
-        b: Second matrix
-        rtol: Relative tolerance (default 1e-5)
-        atol: Absolute tolerance (default 1e-8)
+        a: First matrix.
+        b: Second matrix.
+        rtol: Relative tolerance (default 1e-5).
+        atol: Absolute tolerance (default 1e-8).
 
     Raises:
         Error if matrices have different shapes or any element differs
@@ -801,9 +801,9 @@ fn verify_matmul_correctness(M: Int, K: Int, N: Int) raises -> Bool:
     all produce results matching v1 within tolerance.
 
     Args:
-        M: Number of rows in A and C
-        K: Number of columns in A, rows in B
-        N: Number of columns in B and C
+        M: Number of rows in A and C.
+        K: Number of columns in A, rows in B.
+        N: Number of columns in B and C.
 
     Returns:
         True if all stages match, raises error otherwise.
