@@ -183,25 +183,25 @@ native-format:
 # ==============================================================================
 
 # Train a model (default: LeNet-5 on EMNIST)
-train model="lenet" precision="fp32" epochs="10" batch_size="32" lr="0.001":
+train model="lenet-emnist" precision="fp32" epochs="10" batch_size="32" lr="0.001":
     @echo "Training {{model}} with precision={{precision}}, epochs={{epochs}}"
-    @NATIVE=1 pixi run mojo run -I . examples/{{model}}-emnist/run_train.mojo \
+    @NATIVE=1 pixi run mojo run -I . examples/{{model}}/run_train.mojo \
         --epochs {{epochs}} \
         --batch-size {{batch_size}} \
         --lr {{lr}} \
         --precision {{precision}}
 
 # Run inference on test set
-infer model="lenet" checkpoint="lenet5_weights":
+infer model="lenet-emnist" checkpoint="lenet5_weights":
     @echo "Running inference for {{model}} with checkpoint={{checkpoint}}"
-    @NATIVE=1 pixi run mojo run -I . examples/{{model}}-emnist/run_infer.mojo \
+    @NATIVE=1 pixi run mojo run -I . examples/{{model}}/run_infer.mojo \
         --checkpoint {{checkpoint}} \
         --test-set
 
 # Run inference on single image
-infer-image checkpoint image_path model="lenet":
+infer-image checkpoint image_path model="lenet-emnist":
     @echo "Running inference on {{image_path}}"
-    @NATIVE=1 pixi run mojo run -I . examples/{{model}}-emnist/run_infer.mojo \
+    @NATIVE=1 pixi run mojo run -I . examples/{{model}}/run_infer.mojo \
         --checkpoint {{checkpoint}} \
         --image {{image_path}}
 
