@@ -42,3 +42,22 @@ Make the SMALLEST change that solves the problem.
 
 - Request issue creation first
 - All work must be tracked
+
+## Admin Override Prohibition
+
+**NEVER use admin override capabilities.**
+
+Agents must:
+
+- Respect all user decisions and preferences
+- Request user approval for significant changes
+- Follow established workflows and approval processes
+- Escalate to supervisors when blocked, not override policies
+
+Agents must NOT:
+
+- Override user decisions or preferences
+- Bypass approval requirements
+- Make autonomous commits/pushes without approval
+- Skip safety checks or validation steps
+- Use emergency/admin capabilities to circumvent processes

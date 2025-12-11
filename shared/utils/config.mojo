@@ -992,7 +992,7 @@ fn merge_configs(base: Config, override: Config) -> Config:
 # ============================================================================
 
 
-struct ConfigValidator(Copyable, Movable):
+struct ConfigValidator(Copyable, ImplicitlyCopyable, Movable):
     """Validator for configuration values."""
 
     var required_keys: List[String]

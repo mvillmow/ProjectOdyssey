@@ -386,6 +386,22 @@ jobs:
           pixi-version: latest
           cache: true
 
+      - name: Cache datasets
+        uses: actions/cache@v4
+        id: dataset-cache
+        with:
+          path: datasets/
+          key: datasets-${{ hashFiles('scripts/download_*.py') }}
+          restore-keys: |
+            datasets-
+
+      - name: Download datasets if not cached
+        if: steps.dataset-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p datasets/cifar10
+          python3 scripts/download_cifar10.py datasets/cifar10
+          python3 scripts/download_emnist.py datasets/emnist
+
       - name: Run Training tests
         run: just ci-test-group tests/shared/training "test_*.mojo"
 
