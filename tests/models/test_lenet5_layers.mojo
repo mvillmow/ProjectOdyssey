@@ -138,7 +138,11 @@ fn create_fc3_parameters(dtype: DType) raises -> tuple[ExTensor, ExTensor]:
 fn test_conv1_forward_float32() raises:
     """Test Conv1 forward pass (1→6 channels, 5x5 kernel) with float32."""
     var dtype = DType.float32
-    var kernel, bias = create_conv1_parameters(dtype)
+    var _result = create_conv1_parameters(dtype)
+
+    var kernel = _result[0]
+
+    var bias = _result[1]
 
     LayerTester.test_conv_layer(
         in_channels=1,
@@ -157,7 +161,11 @@ fn test_conv1_forward_float32() raises:
 fn test_conv1_forward_float16() raises:
     """Test Conv1 forward pass with float16."""
     var dtype = DType.float16
-    var kernel, bias = create_conv1_parameters(dtype)
+    var _result = create_conv1_parameters(dtype)
+
+    var kernel = _result[0]
+
+    var bias = _result[1]
 
     LayerTester.test_conv_layer(
         in_channels=1,
@@ -176,7 +184,11 @@ fn test_conv1_forward_float16() raises:
 fn test_conv1_backward_float32() raises:
     """Test Conv1 backward pass with gradient checking (small tensor: 8x8)."""
     var dtype = DType.float32
-    var kernel, bias = create_conv1_parameters(dtype)
+    var _result = create_conv1_parameters(dtype)
+
+    var kernel = _result[0]
+
+    var bias = _result[1]
 
     LayerTester.test_conv_layer_backward(
         in_channels=1,
@@ -200,7 +212,11 @@ fn test_conv1_backward_float32() raises:
 fn test_conv2_forward_float32() raises:
     """Test Conv2 forward pass (6→16 channels, 5x5 kernel) with float32."""
     var dtype = DType.float32
-    var kernel, bias = create_conv2_parameters(dtype)
+    var _result = create_conv2_parameters(dtype)
+
+    var kernel = _result[0]
+
+    var bias = _result[1]
 
     # Input after pool1 is smaller: 14x14
     LayerTester.test_conv_layer(
@@ -220,7 +236,11 @@ fn test_conv2_forward_float32() raises:
 fn test_conv2_forward_float16() raises:
     """Test Conv2 forward pass with float16."""
     var dtype = DType.float16
-    var kernel, bias = create_conv2_parameters(dtype)
+    var _result = create_conv2_parameters(dtype)
+
+    var kernel = _result[0]
+
+    var bias = _result[1]
 
     LayerTester.test_conv_layer(
         in_channels=6,
@@ -239,7 +259,11 @@ fn test_conv2_forward_float16() raises:
 fn test_conv2_backward_float32() raises:
     """Test Conv2 backward pass with gradient checking (small tensor: 8x8)."""
     var dtype = DType.float32
-    var kernel, bias = create_conv2_parameters(dtype)
+    var _result = create_conv2_parameters(dtype)
+
+    var kernel = _result[0]
+
+    var bias = _result[1]
 
     LayerTester.test_conv_layer_backward(
         in_channels=6,
@@ -361,7 +385,11 @@ fn test_maxpool2_forward_float16() raises:
 fn test_fc1_forward_float32() raises:
     """Test FC1 (400→120) forward pass with float32."""
     var dtype = DType.float32
-    var weights, bias = create_fc1_parameters(dtype)
+    var _result = create_fc1_parameters(dtype)
+
+    var weights = _result[0]
+
+    var bias = _result[1]
 
     LayerTester.test_linear_layer(
         in_features=400,
@@ -375,7 +403,11 @@ fn test_fc1_forward_float32() raises:
 fn test_fc1_forward_float16() raises:
     """Test FC1 forward pass with float16."""
     var dtype = DType.float16
-    var weights, bias = create_fc1_parameters(dtype)
+    var _result = create_fc1_parameters(dtype)
+
+    var weights = _result[0]
+
+    var bias = _result[1]
 
     LayerTester.test_linear_layer(
         in_features=400,
@@ -389,7 +421,11 @@ fn test_fc1_forward_float16() raises:
 fn test_fc1_backward_float32() raises:
     """Test FC1 backward pass with gradient checking."""
     var dtype = DType.float32
-    var weights, bias = create_fc1_parameters(dtype)
+    var _result = create_fc1_parameters(dtype)
+
+    var weights = _result[0]
+
+    var bias = _result[1]
 
     LayerTester.test_linear_layer_backward(
         in_features=400,
@@ -408,7 +444,11 @@ fn test_fc1_backward_float32() raises:
 fn test_fc2_forward_float32() raises:
     """Test FC2 (120→84) forward pass with float32."""
     var dtype = DType.float32
-    var weights, bias = create_fc2_parameters(dtype)
+    var _result = create_fc2_parameters(dtype)
+
+    var weights = _result[0]
+
+    var bias = _result[1]
 
     LayerTester.test_linear_layer(
         in_features=120,
@@ -422,7 +462,11 @@ fn test_fc2_forward_float32() raises:
 fn test_fc2_forward_float16() raises:
     """Test FC2 forward pass with float16."""
     var dtype = DType.float16
-    var weights, bias = create_fc2_parameters(dtype)
+    var _result = create_fc2_parameters(dtype)
+
+    var weights = _result[0]
+
+    var bias = _result[1]
 
     LayerTester.test_linear_layer(
         in_features=120,
@@ -436,7 +480,11 @@ fn test_fc2_forward_float16() raises:
 fn test_fc2_backward_float32() raises:
     """Test FC2 backward pass with gradient checking."""
     var dtype = DType.float32
-    var weights, bias = create_fc2_parameters(dtype)
+    var _result = create_fc2_parameters(dtype)
+
+    var weights = _result[0]
+
+    var bias = _result[1]
 
     LayerTester.test_linear_layer_backward(
         in_features=120,
@@ -455,7 +503,11 @@ fn test_fc2_backward_float32() raises:
 fn test_fc3_forward_float32() raises:
     """Test FC3 (84→10) forward pass with float32."""
     var dtype = DType.float32
-    var weights, bias = create_fc3_parameters(dtype)
+    var _result = create_fc3_parameters(dtype)
+
+    var weights = _result[0]
+
+    var bias = _result[1]
 
     LayerTester.test_linear_layer(
         in_features=84,
@@ -469,7 +521,11 @@ fn test_fc3_forward_float32() raises:
 fn test_fc3_forward_float16() raises:
     """Test FC3 forward pass with float16."""
     var dtype = DType.float16
-    var weights, bias = create_fc3_parameters(dtype)
+    var _result = create_fc3_parameters(dtype)
+
+    var weights = _result[0]
+
+    var bias = _result[1]
 
     LayerTester.test_linear_layer(
         in_features=84,
@@ -483,7 +539,11 @@ fn test_fc3_forward_float16() raises:
 fn test_fc3_backward_float32() raises:
     """Test FC3 backward pass with gradient checking."""
     var dtype = DType.float32
-    var weights, bias = create_fc3_parameters(dtype)
+    var _result = create_fc3_parameters(dtype)
+
+    var weights = _result[0]
+
+    var bias = _result[1]
 
     LayerTester.test_linear_layer_backward(
         in_features=84,
@@ -553,7 +613,11 @@ fn test_all_layers_sequence_float32() raises:
     assert_shape(input, [batch_size, 1, 28, 28], "Input shape")
 
     # Conv1: (1, 1, 28, 28) -> (1, 6, 24, 24)
-    var kernel1, bias1 = create_conv1_parameters(dtype)
+    var _result = create_conv1_parameters(dtype)
+
+    var kernel1 = _result[0]
+
+    var bias1 = _result[1]
     var conv1_out = conv2d(input, kernel1, bias1, stride=1, padding=0)
     assert_shape(conv1_out, [batch_size, 6, 24, 24], "Conv1 output shape")
 
@@ -566,7 +630,11 @@ fn test_all_layers_sequence_float32() raises:
     assert_shape(pool1_out, [batch_size, 6, 12, 12], "MaxPool1 output shape")
 
     # Conv2: (1, 6, 12, 12) -> (1, 16, 8, 8)
-    var kernel2, bias2 = create_conv2_parameters(dtype)
+    var _result = create_conv2_parameters(dtype)
+
+    var kernel2 = _result[0]
+
+    var bias2 = _result[1]
     var conv2_out = conv2d(pool1_out, kernel2, bias2, stride=1, padding=0)
     assert_shape(conv2_out, [batch_size, 16, 8, 8], "Conv2 output shape")
 
@@ -583,7 +651,11 @@ fn test_all_layers_sequence_float32() raises:
     assert_shape(flattened, [batch_size, 256], "Flatten output shape")
 
     # FC1: (1, 256) -> (1, 120)
-    var fc1_weights, fc1_bias = create_fc1_parameters(dtype)
+    var _result = create_fc1_parameters(dtype)
+
+    var fc1_weights = _result[0]
+
+    var fc1_bias = _result[1]
     # Note: FC1 expects 400 inputs, but we have 256 due to smaller input test
     # Create compatible FC1 with 256 inputs
     var fc1_weights_compat = kaiming_uniform(256, 120, [120, 256], dtype=dtype)
@@ -595,7 +667,11 @@ fn test_all_layers_sequence_float32() raises:
     assert_shape(relu3_out, [batch_size, 120], "ReLU3 output shape")
 
     # FC2: (1, 120) -> (1, 84)
-    var fc2_weights, fc2_bias = create_fc2_parameters(dtype)
+    var _result = create_fc2_parameters(dtype)
+
+    var fc2_weights = _result[0]
+
+    var fc2_bias = _result[1]
     var fc2_out = linear(relu3_out, fc2_weights, fc2_bias)
     assert_shape(fc2_out, [batch_size, 84], "FC2 output shape")
 
@@ -604,7 +680,11 @@ fn test_all_layers_sequence_float32() raises:
     assert_shape(relu4_out, [batch_size, 84], "ReLU4 output shape")
 
     # FC3: (1, 84) -> (1, 10)
-    var fc3_weights, fc3_bias = create_fc3_parameters(dtype)
+    var _result = create_fc3_parameters(dtype)
+
+    var fc3_weights = _result[0]
+
+    var fc3_bias = _result[1]
     var output = linear(relu4_out, fc3_weights, fc3_bias)
     assert_shape(output, [batch_size, 10], "FC3 (final output) shape")
 

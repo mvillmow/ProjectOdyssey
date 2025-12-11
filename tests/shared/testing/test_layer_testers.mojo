@@ -22,7 +22,7 @@ from shared.testing.special_values import (
     create_seeded_random_tensor,
 )
 from shared.testing.assertions import assert_true
-from shared.core.tensor_factory import zeros
+from shared.testing.tensor_factory import zeros_tensor
 from shared.core.extensor import ExTensor
 
 

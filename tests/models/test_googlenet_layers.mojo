@@ -288,7 +288,7 @@ fn test_inception_module_forward_shape() raises:
 
     # Expected output: (batch, 32+32+16+16, 8, 8) = (batch, 96, 8, 8)
     assert_equal(output.shape()[0], batch_size)
-    assert_equal(output.shape()[1], 96)
+    assert_equal(output.shape()[1]), 96)
     assert_equal(output.shape()[2], in_height)
     assert_equal(output.shape()[3], in_width)
 
@@ -526,7 +526,7 @@ fn test_concatenate_depthwise_4_tensors() raises:
 
     # Verify output shape: (batch, 8+8+4+4, height, width) = (batch, 24, height, width)
     assert_equal(result.shape()[0], batch_size)
-    assert_equal(result.shape()[1], 24)
+    assert_equal(result.shape()[1]), 24)
     assert_equal(result.shape()[2], height)
     assert_equal(result.shape()[3], width)
 
@@ -555,7 +555,7 @@ fn test_concatenate_depthwise_values() raises:
 
     # Verify shape
     assert_equal(result.shape()[0], batch_size)
-    assert_equal(result.shape()[1], 8)
+    assert_equal(result.shape()[1]), 8)
     assert_equal(result.shape()[2], height)
     assert_equal(result.shape()[3], width)
 
@@ -567,19 +567,19 @@ fn test_concatenate_depthwise_values() raises:
 
     # Check first channel value (from t1) is 1.0
     var idx_t1 = 0
-    assert_close_float(result_data[idx_t1], 1.0)
+    assert_close_float(Float64(result_data[idx_t1]), 1.0)
 
     # Check third channel value (from t2) is 2.0
     var idx_t2 = (2 * height * width)
-    assert_close_float(result_data[idx_t2], 2.0)
+    assert_close_float(Float64(result_data[idx_t2]), 2.0)
 
     # Check fifth channel value (from t3) is 3.0
     var idx_t3 = (4 * height * width)
-    assert_close_float(result_data[idx_t3], 3.0)
+    assert_close_float(Float64(result_data[idx_t3]), 3.0)
 
     # Check seventh channel value (from t4) is 4.0
     var idx_t4 = (6 * height * width)
-    assert_close_float(result_data[idx_t4], 4.0)
+    assert_close_float(Float64(result_data[idx_t4]), 4.0)
 
 
 # ============================================================================
@@ -655,7 +655,7 @@ fn test_global_avgpool() raises:
     # Verify output values (should be 2.0 since input was all 2.0)
     var output_data = output._data.bitcast[Float32]()
     for i in range(output.numel()):
-        assert_close_float(output_data[i], 2.0)
+        assert_close_float(Float64(output_data[i]), 2.0)
 
 
 fn test_global_avgpool_larger_spatial() raises:
@@ -682,7 +682,7 @@ fn test_global_avgpool_larger_spatial() raises:
     # Verify averaging: all values should be 4.0
     var output_data = output._data.bitcast[Float32]()
     for i in range(output.numel()):
-        assert_close_float(output_data[i], 4.0)
+        assert_close_float(Float64(output_data[i]), 4.0)
 
 
 # ============================================================================
@@ -770,9 +770,12 @@ fn test_inception_branch_1x1_backward() raises:
     var grad_output = ones([batch_size, out_channels, height, width], DType.float32)
 
     # Backward pass
-    var grad_input, grad_weights, grad_bias = conv2d_backward(
-        input, weights, bias, output, grad_output, stride=1, padding=0
+    var _result = conv2d_backward(
+        grad_output, input, weights, stride=1, padding=0
     )
+    var grad_input = _result.grad_input
+    var grad_weights = _result.grad_weight
+    var grad_bias = _result.grad_bias
 
     # Verify gradient shapes
     assert_shape(grad_input, input.shape())
@@ -803,9 +806,12 @@ fn test_inception_branch_3x3_backward() raises:
     var grad_output = ones([batch_size, out_channels, height, width], DType.float32)
 
     # Backward pass
-    var grad_input, grad_weights, grad_bias = conv2d_backward(
-        input, weights, bias, output, grad_output, stride=1, padding=1
+    var _result = conv2d_backward(
+        grad_output, input, weights, stride=1, padding=1
     )
+    var grad_input = _result.grad_input
+    var grad_weights = _result.grad_weight
+    var grad_bias = _result.grad_bias
 
     # Verify gradient shapes
     assert_shape(grad_input, input.shape())
@@ -836,9 +842,12 @@ fn test_inception_branch_5x5_backward() raises:
     var grad_output = ones([batch_size, out_channels, height, width], DType.float32)
 
     # Backward pass
-    var grad_input, grad_weights, grad_bias = conv2d_backward(
-        input, weights, bias, output, grad_output, stride=1, padding=2
+    var _result = conv2d_backward(
+        grad_output, input, weights, stride=1, padding=2
     )
+    var grad_input = _result.grad_input
+    var grad_weights = _result.grad_weight
+    var grad_bias = _result.grad_bias
 
     # Verify gradient shapes
     assert_shape(grad_input, input.shape())
@@ -869,6 +878,6 @@ fn test_concatenate_gradient_preservation() raises:
 
     # Verify gradient shape
     assert_equal(grad_result.shape()[0], batch_size)
-    assert_equal(grad_result.shape()[1], 8)
+    assert_equal(grad_result.shape()[1]), 8)
     assert_equal(grad_result.shape()[2], height)
     assert_equal(grad_result.shape()[3], width)
