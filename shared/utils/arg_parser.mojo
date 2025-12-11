@@ -252,8 +252,11 @@ struct ArgumentParser(Copyable, Movable):
         # Initialize with defaults (using ref for non-copyable dict entries)
         for ref item in self.arguments.items():
             var name = item.key
+            # Use ref binding instead of var to avoid implicit copy
+            # ArgumentSpec is not ImplicitlyCopyable, so `var spec = item.value`
+            # would trigger a compile error. `ref spec` creates a reference alias.
             ref spec = item.value
-            # Access value fields directly to avoid implicit copy
+            # Access value fields directly via reference
             if not spec.is_flag and len(spec.default_value) > 0:
                 result.set(name, spec.default_value)
 
