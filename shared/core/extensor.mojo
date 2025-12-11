@@ -848,85 +848,85 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
     # ========================================================================
 
     fn __add__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise addition: a + b"""
+        """Element-wise addition: a + b."""
         from .arithmetic import add
 
         return add(self, other)
 
     fn __sub__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise subtraction: a - b"""
+        """Element-wise subtraction: a - b."""
         from .arithmetic import subtract
 
         return subtract(self, other)
 
     fn __mul__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise multiplication: `a * b`"""
+        """Element-wise multiplication: `a * b`."""
         from .arithmetic import multiply
 
         return multiply(self, other)
 
     fn __truediv__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise division: `a / b`"""
+        """Element-wise division: `a / b`."""
         from .arithmetic import divide
 
         return divide(self, other)
 
     fn __floordiv__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise floor division: `a // b`"""
+        """Element-wise floor division: `a // b`."""
         from .arithmetic import floor_divide
 
         return floor_divide(self, other)
 
     fn __mod__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise modulo: `a % b`"""
+        """Element-wise modulo: `a % b`."""
         from .arithmetic import modulo
 
         return modulo(self, other)
 
     fn __pow__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise power: `a ** b`"""
+        """Element-wise power: `a ** b`."""
         from .arithmetic import power
 
         return power(self, other)
 
     fn __matmul__(self, other: ExTensor) raises -> ExTensor:
-        """Matrix multiplication: `a @ b`"""
+        """Matrix multiplication: `a @ b`."""
         from .matrix import matmul
 
         return matmul(self, other)
 
     fn __eq__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise equality: `a == b`"""
+        """Element-wise equality: `a == b`."""
         from .comparison import equal
 
         return equal(self, other)
 
     fn __ne__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise inequality: `a != b`"""
+        """Element-wise inequality: `a != b`."""
         from .comparison import not_equal
 
         return not_equal(self, other)
 
     fn __lt__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise less than: `a < b`"""
+        """Element-wise less than: `a < b`."""
         from .comparison import less
 
         return less(self, other)
 
     fn __le__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise less or equal: `a <= b`"""
+        """Element-wise less or equal: `a <= b`."""
         from .comparison import less_equal
 
         return less_equal(self, other)
 
     fn __gt__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise greater than: `a > b`"""
+        """Element-wise greater than: `a > b`."""
         from .comparison import greater
 
         return greater(self, other)
 
     fn __ge__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise greater or equal: `a >= b`"""
+        """Element-wise greater or equal: `a >= b`."""
         from .comparison import greater_equal
 
         return greater_equal(self, other)

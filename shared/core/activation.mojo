@@ -84,23 +84,23 @@ fn relu(tensor: ExTensor) raises -> ExTensor:
 fn leaky_relu(tensor: ExTensor, alpha: Float64 = 0.01) raises -> ExTensor:
     """Apply Leaky ReLU activation: max(alpha*x, x).
 
-    Leaky ReLU introduces a small slope for negative values to prevent
-    "dying ReLU" problem where neurons can become permanently inactive.
+        Leaky ReLU introduces a small slope for negative values to prevent
+        "dying ReLU" problem where neurons can become permanently inactive.
 
-    Supported dtypes: float16, float32, float64, int8, int16, int32, int64.
+        Supported dtypes: float16, float32, float64, int8, int16, int32, int64.
 
-    Args:
-            tensor: Input tensor of any shape.
-            alpha: Slope for negative values (default: 0.01).
+        Args:
+                tensor: Input tensor of any shape.
+                alpha: Slope for negative values (default: 0.01).
 
-    Returns:
-            New tensor with Leaky ReLU applied element-wise.
+        Returns:
+                New tensor with Leaky ReLU applied element-wise.
 
-    Examples:
-```mojo
-        var x = ExTensor(...)           # [-2, -1, 0, 1, 2]
-        var y = leaky_relu(x, 0.01)     # [-0.02, -0.01, 0, 1, 2]
-```
+        Examples:
+    ```mojo
+            var x = ExTensor(...)           # [-2, -1, 0, 1, 2]
+            var y = leaky_relu(x, 0.01)     # [-0.02, -0.01, 0, 1, 2]
+    ```
     """
     var result = ExTensor(tensor._shape, tensor._dtype)
 
@@ -152,28 +152,28 @@ fn leaky_relu(tensor: ExTensor, alpha: Float64 = 0.01) raises -> ExTensor:
 fn prelu(tensor: ExTensor, alpha: ExTensor) raises -> ExTensor:
     """Apply PReLU (Parametric ReLU) activation: max(alpha*x, x).
 
-        PReLU is similar to Leaky ReLU but uses learnable parameters for the
-        negative slope. Alpha can be a scalar or have the same shape as tensor
-        for per-element or per-channel learned slopes.
+            PReLU is similar to Leaky ReLU but uses learnable parameters for the
+            negative slope. Alpha can be a scalar or have the same shape as tensor
+            for per-element or per-channel learned slopes.
 
-        Supported dtypes: float16, float32, float64.
+            Supported dtypes: float16, float32, float64.
 
-    Args:
-            tensor: Input tensor of any shape.
-            alpha: Learnable slope parameter (scalar or matching shape).
+        Args:
+                tensor: Input tensor of any shape.
+                alpha: Learnable slope parameter (scalar or matching shape).
 
-    Returns:
-            New tensor with PReLU applied element-wise.
+        Returns:
+                New tensor with PReLU applied element-wise.
 
-    Raises:
-            Error: If alpha shape is incompatible with tensor shape.
+        Raises:
+                Error: If alpha shape is incompatible with tensor shape.
 
-    Examples:
-```
-        var x = ExTensor(...)      # [-2, -1, 0, 1, 2]
-        var a = full(x.shape(), 0.25, DType.float32)
-        var y = prelu(x, a)        # [-0.5, -0.25, 0, 1, 2]
-```
+        Examples:
+    ```
+            var x = ExTensor(...)      # [-2, -1, 0, 1, 2]
+            var a = full(x.shape(), 0.25, DType.float32)
+            var y = prelu(x, a)        # [-0.5, -0.25, 0, 1, 2]
+    ```
     """
     # Validate alpha is scalar or compatible shape
     if alpha._numel != 1 and alpha._numel != tensor._numel:
@@ -242,26 +242,26 @@ fn _sigmoid_op[T: DType](x: Scalar[T]) -> Scalar[T]:
 fn sigmoid(tensor: ExTensor) raises -> ExTensor:
     """Apply sigmoid activation: 1 / (1 + exp(-x)).
 
-        Sigmoid maps inputs to (0, 1) range. Uses numerically stable implementation
-        with input clipping to prevent overflow in exp() computation.
+            Sigmoid maps inputs to (0, 1) range. Uses numerically stable implementation
+            with input clipping to prevent overflow in exp() computation.
 
-    For large |x| (>20), uses approximations:
-    - `x > 20: sigmoid(x) = 1.0`
-    - `x < -20: sigmoid(x) = 0.0`
+        For large |x| (>20), uses approximations:
+        - `x > 20: sigmoid(x) = 1.0`
+        - `x < -20: sigmoid(x) = 0.0`
 
-        Supported dtypes: float16, float32, float64.
+            Supported dtypes: float16, float32, float64.
 
-    Args:
-            tensor: Input tensor of any shape.
+        Args:
+                tensor: Input tensor of any shape.
 
-    Returns:
-            New tensor with sigmoid applied element-wise, values in (0, 1).
+        Returns:
+                New tensor with sigmoid applied element-wise, values in (0, 1).
 
-    Examples:
-```
-        var x = ExTensor(...)  # [-2, 0, 2]
-        var y = sigmoid(x)     # [0.119, 0.5, 0.881]
-```
+        Examples:
+    ```
+            var x = ExTensor(...)  # [-2, 0, 2]
+            var y = sigmoid(x)     # [0.119, 0.5, 0.881]
+    ```
     """
     return dispatch_float_unary[_sigmoid_op](tensor)
 
@@ -282,22 +282,22 @@ fn _tanh_op[T: DType](x: Scalar[T]) -> Scalar[T]:
 fn tanh(tensor: ExTensor) raises -> ExTensor:
     """Apply tanh (hyperbolic tangent) activation.
 
-        Tanh maps inputs to (-1, 1) range. This is a numerically stable
-        implementation that leverages the math library tanh function.
+            Tanh maps inputs to (-1, 1) range. This is a numerically stable
+            implementation that leverages the math library tanh function.
 
-        Supported dtypes: float16, float32, float64.
+            Supported dtypes: float16, float32, float64.
 
-    Args:
-            tensor: Input tensor of any shape.
+        Args:
+                tensor: Input tensor of any shape.
 
-    Returns:
-            New tensor with tanh applied element-wise, values in (-1, 1).
+        Returns:
+                New tensor with tanh applied element-wise, values in (-1, 1).
 
-    Examples:
-```
-        var x = ExTensor(...)  # [-2, 0, 2]
-        var y = tanh(x)        # [-0.964, 0, 0.964]
-```
+        Examples:
+    ```
+            var x = ExTensor(...)  # [-2, 0, 2]
+            var y = tanh(x)        # [-0.964, 0, 0.964]
+    ```
     """
     return dispatch_float_unary[_tanh_op](tensor)
 
@@ -310,30 +310,30 @@ fn tanh(tensor: ExTensor) raises -> ExTensor:
 fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
     """Apply softmax activation: exp(x) / sum(exp(x)) along specified axis.
 
-        Softmax converts logits to probability distribution. Uses log-sum-exp trick
-        for numerical stability by subtracting max value before exponentiation.
+            Softmax converts logits to probability distribution. Uses log-sum-exp trick
+            for numerical stability by subtracting max value before exponentiation.
 
-        Outputs sum to 1.0 along the specified axis.
+            Outputs sum to 1.0 along the specified axis.
 
-        Supported dtypes: float16, float32, float64.
+            Supported dtypes: float16, float32, float64.
 
-    Args:
-            tensor: Input tensor (logits).
-            axis: Axis along which to compute softmax (default: -1, last axis).
-                  Supports negative indexing: -1 means last axis.
+        Args:
+                tensor: Input tensor (logits).
+                axis: Axis along which to compute softmax (default: -1, last axis).
+                      Supports negative indexing: -1 means last axis.
 
-    Returns:
-            New tensor with softmax applied, values sum to 1.0 along axis.
+        Returns:
+                New tensor with softmax applied, values sum to 1.0 along axis.
 
-    Raises:
-            Error: If axis is out of bounds.
+        Raises:
+                Error: If axis is out of bounds.
 
-    Examples:
-```
-        var logits = ExTensor(...)  # [[1, 2, 3], [4, 5, 6]]
-        var probs = softmax(logits, axis=-1)
-        # [[0.09, 0.24, 0.67], [0.09, 0.24, 0.67]]
-```
+        Examples:
+    ```
+            var logits = ExTensor(...)  # [[1, 2, 3], [4, 5, 6]]
+            var probs = softmax(logits, axis=-1)
+            # [[0.09, 0.24, 0.67], [0.09, 0.24, 0.67]]
+    ```
     """
     # Normalize axis
     var ndim = len(tensor._shape)
@@ -360,28 +360,28 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
 fn gelu(tensor: ExTensor, approximate: Bool = False) raises -> ExTensor:
     """Apply GELU (Gaussian Error Linear Unit) activation.
 
-        GELU provides smooth, non-linear activation used in transformers (BERT, GPT).
+            GELU provides smooth, non-linear activation used in transformers (BERT, GPT).
 
-        Exact formula: GELU(x) = x * Phi(x) = x * 0.5 * (1 + erf(x / sqrt(2))).
-        Approximate formula: GELU(x) = 0.5 * x * (1 + tanh(sqrt(2/pi) * (x + 0.044715 * x^3))).
+            Exact formula: GELU(x) = x * Phi(x) = x * 0.5 * (1 + erf(x / sqrt(2))).
+            Approximate formula: GELU(x) = 0.5 * x * (1 + tanh(sqrt(2/pi) * (x + 0.044715 * x^3))).
 
-        The approximate version is faster and was used in the original BERT implementation.
+            The approximate version is faster and was used in the original BERT implementation.
 
-        Supported dtypes: float16, float32, float64.
+            Supported dtypes: float16, float32, float64.
 
-    Args:
-            tensor: Input tensor of any shape.
-            approximate: Use tanh approximation (True) or exact erf (False).
+        Args:
+                tensor: Input tensor of any shape.
+                approximate: Use tanh approximation (True) or exact erf (False).
 
-    Returns:
-            New tensor with GELU applied element-wise.
+        Returns:
+                New tensor with GELU applied element-wise.
 
-    Examples:
-```
-        var x = ExTensor(...)     # [-2, 0, 2]
-        var y_exact = gelu(x, approximate=False)
-        var y_approx = gelu(x, approximate=True)
-```
+        Examples:
+    ```
+            var x = ExTensor(...)     # [-2, 0, 2]
+            var y_exact = gelu(x, approximate=False)
+            var y_approx = gelu(x, approximate=True)
+    ```
     """
     return dispatch_gelu(tensor, approximate)
 
@@ -402,22 +402,22 @@ fn relu_backward(
 ) raises escaping -> ExTensor:
     """Compute gradient of ReLU activation.
 
-        ReLU gradient: `dL/dx = dL/dy * (x > 0)`
+            ReLU gradient: `dL/dx = dL/dy * (x > 0)`
 
-    Args:
-            grad_output: Gradient from upstream (dL/dy).
-            x: Input tensor from forward pass.
+        Args:
+                grad_output: Gradient from upstream (dL/dy).
+                x: Input tensor from forward pass.
 
-    Returns:
-            Gradient with respect to input (dL/dx).
+        Returns:
+                Gradient with respect to input (dL/dx).
 
-    Examples:
-```
-        var x = ExTensor(...)  # Input
-        var y = relu(x)        # Forward pass
-        var grad_y = ExTensor(...)  # Gradient from loss
-        var grad_x = relu_backward(grad_y, x)  # Backward pass
-```
+        Examples:
+    ```
+            var x = ExTensor(...)  # Input
+            var y = relu(x)        # Forward pass
+            var grad_y = ExTensor(...)  # Gradient from loss
+            var grad_x = relu_backward(grad_y, x)  # Backward pass
+    ```
     """
     if grad_output._dtype != x._dtype:
         raise Error("relu_backward: grad_output and x must have same dtype")

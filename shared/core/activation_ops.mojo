@@ -32,10 +32,10 @@ fn exp_scalar_f32(x: Float32) -> Float32:
     This is a stable implementation suitable for activation function computation.
 
     Args:
-        x: Input float32 value
+        x: Input float32 value.
 
     Returns:
-        Exponential of x: e^x
+        Exponential of x: e^x.
 
     Note:
         For very negative values (x << -20), the result approaches zero.
@@ -62,10 +62,10 @@ fn exp_scalar_f64(x: Float64) -> Float64:
     with higher precision than float32.
 
     Args:
-        x: Input float64 value
+        x: Input float64 value.
 
     Returns:
-        Exponential of x: e^x
+        Exponential of x: e^x.
 
     Note:
         For very negative values (x << -20), the result approaches zero.
