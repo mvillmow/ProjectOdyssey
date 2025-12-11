@@ -364,14 +364,25 @@ ci-test-group path pattern:
     fi
 
 # CI: Build shared package with -Werror enforcement
-# TEMPORARY: Disabled docstring warnings while fixing 2,997 warnings across 109 files
-# See GitHub issue for tracking docstring cleanup progress
+#
+# TEMPORARY WORKAROUND (Issue #2688):
+# Docstring warnings are temporarily disabled via --disable-warnings flag.
+# This allows CI to pass while we systematically fix 2,997 docstring warnings
+# across 109 files in the shared/ module.
+#
+# Why this is temporary:
+# - Mojo 0.26.1 introduced stricter docstring validation
+# - Missing periods, unknown arguments, and formatting issues block builds
+# - Comprehensive fixes are tracked in issue #2688 and will be done via PRs
+#
+# TODO: Remove --disable-warnings once all docstring fixes are merged
+# Related: https://github.com/mvillmow/ml-odyssey/issues/2688
 ci-build:
     #!/usr/bin/env bash
     set -e
     REPO_ROOT="$(pwd)"
     mkdir -p build
-    echo "Building shared package (docstring warnings temporarily disabled)..."
+    echo "Building shared package (docstring warnings temporarily disabled - see issue #2688)..."
     pixi run mojo package --disable-warnings -I "$REPO_ROOT" shared -o build/ml-odyssey-shared.mojopkg
 
 # CI: Compile shared package (validation only, no output)
