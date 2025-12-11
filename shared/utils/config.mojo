@@ -403,11 +403,11 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         var result = Config()
 
         # Copy all from self
-        for item in self.data.items():
+        for ref item in self.data.items():
             result.data[item.key] = item.value
 
         # Override with other
-        for item in other.data.items():
+        for ref item in other.data.items():
             result.data[item.key] = item.value
 
         return result
@@ -722,7 +722,7 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """
         try:
             with open(filepath, "w") as f:
-                for item in self.data.items():
+                for ref item in self.data.items():
                     var key = item.key
                     var val = item.value
 
@@ -760,7 +760,7 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
                 var count = 0
                 var total = len(self.data)
 
-                for item in self.data.items():
+                for ref item in self.data.items():
                     var key = item.key
                     var val = item.value
 
@@ -803,7 +803,7 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         """
         var result = Config()
 
-        for item in self.data.items():
+        for ref item in self.data.items():
             var key = item.key
             var val = item.value
 

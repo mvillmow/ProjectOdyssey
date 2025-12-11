@@ -249,10 +249,12 @@ struct ArgumentParser(Copyable, Movable):
         """
         var result = ParsedArgs()
 
-        # Initialize with defaults
-        # TODO: Fix dict iteration when Mojo API stabilizes
-        # For now, defaults will be set when arguments are accessed
-        pass
+        # Initialize with defaults (using ref for non-copyable dict entries)
+        for ref item in self.arguments.items():
+            var name = item.key
+            # Access value fields directly to avoid implicit copy
+            if not item.value.is_flag and len(item.value.default_value) > 0:
+                result.set(name, item.value.default_value)
 
         # Parse sys.argv
         var args = argv()

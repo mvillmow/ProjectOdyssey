@@ -107,13 +107,17 @@ fn _serialize_checkpoint(checkpoint: Checkpoint) -> String:
     lines.append("LOSS:" + String(checkpoint.loss))
     lines.append("ACCURACY:" + String(checkpoint.accuracy))
 
-    # TODO: Dict iteration serialization commented out due to Mojo Dict API changes
-    # Model state, optimizer state, and metadata Dict serialization will be
-    # implemented when Dict iteration patterns are clarified
-    # See: https://docs.modular.com/mojo/manual/types/
-    _ = checkpoint.model_state
-    _ = checkpoint.optimizer_state
-    _ = checkpoint.metadata
+    # Model state (using ref for non-copyable dict entries)
+    for ref item in checkpoint.model_state.items():
+        lines.append("MODEL:" + item.key + "=" + item.value)
+
+    # Optimizer state
+    for ref item in checkpoint.optimizer_state.items():
+        lines.append("OPTIMIZER:" + item.key + "=" + item.value)
+
+    # Metadata dict
+    for ref item in checkpoint.metadata.items():
+        lines.append("META:" + item.key + "=" + item.value)
 
     # Join with newlines
     var result = ""
