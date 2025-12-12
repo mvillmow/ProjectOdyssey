@@ -928,3 +928,86 @@ fn test_concatenate_gradient_preservation() raises:
     assert_equal(grad_result.shape()[1], 8)
     assert_equal(grad_result.shape()[2], height)
     assert_equal(grad_result.shape()[3], width)
+
+
+# ============================================================================
+# Main Test Runner
+# ============================================================================
+
+
+fn main() raises:
+    print("Starting GoogLeNet Layerwise Tests...")
+
+    print("  test_inception_module_initialization...", end="")
+    test_inception_module_initialization()
+    print(" OK")
+
+    print("  test_inception_module_forward_shape...", end="")
+    test_inception_module_forward_shape()
+    print(" OK")
+
+    print("  test_inception_module_forward_values...", end="")
+    test_inception_module_forward_values()
+    print(" OK")
+
+    print("  test_inception_branch_1x1_convolution...", end="")
+    test_inception_branch_1x1_convolution()
+    print(" OK")
+
+    print("  test_inception_branch_3x3_convolution...", end="")
+    test_inception_branch_3x3_convolution()
+    print(" OK")
+
+    print("  test_inception_branch_5x5_convolution...", end="")
+    test_inception_branch_5x5_convolution()
+    print(" OK")
+
+    print("  test_inception_branch_maxpool...", end="")
+    test_inception_branch_maxpool()
+    print(" OK")
+
+    print("  test_concatenate_depthwise_4_tensors...", end="")
+    test_concatenate_depthwise_4_tensors()
+    print(" OK")
+
+    print("  test_concatenate_depthwise_values...", end="")
+    test_concatenate_depthwise_values()
+    print(" OK")
+
+    print("  test_initial_conv_block...", end="")
+    test_initial_conv_block()
+    print(" OK")
+
+    print("  test_global_avgpool...", end="")
+    test_global_avgpool()
+    print(" OK")
+
+    print("  test_global_avgpool_larger_spatial...", end="")
+    test_global_avgpool_larger_spatial()
+    print(" OK")
+
+    print("  test_fc_layer...", end="")
+    test_fc_layer()
+    print(" OK")
+
+    print("  test_fc_layer_different_sizes...", end="")
+    test_fc_layer_different_sizes()
+    print(" OK")
+
+    print("  test_inception_branch_1x1_backward...", end="")
+    test_inception_branch_1x1_backward()
+    print(" OK")
+
+    print("  test_inception_branch_3x3_backward...", end="")
+    test_inception_branch_3x3_backward()
+    print(" OK")
+
+    print("  test_inception_branch_5x5_backward...", end="")
+    test_inception_branch_5x5_backward()
+    print(" OK")
+
+    print("  test_concatenate_gradient_preservation...", end="")
+    test_concatenate_gradient_preservation()
+    print(" OK")
+
+    print("All GoogLeNet layerwise tests passed!")

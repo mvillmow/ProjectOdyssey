@@ -986,3 +986,90 @@ fn test_mobilenetv1_block5_512_repeat() raises:
     assert_equal(out_shape[1], channels)
     assert_equal(out_shape[2], height)
     assert_equal(out_shape[3], width)
+
+
+# ============================================================================
+# Main Test Runner
+# ============================================================================
+
+
+fn main() raises:
+    print("Starting MobileNetV1 Layerwise Tests...")
+
+    print("  test_depthwise_conv2d_initialization...", end="")
+    test_depthwise_conv2d_initialization()
+    print(" OK")
+
+    print("  test_depthwise_conv2d_forward_shape...", end="")
+    test_depthwise_conv2d_forward_shape()
+    print(" OK")
+
+    print("  test_depthwise_conv2d_stride2...", end="")
+    test_depthwise_conv2d_stride2()
+    print(" OK")
+
+    print("  test_depthwise_conv2d_backward...", end="")
+    test_depthwise_conv2d_backward()
+    print(" OK")
+
+    print("  test_pointwise_conv2d_1x1_initialization...", end="")
+    test_pointwise_conv2d_1x1_initialization()
+    print(" OK")
+
+    print("  test_pointwise_conv2d_forward...", end="")
+    test_pointwise_conv2d_forward()
+    print(" OK")
+
+    print("  test_pointwise_conv2d_backward...", end="")
+    test_pointwise_conv2d_backward()
+    print(" OK")
+
+    print("  test_depthwise_separable_block_basic...", end="")
+    test_depthwise_separable_block_basic()
+    print(" OK")
+
+    print("  test_depthwise_separable_block_with_stride...", end="")
+    test_depthwise_separable_block_with_stride()
+    print(" OK")
+
+    print("  test_batchnorm2d_initialization...", end="")
+    test_batchnorm2d_initialization()
+    print(" OK")
+
+    print("  test_batchnorm2d_forward_training...", end="")
+    test_batchnorm2d_forward_training()
+    print(" OK")
+
+    print("  test_batchnorm2d_forward_inference...", end="")
+    test_batchnorm2d_forward_inference()
+    print(" OK")
+
+    print("  test_relu_activation_basic...", end="")
+    test_relu_activation_basic()
+    print(" OK")
+
+    print("  test_relu_multiple_applications...", end="")
+    test_relu_multiple_applications()
+    print(" OK")
+
+    print("  test_global_avgpool2d_forward...", end="")
+    test_global_avgpool2d_forward()
+    print(" OK")
+
+    print("  test_global_avgpool2d_backward...", end="")
+    test_global_avgpool2d_backward()
+    print(" OK")
+
+    print("  test_mobilenetv1_block1_32to64...", end="")
+    test_mobilenetv1_block1_32to64()
+    print(" OK")
+
+    print("  test_mobilenetv1_block2_64to128_stride2...", end="")
+    test_mobilenetv1_block2_64to128_stride2()
+    print(" OK")
+
+    print("  test_mobilenetv1_block5_512_repeat...", end="")
+    test_mobilenetv1_block5_512_repeat()
+    print(" OK")
+
+    print("All MobileNetV1 layerwise tests passed!")

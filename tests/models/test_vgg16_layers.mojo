@@ -58,8 +58,8 @@ from shared.core.activation import (
     relu_backward,
 )
 from shared.core.pooling import (
-    max_pool2d,
-    max_pool2d_backward,
+    maxpool2d,
+    maxpool2d_backward,
 )
 
 
@@ -165,9 +165,10 @@ fn test_vgg16_conv64_backward() raises:
     var grad_output = ones(output.shape(), DType.float32)
 
     # Backward pass
-    var grad_input = conv2d_backward(
-        input, kernel, grad_output, stride, padding, in_channels
+    var _result = conv2d_backward(
+        grad_output, input, kernel, stride, padding
     )
+    var grad_input = _result.grad_input
 
     # Verify gradient shapes
     assert_shape(grad_input, input.shape())
@@ -270,9 +271,10 @@ fn test_vgg16_conv128_backward() raises:
     var grad_output = ones(output.shape(), DType.float32)
 
     # Backward pass
-    var grad_input = conv2d_backward(
-        input, kernel, grad_output, stride, padding, in_channels
+    var _result = conv2d_backward(
+        grad_output, input, kernel, stride, padding
     )
+    var grad_input = _result.grad_input
 
     # Verify gradient shapes
     assert_shape(grad_input, input.shape())
@@ -376,9 +378,10 @@ fn test_vgg16_conv256_backward() raises:
     var grad_output = ones(output.shape(), DType.float32)
 
     # Backward pass
-    var grad_input = conv2d_backward(
-        input, kernel, grad_output, stride, padding, in_channels
+    var _result = conv2d_backward(
+        grad_output, input, kernel, stride, padding
     )
+    var grad_input = _result.grad_input
 
     # Verify gradient shapes
     assert_shape(grad_input, input.shape())
@@ -483,9 +486,10 @@ fn test_vgg16_conv512_backward() raises:
     var grad_output = ones(output.shape(), DType.float32)
 
     # Backward pass
-    var grad_input = conv2d_backward(
-        input, kernel, grad_output, stride, padding, in_channels
+    var _result = conv2d_backward(
+        grad_output, input, kernel, stride, padding
     )
+    var grad_input = _result.grad_input
 
     # Verify gradient shapes
     assert_shape(grad_input, input.shape())
@@ -526,7 +530,7 @@ fn test_vgg16_maxpool_forward() raises:
     # MaxPool2D with 2x2 kernel, stride 2
     var kernel_size = 2
     var stride = 2
-    var output = max_pool2d(input, kernel_size, stride)
+    var output = maxpool2d(input, kernel_size, stride)
 
     # Verify output shape (height and width are halved)
     var output_shape = output.shape()
@@ -559,13 +563,13 @@ fn test_vgg16_maxpool_backward() raises:
     # Forward pass
     var kernel_size = 2
     var stride = 2
-    var output = max_pool2d(input, kernel_size, stride)
+    var output = maxpool2d(input, kernel_size, stride)
 
     # Create gradient w.r.t. output
     var grad_output = ones(output.shape(), DType.float32)
 
     # Backward pass
-    var grad_input = max_pool2d_backward(
+    var grad_input = maxpool2d_backward(
         input, grad_output, kernel_size, stride, output.shape()
     )
 

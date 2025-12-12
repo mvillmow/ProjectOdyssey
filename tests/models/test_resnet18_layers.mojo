@@ -108,8 +108,6 @@ fn create_basic_block(
         relu1_out, conv2_weight, conv2_bias, stride=1, padding=1
     )
     var bn2_out: ExTensor
-    var _: ExTensor
-    var __: ExTensor
     (bn2_out, _, __) = batch_norm2d(
         conv2_out,
         bn2_gamma,
@@ -436,8 +434,6 @@ fn test_residual_block_128_channels_projection() raises:
         relu1_out, conv2_weight, conv2_bias, stride=1, padding=1
     )
     var bn2_out: ExTensor
-    var _: ExTensor
-    var __: ExTensor
     (bn2_out, _, __) = batch_norm2d(
         conv2_out,
         bn2_gamma,
@@ -679,7 +675,7 @@ fn test_batchnorm2d_gamma_beta_effects() raises:
     var x = ones(input_shape, DType.float32)
 
     # Parameters: gamma=2, beta=1
-    var gamma = full([channels], Float32(2.0), DType.float32)
+    var gamma = full([channels], 2.0, DType.float32)
     var beta = ones([channels], DType.float32)
     var running_mean = zeros([channels], DType.float32)
     var running_var = ones([channels], DType.float32)
