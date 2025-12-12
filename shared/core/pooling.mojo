@@ -51,8 +51,8 @@ fn maxpool2d(
     Raises:
             Error: If tensor shapes are incompatible or method is unsupported.
     """
-    if method != "direct":
-        raise Error("Only 'direct' method is currently supported for maxpool2d")
+    if method != "direct" and method != "optimized":
+        raise Error("maxpool2d: method must be 'direct' or 'optimized'")
 
     # Get input dimensions
     var x_shape = x.shape()
@@ -81,6 +81,25 @@ fn maxpool2d(
     out_shape.append(out_height)
     out_shape.append(out_width)
     var output = zeros(out_shape, x.dtype())
+
+    if method == "optimized":
+        # Optimized algorithm: precompute row-wise maximums
+        # For each row, we compute max over kernel_size consecutive elements
+        # This reduces inner loop from O(k²) to O(k) per output
+        _maxpool2d_optimized(
+            x,
+            output,
+            batch,
+            channels,
+            in_height,
+            in_width,
+            out_height,
+            out_width,
+            kernel_size,
+            actual_stride,
+            padding,
+        )
+        return output^
 
     # Direct max pooling algorithm
     for b in range(batch):
@@ -128,6 +147,81 @@ fn maxpool2d(
                     output._data.bitcast[Float32]()[out_idx] = max_val
 
     return output^
+
+
+fn _maxpool2d_optimized(
+    x: ExTensor,
+    mut output: ExTensor,
+    batch: Int,
+    channels: Int,
+    in_height: Int,
+    in_width: Int,
+    out_height: Int,
+    out_width: Int,
+    kernel_size: Int,
+    stride: Int,
+    padding: Int,
+):
+    """Optimized maxpool using row-wise precomputation.
+
+    Algorithm:
+    1. For each input row, precompute max over horizontal windows
+    2. For each output position, compute max over precomputed row values
+
+    This reduces complexity from O(k²) to O(k) per output when windows overlap.
+    """
+    # Allocate row-wise max buffer for current batch/channel
+    # row_max[h][w] = max over [w, w+kernel_size) for row h
+    var row_max_size = in_height * out_width
+    var row_max = List[Float32]()
+    for _ in range(row_max_size):
+        row_max.append(Float32(-1e9))
+
+    for b in range(batch):
+        for c in range(channels):
+            # Step 1: Precompute row-wise maximums for this channel
+            for ih in range(in_height):
+                for ow in range(out_width):
+                    # Window starts at w_start = ow * stride - padding
+                    var w_start = ow * stride - padding
+                    var row_max_val = Float32(-1e9)
+
+                    for kw in range(kernel_size):
+                        var iw = w_start + kw
+                        if iw >= 0 and iw < in_width:
+                            var in_idx = (
+                                b * (channels * in_height * in_width)
+                                + c * (in_height * in_width)
+                                + ih * in_width
+                                + iw
+                            )
+                            var val = x._data.bitcast[Float32]()[in_idx]
+                            if val > row_max_val:
+                                row_max_val = val
+
+                    row_max[ih * out_width + ow] = row_max_val
+
+            # Step 2: For each output position, compute max over kernel_size rows
+            for oh in range(out_height):
+                var h_start = oh * stride - padding
+
+                for ow in range(out_width):
+                    var max_val = Float32(-1e9)
+
+                    for kh in range(kernel_size):
+                        var ih = h_start + kh
+                        if ih >= 0 and ih < in_height:
+                            var row_val = row_max[ih * out_width + ow]
+                            if row_val > max_val:
+                                max_val = row_val
+
+                    var out_idx = (
+                        b * (channels * out_height * out_width)
+                        + c * (out_height * out_width)
+                        + oh * out_width
+                        + ow
+                    )
+                    output._data.bitcast[Float32]()[out_idx] = max_val
 
 
 fn avgpool2d(
