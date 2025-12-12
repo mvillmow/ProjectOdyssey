@@ -11,8 +11,8 @@ from .reduction_utils import (
     coords_to_linear,
     map_result_to_input_coords,
     create_result_coords,
+    compute_axis_strides,
     build_reduced_shape,
-    AxisReductionIterator,
 )
 
 
@@ -28,9 +28,6 @@ fn sum(
 
     Returns:
             A new tensor with sum along specified axis.
-
-    Raises:
-            Error: If operation fails.
 
     Examples:
         ```
@@ -66,18 +63,29 @@ fn sum(
                 + " dimensions"
             )
 
-        # Use AxisReductionIterator to handle coordinate transformation
-        var iter = AxisReductionIterator(tensor.shape(), axis, keepdims)
-        var result = ExTensor(iter.result_shape, tensor.dtype())
+        # Use direct index computation (no coordinate allocations)
+        var result_shape = build_reduced_shape(tensor.shape(), axis, keepdims)
+        var result = ExTensor(result_shape, tensor.dtype())
         result._fill_zero()
 
-        # For each position in the result, sum along the reduction axis
-        for result_idx in range(result.numel()):
-            var sum_val: Float64 = 0.0
-            for k in range(iter.axis_size):
-                var input_idx = iter.get_input_idx(result_idx, k)
-                sum_val += tensor._get_float64(input_idx)
-            result._set_float64(result_idx, sum_val)
+        # Compute outer/inner sizes for direct indexing
+        var sizes = compute_axis_strides(tensor.shape(), axis)
+        var outer_size = sizes[0]
+        var axis_size = sizes[1]
+        var inner_size = sizes[2]
+
+        # Direct iteration: O(1) index computation per element
+        for outer in range(outer_size):
+            for inner in range(inner_size):
+                var sum_val: Float64 = 0.0
+                for k in range(axis_size):
+                    # Direct index: outer * axis_size * inner_size + k * inner_size + inner
+                    var input_idx = (
+                        outer * axis_size * inner_size + k * inner_size + inner
+                    )
+                    sum_val += tensor._get_float64(input_idx)
+                var result_idx = outer * inner_size + inner
+                result._set_float64(result_idx, sum_val)
 
         return result^
 
@@ -94,9 +102,6 @@ fn mean(
 
     Returns:
             A new tensor with mean along specified axis.
-
-    Raises:
-            Error: If operation fails.
 
     Examples:
         ```
@@ -149,9 +154,6 @@ fn max_reduce(
     Returns:
             A new tensor with maximum along specified axis.
 
-    Raises:
-            Error: If operation fails.
-
     Examples:
         ```
             var t = arange(0.0, 12.0, 1.0, DType.float32)
@@ -186,20 +188,32 @@ fn max_reduce(
                 + " dimensions"
             )
 
-        # Use AxisReductionIterator to handle coordinate transformation
-        var iter = AxisReductionIterator(tensor.shape(), axis, keepdims)
-        var result = ExTensor(iter.result_shape, tensor.dtype())
+        # Use direct index computation (no coordinate allocations)
+        var result_shape = build_reduced_shape(tensor.shape(), axis, keepdims)
+        var result = ExTensor(result_shape, tensor.dtype())
 
-        # For each position in the result, find max along the reduction axis
-        for result_idx in range(result.numel()):
-            # Initialize with first value
-            var max_val = tensor._get_float64(iter.get_input_idx(result_idx, 0))
-            # Compare with remaining values
-            for k in range(1, iter.axis_size):
-                var val = tensor._get_float64(iter.get_input_idx(result_idx, k))
-                if val > max_val:
-                    max_val = val
-            result._set_float64(result_idx, max_val)
+        # Compute outer/inner sizes for direct indexing
+        var sizes = compute_axis_strides(tensor.shape(), axis)
+        var outer_size = sizes[0]
+        var axis_size = sizes[1]
+        var inner_size = sizes[2]
+
+        # Direct iteration: O(1) index computation per element
+        for outer in range(outer_size):
+            for inner in range(inner_size):
+                # Initialize with first value along axis
+                var first_idx = outer * axis_size * inner_size + inner
+                var max_val = tensor._get_float64(first_idx)
+                # Compare with remaining values
+                for k in range(1, axis_size):
+                    var input_idx = (
+                        outer * axis_size * inner_size + k * inner_size + inner
+                    )
+                    var val = tensor._get_float64(input_idx)
+                    if val > max_val:
+                        max_val = val
+                var result_idx = outer * inner_size + inner
+                result._set_float64(result_idx, max_val)
 
         return result^
 
@@ -216,9 +230,6 @@ fn min_reduce(
 
     Returns:
             A new tensor with minimum along specified axis.
-
-    Raises:
-            Error: If operation fails.
 
     Examples:
         ```
@@ -254,20 +265,32 @@ fn min_reduce(
                 + " dimensions"
             )
 
-        # Use AxisReductionIterator to handle coordinate transformation
-        var iter = AxisReductionIterator(tensor.shape(), axis, keepdims)
-        var result = ExTensor(iter.result_shape, tensor.dtype())
+        # Use direct index computation (no coordinate allocations)
+        var result_shape = build_reduced_shape(tensor.shape(), axis, keepdims)
+        var result = ExTensor(result_shape, tensor.dtype())
 
-        # For each position in the result, find min along the reduction axis
-        for result_idx in range(result.numel()):
-            # Initialize with first value
-            var min_val = tensor._get_float64(iter.get_input_idx(result_idx, 0))
-            # Compare with remaining values
-            for k in range(1, iter.axis_size):
-                var val = tensor._get_float64(iter.get_input_idx(result_idx, k))
-                if val < min_val:
-                    min_val = val
-            result._set_float64(result_idx, min_val)
+        # Compute outer/inner sizes for direct indexing
+        var sizes = compute_axis_strides(tensor.shape(), axis)
+        var outer_size = sizes[0]
+        var axis_size = sizes[1]
+        var inner_size = sizes[2]
+
+        # Direct iteration: O(1) index computation per element
+        for outer in range(outer_size):
+            for inner in range(inner_size):
+                # Initialize with first value along axis
+                var first_idx = outer * axis_size * inner_size + inner
+                var min_val = tensor._get_float64(first_idx)
+                # Compare with remaining values
+                for k in range(1, axis_size):
+                    var input_idx = (
+                        outer * axis_size * inner_size + k * inner_size + inner
+                    )
+                    var val = tensor._get_float64(input_idx)
+                    if val < min_val:
+                        min_val = val
+                var result_idx = outer * inner_size + inner
+                result._set_float64(result_idx, min_val)
 
         return result^
 
@@ -295,9 +318,6 @@ fn sum_backward(
 
     Returns:
             Gradient w.r.t. input (∂L/∂X) - broadcast back to input_shape.
-
-    Raises:
-            Error: If operation fails.
 
     Examples:
         ```
@@ -381,9 +401,6 @@ fn mean_backward(
     Returns:
             Gradient w.r.t. input (∂L/∂X) - broadcast and scaled.
 
-    Raises:
-            Error: If operation fails.
-
     Examples:
         ```
             var x = ones([3, 4], DType.float32)
@@ -435,9 +452,6 @@ fn max_reduce_backward(
 
     Returns:
             Gradient w.r.t. input (∂L/∂X).
-
-    Raises:
-            Error: If operation fails.
 
     Examples:
         ```
@@ -567,9 +581,6 @@ fn min_reduce_backward(
 
     Returns:
             Gradient w.r.t. input (∂L/∂X).
-
-    Raises:
-            Error: If operation fails.
 
     Examples:
         ```
