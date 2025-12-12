@@ -40,6 +40,8 @@ try:
 except ImportError:
     HAS_TQDM = False
 
+from common import get_repo_root
+
 
 class Colors:
     """ANSI color codes for terminal output"""
@@ -59,16 +61,6 @@ class Colors:
         Colors.HEADER = Colors.OKBLUE = Colors.OKCYAN = ""
         Colors.OKGREEN = Colors.WARNING = Colors.FAIL = ""
         Colors.ENDC = Colors.BOLD = ""
-
-
-def get_repo_root() -> Path:
-    """Get the repository root directory."""
-    current = Path(__file__).resolve().parent
-    while current != current.parent:
-        if (current / ".git").exists():
-            return current
-        current = current.parent
-    raise RuntimeError("Could not find repository root")
 
 
 def check_github_rate_limit() -> Tuple[int, float]:
