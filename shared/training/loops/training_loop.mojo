@@ -105,7 +105,7 @@ fn train_one_epoch(
     var num_batches = 0
 
     # Setup metrics for epoch
-    # FIXME: var accuracy_metric = AccuracyMetric()
+    # FIXME(#2713): var accuracy_metric = AccuracyMetric()
     var loss_tracker = LossTracker(window_size=log_interval)
 
     # Reset dataloader
@@ -239,9 +239,9 @@ struct TrainingLoop:
         print("Epoch [", epoch, "/", total_epochs, "]")
 
         for batch_idx in range(num_batches):
-            # FIXME: var start_idx = batch_idx * batch_size
-            # FIXME: var end_idx = min(start_idx + batch_size, num_samples)
-            # FIXME: var actual_batch_size = end_idx - start_idx
+            # FIXME(#2713): var start_idx = batch_idx * batch_size
+            # FIXME(#2713): var end_idx = min(start_idx + batch_size, num_samples)
+            # FIXME(#2713): var actual_batch_size = end_idx - start_idx
 
             # Extract batch slice (when slicing fully supported, use that)
             # For now, pass full data - model-specific code handles batching

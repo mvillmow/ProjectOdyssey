@@ -66,7 +66,7 @@ struct TestFixtures:
         """Set random seed for deterministic test execution."""
         seed(Self.deterministic_seed())
 
-    # FIXME: Placeholder tensor fixture methods in tests/shared/conftest.mojo
+    # FIXME(#2715): Placeholder tensor fixture methods in tests/shared/conftest.mojo
     # TODO(#1538): Add tensor fixture methods when Tensor type is implemented
     # @staticmethod
     # fn small_tensor() -> Tensor:
@@ -78,14 +78,14 @@ struct TestFixtures:
     #     """Create random tensor with deterministic seed."""
     #     pass
 
-    # FIXME: Placeholder model fixture methods in tests/shared/conftest.mojo
+    # FIXME(#2715): Placeholder model fixture methods in tests/shared/conftest.mojo
     # TODO(#1538): Add model fixture methods when models are implemented
     # @staticmethod
     # fn simple_linear_model() -> Linear:
     #     """Create simple Linear layer with known weights."""
     #     pass
 
-    # FIXME: Placeholder dataset fixture methods in tests/shared/conftest.mojo
+    # FIXME(#2715): Placeholder dataset fixture methods in tests/shared/conftest.mojo
     # TODO(#1538): Add dataset fixture methods when datasets are implemented
     # @staticmethod
     # fn synthetic_dataset(n_samples: Int = 100) -> TensorDataset:
@@ -173,7 +173,7 @@ fn measure_time[func: fn () raises -> None]() raises -> Float64:
     Returns:
         Execution time in milliseconds.
 
-    FIXME: Placeholder implementation in tests/shared/conftest.mojo (line 250)
+    FIXME(#2715): Placeholder implementation in tests/shared/conftest.mojo (line 250)
     Currently returns 0.0 - needs proper time measurement using Mojo's time module.
     """
     # TODO(#1538): Implement using Mojo's time module when available
@@ -195,7 +195,7 @@ fn measure_throughput[
     Returns:
         Operations per second.
 
-    FIXME: Placeholder implementation in tests/shared/conftest.mojo (line 264)
+    FIXME(#2715): Placeholder implementation in tests/shared/conftest.mojo (line 264)
     Currently relies on placeholder measure_time - needs proper time measurement.
     """
     # TODO(#1538): Implement using Mojo's time module when available

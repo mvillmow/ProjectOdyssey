@@ -6,7 +6,7 @@ schedulers, metrics, callbacks, and training loops for ML Odyssey paper implemen
 
 All components are implemented in Mojo for maximum performance.
 
-FIXME: Placeholder import tests in tests/shared/test_imports.mojo require:
+FIXME(#2715): Placeholder import tests in tests/shared/test_imports.mojo require:
 - test_training_imports (line 80+)
 - test_training_optimizers_imports (line 95+)
 - test_training_schedulers_imports (line 110+)

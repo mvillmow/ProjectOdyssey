@@ -539,7 +539,7 @@ struct LayerTester:
 
         # Test gradient checking with small epsilon and tolerance appropriate for dtype
         var epsilon = 1e-5 if dtype == DType.float32 else 1e-4
-        # FIXME(unused) var tolerance = 1e-2 if dtype == DType.float32 else 1e-1
+        # FIXME(#2710, unused) var tolerance = 1e-2 if dtype == DType.float32 else 1e-1
 
         # Define forward function for gradient checking
         fn forward(x: ExTensor) raises escaping -> ExTensor:
@@ -622,7 +622,7 @@ struct LayerTester:
 
         # Test gradient checking with small epsilon and tolerance appropriate for dtype
         var epsilon = 1e-5 if dtype == DType.float32 else 1e-4
-        # FIXME(unused) var tolerance = 1e-2 if dtype == DType.float32 else 1e-1
+        # FIXME(#2710, unused) var tolerance = 1e-2 if dtype == DType.float32 else 1e-1
 
         # Define forward function for gradient checking
         fn forward(x: ExTensor) raises escaping -> ExTensor:
@@ -710,7 +710,7 @@ struct LayerTester:
 
         # Test gradient checking with appropriate epsilon and tolerance for dtype
         var epsilon = 1e-5 if dtype == DType.float32 else 1e-4
-        # FIXME(unused) var tolerance = 1e-2 if dtype == DType.float32 else 1e-1
+        # FIXME(#2710, unused) var tolerance = 1e-2 if dtype == DType.float32 else 1e-1
 
         # Define forward function for gradient checking
         fn forward(x: ExTensor) raises escaping -> ExTensor:
@@ -883,8 +883,8 @@ struct LayerTester:
         assert_dtype(input, dtype, "BatchNorm backward: input dtype mismatch")
 
         # Test gradient checking with appropriate epsilon and tolerance for dtype
-        # FIXME(unused) var epsilon = 1e-5 if dtype == DType.float32 else 1e-4
-        # FIXME(unused) var tolerance = 1e-2 if dtype == DType.float32 else 1e-1
+        # FIXME(#2710, unused) var epsilon = 1e-5 if dtype == DType.float32 else 1e-4
+        # FIXME(#2710, unused) var tolerance = 1e-2 if dtype == DType.float32 else 1e-1
 
         # Note: Actual BatchNorm backward gradient checking would be implemented
         # when BatchNorm forward pass is available

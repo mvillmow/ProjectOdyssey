@@ -901,7 +901,7 @@ struct RandomErasing(Copyable, Movable, Transform):
             # Check if this element is in the erased rectangle
             # Calculate (row, col, c) from flat index
             var pixel_idx = i // channels
-            # FIXME(unused) var c = i % channels
+            # FIXME(#2707, unused) var c = i % channels
             var col = pixel_idx % width
             var row = pixel_idx // width
 

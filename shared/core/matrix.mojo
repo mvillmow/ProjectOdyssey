@@ -2,7 +2,7 @@
 
 Implements linear algebra operations like matrix multiplication and transpose
 
-FIXME: Placeholder tests in tests/shared/core/legacy/test_matrix.mojo (lines 493-560) require:
+FIXME(#2715): Placeholder tests in tests/shared/core/legacy/test_matrix.mojo (lines 493-560) require:
 - inner() function (test_inner_1d, test_inner_2d at lines 493-515)
 - tensordot() function (test_tensordot_basic, test_tensordot_multiple_axes at lines 522-560)
 Both functions are marked as "TODO: Implement" and tests pass as placeholders (line 501, 515, 537).

@@ -52,7 +52,7 @@ Example:
     var a1 = relu(h1)
     ```
 
-FIXME: Placeholder import tests in tests/shared/test_imports.mojo require:
+FIXME(#2715): Placeholder import tests in tests/shared/test_imports.mojo require:
 - test_core_imports (line 17)
 - test_core_layers_imports (line 31)
 - test_core_activations_imports (line 46)

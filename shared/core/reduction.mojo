@@ -401,10 +401,10 @@ fn sum_backward(
         # The gradient value is replicated axis_size times.
 
         # Compute strides for input tensor
-        # FIXME(Unused): var ndim = len(input_shape)
-        # FIXME(Unused): var strides = compute_strides(input_shape)
+        # FIXME(#2708, Unused): var ndim = len(input_shape)
+        # FIXME(#2708, Unused): var strides = compute_strides(input_shape)
 
-        # FIXME(Unused): var axis_size = input_shape[axis]
+        # FIXME(#2708, Unused): var axis_size = input_shape[axis]
 
         # For each position in grad_output, broadcast it to all positions along axis
         for result_idx in range(result.numel()):

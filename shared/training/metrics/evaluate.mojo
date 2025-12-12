@@ -153,7 +153,7 @@ fn compute_accuracy_on_batch(
         ```
     """
     var pred_shape = predictions.shape()
-    # FIXME(unused) var batch_size = 0
+    # FIXME(#2712, unused) var batch_size = 0
 
     # Determine if predictions are logits (2D) or class indices (1D)
     if len(pred_shape) == 2:

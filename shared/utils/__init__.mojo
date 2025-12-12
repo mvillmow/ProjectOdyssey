@@ -23,7 +23,7 @@ Example:
     config = load_config("experiment.yaml")
     ```
 
-FIXME: Placeholder import tests in tests/shared/test_imports.mojo require:
+FIXME(#2715): Placeholder import tests in tests/shared/test_imports.mojo require:
 - test_utils_imports (line 210+)
 - test_utils_logging_imports (line 220+)
 - test_utils_visualization_imports (line 230+)

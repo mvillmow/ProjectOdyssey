@@ -425,7 +425,7 @@ fn assert_gradients_close(
     # Compare element-wise
     var max_diff: Float64 = 0.0
     var max_rel_diff: Float64 = 0.0
-    # FIXME(unused) var worst_idx: Int = -1
+    # FIXME(#2711, unused) var worst_idx: Int = -1
 
     for i in range(analytical.numel()):
         var a = analytical._get_float64(i)
@@ -444,7 +444,7 @@ fn assert_gradients_close(
 
         if abs_diff > max_diff:
             max_diff = abs_diff
-            # FIXME(unused) worst_idx = i
+            # FIXME(#2711, unused) worst_idx = i
 
         # Compute relative difference for reporting (using max_abs from above)
         if max_abs > 1e-10:

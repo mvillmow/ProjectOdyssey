@@ -12,7 +12,7 @@ Architecture:
 This example trains on synthetic XOR-like data to demonstrate that the training
 pipeline is fully functional.
 
-FIXME: This example has multiple compilation issues:
+FIXME(#2706): This example has multiple compilation issues:
 1. Import error: `from collections.vector import DynamicVector` uses outdated
    import path. Mojo stdlib changed - need to verify correct path.
 
@@ -34,7 +34,7 @@ This example is closest to working - syntax fixes and export verification
 should allow it to compile and run.
 """
 
-# FIXME: Check correct import path for DynamicVector
+# FIXME(#2706): Check correct import path for DynamicVector
 from shared.core import (
     ExTensor,
     # Creation

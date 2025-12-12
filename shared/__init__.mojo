@@ -38,7 +38,7 @@ Example:
         print("Epoch", epoch, "Loss:", loss)
     ```
 
-FIXME: Placeholder tests in tests/shared/integration/test_packaging.mojo require:
+FIXME(#2715): Placeholder tests in tests/shared/integration/test_packaging.mojo require:
 - test_subpackage_accessibility (line 28)
 - test_root_level_imports (line 49)
 - test_module_level_imports (line 65)
