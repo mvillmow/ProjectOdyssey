@@ -108,6 +108,98 @@ fn _fill_constant[dtype: DType](result: ExTensor, value: Float64) raises:
 
 
 # ============================================================================
+# DType Dispatch Helpers (Issue #2582)
+# ============================================================================
+
+
+fn _dispatch_fill_uniform_scaled(
+    result: ExTensor, scale: Float64, offset: Float64
+) raises:
+    """Dispatch uniform fill based on tensor dtype.
+
+    Centralizes dtype branching for _fill_uniform_scaled to avoid
+    repetitive if/elif chains throughout the codebase.
+
+    Args:
+        result: Tensor to fill (pre-allocated, dtype determines dispatch).
+        scale: Scale factor for random values.
+        offset: Offset to add to scaled values.
+
+    Raises:
+        Error: If tensor dtype is not float16, float32, or float64.
+    """
+    var dtype = result.dtype()
+    if dtype == DType.float16:
+        _fill_uniform_scaled[DType.float16](result, scale, offset)
+    elif dtype == DType.float32:
+        _fill_uniform_scaled[DType.float32](result, scale, offset)
+    elif dtype == DType.float64:
+        _fill_uniform_scaled[DType.float64](result, scale, offset)
+    else:
+        raise Error(
+            "Unsupported dtype for uniform fill: only float16, float32,"
+            " float64 supported"
+        )
+
+
+fn _dispatch_fill_normal_boxmuller(
+    result: ExTensor, mean: Float64, std: Float64
+) raises:
+    """Dispatch normal fill based on tensor dtype.
+
+    Centralizes dtype branching for _fill_normal_boxmuller to avoid
+    repetitive if/elif chains throughout the codebase.
+
+    Args:
+        result: Tensor to fill (pre-allocated, dtype determines dispatch).
+        mean: Mean of normal distribution.
+        std: Standard deviation of normal distribution.
+
+    Raises:
+        Error: If tensor dtype is not float16, float32, or float64.
+    """
+    var dtype = result.dtype()
+    if dtype == DType.float16:
+        _fill_normal_boxmuller[DType.float16](result, mean, std)
+    elif dtype == DType.float32:
+        _fill_normal_boxmuller[DType.float32](result, mean, std)
+    elif dtype == DType.float64:
+        _fill_normal_boxmuller[DType.float64](result, mean, std)
+    else:
+        raise Error(
+            "Unsupported dtype for normal fill: only float16, float32,"
+            " float64 supported"
+        )
+
+
+fn _dispatch_fill_constant(result: ExTensor, value: Float64) raises:
+    """Dispatch constant fill based on tensor dtype.
+
+    Centralizes dtype branching for _fill_constant to avoid
+    repetitive if/elif chains throughout the codebase.
+
+    Args:
+        result: Tensor to fill (pre-allocated, dtype determines dispatch).
+        value: Constant value to fill with.
+
+    Raises:
+        Error: If tensor dtype is not float16, float32, or float64.
+    """
+    var dtype = result.dtype()
+    if dtype == DType.float16:
+        _fill_constant[DType.float16](result, value)
+    elif dtype == DType.float32:
+        _fill_constant[DType.float32](result, value)
+    elif dtype == DType.float64:
+        _fill_constant[DType.float64](result, value)
+    else:
+        raise Error(
+            "Unsupported dtype for constant fill: only float16, float32,"
+            " float64 supported"
+        )
+
+
+# ============================================================================
 # Xavier/Glorot Initialization (#258-260)
 # ============================================================================
 
@@ -173,18 +265,7 @@ fn xavier_uniform(
     var result = ExTensor(shape, dtype)
 
     # Fill with uniform random values in [-bound, bound]
-    # Use dtype dispatch pattern to eliminate branching
-    if dtype == DType.float16:
-        _fill_uniform_scaled[DType.float16](result, 2.0 * bound, -bound)
-    elif dtype == DType.float32:
-        _fill_uniform_scaled[DType.float32](result, 2.0 * bound, -bound)
-    elif dtype == DType.float64:
-        _fill_uniform_scaled[DType.float64](result, 2.0 * bound, -bound)
-    else:
-        raise Error(
-            "xavier_uniform: only float16, float32, and float64 dtypes"
-            " supported"
-        )
+    _dispatch_fill_uniform_scaled(result, 2.0 * bound, -bound)
 
     return result^
 
@@ -250,17 +331,7 @@ fn xavier_normal(
     var result = ExTensor(shape, dtype)
 
     # Fill with normal random values using Box-Muller transform
-    # Use dtype dispatch pattern to eliminate branching
-    if dtype == DType.float16:
-        _fill_normal_boxmuller[DType.float16](result, 0.0, std)
-    elif dtype == DType.float32:
-        _fill_normal_boxmuller[DType.float32](result, 0.0, std)
-    elif dtype == DType.float64:
-        _fill_normal_boxmuller[DType.float64](result, 0.0, std)
-    else:
-        raise Error(
-            "xavier_normal: only float16, float32, and float64 dtypes supported"
-        )
+    _dispatch_fill_normal_boxmuller(result, 0.0, std)
 
     return result^
 
@@ -352,18 +423,7 @@ fn kaiming_uniform(
     var result = ExTensor(shape, dtype)
 
     # Fill with uniform random values in [-bound, bound]
-    # Use dtype dispatch pattern to eliminate branching
-    if dtype == DType.float16:
-        _fill_uniform_scaled[DType.float16](result, 2.0 * bound, -bound)
-    elif dtype == DType.float32:
-        _fill_uniform_scaled[DType.float32](result, 2.0 * bound, -bound)
-    elif dtype == DType.float64:
-        _fill_uniform_scaled[DType.float64](result, 2.0 * bound, -bound)
-    else:
-        raise Error(
-            "kaiming_uniform: only float16, float32, and float64 dtypes"
-            " supported"
-        )
+    _dispatch_fill_uniform_scaled(result, 2.0 * bound, -bound)
 
     return result^
 
@@ -446,18 +506,7 @@ fn kaiming_normal(
     var result = ExTensor(shape, dtype)
 
     # Fill with normal random values using Box-Muller transform
-    # Use dtype dispatch pattern to eliminate branching
-    if dtype == DType.float16:
-        _fill_normal_boxmuller[DType.float16](result, 0.0, std)
-    elif dtype == DType.float32:
-        _fill_normal_boxmuller[DType.float32](result, 0.0, std)
-    elif dtype == DType.float64:
-        _fill_normal_boxmuller[DType.float64](result, 0.0, std)
-    else:
-        raise Error(
-            "kaiming_normal: only float16, float32, and float64 dtypes"
-            " supported"
-        )
+    _dispatch_fill_normal_boxmuller(result, 0.0, std)
 
     return result^
 
@@ -515,18 +564,8 @@ fn uniform(
     var result = ExTensor(shape, dtype)
 
     # Fill with uniform random values in [low, high]
-    # Use dtype dispatch pattern to eliminate branching
     var range_val = high - low
-    if dtype == DType.float16:
-        _fill_uniform_scaled[DType.float16](result, range_val, low)
-    elif dtype == DType.float32:
-        _fill_uniform_scaled[DType.float32](result, range_val, low)
-    elif dtype == DType.float64:
-        _fill_uniform_scaled[DType.float64](result, range_val, low)
-    else:
-        raise Error(
-            "uniform: only float16, float32, and float64 dtypes supported"
-        )
+    _dispatch_fill_uniform_scaled(result, range_val, low)
 
     return result^
 
@@ -581,17 +620,7 @@ fn normal(
     var result = ExTensor(shape, dtype)
 
     # Fill with normal random values using Box-Muller transform
-    # Use dtype dispatch pattern to eliminate branching
-    if dtype == DType.float16:
-        _fill_normal_boxmuller[DType.float16](result, mean, std)
-    elif dtype == DType.float32:
-        _fill_normal_boxmuller[DType.float32](result, mean, std)
-    elif dtype == DType.float64:
-        _fill_normal_boxmuller[DType.float64](result, mean, std)
-    else:
-        raise Error(
-            "normal: only float16, float32, and float64 dtypes supported"
-        )
+    _dispatch_fill_normal_boxmuller(result, mean, std)
 
     return result^
 
@@ -625,19 +654,7 @@ fn constant(
         Issue: #268-272 - Uniform/Normal basic distributions.
     """
     var result = ExTensor(shape, dtype)
-
-    # Use dtype dispatch pattern to eliminate branching
-    if dtype == DType.float16:
-        _fill_constant[DType.float16](result, value)
-    elif dtype == DType.float32:
-        _fill_constant[DType.float32](result, value)
-    elif dtype == DType.float64:
-        _fill_constant[DType.float64](result, value)
-    else:
-        raise Error(
-            "constant: only float16, float32, and float64 dtypes supported"
-        )
-
+    _dispatch_fill_constant(result, value)
     return result^
 
 
