@@ -49,7 +49,7 @@ from math import isnan, isinf
 # ============================================================================
 
 
-fn create_conv1_parameters(dtype: DType) raises -> tuple[ExTensor, ExTensor]:
+fn create_conv1_parameters(dtype: DType) raises -> Tuple[ExTensor, ExTensor]:
     """Create Conv1 layer parameters (1→6, 5x5 kernel)."""
     var in_channels = 1
     var out_channels = 6
@@ -72,7 +72,7 @@ fn create_conv1_parameters(dtype: DType) raises -> tuple[ExTensor, ExTensor]:
     return kernel, bias
 
 
-fn create_conv2_parameters(dtype: DType) raises -> tuple[ExTensor, ExTensor]:
+fn create_conv2_parameters(dtype: DType) raises -> Tuple[ExTensor, ExTensor]:
     """Create Conv2 layer parameters (6→16, 5x5 kernel)."""
     var in_channels = 6
     var out_channels = 16
@@ -95,7 +95,7 @@ fn create_conv2_parameters(dtype: DType) raises -> tuple[ExTensor, ExTensor]:
     return kernel, bias
 
 
-fn create_fc1_parameters(dtype: DType) raises -> tuple[ExTensor, ExTensor]:
+fn create_fc1_parameters(dtype: DType) raises -> Tuple[ExTensor, ExTensor]:
     """Create FC1 layer parameters (400→120)."""
     var in_features = 400
     var out_features = 120
@@ -112,7 +112,7 @@ fn create_fc1_parameters(dtype: DType) raises -> tuple[ExTensor, ExTensor]:
     return weights, bias
 
 
-fn create_fc2_parameters(dtype: DType) raises -> tuple[ExTensor, ExTensor]:
+fn create_fc2_parameters(dtype: DType) raises -> Tuple[ExTensor, ExTensor]:
     """Create FC2 layer parameters (120→84)."""
     var in_features = 120
     var out_features = 84
@@ -129,7 +129,7 @@ fn create_fc2_parameters(dtype: DType) raises -> tuple[ExTensor, ExTensor]:
     return weights, bias
 
 
-fn create_fc3_parameters(dtype: DType) raises -> tuple[ExTensor, ExTensor]:
+fn create_fc3_parameters(dtype: DType) raises -> Tuple[ExTensor, ExTensor]:
     """Create FC3 layer parameters (84→10)."""
     var in_features = 84
     var out_features = 10
@@ -635,11 +635,11 @@ fn test_all_layers_sequence_float32() raises:
     assert_shape(input, [batch_size, 1, 28, 28], "Input shape")
 
     # Conv1: (1, 1, 28, 28) -> (1, 6, 24, 24)
-    var _result = create_conv1_parameters(dtype)
+    var _result_conv1 = create_conv1_parameters(dtype)
 
-    var kernel1 = _result[0]
+    var kernel1 = _result_conv1[0]
 
-    var bias1 = _result[1]
+    var bias1 = _result_conv1[1]
     var conv1_out = conv2d(input, kernel1, bias1, stride=1, padding=0)
     assert_shape(conv1_out, [batch_size, 6, 24, 24], "Conv1 output shape")
 
@@ -652,11 +652,11 @@ fn test_all_layers_sequence_float32() raises:
     assert_shape(pool1_out, [batch_size, 6, 12, 12], "MaxPool1 output shape")
 
     # Conv2: (1, 6, 12, 12) -> (1, 16, 8, 8)
-    var _result = create_conv2_parameters(dtype)
+    var _result_conv2 = create_conv2_parameters(dtype)
 
-    var kernel2 = _result[0]
+    var kernel2 = _result_conv2[0]
 
-    var bias2 = _result[1]
+    var bias2 = _result_conv2[1]
     var conv2_out = conv2d(pool1_out, kernel2, bias2, stride=1, padding=0)
     assert_shape(conv2_out, [batch_size, 16, 8, 8], "Conv2 output shape")
 
@@ -673,11 +673,11 @@ fn test_all_layers_sequence_float32() raises:
     assert_shape(flattened, [batch_size, 256], "Flatten output shape")
 
     # FC1: (1, 256) -> (1, 120)
-    var _result = create_fc1_parameters(dtype)
+    var _result_fc1 = create_fc1_parameters(dtype)
 
-    var fc1_weights = _result[0]
+    var fc1_weights = _result_fc1[0]
 
-    var fc1_bias = _result[1]
+    var fc1_bias = _result_fc1[1]
     # Note: FC1 expects 400 inputs, but we have 256 due to smaller input test
     # Create compatible FC1 with 256 inputs
     var fc1_weights_compat = kaiming_uniform(256, 120, [120, 256], dtype=dtype)
@@ -689,11 +689,11 @@ fn test_all_layers_sequence_float32() raises:
     assert_shape(relu3_out, [batch_size, 120], "ReLU3 output shape")
 
     # FC2: (1, 120) -> (1, 84)
-    var _result = create_fc2_parameters(dtype)
+    var _result_fc2 = create_fc2_parameters(dtype)
 
-    var fc2_weights = _result[0]
+    var fc2_weights = _result_fc2[0]
 
-    var fc2_bias = _result[1]
+    var fc2_bias = _result_fc2[1]
     var fc2_out = linear(relu3_out, fc2_weights, fc2_bias)
     assert_shape(fc2_out, [batch_size, 84], "FC2 output shape")
 
@@ -702,11 +702,11 @@ fn test_all_layers_sequence_float32() raises:
     assert_shape(relu4_out, [batch_size, 84], "ReLU4 output shape")
 
     # FC3: (1, 84) -> (1, 10)
-    var _result = create_fc3_parameters(dtype)
+    var _result_fc3 = create_fc3_parameters(dtype)
 
-    var fc3_weights = _result[0]
+    var fc3_weights = _result_fc3[0]
 
-    var fc3_bias = _result[1]
+    var fc3_bias = _result_fc3[1]
     var output = linear(relu4_out, fc3_weights, fc3_bias)
     assert_shape(output, [batch_size, 10], "FC3 (final output) shape")
 

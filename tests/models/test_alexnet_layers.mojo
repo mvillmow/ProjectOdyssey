@@ -919,11 +919,11 @@ fn test_all_layers_sequence_float32() raises:
     assert_shape(input, [batch_size, 3, 224, 224], "Input shape")
 
     # Conv1: (1, 3, 224, 224) -> (1, 64, 55, 55) with stride 4
-    var _result = create_conv1_parameters(dtype)
+    var _result_conv1 = create_conv1_parameters(dtype)
 
-    var kernel1 = _result[0]
+    var kernel1 = _result_conv1[0]
 
-    var bias1 = _result[1]
+    var bias1 = _result_conv1[1]
     var conv1_out = conv2d(input, kernel1, bias1, stride=4, padding=2)
     assert_shape(conv1_out, [batch_size, 64, 55, 55], "Conv1 output shape")
 
@@ -936,11 +936,11 @@ fn test_all_layers_sequence_float32() raises:
     assert_shape(pool1_out, [batch_size, 64, 27, 27], "MaxPool1 output shape")
 
     # Conv2: (1, 64, 27, 27) -> (1, 192, 27, 27)
-    var _result = create_conv2_parameters(dtype)
+    var _result_conv2 = create_conv2_parameters(dtype)
 
-    var kernel2 = _result[0]
+    var kernel2 = _result_conv2[0]
 
-    var bias2 = _result[1]
+    var bias2 = _result_conv2[1]
     var conv2_out = conv2d(pool1_out, kernel2, bias2, stride=1, padding=2)
     assert_shape(conv2_out, [batch_size, 192, 27, 27], "Conv2 output shape")
 
@@ -953,11 +953,11 @@ fn test_all_layers_sequence_float32() raises:
     assert_shape(pool2_out, [batch_size, 192, 13, 13], "MaxPool2 output shape")
 
     # Conv3: (1, 192, 13, 13) -> (1, 384, 13, 13)
-    var _result = create_conv3_parameters(dtype)
+    var _result_conv3 = create_conv3_parameters(dtype)
 
-    var kernel3 = _result[0]
+    var kernel3 = _result_conv3[0]
 
-    var bias3 = _result[1]
+    var bias3 = _result_conv3[1]
     var conv3_out = conv2d(pool2_out, kernel3, bias3, stride=1, padding=1)
     assert_shape(conv3_out, [batch_size, 384, 13, 13], "Conv3 output shape")
 
@@ -966,11 +966,11 @@ fn test_all_layers_sequence_float32() raises:
     assert_shape(relu3_out, [batch_size, 384, 13, 13], "ReLU3 output shape")
 
     # Conv4: (1, 384, 13, 13) -> (1, 384, 13, 13)
-    var _result = create_conv4_parameters(dtype)
+    var _result_conv4 = create_conv4_parameters(dtype)
 
-    var kernel4 = _result[0]
+    var kernel4 = _result_conv4[0]
 
-    var bias4 = _result[1]
+    var bias4 = _result_conv4[1]
     var conv4_out = conv2d(relu3_out, kernel4, bias4, stride=1, padding=1)
     assert_shape(conv4_out, [batch_size, 384, 13, 13], "Conv4 output shape")
 
@@ -979,11 +979,11 @@ fn test_all_layers_sequence_float32() raises:
     assert_shape(relu4_out, [batch_size, 384, 13, 13], "ReLU4 output shape")
 
     # Conv5: (1, 384, 13, 13) -> (1, 256, 13, 13)
-    var _result = create_conv5_parameters(dtype)
+    var _result_conv5 = create_conv5_parameters(dtype)
 
-    var kernel5 = _result[0]
+    var kernel5 = _result_conv5[0]
 
-    var bias5 = _result[1]
+    var bias5 = _result_conv5[1]
     var conv5_out = conv2d(relu4_out, kernel5, bias5, stride=1, padding=1)
     assert_shape(conv5_out, [batch_size, 256, 13, 13], "Conv5 output shape")
 
@@ -1000,11 +1000,11 @@ fn test_all_layers_sequence_float32() raises:
     assert_shape(flattened, [batch_size, 9216], "Flatten output shape")
 
     # FC1: (1, 9216) -> (1, 4096)
-    var _result = create_fc1_parameters(dtype)
+    var _result_fc1 = create_fc1_parameters(dtype)
 
-    var fc1_weights = _result[0]
+    var fc1_weights = _result_fc1[0]
 
-    var fc1_bias = _result[1]
+    var fc1_bias = _result_fc1[1]
     var fc1_out = linear(flattened, fc1_weights, fc1_bias)
     assert_shape(fc1_out, [batch_size, 4096], "FC1 output shape")
 
@@ -1013,11 +1013,11 @@ fn test_all_layers_sequence_float32() raises:
     assert_shape(relu6_out, [batch_size, 4096], "ReLU6 output shape")
 
     # FC2: (1, 4096) -> (1, 4096)
-    var _result = create_fc2_parameters(dtype)
+    var _result_fc2 = create_fc2_parameters(dtype)
 
-    var fc2_weights = _result[0]
+    var fc2_weights = _result_fc2[0]
 
-    var fc2_bias = _result[1]
+    var fc2_bias = _result_fc2[1]
     var fc2_out = linear(relu6_out, fc2_weights, fc2_bias)
     assert_shape(fc2_out, [batch_size, 4096], "FC2 output shape")
 
@@ -1026,11 +1026,11 @@ fn test_all_layers_sequence_float32() raises:
     assert_shape(relu7_out, [batch_size, 4096], "ReLU7 output shape")
 
     # FC3: (1, 4096) -> (1, 1000)
-    var _result = create_fc3_parameters(dtype)
+    var _result_fc3 = create_fc3_parameters(dtype)
 
-    var fc3_weights = _result[0]
+    var fc3_weights = _result_fc3[0]
 
-    var fc3_bias = _result[1]
+    var fc3_bias = _result_fc3[1]
     var output = linear(relu7_out, fc3_weights, fc3_bias)
     assert_shape(output, [batch_size, 1000], "FC3 (final output) shape")
 

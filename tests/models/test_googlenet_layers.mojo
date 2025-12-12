@@ -23,11 +23,11 @@ from tests.shared.conftest import (
     assert_shape,
     assert_true,
 )
-from shared.core.extensor import ExTensor, zeros, ones, full, rand
+from shared.core.extensor import ExTensor, zeros, ones, full, randn
 from shared.core.conv import conv2d, conv2d_backward
 from shared.core.pooling import maxpool2d, global_avgpool2d
 from shared.core.linear import linear
-from shared.core.activation_ops import relu
+from shared.core.activation import relu
 from shared.core.initializers import kaiming_normal, xavier_normal, constant
 
 
@@ -817,7 +817,7 @@ fn test_inception_branch_1x1_backward() raises:
         grad_output, input, weights, stride=1, padding=0
     )
     var grad_input = _result.grad_input
-    var grad_weights = _result.grad_weight
+    var grad_weights = _result.grad_weights
     var grad_bias = _result.grad_bias
 
     # Verify gradient shapes
@@ -855,7 +855,7 @@ fn test_inception_branch_3x3_backward() raises:
         grad_output, input, weights, stride=1, padding=1
     )
     var grad_input = _result.grad_input
-    var grad_weights = _result.grad_weight
+    var grad_weights = _result.grad_weights
     var grad_bias = _result.grad_bias
 
     # Verify gradient shapes
@@ -893,7 +893,7 @@ fn test_inception_branch_5x5_backward() raises:
         grad_output, input, weights, stride=1, padding=2
     )
     var grad_input = _result.grad_input
-    var grad_weights = _result.grad_weight
+    var grad_weights = _result.grad_weights
     var grad_bias = _result.grad_bias
 
     # Verify gradient shapes

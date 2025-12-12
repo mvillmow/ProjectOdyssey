@@ -860,7 +860,7 @@ fn test_mobilenetv1_block1_32to64() raises:
     dw_kernel_shape.append(3)
     dw_kernel_shape.append(3)
     var dw_kernel = ones(dw_kernel_shape, DType.float32)
-    var dw_bias = zeros(List[Int](in_channels), DType.float32)
+    var dw_bias = zeros([in_channels], DType.float32)
 
     var dw_output = depthwise_conv2d(
         input, dw_kernel, dw_bias, stride=1, padding=1
@@ -873,7 +873,7 @@ fn test_mobilenetv1_block1_32to64() raises:
     pw_kernel_shape.append(1)
     pw_kernel_shape.append(1)
     var pw_kernel = ones(pw_kernel_shape, DType.float32)
-    var pw_bias = zeros(List[Int](out_channels), DType.float32)
+    var pw_bias = zeros([out_channels], DType.float32)
 
     var output = conv2d(dw_output, pw_kernel, pw_bias, stride=1, padding=0)
 
@@ -908,7 +908,7 @@ fn test_mobilenetv1_block2_64to128_stride2() raises:
     dw_kernel_shape.append(3)
     dw_kernel_shape.append(3)
     var dw_kernel = ones(dw_kernel_shape, DType.float32)
-    var dw_bias = zeros(List[Int](in_channels), DType.float32)
+    var dw_bias = zeros([in_channels], DType.float32)
 
     var dw_output = depthwise_conv2d(
         input, dw_kernel, dw_bias, stride=2, padding=1
@@ -926,7 +926,7 @@ fn test_mobilenetv1_block2_64to128_stride2() raises:
     pw_kernel_shape.append(1)
     pw_kernel_shape.append(1)
     var pw_kernel = ones(pw_kernel_shape, DType.float32)
-    var pw_bias = zeros(List[Int](out_channels), DType.float32)
+    var pw_bias = zeros([out_channels], DType.float32)
 
     var output = conv2d(dw_output, pw_kernel, pw_bias, stride=1, padding=0)
 
@@ -963,7 +963,7 @@ fn test_mobilenetv1_block5_512_repeat() raises:
     dw_kernel_shape.append(3)
     dw_kernel_shape.append(3)
     var dw_kernel = ones(dw_kernel_shape, DType.float32)
-    var dw_bias = zeros(List[Int](channels), DType.float32)
+    var dw_bias = zeros([channels], DType.float32)
 
     var dw_output = depthwise_conv2d(
         input, dw_kernel, dw_bias, stride=1, padding=1
@@ -976,7 +976,7 @@ fn test_mobilenetv1_block5_512_repeat() raises:
     pw_kernel_shape.append(1)
     pw_kernel_shape.append(1)
     var pw_kernel = ones(pw_kernel_shape, DType.float32)
-    var pw_bias = zeros(List[Int](channels), DType.float32)
+    var pw_bias = zeros([channels], DType.float32)
 
     var output = conv2d(dw_output, pw_kernel, pw_bias, stride=1, padding=0)
 
