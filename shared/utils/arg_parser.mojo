@@ -238,52 +238,11 @@ struct ArgumentParser(Copyable, Movable):
         )
         self.arguments[name] = spec^
 
-    fn _parse_single_arg(
-        self, args: List[String], i: Int, mut result: ParsedArgs
-    ) raises -> Int:
-        """Parse a single command-line argument.
-
-        Extracts and validates a single argument from the args list,
-        handling both flags and typed arguments. Uses early returns
-        to minimize nesting depth.
-
-        Args:
-            args: List of command-line arguments.
-            i: Current index in args.
-            result: ParsedArgs object to populate.
-
-        Returns:
-            The next index to process.
-
-        Raises:
-            Error: If argument format is invalid, unknown, or missing value.
-        """
-        var arg = args[i]
-
-        # Early return for invalid format
-        if not arg.startswith("--"):
-            raise Error("Invalid argument format: " + arg)
-
-        var arg_name = arg[2:]
-
-        # Early return for unknown argument
-        if arg_name not in self.arguments:
-            raise Error("Unknown argument: --" + arg_name)
-
-        # Handle flag arguments
-        if self.arguments[arg_name].is_flag:
-            result.set(arg_name, "true")
-            return i + 1
-
-        # Handle value arguments - check value exists
-        if i + 1 >= len(args):
-            raise Error("Missing value for argument: --" + arg_name)
-
-        result.set(arg_name, args[i + 1])
-        return i + 2
-
     fn parse(self) raises -> ParsedArgs:
         """Parse command-line arguments from sys.argv.
+
+        Uses early returns to minimize nesting depth (simplified from
+        nested if/else blocks).
 
         Returns:
             ParsedArgs container with parsed values.
@@ -304,11 +263,34 @@ struct ArgumentParser(Copyable, Movable):
             if not spec.is_flag and len(spec.default_value) > 0:
                 result.set(name, spec.default_value)
 
-        # Parse sys.argv
+        # Parse sys.argv with early returns for cleaner flow
         var args = argv()
         var i = 1  # Skip program name
         while i < len(args):
-            i = self._parse_single_arg(args, i, result)
+            var arg = String(args[i])
+
+            # Early error for invalid format
+            if not arg.startswith("--"):
+                raise Error("Invalid argument format: " + arg)
+
+            var arg_name = String(arg[2:])
+
+            # Early error for unknown argument
+            if arg_name not in self.arguments:
+                raise Error("Unknown argument: --" + arg_name)
+
+            # Handle flag arguments (early continue)
+            if self.arguments[arg_name].is_flag:
+                result.set(arg_name, "true")
+                i += 1
+                continue
+
+            # Handle value arguments - early error if missing
+            if i + 1 >= len(args):
+                raise Error("Missing value for argument: --" + arg_name)
+
+            result.set(arg_name, String(args[i + 1]))
+            i += 2
 
         return result^
 
