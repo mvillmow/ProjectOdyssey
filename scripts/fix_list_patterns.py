@@ -2,7 +2,6 @@
 """Fix List mutation patterns and missing dtype arguments in model files."""
 
 import re
-import sys
 from pathlib import Path
 
 
