@@ -511,7 +511,9 @@ struct GradientTape:
         elif op_type == OP_TANH:
             self._backward_tanh_by_idx(node_idx, grad_output)
         else:
-            raise Error("Unsupported operation type for backward pass: " + op_type)
+            raise Error(
+                "Unsupported operation type for backward pass: " + op_type
+            )
 
     fn backward(mut self, output_id: Int, output_grad: ExTensor) raises:
         """Compute gradients by traversing tape in reverse.
