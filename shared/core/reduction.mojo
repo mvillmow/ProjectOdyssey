@@ -11,8 +11,6 @@ from .reduction_utils import (
     coords_to_linear,
     map_result_to_input_coords,
     create_result_coords,
-    compute_axis_strides,
-    build_reduced_shape,
 )
 
 
@@ -38,7 +36,7 @@ fn sum(
     """
     if axis == -1:
         # Sum all elements
-        var result_shape = List[Int]()
+        var result_shape = List[Int](capacity=tensor.dim() if keepdims else 0)
         if keepdims:
             for _ in range(tensor.dim()):
                 result_shape.append(1)
@@ -63,29 +61,46 @@ fn sum(
                 + " dimensions"
             )
 
-        # Use direct index computation (no coordinate allocations)
-        var result_shape = build_reduced_shape(tensor.shape(), axis, keepdims)
+        # Build result shape
+        var result_shape = List[Int](capacity=tensor.dim() if keepdims else tensor.dim() - 1)
+        for i in range(tensor.dim()):
+            if i != axis:
+                result_shape.append(tensor.shape()[i])
+            elif keepdims:
+                result_shape.append(1)
+
         var result = ExTensor(result_shape, tensor.dtype())
         result._fill_zero()
 
-        # Compute outer/inner sizes for direct indexing
-        var sizes = compute_axis_strides(tensor.shape(), axis)
-        var outer_size = sizes[0]
-        var axis_size = sizes[1]
-        var inner_size = sizes[2]
+        # Compute strides for indexing
+        var input_shape = tensor.shape()
+        var strides = compute_strides(input_shape)
 
-        # Direct iteration: O(1) index computation per element
-        for outer in range(outer_size):
-            for inner in range(inner_size):
-                var sum_val: Float64 = 0.0
-                for k in range(axis_size):
-                    # Direct index: outer * axis_size * inner_size + k * inner_size + inner
-                    var input_idx = (
-                        outer * axis_size * inner_size + k * inner_size + inner
-                    )
-                    sum_val += tensor._get_float64(input_idx)
-                var result_idx = outer * inner_size + inner
-                result._set_float64(result_idx, sum_val)
+        # Iterate over all elements and accumulate
+        var axis_size = input_shape[axis]
+
+        # For each position in the result
+        for result_idx in range(result.numel()):
+            var sum_val: Float64 = 0.0
+
+            # Convert result index to coordinates
+            var result_coords = create_result_coords(result_idx, result.shape())
+
+            # Map result coordinates to input coordinates (accounting for reduced axis)
+            var input_coords = map_result_to_input_coords(
+                result_coords, axis, tensor.dim()
+            )
+
+            # Sum along the reduction axis
+            for k in range(axis_size):
+                input_coords[axis] = k
+
+                # Convert coordinates to linear index
+                var linear_idx = coords_to_linear(input_coords, strides)
+
+                sum_val += tensor._get_float64(linear_idx)
+
+            result._set_float64(result_idx, sum_val)
 
         return result^
 
@@ -162,7 +177,7 @@ fn max_reduce(
     """
     if axis == -1:
         # Max of all elements
-        var result_shape = List[Int]()
+        var result_shape = List[Int](capacity=tensor.dim() if keepdims else 0)
         if keepdims:
             for _ in range(tensor.dim()):
                 result_shape.append(1)
@@ -188,32 +203,51 @@ fn max_reduce(
                 + " dimensions"
             )
 
-        # Use direct index computation (no coordinate allocations)
-        var result_shape = build_reduced_shape(tensor.shape(), axis, keepdims)
+        # Build result shape
+        var result_shape = List[Int](capacity=tensor.dim() if keepdims else tensor.dim() - 1)
+        for i in range(tensor.dim()):
+            if i != axis:
+                result_shape.append(tensor.shape()[i])
+            elif keepdims:
+                result_shape.append(1)
+
         var result = ExTensor(result_shape, tensor.dtype())
 
-        # Compute outer/inner sizes for direct indexing
-        var sizes = compute_axis_strides(tensor.shape(), axis)
-        var outer_size = sizes[0]
-        var axis_size = sizes[1]
-        var inner_size = sizes[2]
+        # Compute strides for indexing
+        var input_shape = tensor.shape()
+        var strides = compute_strides(input_shape)
 
-        # Direct iteration: O(1) index computation per element
-        for outer in range(outer_size):
-            for inner in range(inner_size):
-                # Initialize with first value along axis
-                var first_idx = outer * axis_size * inner_size + inner
-                var max_val = tensor._get_float64(first_idx)
-                # Compare with remaining values
-                for k in range(1, axis_size):
-                    var input_idx = (
-                        outer * axis_size * inner_size + k * inner_size + inner
-                    )
-                    var val = tensor._get_float64(input_idx)
-                    if val > max_val:
-                        max_val = val
-                var result_idx = outer * inner_size + inner
-                result._set_float64(result_idx, max_val)
+        # Iterate over all elements and find maximum
+        var axis_size = input_shape[axis]
+
+        # For each position in the result
+        for result_idx in range(result.numel()):
+            # Convert result index to coordinates
+            var result_coords = create_result_coords(result_idx, result.shape())
+
+            # Map result coordinates to input coordinates (accounting for reduced axis)
+            var input_coords = map_result_to_input_coords(
+                result_coords, axis, tensor.dim()
+            )
+
+            # Find max along the reduction axis
+            # Initialize with first value
+            input_coords[axis] = 0
+            var linear_idx = coords_to_linear(input_coords, strides)
+            var max_val = tensor._get_float64(linear_idx)
+
+            # Compare with remaining values
+            for k in range(1, axis_size):
+                input_coords[axis] = k
+
+                # Convert coordinates to linear index
+                linear_idx = coords_to_linear(input_coords, strides)
+
+                var val = tensor._get_float64(linear_idx)
+                if val > max_val:
+                    max_val = val
+
+            result._set_float64(result_idx, max_val)
 
         return result^
 
@@ -239,7 +273,7 @@ fn min_reduce(
     """
     if axis == -1:
         # Min of all elements
-        var result_shape = List[Int]()
+        var result_shape = List[Int](capacity=tensor.dim() if keepdims else 0)
         if keepdims:
             for _ in range(tensor.dim()):
                 result_shape.append(1)
@@ -265,32 +299,51 @@ fn min_reduce(
                 + " dimensions"
             )
 
-        # Use direct index computation (no coordinate allocations)
-        var result_shape = build_reduced_shape(tensor.shape(), axis, keepdims)
+        # Build result shape
+        var result_shape = List[Int](capacity=tensor.dim() if keepdims else tensor.dim() - 1)
+        for i in range(tensor.dim()):
+            if i != axis:
+                result_shape.append(tensor.shape()[i])
+            elif keepdims:
+                result_shape.append(1)
+
         var result = ExTensor(result_shape, tensor.dtype())
 
-        # Compute outer/inner sizes for direct indexing
-        var sizes = compute_axis_strides(tensor.shape(), axis)
-        var outer_size = sizes[0]
-        var axis_size = sizes[1]
-        var inner_size = sizes[2]
+        # Compute strides for indexing
+        var input_shape = tensor.shape()
+        var strides = compute_strides(input_shape)
 
-        # Direct iteration: O(1) index computation per element
-        for outer in range(outer_size):
-            for inner in range(inner_size):
-                # Initialize with first value along axis
-                var first_idx = outer * axis_size * inner_size + inner
-                var min_val = tensor._get_float64(first_idx)
-                # Compare with remaining values
-                for k in range(1, axis_size):
-                    var input_idx = (
-                        outer * axis_size * inner_size + k * inner_size + inner
-                    )
-                    var val = tensor._get_float64(input_idx)
-                    if val < min_val:
-                        min_val = val
-                var result_idx = outer * inner_size + inner
-                result._set_float64(result_idx, min_val)
+        # Iterate over all elements and find minimum
+        var axis_size = input_shape[axis]
+
+        # For each position in the result
+        for result_idx in range(result.numel()):
+            # Convert result index to coordinates
+            var result_coords = create_result_coords(result_idx, result.shape())
+
+            # Map result coordinates to input coordinates (accounting for reduced axis)
+            var input_coords = map_result_to_input_coords(
+                result_coords, axis, tensor.dim()
+            )
+
+            # Find min along the reduction axis
+            # Initialize with first value
+            input_coords[axis] = 0
+            var linear_idx = coords_to_linear(input_coords, strides)
+            var min_val = tensor._get_float64(linear_idx)
+
+            # Compare with remaining values
+            for k in range(1, axis_size):
+                input_coords[axis] = k
+
+                # Convert coordinates to linear index
+                linear_idx = coords_to_linear(input_coords, strides)
+
+                var val = tensor._get_float64(linear_idx)
+                if val < min_val:
+                    min_val = val
+
+            result._set_float64(result_idx, min_val)
 
         return result^
 
@@ -360,7 +413,7 @@ fn sum_backward(
 
             # Map to grad_output coordinates (remove axis dimension)
             var grad_dim = grad_output.dim()
-            var grad_coords = List[Int]()
+            var grad_coords = List[Int](capacity=grad_dim)
             for _ in range(grad_dim):
                 grad_coords.append(0)
             var coord_idx = 0
@@ -519,7 +572,7 @@ fn max_reduce_backward(
 
             # Map to grad_output coordinates (remove axis dimension)
             var grad_dim = grad_output.dim()
-            var grad_coords = List[Int]()
+            var grad_coords = List[Int](capacity=grad_dim)
             for _ in range(grad_dim):
                 grad_coords.append(0)
             var coord_idx = 0
@@ -538,7 +591,9 @@ fn max_reduce_backward(
 
             # First pass: find max
             for k in range(axis_size):
-                var test_coords: List[Int] = List[Int](coords)
+                var test_coords: List[Int] = List[Int](capacity=ndim)
+                for c in coords:
+                    test_coords.append(c)
                 test_coords[normalized_axis] = k
                 var test_idx = coords_to_linear(test_coords, strides)
                 var val = x._get_float64(test_idx)
@@ -547,7 +602,9 @@ fn max_reduce_backward(
 
             # Second pass: count max elements
             for k in range(axis_size):
-                var test_coords: List[Int] = List[Int](coords)
+                var test_coords: List[Int] = List[Int](capacity=ndim)
+                for c in coords:
+                    test_coords.append(c)
                 test_coords[normalized_axis] = k
                 var test_idx = coords_to_linear(test_coords, strides)
                 var val = x._get_float64(test_idx)
@@ -640,7 +697,7 @@ fn min_reduce_backward(
 
             # Map to grad_output coordinates
             var grad_dim = grad_output.dim()
-            var grad_coords = List[Int]()
+            var grad_coords = List[Int](capacity=grad_dim)
             for _ in range(grad_dim):
                 grad_coords.append(0)
             var coord_idx = 0
@@ -659,7 +716,9 @@ fn min_reduce_backward(
 
             # First pass: find min
             for k in range(axis_size):
-                var test_coords = List[Int](coords)
+                var test_coords = List[Int](capacity=ndim)
+                for c in coords:
+                    test_coords.append(c)
                 test_coords[normalized_axis] = k
                 var test_idx = coords_to_linear(test_coords, strides)
                 var val = x._get_float64(test_idx)
@@ -668,7 +727,9 @@ fn min_reduce_backward(
 
             # Second pass: count min elements
             for k in range(axis_size):
-                var test_coords = List[Int](coords)
+                var test_coords = List[Int](capacity=ndim)
+                for c in coords:
+                    test_coords.append(c)
                 test_coords[normalized_axis] = k
                 var test_idx = coords_to_linear(test_coords, strides)
                 var val = x._get_float64(test_idx)

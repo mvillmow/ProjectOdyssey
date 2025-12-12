@@ -80,7 +80,7 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
             )
 
         # Result is a vector of shape (m,)
-        var result_shape = List[Int]()
+        var result_shape = List[Int](capacity=1)
         result_shape.append(m)
         var result = ExTensor(result_shape, a.dtype())
 
@@ -113,7 +113,7 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
             )
 
         # Result is a vector of shape (n,)
-        var result_shape = List[Int]()
+        var result_shape = List[Int](capacity=1)
         result_shape.append(n)
         var result = ExTensor(result_shape, a.dtype())
 
@@ -149,7 +149,7 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
         )
 
     # Compute output shape
-    var result_shape = List[Int]()
+    var result_shape = List[Int](capacity=len(a_shape))
 
     # Copy batch dimensions (if any)
     for i in range(len(a_shape) - 2):
@@ -233,7 +233,7 @@ fn transpose(
 
             # Custom permutation: (2, 3, 4) -> (4, 3, 2) with axes=[2, 0, 1]
             var t3d = zeros([2, 3, 4], DType.float32)
-            var axes  = List[Int]()
+            var axes  = List[Int](capacity=3)
             axes.append(2)
             axes.append(0)
             axes.append(1)
@@ -281,20 +281,20 @@ fn transpose(
         seen[axis] = True
 
     # Build result shape using permutation
-    var result_shape = List[Int]()
+    var result_shape = List[Int](capacity=ndim)
     for axis in perm.value():
         result_shape.append(input_shape[axis])
 
     var result = ExTensor(result_shape, tensor.dtype())
 
     # Compute strides for input tensor (row-major order)
-    var input_strides = List[Int]()
+    var input_strides = List[Int](capacity=ndim)
     var stride = 1
     for i in range(ndim - 1, -1, -1):
         input_strides.append(stride)
         stride *= input_shape[i]
     # Reverse to get correct indexing order
-    var temp_strides = List[Int]()
+    var temp_strides = List[Int](capacity=ndim)
     for i in range(len(input_strides) - 1, -1, -1):
         temp_strides.append(input_strides[i])
     input_strides = temp_strides^
@@ -302,7 +302,7 @@ fn transpose(
     # For each element in result, map to input position
     for result_idx in range(result.numel()):
         # Convert linear result index to coordinates
-        var result_coords = List[Int]()
+        var result_coords = List[Int](capacity=ndim)
         for _ in range(ndim):
             result_coords.append(0)
         var temp_idx = result_idx
@@ -311,7 +311,7 @@ fn transpose(
             temp_idx //= result_shape[i]
 
         # Map result coordinates to input coordinates using permutation
-        var input_coords = List[Int]()
+        var input_coords = List[Int](capacity=ndim)
         for _ in range(ndim):
             input_coords.append(0)
         for result_axis in range(ndim):
@@ -361,7 +361,7 @@ fn dot(a: ExTensor, b: ExTensor) raises -> ExTensor:
         if len(a.shape()) != len(b.shape()) or a.shape()[0] != b.shape()[0]:
             raise Error("Incompatible shapes for dot product")
 
-        var result_shape = List[Int]()  # Scalar (0D)
+        var result_shape = List[Int](capacity=0)  # Scalar (0D)
         var result = ExTensor(result_shape, a.dtype())
 
         # Compute dot product: sum of a[i] * b[i]
@@ -407,7 +407,7 @@ fn outer(a: ExTensor, b: ExTensor) raises -> ExTensor:
         raise Error("Cannot compute outer product with different dtypes")
 
     # Output shape is (len(a), len(b))
-    var result_shape = List[Int]()
+    var result_shape = List[Int](capacity=2)
     result_shape.append(a.shape()[0])
     result_shape.append(b.shape()[0])
 
@@ -491,7 +491,7 @@ fn matmul_backward(
         # grad_b (k,) = A^T (k, m) @ grad_output (m,)
 
         # grad_a: Outer product of grad_output and b
-        var grad_a_shape = List[Int]()
+        var grad_a_shape = List[Int](capacity=2)
         grad_a_shape.append(a_shape[0])  # m
         grad_a_shape.append(a_shape[1])  # k
         var grad_a = ExTensor(grad_a_shape, a.dtype())
@@ -522,7 +522,7 @@ fn matmul_backward(
         var grad_a = matmul(b, grad_output)  # (k, n) @ (n,) -> (k,)
 
         # grad_b: Outer product of a and grad_output
-        var grad_b_shape = List[Int]()
+        var grad_b_shape = List[Int](capacity=2)
         grad_b_shape.append(b_shape[0])  # k
         grad_b_shape.append(b_shape[1])  # n
         var grad_b = ExTensor(grad_b_shape, b.dtype())
@@ -582,7 +582,7 @@ fn transpose_backward(
 
             # Custom axes case
             var x3d = zeros([2, 3, 4], DType.float32)
-            var axes  = List[Int]()
+            var axes  = List[Int](capacity=3)
             axes.append(2)
             axes.append(0)
             axes.append(1)
@@ -608,7 +608,7 @@ fn transpose_backward(
     # Compute inverse permutation
     # If forward permutation is [a1, a2, ..., an], inverse satisfies:
     # inverse[perm[i]] = i for all i
-    var inverse_perm = List[Int]()
+    var inverse_perm = List[Int](capacity=ndim)
     for _ in range(ndim):
         inverse_perm.append(0)
 
