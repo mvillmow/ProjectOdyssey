@@ -41,13 +41,64 @@ def find_test_files(root_dir: Path) -> List[Path]:
 
     # Exclude specific test files that require external datasets
     # These tests need datasets/ directory which must be downloaded separately
+    # They run in the weekly E2E workflow, not per-PR
     exclude_files = [
+        # EMNIST example tests (require dataset download)
         "examples/lenet-emnist/test_gradients.mojo",
         "examples/lenet-emnist/test_loss_decrease.mojo",
         "examples/lenet-emnist/test_predictions.mojo",
         "examples/lenet-emnist/test_training_metrics.mojo",
         "examples/lenet-emnist/test_weight_updates.mojo",
+        # CIFAR10 example tests (require dataset download)
+        "examples/densenet121-cifar10/test_model.mojo",
+        "examples/googlenet-cifar10/test_model.mojo",
+        "examples/mobilenetv1-cifar10/test_model.mojo",
+        "examples/resnet18-cifar10/test_model.mojo",
     ]
+
+    # Exclude E2E model tests (run weekly, not per-PR)
+    # These test full training loops and require significant runtime
+    exclude_e2e_patterns = [
+        "tests/models/test_alexnet_e2e.mojo",
+        "tests/models/test_densenet121_e2e.mojo",
+        "tests/models/test_googlenet_e2e.mojo",
+        "tests/models/test_lenet5_e2e.mojo",
+        "tests/models/test_mobilenetv1_e2e.mojo",
+        "tests/models/test_resnet18_e2e.mojo",
+        "tests/models/test_vgg16_e2e.mojo",
+    ]
+    exclude_files.extend(exclude_e2e_patterns)
+
+    # Exclude training tests (run weekly, require dataset downloads)
+    exclude_training_patterns = [
+        "tests/shared/training/test_accuracy_bugs.mojo",
+        "tests/shared/training/test_base.mojo",
+        "tests/shared/training/test_callbacks.mojo",
+        "tests/shared/training/test_checkpointing.mojo",
+        "tests/shared/training/test_confusion_matrix_bugs.mojo",
+        "tests/shared/training/test_dtype_utils.mojo",
+        "tests/shared/training/test_early_stopping.mojo",
+        "tests/shared/training/test_evaluate.mojo",
+        "tests/shared/training/test_evaluation.mojo",
+        "tests/shared/training/test_lars.mojo",
+        "tests/shared/training/test_logging_callback.mojo",
+        "tests/shared/training/test_loops.mojo",
+        "tests/shared/training/test_metrics.mojo",
+        "tests/shared/training/test_mixed_precision.mojo",
+        "tests/shared/training/test_optimizer_utils.mojo",
+        "tests/shared/training/test_optimizers.mojo",
+        "tests/shared/training/test_precision_checkpoint.mojo",
+        "tests/shared/training/test_precision_config.mojo",
+        "tests/shared/training/test_results_printer.mojo",
+        "tests/shared/training/test_rmsprop.mojo",
+        "tests/shared/training/test_schedulers.mojo",
+        "tests/shared/training/test_step_scheduler.mojo",
+        "tests/shared/training/test_trainer_interface_bugs.mojo",
+        "tests/shared/training/test_training_loop.mojo",
+        "tests/shared/training/test_validation_loop.mojo",
+        "tests/shared/training/test_warmup_scheduler.mojo",
+    ]
+    exclude_files.extend(exclude_training_patterns)
 
     for test_file in root_dir.rglob("test_*.mojo"):
         # Check if file is in an excluded directory
