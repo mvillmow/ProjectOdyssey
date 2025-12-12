@@ -10,7 +10,7 @@ See Issue #49 for details
 """
 
 from collections import List
-from .extensor import ExTensor
+from .extensor import ExTensor, zeros
 from .gradient_types import GradientPair
 
 
@@ -159,8 +159,8 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
     result_shape.append(a_rows)
     result_shape.append(b_cols)
 
-    # Create result
-    var result = ExTensor(result_shape, a.dtype())
+    # Create zero-initialized result (required for accumulation pattern)
+    var result = zeros(result_shape, a.dtype())
 
     # Implement matrix multiplication
     # For 2D case: result[i, j] = sum(a[i, k] * b[k, j] for k in range(a_cols))
