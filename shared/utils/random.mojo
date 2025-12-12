@@ -390,31 +390,199 @@ fn compute_distribution_stats(samples: List[Float32]) -> DistributionStats:
     Returns:
             Statistics including mean, std dev, min, max.
     """
-    # TODO(#2383): Implement statistical calculation
-    return DistributionStats()
+    if len(samples) == 0:
+        return DistributionStats()
+
+    # Compute mean
+    var sum_val: Float32 = 0.0
+    for sample in samples:
+        sum_val += sample
+    var mean = sum_val / Float32(len(samples))
+
+    # Compute variance and track min/max
+    var variance: Float32 = 0.0
+    var min_val = samples[0]
+    var max_val = samples[0]
+
+    for sample in samples:
+        # Accumulate squared differences from mean
+        var diff = sample - mean
+        variance += diff * diff
+
+        # Track min and max
+        if sample < min_val:
+            min_val = sample
+        if sample > max_val:
+            max_val = sample
+
+    # Normalize variance by sample count
+    variance = variance / Float32(len(samples))
+
+    # Compute standard deviation
+    from math import sqrt
+
+    var std_dev = sqrt(variance)
+
+    # Create and populate result
+    var stats = DistributionStats()
+    # Modify struct fields using mutable reference (implicit with var binding)
+    stats.mean = mean
+    stats.std_dev = std_dev
+    stats.min_val = min_val
+    stats.max_val = max_val
+    stats.sample_count = len(samples)
+
+    return stats^
 
 
 fn test_uniform_distribution(sample_count: Int = 1000) -> Bool:
     """Test if random uniform is actually uniform (chi-square test).
 
+    Uses chi-square goodness-of-fit test to verify that random_uniform()
+    produces samples that are uniformly distributed in [0, 1).
+
+    The test divides [0, 1) into 10 equal bins and checks if observed
+    frequencies match expected frequencies under the null hypothesis
+    that the distribution is uniform.
+
     Args:
-            sample_count: Number of samples to generate.
+            sample_count: Number of samples to generate for testing.
 
     Returns:
-            True if distribution is uniform enough, False if skewed.
+            True if chi-square test passes (p > 0.05), False otherwise.
+
+    Note:
+            Uses chi-square critical value ≈ 16.92 for 9 degrees of freedom
+            at significance level α = 0.05. This is a simplified test without
+            computing exact p-values.
     """
-    # TODO(#2383): Implement chi-square test for uniformity
-    return True
+    # Generate samples
+    var samples = List[Float32]()
+    for _ in range(sample_count):
+        samples.append(random_uniform())
+
+    # Divide [0, 1) into 10 bins and count observed frequencies
+    var bin_count = 10
+    var observed = List[Int]()
+    for _ in range(bin_count):
+        observed.append(0)
+
+    for sample in samples:
+        # Clamp sample to [0, 1) range to avoid array out of bounds
+        var clamped = sample
+        if clamped >= 1.0:
+            clamped = 0.9999
+        if clamped < 0.0:
+            clamped = 0.0
+
+        # Compute bin index
+        var bin_idx = Int(clamped * Float32(bin_count))
+        if bin_idx >= bin_count:
+            bin_idx = bin_count - 1
+
+        observed[bin_idx] += 1
+
+    # Compute chi-square statistic
+    var expected = Float32(sample_count) / Float32(bin_count)
+    var chi_square: Float32 = 0.0
+
+    for count in observed:
+        var count_float = Float32(count)
+        var diff = count_float - expected
+        chi_square += (diff * diff) / expected
+
+    # Check against chi-square critical value for 9 degrees of freedom at α=0.05
+    # Critical value ≈ 16.92
+    var critical_value: Float32 = 16.92
+
+    return chi_square <= critical_value
 
 
 fn test_normal_distribution(sample_count: Int = 1000) -> Bool:
     """Test if random normal is actually normal (Kolmogorov-Smirnov test).
 
+    Uses Kolmogorov-Smirnov test to verify that random_normal()
+    produces samples that approximately follow N(0, 1).
+
+    The test compares the empirical CDF (ECDF) of samples to the
+    theoretical CDF of the standard normal distribution, computing
+    the maximum absolute difference (KS statistic).
+
     Args:
-            sample_count: Number of samples to generate.
+            sample_count: Number of samples to generate for testing.
 
     Returns:
-            True if distribution is normal enough, False if skewed.
+            True if KS test passes (D < critical value), False otherwise.
+
+    Note:
+            Uses KS critical value ≈ 0.0418 for n=1000 at α=0.05.
+            For smaller samples, uses approximate formula:
+            D_critical ≈ 1.36 / sqrt(n)
     """
-    # TODO(#2383): Implement KS test for normality
-    return True
+    from math import sqrt, erf, log, pi, exp
+
+    # Generate samples from N(0, 1)
+    var samples = List[Float32]()
+    for _ in range(sample_count):
+        samples.append(random_normal())
+
+    # Sort samples for empirical CDF computation
+    # Simple bubble sort for small samples
+    for i in range(len(samples)):
+        for j in range(i + 1, len(samples)):
+            if samples[i] > samples[j]:
+                var temp = samples[i]
+                samples[i] = samples[j]
+                samples[j] = temp
+
+    # Standard normal CDF approximation using error function
+    # Φ(x) = 0.5 * (1 + erf(x / sqrt(2)))
+    # For better approximation with Mojo's erf, we use direct approximation
+    fn normal_cdf(x: Float32) -> Float32:
+        # Rational approximation for standard normal CDF
+        # Abramowitz & Stegun 7.1.26
+        var b1: Float32 = 0.319381530
+        var b2: Float32 = -0.356563782
+        var b3: Float32 = 1.781477937
+        var b4: Float32 = -1.821255978
+        var b5: Float32 = 1.330274429
+        var p: Float32 = 0.2316419
+
+        var neg_x = -x
+        var t = 1.0 / (1.0 + p * neg_x)
+        var t_abs = t
+        if neg_x < 0.0:
+            t_abs = 1.0 / (1.0 + p * x)
+
+        var exp_val = Float32(exp(Float64(-0.5 * Float64(x * x))))
+
+        # Compute polynomial approximation
+        var result = 1.0 - (
+            (((b5 * t_abs + b4) * t_abs + b3) * t_abs + b2) * t_abs + b1
+        ) * t_abs * Float32(exp_val)
+
+        # Return based on sign of x
+        if x >= 0.0:
+            return result
+        else:
+            return 1.0 - result
+
+    # Compute KS statistic: max|ECDF - CDF|
+    var ks_statistic: Float32 = 0.0
+
+    for i in range(len(samples)):
+        # Empirical CDF at sample i: (i+1) / n
+        var ecdf_val = Float32(i + 1) / Float32(sample_count)
+
+        # Theoretical CDF
+        var cdf_val = normal_cdf(samples[i])
+
+        # Absolute difference
+        var diff = abs(ecdf_val - cdf_val)
+        if diff > ks_statistic:
+            ks_statistic = diff
+
+    # KS critical value for α=0.05: approximately 1.36 / sqrt(n)
+    var critical_value = 1.36 / sqrt(Float32(sample_count))
+
+    return ks_statistic <= critical_value
