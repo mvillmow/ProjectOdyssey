@@ -204,7 +204,7 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
         # grad_weights = grad_output^T @ input
         # grad_bias = sum(grad_output, axis=0)
 
-        # TODO: Use actual matmul for gradients
+        # TODO(#2717): Use actual matmul for gradients
         # For now, return zeros as placeholder
 
         return grad_input^
@@ -328,13 +328,13 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
         """Forward pass: Normalize, scale, and shift."""
         self.last_input = input.copy()
 
-        # TODO: Implement proper batch normalization
+        # TODO(#2724): Implement proper batch normalization
         # For now, return input as placeholder
         return input
 
     fn backward(self, grad_output: ExTensor) raises -> ExTensor:
         """Backward pass: Compute gradients."""
-        # TODO: Implement batch norm backward
+        # TODO(#2724): Implement batch norm backward
         return grad_output
 
     # Parameterized trait
@@ -360,12 +360,12 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
     # Serializable trait
     fn save(self, path: String) raises:
         """Save layer state to file."""
-        # TODO: Implement tensor serialization
+        # TODO(#2727): Implement tensor serialization
         print("Saving BatchNorm to:", path)
 
     fn load(mut self, path: String) raises:
         """Load layer state from file."""
-        # TODO: Implement tensor deserialization
+        # TODO(#2727): Implement tensor deserialization
         print("Loading BatchNorm from:", path)
 
     # Trainable trait

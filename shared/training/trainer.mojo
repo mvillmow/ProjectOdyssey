@@ -282,7 +282,7 @@ struct BaseTrainer(Trainer):
             Error if save fails.
         """
         print("Checkpoint saved: " + path + " (epoch " + String(epoch) + ")")
-        # TODO: Implement actual checkpoint saving
+        # TODO(#2726): Implement actual checkpoint saving
 
     fn load_checkpoint(mut self, path: String) raises:
         """Load checkpoint from path.
@@ -297,7 +297,7 @@ struct BaseTrainer(Trainer):
             Error if load fails.
         """
         print("Checkpoint loaded: " + path)
-        # TODO: Implement actual checkpoint loading
+        # TODO(#2726): Implement actual checkpoint loading
 
     fn reset(mut self):
         """Reset trainer state for new training run."""

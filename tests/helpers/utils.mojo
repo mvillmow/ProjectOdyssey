@@ -3,7 +3,7 @@
 Provides utility functions for test setup, debugging, and validation.
 """
 
-# TODO: Implement utility functions once needed
+# TODO(#2734): Implement utility functions once needed
 # These might include:
 # - print_tensor(tensor) - Pretty-print tensor for debugging
 # - tensor_summary(tensor) - Print shape, dtype, min/max/mean

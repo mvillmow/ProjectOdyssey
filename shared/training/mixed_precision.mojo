@@ -260,7 +260,7 @@ fn convert_to_fp32_master(params: ExTensor) raises -> ExTensor:
 
     # If FP16, use SIMD-optimized conversion
     if params.dtype() == DType.float16:
-        # TODO: Use SIMD vectorization when Mojo supports FP16 SIMD loads
+        # TODO(#2731): Use SIMD vectorization when Mojo supports FP16 SIMD loads
         # For now, use scalar conversion
         var src_ptr = params._data.bitcast[Float16]()
         var dst_ptr = result._data.bitcast[Float32]()

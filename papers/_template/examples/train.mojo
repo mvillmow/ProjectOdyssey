@@ -25,7 +25,7 @@ fn parse_arguments() -> (String, String):
     Returns:
         Tuple of (paper_name, experiment_name)
 
-    TODO: Implement proper argument parsing when Mojo stdlib supports it.
+    TODO(#2733): Implement proper argument parsing when Mojo stdlib supports it.
     For now, returns hardcoded values for demonstration.
     """
     # Placeholder - replace with actual argument parsing
@@ -40,7 +40,7 @@ fn create_model(config: Config) raises:
     Args:
         config: Configuration containing model parameters
 
-    TODO: Implement actual model creation based on config.
+    TODO(#2733): Implement actual model creation based on config.
     This is a placeholder demonstrating the pattern.
     """
     print("Creating model from configuration...")
@@ -70,7 +70,7 @@ fn create_trainer(config: Config) raises:
     Args:
         config: Configuration containing training parameters
 
-    TODO: Implement actual trainer creation based on config.
+    TODO(#2733): Implement actual trainer creation based on config.
     This is a placeholder demonstrating the pattern.
     """
     print("Creating trainer from configuration...")
@@ -95,7 +95,7 @@ fn run_training(config: Config) raises:
     Args:
         config: Complete configuration for training
 
-    TODO: Implement actual training loop.
+    TODO(#2733): Implement actual training loop.
     This is a placeholder demonstrating the pattern.
     """
     print("\nStarting training...")

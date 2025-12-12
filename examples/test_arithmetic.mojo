@@ -57,4 +57,4 @@ fn main() raises:
     print("All tests completed!")
     print("\nNote: Broadcasting not yet implemented")
     print("  - Only same-shape operations work")
-    print("  - Scalar broadcasting: TODO")
+    print("  - Scalar broadcasting: TODO(#2718)")

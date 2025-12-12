@@ -338,7 +338,7 @@ fn train_epoch(
         var end_idx = min(start_idx + batch_size, num_samples)
         var actual_batch_size = end_idx - start_idx
 
-        # TODO: Extract batch slice when slicing is fully supported
+        # TODO(#2721): Extract batch slice when slicing is fully supported
         # For now, we'll process the entire dataset (inefficient but demonstrates structure)
 
         # Compute gradients and update parameters
@@ -392,12 +392,12 @@ fn evaluate(
 
     print("Evaluating...")
 
-    # TODO: Process in batches when slicing is implemented
+    # TODO(#2721): Process in batches when slicing is implemented
     # For now, evaluate on first 100 samples
     var eval_samples = min(100, num_samples)
 
     for i in range(eval_samples):
-        # TODO: Extract single sample when slicing works
+        # TODO(#2721): Extract single sample when slicing works
         # For demonstration, we'll use the first image repeatedly
         var pred_class = model.predict(test_images)
         var true_label = Int(test_labels[i])

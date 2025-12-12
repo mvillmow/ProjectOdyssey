@@ -260,7 +260,7 @@ struct TrainingLoop:
                     avg_loss,
                 )
 
-            # TODO: Remove after tensor slicing is optimized
+            # TODO(#2721): Remove after tensor slicing is optimized
             # break.
 
         var avg_loss = total_loss / Float32(num_batches)

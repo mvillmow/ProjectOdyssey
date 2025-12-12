@@ -1620,7 +1620,7 @@ fn main() raises:
     print("\n=== Matrix Multiplication: Backward Pass ===")
     test_matmul_backward_shapes()
     print("✓ test_matmul_backward_shapes")
-    # TODO: Fix matmul_backward gradient computation
+    # TODO(#2724): Fix matmul_backward gradient computation
     # test_matmul_backward_gradient_a() and _b() have ~10000x gradient mismatch
     # Analytical: ~1.5e-08, Numerical: ~-0.00015 - likely bug in backward pass
     print("⚠ test_matmul_backward_gradient_a - SKIPPED (pending fix)")
@@ -1715,7 +1715,7 @@ fn main() raises:
 
     # Dot product tests
     print("\n=== Dot Product ===")
-    # TODO: Fix dot product tests - crash/segfault during execution
+    # TODO(#2717): Fix dot product tests - crash/segfault during execution
     # Need to investigate SIMD memory access issue
     print("⚠ All Dot Product tests - SKIPPED (pending crash investigation)")
 

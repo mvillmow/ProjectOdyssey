@@ -90,7 +90,7 @@ fn simple_linear_regression() raises:
         var loss = mean(squared_errors, axis=0, keepdims=False)
 
         # Backward pass (manual gradients for now)
-        # TODO: Replace with tape.backward() when fully implemented
+        # TODO(#2725): Replace with tape.backward() when fully implemented
 
         # Gradient of loss (scalar): ∂loss/∂loss = 1
         var grad_loss = ones(loss.shape(), loss.dtype())

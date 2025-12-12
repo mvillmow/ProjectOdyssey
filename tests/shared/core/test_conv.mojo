@@ -795,7 +795,7 @@ fn main() raises:
     print("✓ test_conv2d_batched")
 
     # Integration tests (backward tests disabled due to ownership issues in Conv2dBackwardResult)
-    # TODO: Fix Conv2dBackwardResult ownership to enable backward pass testing
+    # TODO(#2724): Fix Conv2dBackwardResult ownership to enable backward pass testing
     test_conv2d_forward_backward_consistency()
     print("✓ test_conv2d_forward_backward_consistency")
 

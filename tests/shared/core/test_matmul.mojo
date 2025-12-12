@@ -580,10 +580,10 @@ fn test_matmul_accumulation_precision_float64() raises:
 
 
 # ============================================================================
-# Performance Regression Tests (TODO: Add when benchmarking infrastructure exists)
+# Performance Regression Tests (TODO(#2588): Add when benchmarking infrastructure exists)
 # ============================================================================
 
-# TODO(#2588-benchmark): Add performance regression tests
+# TODO(#2588): Add performance regression tests
 # - Ensure Stage 1 is at least 3x faster than Stage 0
 # - Ensure Stage 2 is at least 4x faster than Stage 1 (15x cumulative)
 # - Ensure Stage 3 is at least 3x faster than Stage 2 (50x cumulative)

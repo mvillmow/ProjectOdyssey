@@ -37,7 +37,7 @@ fn bench_batch_loading_speed() raises -> List[BenchmarkResult]:
         - > 1000 batches/second on test hardware
         - Within 2x of PyTorch DataLoader performance.
     """
-    # TODO: Implement when DataLoader is available
+    # TODO(#2730): Implement when DataLoader is available
     # Placeholder for TDD
     var results: List[BenchmarkResult] = []
     results.append(
@@ -62,7 +62,7 @@ fn bench_data_preprocessing() raises -> BenchmarkResult:
     Performance Target:
         - Preprocessing should not be bottleneck (> 10k samples/sec).
     """
-    # TODO: Implement when data preprocessing utilities are available
+    # TODO(#2730): Implement when data preprocessing utilities are available
     # Placeholder for TDD
     return BenchmarkResult(
         name="DataPreprocessing-placeholder",

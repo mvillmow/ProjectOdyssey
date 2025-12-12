@@ -411,7 +411,7 @@ fn test_training_with_toml_config() raises:
     Note: This test requires config loading infrastructure.
     Currently a placeholder.
     """
-    # TODO: Implement when TOML config loading is available
+    # TODO(#2734): Implement when TOML config loading is available
     # Expected workflow:
     # 1. Load config from configs/lenet5/emnist/fp16.toml
     # 2. Create PrecisionConfig from config

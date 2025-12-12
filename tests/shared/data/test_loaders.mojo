@@ -1,6 +1,6 @@
 """Tests for data loaders.
 
-TODO: Implement high-level loader integration tests.
+TODO(#2729): Implement high-level loader integration tests.
 Individual loader tests exist in loaders/test_*.mojo files.
 """
 

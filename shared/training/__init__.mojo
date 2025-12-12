@@ -93,7 +93,7 @@ struct SGD(Movable, Optimizer):
             This is a stub implementation for Issue #2397.
             Full gradient-based updates will be implemented later.
         """
-        # TODO: Implement actual parameter updates when gradient system is ready
+        # TODO(#2725): Implement actual parameter updates when gradient system is ready
         pass
 
     fn zero_grad(mut self) raises:
@@ -237,8 +237,8 @@ struct TrainingLoop[
         # Compute loss via Loss trait
         var loss_value = self.compute_loss(outputs, targets)
 
-        # TODO: Backward pass when gradient system is ready
-        # TODO: Optimizer step when gradient system is ready
+        # TODO(#2725): Backward pass when gradient system is ready
+        # TODO(#2725): Optimizer step when gradient system is ready
 
         return loss_value^
 
@@ -288,7 +288,7 @@ struct TrainingLoop[
         var total_loss = Float64(0.0)
         var num_batches = Int(0)
 
-        # TODO: Iterate through batches when Python integration is complete
+        # TODO(#2721): Iterate through batches when Python integration is complete
         # The data_loader is currently a PythonObject, but step() requires ExTensor.
         # This will be implemented once the data loading infrastructure is ready.
         # For now, return 0.0 as a placeholder.

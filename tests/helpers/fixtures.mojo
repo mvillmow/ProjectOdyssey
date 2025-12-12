@@ -14,7 +14,7 @@ These will be implemented once ExTensor is fully functional.
 See Issue #49 for details
 """
 
-# TODO: Implement fixture functions once ExTensor is fully functional
+# TODO(#2734): Implement fixture functions once ExTensor is fully functional
 # These will include:
 # - random_tensor(shape, dtype) -> ExTensor
 # - sequential_tensor(shape, dtype) -> ExTensor  # 0, 1, 2, 3, ...

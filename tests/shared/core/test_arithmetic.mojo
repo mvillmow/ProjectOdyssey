@@ -962,7 +962,7 @@ fn test_add_mismatched_shapes_raises_error() raises:
 
     # This should raise an error
     # For now, we expect it to return zeros or error
-    # TODO: Verify proper error handling once implemented
+    # TODO(#2732): Verify proper error handling once implemented
     # try:
     #     var c = add(a, b)
     #     raise Error("Should have raised error for mismatched shapes")
@@ -984,7 +984,7 @@ fn test_multiply_mismatched_shapes_raises_error() raises:
     var b = ones(shape_b, DType.float32)
 
     # This should raise an error
-    # TODO: Verify proper error handling once implemented
+    # TODO(#2732): Verify proper error handling once implemented
     pass  # Placeholder until error handling is implemented
 
 
@@ -997,7 +997,7 @@ fn test_add_mismatched_dtypes_raises_error() raises:
     var b = ones(shape, DType.float64)
 
     # This should raise an error
-    # TODO: Verify proper error handling once implemented
+    # TODO(#2732): Verify proper error handling once implemented
     pass  # Placeholder until error handling is implemented
 
 

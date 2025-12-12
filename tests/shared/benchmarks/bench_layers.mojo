@@ -37,7 +37,7 @@ fn bench_linear_forward() raises -> List[BenchmarkResult]:
         - > 1M samples/second for typical layer sizes
         - Within 2x of PyTorch Linear layer performance.
     """
-    # TODO: Implement when Linear layer is available
+    # TODO(#2730): Implement when Linear layer is available
     # Placeholder for TDD
     var results: List[BenchmarkResult] = []
     results.append(
@@ -62,7 +62,7 @@ fn bench_linear_backward() raises -> BenchmarkResult:
     Performance Target:
         - Backward pass within 2x of forward pass time.
     """
-    # TODO: Implement when Linear layer backward is available
+    # TODO(#2730): Implement when Linear layer backward is available
     # Placeholder for TDD
     return BenchmarkResult(
         name="LinearBackward-placeholder",
@@ -88,7 +88,7 @@ fn bench_activation_functions() raises -> List[BenchmarkResult]:
     Performance Target:
         - > 10M elements/second for all activation functions.
     """
-    # TODO: Implement when activation layers are available
+    # TODO(#2730): Implement when activation layers are available
     # Placeholder for TDD
     var results: List[BenchmarkResult] = []
     results.append(

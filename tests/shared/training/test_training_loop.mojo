@@ -62,8 +62,8 @@ fn test_training_loop_single_batch() raises:
 
     This is a CRITICAL test for basic training functionality.
     """
-    # TODO(#34): Implement when TrainingLoop is available
-    # TODO: Uncomment when SimpleMLP and create_simple_model are available
+    # TODO(#2728): Implement when TrainingLoop is available
+    # TODO(#2728): Uncomment when SimpleMLP and create_simple_model are available
     # var model = create_simple_model()
     # var optimizer = SGD(learning_rate=0.01)
     # var loss_fn = MSELoss()
@@ -97,8 +97,8 @@ fn test_training_loop_full_epoch() raises:
         - Performs training step on each batch
         - Returns average loss for the epoch.
     """
-    # TODO(#34): Implement when TrainingLoop is available
-    # TODO: Uncomment when SimpleMLP and create_mock_dataloader are available
+    # TODO(#2728): Implement when TrainingLoop is available
+    # TODO(#2728): Uncomment when SimpleMLP and create_mock_dataloader are available
     # var model = create_simple_model()
     # var optimizer = SGD(learning_rate=0.01)
     # var loss_fn = MSELoss()
@@ -124,8 +124,8 @@ fn test_training_loop_multiple_epochs() raises:
         - Loss should generally decrease (for simple problems)
         - Return list of epoch losses.
     """
-    # TODO(#34): Implement when TrainingLoop is available
-    # TODO: Uncomment when SimpleMLP and create_simple_dataset are available
+    # TODO(#2728): Implement when TrainingLoop is available
+    # TODO(#2728): Uncomment when SimpleMLP and create_simple_dataset are available
     # var model = create_simple_model()
     # var optimizer = SGD(learning_rate=0.1)
     # var loss_fn = MSELoss()
@@ -158,12 +158,12 @@ fn test_training_loop_forward_pass() raises:
         - Return output tensor
         - Preserve batch dimension.
     """
-    # TODO(#34): Implement when TrainingLoop is available
-    # TODO: Uncomment when SimpleMLP and ExTensor.randn are available
+    # TODO(#2728): Implement when TrainingLoop is available
+    # TODO(#2728): Uncomment when SimpleMLP and ExTensor.randn are available
     # var model = create_simple_model()
     # var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     # #
-    # # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros([8, 10], DType.float32)  # batch_size=8
+    # # TODO(#2728): Implement randn - var inputs = ExTensor.zeros([8, 10], DType.float32)  # batch_size=8
     # #
     # # Execute forward pass
     # var outputs = training_loop.forward(inputs)
@@ -179,13 +179,13 @@ fn test_training_loop_forward_batches_independently() raises:
     API Contract:
         Forward pass on batch should equal processing samples individually.
     """
-    # TODO(#34): Implement when TrainingLoop is available
-    # TODO: Uncomment when SimpleMLP and ExTensor.randn are available
+    # TODO(#2728): Implement when TrainingLoop is available
+    # TODO(#2728): Uncomment when SimpleMLP and ExTensor.randn are available
     # var model = create_simple_model()
     # var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     # #
     # # Create batch
-    # # TODO(ExTensor): Implement randn - var batch_input = ExTensor.zeros([4, 10], DType.float32)
+    # # TODO(#2728): Implement randn - var batch_input = ExTensor.zeros([4, 10], DType.float32)
     # #
     # # Forward pass on batch
     # var batch_output = training_loop.forward(batch_input)
@@ -211,8 +211,8 @@ fn test_training_loop_computes_loss() raises:
         - Calls loss_fn(outputs, targets)
         - Returns scalar loss value.
     """
-    # TODO(#34): Implement when TrainingLoop is available
-    # TODO: Uncomment when TrainingLoop is available
+    # TODO(#2728): Implement when TrainingLoop is available
+    # TODO(#2728): Uncomment when TrainingLoop is available
     # var loss_fn = MSELoss()
     # var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     # #
@@ -254,12 +254,12 @@ fn test_training_loop_loss_scalar() raises:
         Loss should be reduced to single Float32 value
         (average over batch or sum, depending on loss function).
     """
-    # TODO(#34): Implement when TrainingLoop is available
-    # TODO: Uncomment when TrainingLoop and ExTensor.randn are available
+    # TODO(#2728): Implement when TrainingLoop is available
+    # TODO(#2728): Uncomment when TrainingLoop and ExTensor.randn are available
     # var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     # #
-    # # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros([10, 5], DType.float32)
-    # # TODO(ExTensor): Implement randn - var targets = ExTensor.zeros([10, 1], DType.float32)
+    # # TODO(#2728): Implement randn - var inputs = ExTensor.zeros([10, 5], DType.float32)
+    # # TODO(#2728): Implement randn - var targets = ExTensor.zeros([10, 1], DType.float32)
     # #
     # var loss = training_loop.step(inputs, targets)
     # #
@@ -284,14 +284,14 @@ fn test_training_loop_backward_pass() raises:
 
     This is a CRITICAL test for gradient computation.
     """
-    # TODO(#34): Implement when TrainingLoop is available
-    # TODO: Uncomment when SimpleMLP, TrainingLoop, and ExTensor.randn are available
+    # TODO(#2728): Implement when TrainingLoop is available
+    # TODO(#2728): Uncomment when SimpleMLP, TrainingLoop, and ExTensor.randn are available
     # Note: ExTensor._grad attribute doesn't exist yet - will be added in gradient computation implementation
     # var model = create_simple_model()
     # var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     # #
-    # # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros([4, 10], DType.float32)
-    # # TODO(ExTensor): Implement randn - var targets = ExTensor.zeros([4, 1], DType.float32)
+    # # TODO(#2728): Implement randn - var inputs = ExTensor.zeros([4, 10], DType.float32)
+    # # TODO(#2728): Implement randn - var targets = ExTensor.zeros([4, 1], DType.float32)
     # #
     # # Zero gradients
     # model.zero_grad()
@@ -313,13 +313,13 @@ fn test_training_loop_gradient_accumulation() raises:
         If gradients not zeroed, backward pass should accumulate:
         new_grad = old_grad + computed_grad.
     """
-    # TODO(#34): Implement when TrainingLoop is available
-    # TODO: Uncomment when SimpleMLP, TrainingLoop, ExTensor.randn, and _grad attribute are available
+    # TODO(#2728): Implement when TrainingLoop is available
+    # TODO(#2728): Uncomment when SimpleMLP, TrainingLoop, ExTensor.randn, and _grad attribute are available
     # var model = create_simple_model()
     # var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     # #
-    # # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros([4, 10], DType.float32)
-    # # TODO(ExTensor): Implement randn - var targets = ExTensor.zeros([4, 1], DType.float32)
+    # # TODO(#2728): Implement randn - var inputs = ExTensor.zeros([4, 10], DType.float32)
+    # # TODO(#2728): Implement randn - var targets = ExTensor.zeros([4, 1], DType.float32)
     # #
     # # First backward (gradients zeroed initially)
     # model.zero_grad()
@@ -357,8 +357,8 @@ fn test_training_loop_updates_weights() raises:
 
     This is a CRITICAL test for learning.
     """
-    # TODO(#34): Implement when TrainingLoop is available
-    # TODO: Uncomment when SimpleMLP, TrainingLoop, and ExTensor.randn are available
+    # TODO(#2728): Implement when TrainingLoop is available
+    # TODO(#2728): Uncomment when SimpleMLP, TrainingLoop, and ExTensor.randn are available
     # var model = create_simple_model()
     # var optimizer = SGD(learning_rate=0.1)
     # var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
@@ -367,8 +367,8 @@ fn test_training_loop_updates_weights() raises:
     # var initial_weights = model.parameters()[0]._data.copy()
     # #
     # # Training step
-    # # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros([4, 10], DType.float32)
-    # # TODO(ExTensor): Implement randn - var targets = ExTensor.zeros([4, 1], DType.float32)
+    # # TODO(#2728): Implement randn - var inputs = ExTensor.zeros([4, 10], DType.float32)
+    # # TODO(#2728): Implement randn - var targets = ExTensor.zeros([4, 1], DType.float32)
     # var loss = training_loop.step(inputs, targets)
     # #
     # # Get updated weights
@@ -386,8 +386,8 @@ fn test_training_loop_respects_learning_rate() raises:
         Higher learning rate → larger weight updates
         Lower learning rate → smaller weight updates.
     """
-    # TODO(#34): Implement when TrainingLoop is available
-    # TODO: Uncomment when SimpleMLP, TrainingLoop, state_dict, and ExTensor.randn are available
+    # TODO(#2728): Implement when TrainingLoop is available
+    # TODO(#2728): Uncomment when SimpleMLP, TrainingLoop, state_dict, and ExTensor.randn are available
     # var model1 = create_simple_model()
     # var model2 = create_simple_model()
     # #
@@ -402,8 +402,8 @@ fn test_training_loop_respects_learning_rate() raises:
     # var loop2 = TrainingLoop(model2^, optimizer2^, loss_fn^)
     # #
     # # Same inputs/targets
-    # # TODO(ExTensor): Implement randn with seed=42 - var inputs = ExTensor.zeros([4, 10], DType.float32)
-    # # TODO(ExTensor): Implement randn with seed=43 - var targets = ExTensor.zeros([4, 1], DType.float32)
+    # # TODO(#2728): Implement randn with seed=42 - var inputs = ExTensor.zeros([4, 10], DType.float32)
+    # # TODO(#2728): Implement randn with seed=43 - var targets = ExTensor.zeros([4, 1], DType.float32)
     # #
     # # Training steps
     # loop1.step(inputs, targets)
@@ -432,15 +432,15 @@ fn test_training_loop_processes_variable_batch_sizes() raises:
         - Medium batches (16-64 samples)
         - Large batches (128+ samples).
     """
-    # TODO(#34): Implement when TrainingLoop is available
-    # TODO: Uncomment when SimpleMLP, TrainingLoop, and ExTensor.randn are available
+    # TODO(#2728): Implement when TrainingLoop is available
+    # TODO(#2728): Uncomment when SimpleMLP, TrainingLoop, and ExTensor.randn are available
     # var model = create_simple_model()
     # var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     # #
     # # Test different batch sizes
     # for batch_size in [1, 4, 16, 64, 128]:
-    #     # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros(List[Int](batch_size, 10), DType.float32)
-    #     # TODO(ExTensor): Implement randn - var targets = ExTensor.zeros(List[Int](batch_size, 1), DType.float32)
+    #     # TODO(#2728): Implement randn - var inputs = ExTensor.zeros(List[Int](batch_size, 10), DType.float32)
+    #     # TODO(#2728): Implement randn - var targets = ExTensor.zeros(List[Int](batch_size, 1), DType.float32)
     # #
     #     # Should process without error
     #     var loss = training_loop.step(inputs, targets)
@@ -455,15 +455,15 @@ fn test_training_loop_averages_loss_over_batch() raises:
         Batch loss should be mean of individual sample losses
         (for most loss functions).
     """
-    # TODO(#34): Implement when TrainingLoop is available
-    # TODO: Uncomment when SimpleMLP, TrainingLoop, and ExTensor.randn are available
+    # TODO(#2728): Implement when TrainingLoop is available
+    # TODO(#2728): Uncomment when SimpleMLP, TrainingLoop, and ExTensor.randn are available
     # var model = create_simple_model()
     # var optimizer = SGD(learning_rate=0.01)
     # var training_loop = TrainingLoop(model^, optimizer^, MSELoss(reduction="mean"))
     # #
     # # Create batch
-    # # TODO(ExTensor): Implement randn - var batch_inputs = ExTensor.zeros([4, 10], DType.float32)
-    # # TODO(ExTensor): Implement randn - var batch_targets = ExTensor.zeros([4, 1], DType.float32)
+    # # TODO(#2728): Implement randn - var batch_inputs = ExTensor.zeros([4, 10], DType.float32)
+    # # TODO(#2728): Implement randn - var batch_targets = ExTensor.zeros([4, 1], DType.float32)
     # #
     # # Batch loss
     # var batch_loss = training_loop.compute_loss(
@@ -496,15 +496,15 @@ fn test_training_loop_property_loss_decreases_on_simple_problem() raises:
 
     Test that training loop can solve a basic regression problem.
     """
-    # TODO(#34): Implement when TrainingLoop is available
-    # TODO: Uncomment when Linear layer, TrainingLoop, and create_dataloader are available
+    # TODO(#2728): Implement when TrainingLoop is available
+    # TODO(#2728): Uncomment when Linear layer, TrainingLoop, and create_dataloader are available
     # Simple problem: learn to map inputs to sum(inputs)
     # var model = Linear(in_features=10, out_features=1)
     # var optimizer = SGD(learning_rate=0.01)
     # var training_loop = TrainingLoop(model^, optimizer^, MSELoss())
     # #
     # # Generate simple dataset
-    # # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros([100, 10], DType.float32)
+    # # TODO(#2728): Implement randn - var inputs = ExTensor.zeros([100, 10], DType.float32)
     # var targets = inputs.sum(dim=1, keepdim=True)
     # var data_loader = create_dataloader(inputs, targets, batch_size=10)
     # #

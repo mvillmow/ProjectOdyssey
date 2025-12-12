@@ -333,7 +333,7 @@ struct DataLoader(Copyable, Movable):
 
         # Copy data (simplified - real implementation would use slicing)
         # For now, we'll just create placeholders
-        # TODO: Implement proper tensor slicing in ExTensor
+        # TODO(#2721): Implement proper tensor slicing in ExTensor
 
         self.current_batch += 1
 

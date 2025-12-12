@@ -208,7 +208,7 @@ fn test_check_gradients_finite() raises:
         "Finite gradients should return True",
     )
 
-    # TODO: Test with NaN/Inf gradients when we can create them
+    # TODO(#2731): Test with NaN/Inf gradients when we can create them
     # (Requires ability to set individual elements or create from values)
 
     print("✓ Gradient finite check test passed")

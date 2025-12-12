@@ -20,12 +20,12 @@ Array API Categories (in progress):
 - Arithmetic: add, subtract, multiply, divide, floor_divide, modulo, power ✓
 - Comparison: equal, not_equal, less, less_equal, greater, greater_equal ✓
 - Reduction: sum, mean, max, min (all-elements only) ✓
-- Matrix: matmul, transpose, dot, outer (TODO)
-- Shape manipulation: reshape, squeeze, unsqueeze, concatenate (TODO)
-- Broadcasting: Full support for different-shape operations (TODO)
-- Element-wise math: exp, log, sqrt, sin, cos, tanh (TODO)
-- Statistical: var, std, median, percentile (TODO)
-- Indexing: slicing, advanced indexing (TODO)
+- Matrix: matmul, transpose, dot, outer (TODO(#2717))
+- Shape manipulation: reshape, squeeze, unsqueeze, concatenate (TODO(#2718))
+- Broadcasting: Full support for different-shape operations (TODO(#2718))
+- Element-wise math: exp, log, sqrt, sin, cos, tanh (TODO(#2719))
+- Statistical: var, std, median, percentile (TODO(#2720))
+- Indexing: slicing, advanced indexing (TODO(#2721))
 
 Reference: https://data-apis.org/array-api/latest/API_specification/index.html
 """

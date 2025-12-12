@@ -154,7 +154,7 @@ fn test_nan_propagation_add() raises:
     """Test that NaN propagates through addition."""
     var shape = List[Int]()
     shape.append(3)
-    # var a = full(shape, Float32.nan, DType.float32)  # TODO: Create NaN tensor
+    # var a = full(shape, Float32.nan, DType.float32)  # TODO(#2723): Create NaN tensor
     # var b = ones(shape, DType.float32)
     # var c = add(a, b)
 
@@ -186,7 +186,7 @@ fn test_nan_equality() raises:
     shape.append(1)
     # var a = full(shape, Float32.nan, DType.float32)
     # var b = full(shape, Float32.nan, DType.float32)
-    # var c = equal(a, b)  # TODO: Implement equal()
+    # var c = equal(a, b)  # TODO(#2723): Implement equal()
 
     # IEEE 754: NaN != NaN
     # assert_value_at(c, 0, 0.0, 1e-8, "NaN != NaN should be False")
@@ -264,7 +264,7 @@ fn test_inf_comparison() raises:
     shape.append(3)
     # var a = full(shape, 1000000.0, DType.float32)
     # var b = full(shape, Float32.infinity, DType.float32)
-    # var c = less(a, b)  # TODO: Implement less()
+    # var c = less(a, b)  # TODO(#2723): Implement less()
 
     # 1e6 < inf should be True
     # assert_all_values(c, 1.0, 1e-8, "Finite < inf should be True")
@@ -302,7 +302,7 @@ fn test_overflow_int32() raises:
     # var c = add(a, b)
 
     # Integer overflow behavior: wraps around or saturates depending on implementation
-    # TODO: Document expected behavior
+    # TODO(#2723): Document expected behavior
     pass  # Placeholder
 
 
@@ -353,10 +353,10 @@ fn test_divide_by_zero_int() raises:
     shape.append(3)
     var a = full(shape, 10.0, DType.int32)
     var b = zeros(shape, DType.int32)
-    # var c = divide(a, b)  # TODO: Implement divide()
+    # var c = divide(a, b)  # TODO(#2723): Implement divide()
 
     # Integer division by zero: undefined behavior (should error or saturate)
-    # TODO: Document expected behavior and test
+    # TODO(#2723): Document expected behavior and test
     pass  # Placeholder
 
 
@@ -624,7 +624,7 @@ fn test_catastrophic_cancellation() raises:
     # var c = subtract(a, b)
 
     # Result should be approximately 1e-10 but may lose precision
-    # TODO: Test precision loss
+    # TODO(#2723): Test precision loss
     pass  # Placeholder
 
 
@@ -657,7 +657,7 @@ fn test_bool_dtype_operations() raises:
     var a = ones(shape, DType.bool)  # All True
     var b = zeros(shape, DType.bool)  # All False
 
-    # TODO: Test bool-specific operations (and, or, xor, not)
+    # TODO(#2723): Test bool-specific operations (and, or, xor, not)
     # var c = bitwise_and(a, b)  # Should be all False
     # assert_all_values(c, 0.0, 1e-8, "True AND False should be False")
     pass  # Placeholder
