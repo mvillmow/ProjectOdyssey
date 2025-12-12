@@ -473,6 +473,46 @@ struct GradientTape:
         var node = TapeNode(op_type, input_ids, output_id, saved^)
         self.nodes.append(node^)
 
+    fn _dispatch_backward_op(
+        mut self, op_type: String, node_idx: Int, grad_output: ExTensor
+    ) raises:
+        """Dispatch backward pass computation for the given operation type.
+
+        Args:
+            op_type: Operation type constant (e.g., OP_ADD, OP_MATMUL).
+            node_idx: Index of the node in the tape.
+            grad_output: Gradient flowing back from downstream operations.
+
+        Raises:
+            Error if operation type is not supported.
+        """
+        # Binary arithmetic operations
+        if op_type == OP_ADD:
+            self._backward_add_by_idx(node_idx, grad_output)
+        elif op_type == OP_SUBTRACT:
+            self._backward_subtract_by_idx(node_idx, grad_output)
+        elif op_type == OP_MULTIPLY:
+            self._backward_multiply_by_idx(node_idx, grad_output)
+        elif op_type == OP_DIVIDE:
+            self._backward_divide_by_idx(node_idx, grad_output)
+        # Reduction operations
+        elif op_type == OP_SUM:
+            self._backward_sum_by_idx(node_idx, grad_output)
+        elif op_type == OP_MEAN:
+            self._backward_mean_by_idx(node_idx, grad_output)
+        # Matrix operations
+        elif op_type == OP_MATMUL:
+            self._backward_matmul_by_idx(node_idx, grad_output)
+        # Activation functions
+        elif op_type == OP_RELU:
+            self._backward_relu_by_idx(node_idx, grad_output)
+        elif op_type == OP_SIGMOID:
+            self._backward_sigmoid_by_idx(node_idx, grad_output)
+        elif op_type == OP_TANH:
+            self._backward_tanh_by_idx(node_idx, grad_output)
+        else:
+            raise Error("Unsupported operation type for backward pass: " + op_type)
+
     fn backward(mut self, output_id: Int, output_grad: ExTensor) raises:
         """Compute gradients by traversing tape in reverse.
 
@@ -511,27 +551,7 @@ struct GradientTape:
             var op_type = self.nodes[node_idx].op_type
 
             # Dispatch to appropriate backward function
-            if op_type == OP_ADD:
-                self._backward_add_by_idx(node_idx, grad_output)
-            elif op_type == OP_SUBTRACT:
-                self._backward_subtract_by_idx(node_idx, grad_output)
-            elif op_type == OP_MULTIPLY:
-                self._backward_multiply_by_idx(node_idx, grad_output)
-            elif op_type == OP_DIVIDE:
-                self._backward_divide_by_idx(node_idx, grad_output)
-            elif op_type == OP_SUM:
-                self._backward_sum_by_idx(node_idx, grad_output)
-            elif op_type == OP_MEAN:
-                self._backward_mean_by_idx(node_idx, grad_output)
-            elif op_type == OP_MATMUL:
-                self._backward_matmul_by_idx(node_idx, grad_output)
-            elif op_type == OP_RELU:
-                self._backward_relu_by_idx(node_idx, grad_output)
-            elif op_type == OP_SIGMOID:
-                self._backward_sigmoid_by_idx(node_idx, grad_output)
-            elif op_type == OP_TANH:
-                self._backward_tanh_by_idx(node_idx, grad_output)
-            # Add more operations as needed.
+            self._dispatch_backward_op(op_type, node_idx, grad_output)
 
     fn _backward_add(mut self, node: TapeNode, grad_output: ExTensor) raises:
         """Backward pass for addition: d(a+b)/da = 1, d(a+b)/db = 1."""
