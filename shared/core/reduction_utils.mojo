@@ -9,6 +9,8 @@ Functions:
     coords_to_linear: Convert multi-dimensional coordinates to linear index.
     map_result_to_input_coords: Map output coordinates to input coordinates accounting for reduction axis.
     create_result_coords: Create and initialize coordinate list.
+    compute_axis_strides: Compute strides for direct axis reduction indexing.
+    build_reduced_shape: Build output shape for axis reduction.
 
 Example:
     ```mojo
@@ -177,6 +179,50 @@ fn create_result_coords(result_idx: Int, shape: List[Int]) -> List[Int]:
     return coords^
 
 
+fn compute_axis_strides(
+    input_shape: List[Int], axis: Int
+) -> Tuple[Int, Int, Int]:
+    """Compute strides for direct axis reduction indexing (O(1) per element).
+
+    For reduction along axis, compute input indices directly using:
+        input_idx = outer * axis_size * inner_size + k * inner_size + inner
+
+    Where:
+        - outer: index into dimensions before axis (0 to outer_size-1)
+        - k: index along the reduction axis (0 to axis_size-1)
+        - inner: index into dimensions after axis (0 to inner_size-1)
+
+    This eliminates O(numel × axis_size) coordinate list allocations.
+
+    Args:
+        input_shape: Shape of the input tensor.
+        axis: Axis along which to reduce.
+
+    Returns:
+        Tuple of (outer_size, axis_size, inner_size).
+
+    Examples:
+        ```mojo
+        # For shape [3, 4, 5] reducing along axis=1:
+        # outer_size = 3 (dims before axis)
+        # axis_size = 4 (reduction axis)
+        # inner_size = 5 (dims after axis)
+        var sizes = compute_axis_strides([3, 4, 5], 1)
+        # Returns (3, 4, 5)
+        ```
+    """
+    var outer_size = 1
+    var inner_size = 1
+
+    for i in range(axis):
+        outer_size *= input_shape[i]
+
+    for i in range(axis + 1, len(input_shape)):
+        inner_size *= input_shape[i]
+
+    return (outer_size, input_shape[axis], inner_size)
+
+
 fn build_reduced_shape(
     input_shape: List[Int], axis: Int, keepdims: Bool
 ) -> List[Int]:
@@ -206,74 +252,3 @@ fn build_reduced_shape(
         elif keepdims:
             result_shape.append(1)
     return result_shape^
-
-
-@fieldwise_init
-struct AxisReductionIterator(Copyable, Movable):
-    """Iterator for accessing elements along a reduction axis.
-
-    This struct encapsulates the common coordinate transformation logic used by
-    all axis-reduction operations (sum, mean, max, min). It provides efficient
-    iteration over elements along the reduction axis for each output position.
-
-    Usage:
-        ```mojo
-        var iter = AxisReductionIterator(input_shape, axis)
-        for result_idx in range(result.numel()):
-            # Get first element along axis
-            var first_idx = iter.get_input_idx(result_idx, 0)
-            # Iterate remaining elements
-            for k in range(1, iter.axis_size):
-                var idx = iter.get_input_idx(result_idx, k)
-        ```
-    """
-
-    var input_strides: List[Int]
-    var result_shape: List[Int]
-    var axis: Int
-    var axis_size: Int
-    var ndim: Int
-
-    fn __init__(
-        out self, input_shape: List[Int], axis: Int, keepdims: Bool = False
-    ):
-        """Initialize the axis reduction iterator.
-
-        Args:
-            input_shape: Shape of the input tensor.
-            axis: Axis along which to reduce.
-            keepdims: Whether to keep the reduced dimension (for result shape).
-        """
-        self.input_strides = compute_strides(input_shape)
-        self.result_shape = build_reduced_shape(input_shape, axis, keepdims)
-        self.axis = axis
-        self.axis_size = input_shape[axis]
-        self.ndim = len(input_shape)
-
-    fn get_input_idx(self, result_idx: Int, k: Int) -> Int:
-        """Get input tensor linear index for a given result position and axis offset.
-
-        Args:
-            result_idx: Linear index in the result (reduced) tensor.
-            k: Offset along the reduction axis (0 to axis_size-1).
-
-        Returns:
-            Linear index into the input tensor.
-        """
-        # Convert result index to result coordinates
-        var result_coords = create_result_coords(result_idx, self.result_shape)
-
-        # Map to input coordinates (insert axis position with value k)
-        var input_coords = List[Int]()
-        for _ in range(self.ndim):
-            input_coords.append(0)
-
-        var result_coord_idx = 0
-        for i in range(self.ndim):
-            if i != self.axis:
-                input_coords[i] = result_coords[result_coord_idx]
-                result_coord_idx += 1
-            else:
-                input_coords[i] = k
-
-        return coords_to_linear(input_coords, self.input_strides)
