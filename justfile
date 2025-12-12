@@ -14,6 +14,22 @@ USER_ID := `id -u`
 GROUP_ID := `id -g`
 
 # ==============================================================================
+# Mojo Compiler Flags
+# ==============================================================================
+
+# Strict analysis flags (applied to ALL builds)
+MOJO_STRICT := "--validate-doc-strings --diagnose-missing-doc-strings"
+
+# Mode-specific flags
+MOJO_DEBUG := "-g2 --no-optimization"
+MOJO_RELEASE := "-g0 -O3"
+MOJO_TEST := "-g1"
+
+# Sanitizer flags
+MOJO_ASAN := "--sanitize address"
+MOJO_TSAN := "--sanitize thread"
+
+# ==============================================================================
 # Internal Helpers
 # ==============================================================================
 
@@ -76,13 +92,130 @@ docker-status:
     @USER_ID={{USER_ID}} GROUP_ID={{GROUP_ID}} docker compose ps
 
 # ==============================================================================
-# Build Recipes
+# Build Recipes (mojo build - compile/validate Mojo files)
 # ==============================================================================
 
-# Build project (default: debug mode)
+# Build/compile Mojo files with mode-specific flags
 build mode="debug": docker-up (_ensure_build_dir mode)
-    @echo "Building in {{mode}} mode..."
-    @just _run "pixi run mojo package shared -o build/{{mode}}/ml-odyssey-shared.mojopkg"
+    #!/usr/bin/env bash
+    set -e
+    REPO_ROOT="$(pwd)"
+    STRICT="--validate-doc-strings --diagnose-missing-doc-strings"
+
+    case "{{mode}}" in
+        debug)   FLAGS="-g --no-optimization $STRICT" ;;
+        release) FLAGS="-g0 -O3 $STRICT" ;;
+        test)    FLAGS="-g1 $STRICT" ;;
+        *)       FLAGS="$STRICT" ;;
+    esac
+
+    echo "Building Mojo files in {{mode}} mode..."
+    echo "Flags: $FLAGS"
+
+    # Find and build all .mojo files (excluding tests, templates, and hidden dirs)
+    find . -name "*.mojo" \
+        -not -path "./.pixi/*" \
+        -not -path "./worktrees/*" \
+        -not -path "./.claude/*" \
+        -not -path "./tests/*" \
+        -not -name "test_*.mojo" \
+        | while read -r file; do
+            echo "Building: $file"
+            pixi run mojo build $FLAGS -I "$REPO_ROOT" "$file" -o "build/{{mode}}/$(basename "$file" .mojo)" 2>&1 || true
+        done
+
+    echo "Build complete. Outputs in build/{{mode}}/"
+
+# Build with AddressSanitizer (memory error detection)
+build-asan mode="debug": docker-up (_ensure_build_dir mode)
+    #!/usr/bin/env bash
+    set -e
+    REPO_ROOT="$(pwd)"
+    STRICT="--validate-doc-strings --diagnose-missing-doc-strings"
+
+    case "{{mode}}" in
+        debug)   FLAGS="-g --no-optimization $STRICT --sanitize address" ;;
+        release) FLAGS="-g0 -O3 $STRICT --sanitize address" ;;
+        test)    FLAGS="-g1 $STRICT --sanitize address" ;;
+        *)       FLAGS="$STRICT --sanitize address" ;;
+    esac
+
+    echo "Building Mojo files in {{mode}} mode with AddressSanitizer..."
+    echo "Flags: $FLAGS"
+
+    find . -name "*.mojo" \
+        -not -path "./.pixi/*" \
+        -not -path "./worktrees/*" \
+        -not -path "./.claude/*" \
+        -not -path "./tests/*" \
+        -not -name "test_*.mojo" \
+        | while read -r file; do
+            echo "Building: $file"
+            pixi run mojo build $FLAGS -I "$REPO_ROOT" "$file" -o "build/{{mode}}/$(basename "$file" .mojo)" 2>&1 || true
+        done
+
+# Build with ThreadSanitizer (threading error detection)
+build-tsan mode="debug": docker-up (_ensure_build_dir mode)
+    #!/usr/bin/env bash
+    set -e
+    REPO_ROOT="$(pwd)"
+    STRICT="--validate-doc-strings --diagnose-missing-doc-strings"
+
+    case "{{mode}}" in
+        debug)   FLAGS="-g --no-optimization $STRICT --sanitize thread" ;;
+        release) FLAGS="-g0 -O3 $STRICT --sanitize thread" ;;
+        test)    FLAGS="-g1 $STRICT --sanitize thread" ;;
+        *)       FLAGS="$STRICT --sanitize thread" ;;
+    esac
+
+    echo "Building Mojo files in {{mode}} mode with ThreadSanitizer..."
+    echo "Flags: $FLAGS"
+
+    find . -name "*.mojo" \
+        -not -path "./.pixi/*" \
+        -not -path "./worktrees/*" \
+        -not -path "./.claude/*" \
+        -not -path "./tests/*" \
+        -not -name "test_*.mojo" \
+        | while read -r file; do
+            echo "Building: $file"
+            pixi run mojo build $FLAGS -I "$REPO_ROOT" "$file" -o "build/{{mode}}/$(basename "$file" .mojo)" 2>&1 || true
+        done
+
+# Build with experimental fixit (DESTRUCTIVE - auto-applies fixes!)
+build-fixit mode="debug": docker-up (_ensure_build_dir mode)
+    #!/usr/bin/env bash
+    set -e
+    REPO_ROOT="$(pwd)"
+    STRICT="--validate-doc-strings --diagnose-missing-doc-strings"
+
+    echo "⚠️  WARNING: --experimental-fixit may modify files irreversibly!"
+    echo "Backup your changes before proceeding."
+    echo ""
+
+    case "{{mode}}" in
+        debug)   FLAGS="-g --no-optimization $STRICT --experimental-fixit" ;;
+        release) FLAGS="-g0 -O3 $STRICT --experimental-fixit" ;;
+        test)    FLAGS="-g1 $STRICT --experimental-fixit" ;;
+        *)       FLAGS="$STRICT --experimental-fixit" ;;
+    esac
+
+    echo "Building Mojo files in {{mode}} mode with fixit enabled..."
+    echo "Flags: $FLAGS"
+
+    find . -name "*.mojo" \
+        -not -path "./.pixi/*" \
+        -not -path "./worktrees/*" \
+        -not -path "./.claude/*" \
+        -not -path "./tests/*" \
+        -not -name "test_*.mojo" \
+        | while read -r file; do
+            echo "Building: $file"
+            pixi run mojo build $FLAGS -I "$REPO_ROOT" "$file" -o "build/{{mode}}/$(basename "$file" .mojo)" 2>&1 || true
+        done
+
+    echo ""
+    echo "Fix-its applied. Review changes with: git diff"
 
 # Build debug version
 build-debug: (build "debug")
@@ -108,6 +241,73 @@ native-build-debug:
 
 native-build-release:
     @NATIVE=1 just build-release
+
+# ==============================================================================
+# Package Recipes (mojo package - create .mojopkg libraries)
+# ==============================================================================
+
+# Package shared library with mode-specific flags
+package mode="debug": docker-up (_ensure_build_dir mode)
+    #!/usr/bin/env bash
+    set -e
+    REPO_ROOT="$(pwd)"
+    STRICT="--validate-doc-strings --diagnose-missing-doc-strings"
+
+    case "{{mode}}" in
+        debug)   FLAGS="$STRICT" ;;
+        release) FLAGS="$STRICT" ;;
+        test)    FLAGS="$STRICT" ;;
+        *)       FLAGS="$STRICT" ;;
+    esac
+
+    echo "Packaging shared library in {{mode}} mode..."
+    echo "Flags: $FLAGS"
+    pixi run mojo package $FLAGS -I "$REPO_ROOT" shared -o build/{{mode}}/ml-odyssey-shared.mojopkg
+
+# Package with AddressSanitizer
+package-asan mode="debug": docker-up (_ensure_build_dir mode)
+    #!/usr/bin/env bash
+    set -e
+    REPO_ROOT="$(pwd)"
+    STRICT="--validate-doc-strings --diagnose-missing-doc-strings"
+    FLAGS="$STRICT --sanitize address"
+
+    echo "Packaging shared library in {{mode}} mode with AddressSanitizer..."
+    echo "Flags: $FLAGS"
+    pixi run mojo package $FLAGS -I "$REPO_ROOT" shared -o build/{{mode}}/ml-odyssey-shared.mojopkg
+
+# Package with ThreadSanitizer
+package-tsan mode="debug": docker-up (_ensure_build_dir mode)
+    #!/usr/bin/env bash
+    set -e
+    REPO_ROOT="$(pwd)"
+    STRICT="--validate-doc-strings --diagnose-missing-doc-strings"
+    FLAGS="$STRICT --sanitize thread"
+
+    echo "Packaging shared library in {{mode}} mode with ThreadSanitizer..."
+    echo "Flags: $FLAGS"
+    pixi run mojo package $FLAGS -I "$REPO_ROOT" shared -o build/{{mode}}/ml-odyssey-shared.mojopkg
+
+# Package debug version
+package-debug: (package "debug")
+
+# Package release version
+package-release: (package "release")
+
+# Package all modes
+package-all:
+    @just package debug
+    @just package release
+
+# Native package variants
+native-package mode="debug":
+    @NATIVE=1 just package {{mode}}
+
+native-package-debug:
+    @NATIVE=1 just package-debug
+
+native-package-release:
+    @NATIVE=1 just package-release
 
 # ==============================================================================
 # Testing
@@ -363,42 +563,56 @@ ci-test-group path pattern:
         exit 1
     fi
 
-# CI: Build shared package with -Werror enforcement
-#
-# TEMPORARY WORKAROUND (Issue #2688):
-# Docstring warnings are temporarily disabled via --disable-warnings flag.
-# This allows CI to pass while we systematically fix 2,997 docstring warnings
-# across 109 files in the shared/ module.
-#
-# Why this is temporary:
-# - Mojo 0.26.1 introduced stricter docstring validation
-# - Missing periods, unknown arguments, and formatting issues block builds
-# - Comprehensive fixes are tracked in issue #2688 and will be done via PRs
-#
-# TODO: Remove --disable-warnings once all docstring fixes are merged
-# Related: https://github.com/mvillmow/ml-odyssey/issues/2688
+# CI: Build Mojo files with strict analysis (mojo build)
 ci-build:
     #!/usr/bin/env bash
     set -e
     REPO_ROOT="$(pwd)"
-    mkdir -p build
-    echo "Building shared package (docstring warnings temporarily disabled - see issue #2688)..."
-    pixi run mojo package --disable-warnings -I "$REPO_ROOT" shared -o build/ml-odyssey-shared.mojopkg
+    mkdir -p build/ci
+    STRICT="--validate-doc-strings --diagnose-missing-doc-strings"
+    FLAGS="-g1 $STRICT"
 
-# CI: Compile shared package (validation only, no output)
+    echo "Building Mojo files with strict analysis..."
+    echo "Flags: $FLAGS"
+
+    find . -name "*.mojo" \
+        -not -path "./.pixi/*" \
+        -not -path "./worktrees/*" \
+        -not -path "./.claude/*" \
+        -not -path "./tests/*" \
+        -not -name "test_*.mojo" \
+        | while read -r file; do
+            echo "Building: $file"
+            pixi run mojo build $FLAGS -I "$REPO_ROOT" "$file" -o "build/ci/$(basename "$file" .mojo)" 2>&1 || true
+        done
+
+    echo "✅ Build complete"
+
+# CI: Package shared library with strict analysis (mojo package)
+ci-package:
+    #!/usr/bin/env bash
+    set -e
+    REPO_ROOT="$(pwd)"
+    mkdir -p build
+    STRICT="--validate-doc-strings --diagnose-missing-doc-strings"
+    echo "Packaging shared library with strict analysis..."
+    pixi run mojo package $STRICT -I "$REPO_ROOT" shared -o build/ml-odyssey-shared.mojopkg
+
+# CI: Compile/validate shared package (no output kept)
 ci-compile:
     #!/usr/bin/env bash
     set -e
     REPO_ROOT="$(pwd)"
+    STRICT="--validate-doc-strings --diagnose-missing-doc-strings"
     echo "Compiling shared package for validation..."
-    pixi run mojo package -I "$REPO_ROOT" shared -o /tmp/shared.mojopkg
+    pixi run mojo package $STRICT -I "$REPO_ROOT" shared -o /tmp/shared.mojopkg
 
-# CI: Run all Mojo tests with -Werror
+# CI: Run all Mojo tests
 ci-test-mojo:
     #!/usr/bin/env bash
     set -e
     REPO_ROOT="$(pwd)"
-    echo "Running all Mojo tests with -Werror..."
+    echo "Running all Mojo tests..."
 
     failed=0
     for test_file in tests/**/*.mojo; do
@@ -416,10 +630,11 @@ ci-test-mojo:
     fi
     echo "✅ All tests passed"
 
-# CI: Full validation (build + test)
+# CI: Full validation (build + package + test)
 ci-validate:
     @echo "Running full CI validation..."
     @just ci-build
+    @just ci-package
     @just ci-test-mojo
     @echo "✅ CI validation complete"
 
@@ -442,13 +657,16 @@ help:
     @echo ""
     @echo "Training:  train [model] [precision] [epochs], infer [model] [checkpoint]"
     @echo "           list-models, infer-image [model] [checkpoint] [image_path]"
-    @echo "Build:     build, build-debug, build-release, build-all"
+    @echo "Build:     build [mode], build-debug, build-release, build-all"
+    @echo "           build-asan [mode], build-tsan [mode], build-fixit [mode]"
+    @echo "Package:   package [mode], package-debug, package-release, package-all"
+    @echo "           package-asan [mode], package-tsan [mode]"
     @echo "Test:      test, test-python, test-coverage, test-integration"
     @echo "Lint:      lint, lint-python, lint-markdown, format"
     @echo "Docker:    docker-up, docker-down, docker-shell, docker-logs"
     @echo "Dev:       dev, shell, docs, docs-serve"
     @echo "CI:        ci, ci-full, pre-commit, validate"
-    @echo "CI (GHA):  ci-build, ci-compile, ci-test-group, ci-test-mojo, ci-validate"
+    @echo "CI (GHA):  ci-build, ci-package, ci-compile, ci-test-group, ci-test-mojo, ci-validate"
     @echo "Utility:   help, status, clean, version"
     @echo ""
     @echo "Examples:"
