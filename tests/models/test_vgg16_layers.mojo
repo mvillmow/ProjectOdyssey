@@ -165,8 +165,10 @@ fn test_vgg16_conv64_backward() raises:
     var grad_output = ones(output.shape(), DType.float32)
 
     # Backward pass
-    var _result = conv2d_backward(grad_output, input, kernel, stride, padding)
-    var grad_input = _result.grad_input
+    var _backward_result = conv2d_backward(
+        grad_output, input, kernel, stride, padding
+    )
+    var grad_input = _backward_result.grad_input
 
     # Verify gradient shapes
     assert_shape(grad_input, input.shape())
@@ -269,8 +271,10 @@ fn test_vgg16_conv128_backward() raises:
     var grad_output = ones(output.shape(), DType.float32)
 
     # Backward pass
-    var _result = conv2d_backward(grad_output, input, kernel, stride, padding)
-    var grad_input = _result.grad_input
+    var _backward_result = conv2d_backward(
+        grad_output, input, kernel, stride, padding
+    )
+    var grad_input = _backward_result.grad_input
 
     # Verify gradient shapes
     assert_shape(grad_input, input.shape())
@@ -374,8 +378,10 @@ fn test_vgg16_conv256_backward() raises:
     var grad_output = ones(output.shape(), DType.float32)
 
     # Backward pass
-    var _result = conv2d_backward(grad_output, input, kernel, stride, padding)
-    var grad_input = _result.grad_input
+    var _backward_result = conv2d_backward(
+        grad_output, input, kernel, stride, padding
+    )
+    var grad_input = _backward_result.grad_input
 
     # Verify gradient shapes
     assert_shape(grad_input, input.shape())
@@ -480,8 +486,10 @@ fn test_vgg16_conv512_backward() raises:
     var grad_output = ones(output.shape(), DType.float32)
 
     # Backward pass
-    var _result = conv2d_backward(grad_output, input, kernel, stride, padding)
-    var grad_input = _result.grad_input
+    var _backward_result = conv2d_backward(
+        grad_output, input, kernel, stride, padding
+    )
+    var grad_input = _backward_result.grad_input
 
     # Verify gradient shapes
     assert_shape(grad_input, input.shape())
@@ -528,8 +536,8 @@ fn test_vgg16_maxpool_forward() raises:
     var output_shape = output.shape()
     assert_equal(output_shape[0], batch_size)
     assert_equal(output_shape[1], channels)
-    assert_equal(output_shape[2], height / stride)
-    assert_equal(output_shape[3], width / stride)
+    assert_equal(output_shape[2], height // stride)
+    assert_equal(output_shape[3], width // stride)
 
 
 fn test_vgg16_maxpool_backward() raises:
@@ -561,9 +569,7 @@ fn test_vgg16_maxpool_backward() raises:
     var grad_output = ones(output.shape(), DType.float32)
 
     # Backward pass
-    var grad_input = maxpool2d_backward(
-        input, grad_output, kernel_size, stride, output.shape()
-    )
+    var grad_input = maxpool2d_backward(grad_output, input, kernel_size, stride)
 
     # Verify gradient shape matches input
     assert_shape(grad_input, input.shape())
@@ -605,7 +611,9 @@ fn test_vgg16_relu_forward() raises:
     var output_data = output._data.bitcast[Float32]()
     for i in range(4 * 64 * 32 * 32):
         if i % 3 == 0:
-            assert_close_float(output_data[i], Float32(1.5), tolerance=1e-5)
+            assert_almost_equal(
+                output_data[i], Float32(1.5), tolerance=Float32(1e-5)
+            )
         else:
             assert_almost_equal(output_data[i], 0.0, tolerance=1e-5)
 
@@ -715,10 +723,10 @@ fn test_vgg16_fc_backward() raises:
     var grad_output = ones(output.shape(), DType.float32)
 
     # Backward pass
-    var grad_input = linear_backward(input, weights, grad_output)
+    var backward_result = linear_backward(grad_output, input, weights)
 
     # Verify gradient shapes
-    assert_shape(grad_input, input.shape())
+    assert_shape(backward_result.grad_input, input.shape())
 
 
 # ============================================================================
@@ -792,7 +800,86 @@ fn test_vgg16_output_layer_backward() raises:
     var grad_output = ones(output.shape(), DType.float32)
 
     # Backward pass
-    var grad_input = linear_backward(input, weights, grad_output)
+    var backward_result = linear_backward(grad_output, input, weights)
 
     # Verify gradient shape
-    assert_shape(grad_input, input.shape())
+    assert_shape(backward_result.grad_input, input.shape())
+
+
+fn main() raises:
+    """Run all VGG-16 layerwise tests."""
+    print("Starting VGG-16 Layerwise Tests...")
+
+    # Conv64 tests
+    print("  test_vgg16_conv64_forward...", end="")
+    test_vgg16_conv64_forward()
+    print(" OK")
+
+    print("  test_vgg16_conv64_backward...", end="")
+    test_vgg16_conv64_backward()
+    print(" OK")
+
+    # Conv128 tests
+    print("  test_vgg16_conv128_forward...", end="")
+    test_vgg16_conv128_forward()
+    print(" OK")
+
+    print("  test_vgg16_conv128_backward...", end="")
+    test_vgg16_conv128_backward()
+    print(" OK")
+
+    # Conv256 tests
+    print("  test_vgg16_conv256_forward...", end="")
+    test_vgg16_conv256_forward()
+    print(" OK")
+
+    print("  test_vgg16_conv256_backward...", end="")
+    test_vgg16_conv256_backward()
+    print(" OK")
+
+    # Conv512 tests
+    print("  test_vgg16_conv512_forward...", end="")
+    test_vgg16_conv512_forward()
+    print(" OK")
+
+    print("  test_vgg16_conv512_backward...", end="")
+    test_vgg16_conv512_backward()
+    print(" OK")
+
+    # MaxPool tests
+    print("  test_vgg16_maxpool_forward...", end="")
+    test_vgg16_maxpool_forward()
+    print(" OK")
+
+    print("  test_vgg16_maxpool_backward...", end="")
+    test_vgg16_maxpool_backward()
+    print(" OK")
+
+    # ReLU tests
+    print("  test_vgg16_relu_forward...", end="")
+    test_vgg16_relu_forward()
+    print(" OK")
+
+    print("  test_vgg16_relu_backward...", end="")
+    test_vgg16_relu_backward()
+    print(" OK")
+
+    # FC layer tests
+    print("  test_vgg16_fc_forward...", end="")
+    test_vgg16_fc_forward()
+    print(" OK")
+
+    print("  test_vgg16_fc_backward...", end="")
+    test_vgg16_fc_backward()
+    print(" OK")
+
+    # Output layer tests
+    print("  test_vgg16_output_layer_forward...", end="")
+    test_vgg16_output_layer_forward()
+    print(" OK")
+
+    print("  test_vgg16_output_layer_backward...", end="")
+    test_vgg16_output_layer_backward()
+    print(" OK")
+
+    print("All VGG-16 layerwise tests passed!")

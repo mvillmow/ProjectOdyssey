@@ -393,7 +393,12 @@ fn test_residual_block_128_channels_projection() raises:
     var bn1_running_var = ones([out_channels], DType.float32)
 
     # Conv2: (128, 128, 3, 3)
-    var conv2_weight = ones(conv1_weight_shape, DType.float32)
+    var conv2_weight_shape = List[Int]()
+    conv2_weight_shape.append(out_channels)
+    conv2_weight_shape.append(out_channels)
+    conv2_weight_shape.append(3)
+    conv2_weight_shape.append(3)
+    var conv2_weight = ones(conv2_weight_shape, DType.float32)
     var conv2_bias = zeros([out_channels], DType.float32)
 
     # BN2
@@ -688,13 +693,14 @@ fn test_batchnorm2d_gamma_beta_effects() raises:
         x, gamma, beta, running_mean, running_var, training=False
     )
 
-    # With gamma=2 and beta=1, and normalized input (0 after mean subtraction):
-    # output = gamma * normalized + beta = 2 * 0 + 1 = 1
+    # With gamma=2 and beta=1, running_mean=0, running_var=1:
+    # normalized = (x - running_mean) / sqrt(running_var + eps) = (1 - 0) / 1 = 1
+    # output = gamma * normalized + beta = 2 * 1 + 1 = 3
     var out_data = output._data.bitcast[Float32]()
     var total_elements = batch_size * channels * height * width
     for i in range(min(10, total_elements)):
-        # Expected: 1.0 (gamma * 0 + beta, since all input is 1 and mean is 1)
-        assert_almost_equal(out_data[i], 1.0, tolerance=1e-4)
+        # Expected: 3.0 (gamma * normalized + beta = 2 * 1 + 1)
+        assert_almost_equal(out_data[i], 3.0, tolerance=1e-4)
 
 
 # ============================================================================
