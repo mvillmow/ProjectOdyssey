@@ -17,7 +17,6 @@ from math import exp as math_exp
 from math import log as math_log
 from math import sin as math_sin
 from math import cos as math_cos
-from math import tanh as math_tanh
 from math import ceil as math_ceil
 from math import floor as math_floor
 from math import trunc as math_trunc
@@ -271,35 +270,6 @@ fn cos(tensor: ExTensor) raises -> ExTensor:
     ```
     """
     return dispatch_float_unary[_cos_op](tensor)
-
-
-@always_inline
-fn _tanh_op[T: DType](x: Scalar[T]) -> Scalar[T]:
-    """Hyperbolic tangent operation."""
-
-    @parameter
-    if T == DType.float16 or T == DType.float32:
-        return Scalar[T](math_tanh(Float32(x)))
-    else:
-        return Scalar[T](math_tanh(Float64(x)))
-
-
-fn tanh(tensor: ExTensor) raises -> ExTensor:
-    """Hyperbolic tangent function element-wise.
-
-    Args:
-            tensor: Input tensor.
-
-    Returns:
-            A new tensor with tanh values (range: -1 to 1).
-
-    Examples:
-    ```
-            var a = zeros(shape, DType.float32)
-            var b = tanh(a)  # All values become 0.0 (tanh(0))
-    ```
-    """
-    return dispatch_float_unary[_tanh_op](tensor)
 
 
 fn clip(
