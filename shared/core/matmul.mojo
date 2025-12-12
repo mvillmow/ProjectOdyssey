@@ -113,7 +113,11 @@ fn matmul_typed(a: ExTensor, b: ExTensor, mut c: ExTensor) raises:
 fn _matmul_typed_float32(
     a: ExTensor, b: ExTensor, mut c: ExTensor, M: Int, K: Int, N: Int
 ) raises:
-    """Float32-specific matmul implementation."""
+    """Float32-specific matmul implementation.
+
+    Raises:
+        Error: If operation fails.
+    """
     var a_ptr = a._data.bitcast[Float32]()
     var b_ptr = b._data.bitcast[Float32]()
     var c_ptr = c._data.bitcast[Float32]()
@@ -130,7 +134,11 @@ fn _matmul_typed_float32(
 fn _matmul_typed_float64(
     a: ExTensor, b: ExTensor, mut c: ExTensor, M: Int, K: Int, N: Int
 ) raises:
-    """Float64-specific matmul implementation."""
+    """Float64-specific matmul implementation.
+
+    Raises:
+        Error: If operation fails.
+    """
     var a_ptr = a._data.bitcast[Float64]()
     var b_ptr = b._data.bitcast[Float64]()
     var c_ptr = c._data.bitcast[Float64]()
@@ -806,6 +814,9 @@ fn verify_matmul_correctness(M: Int, K: Int, N: Int) raises -> Bool:
 
     Returns:
         True if all stages match, raises error otherwise.
+
+    Raises:
+        Error: If operation fails.
 
     Note:
         Uses rtol=1e-4 and atol=1e-6 for v4 due to operation reordering

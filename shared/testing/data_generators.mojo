@@ -54,6 +54,9 @@ fn random_tensor(
     Note:
             Values are uniformly distributed in [0, 1) regardless of dtype
             For integer dtypes, values are truncated to Int.
+
+    Raises:
+        Error: If operation fails.
     """
     # Create empty tensor with the specified shape
     var tensor = zeros(shape, dtype)
@@ -118,6 +121,9 @@ fn random_uniform(
     Note:
             The range [low, high) is linearly scaled from [0, 1)
             For integer dtypes, values are truncated to Int.
+
+    Raises:
+        Error: If operation fails.
     """
     # Create empty tensor with the specified shape
     var tensor = zeros(shape, dtype)
@@ -188,6 +194,9 @@ fn random_normal(
     Note:
             Uses Box-Muller transform for efficiency
             For integer dtypes, values are truncated to Int after sampling.
+
+    Raises:
+        Error: If operation fails.
     """
     # Create empty tensor with the specified shape
     var tensor = zeros(shape, dtype)
@@ -281,6 +290,9 @@ fn synthetic_classification_data(
             2. For each sample, assign to random class.
             3. Add Gaussian noise around class center.
             4. Normalize features to zero mean and unit variance.
+
+    Raises:
+        Error: If operation fails.
     """
     # Validate inputs
     if num_samples <= 0 or num_features <= 0 or num_classes <= 0:

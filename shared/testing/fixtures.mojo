@@ -104,6 +104,9 @@ fn create_test_input(
     Returns:
             Input tensor (batch_size, in_features) filled with 1.0
 
+    Raises:
+            Error: If tensor creation fails.
+
         Example:
             ```mojo
             var input = create_test_input(32, 784)
@@ -131,6 +134,9 @@ fn create_test_targets(
 
     Returns:
             Target tensor (batch_size,) filled with 0
+
+    Raises:
+            Error: If tensor creation fails.
 
         Example:
             ```mojo

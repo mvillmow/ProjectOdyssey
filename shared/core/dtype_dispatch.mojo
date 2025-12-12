@@ -109,6 +109,9 @@ fn elementwise_unary[
     Returns:
             New tensor with operation applied element-wise.
 
+    Raises:
+        Error: If operation fails.
+
     Example:
         ```mojo
         # Define operation
@@ -350,6 +353,9 @@ fn elementwise_scalar[
 
     Returns:
             New tensor with operation applied element-wise.
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo

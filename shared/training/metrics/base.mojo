@@ -60,7 +60,11 @@ struct MetricResult(Copyable, Movable):
     var tensor_value: ExTensor
 
     fn __init__(out self, name: String, value: Float64) raises:
-        """Create scalar metric result."""
+        """Create scalar metric result.
+
+        Raises:
+            Error: If operation fails.
+        """
         self.name = name
         self.is_scalar = True
         self.scalar_value = value

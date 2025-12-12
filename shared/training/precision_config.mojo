@@ -299,6 +299,9 @@ struct PrecisionConfig(Copyable, Movable):
 
         Returns:
             Tensor cast to compute_dtype.
+
+        Raises:
+            Error: If operation fails.
         """
         if tensor.dtype() == self.compute_dtype:
             return tensor
@@ -312,6 +315,9 @@ struct PrecisionConfig(Copyable, Movable):
 
         Returns:
             Tensor cast to storage_dtype.
+
+        Raises:
+            Error: If operation fails.
         """
         if tensor.dtype() == self.storage_dtype:
             return tensor
@@ -325,6 +331,9 @@ struct PrecisionConfig(Copyable, Movable):
 
         Returns:
             Tensor cast to float32.
+
+        Raises:
+            Error: If operation fails.
         """
         return convert_to_fp32_master(tensor)
 
@@ -339,6 +348,9 @@ struct PrecisionConfig(Copyable, Movable):
 
         Returns:
             Scaled loss tensor.
+
+        Raises:
+            Error: If operation fails.
         """
         if not self.use_gradient_scaler:
             return loss
@@ -355,6 +367,9 @@ struct PrecisionConfig(Copyable, Movable):
 
         Returns:
             Unscaled gradients ready for optimizer.
+
+        Raises:
+            Error: If operation fails.
         """
         if not self.use_gradient_scaler:
             return gradients
@@ -368,6 +383,9 @@ struct PrecisionConfig(Copyable, Movable):
 
         Returns:
             True if gradients are finite, False if NaN/Inf detected.
+
+        Raises:
+            Error: If operation fails.
         """
         return check_gradients_finite(gradients)
 
@@ -439,6 +457,9 @@ struct PrecisionConfig(Copyable, Movable):
 
         Returns:
             Clipped gradients.
+
+        Raises:
+            Error: If operation fails.
         """
         return clip_gradients_by_norm(gradients, max_norm)
 

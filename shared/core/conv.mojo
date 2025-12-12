@@ -204,6 +204,9 @@ fn conv2d_no_bias(
 
     Raises:
             Error: If tensor shapes are incompatible.
+
+    Note:
+            This is a convenience wrapper around conv2d with zero bias.
     """
     # Create zero bias
     var k_shape = kernel.shape()
@@ -636,6 +639,9 @@ fn depthwise_conv2d_no_bias(
 
     Raises:
             Error: If tensor shapes are incompatible.
+
+    Note:
+            This is a convenience wrapper around depthwise_conv2d with zero bias.
     """
     var x_shape = x.shape()
     var channels = x_shape[1]
@@ -891,6 +897,9 @@ fn depthwise_separable_conv2d(
     Returns:
             Output tensor of shape (batch, out_channels, out_height, out_width).
 
+    Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
             from shared.core import depthwise_separable_conv2d
@@ -946,6 +955,9 @@ fn depthwise_separable_conv2d_no_bias(
 
     Returns:
             Output tensor of shape (batch, out_channels, out_height, out_width).
+
+    Raises:
+            Error: If operation fails.
     """
     # Stage 1: Depthwise convolution
     var depthwise_output = depthwise_conv2d_no_bias(
@@ -986,6 +998,9 @@ fn depthwise_separable_conv2d_backward(
                 - grad_depthwise_kernel: Gradient w.r.t. depthwise kernel.
                 - grad_pointwise_kernel: Gradient w.r.t. pointwise kernel.
                 - grad_bias: Gradient w.r.t. bias (sum over batch and spatial dims).
+
+    Raises:
+        Error: If operation fails.
 
     Note:
             Pure functional: returns new tensors, does not modify inputs.
@@ -1035,6 +1050,9 @@ fn depthwise_separable_conv2d_no_bias_backward(
 
     Returns:
             DepthwiseSeparableConv2dNoBiasBackwardResult containing gradients.
+
+    Raises:
+        Error: If operation fails.
     """
     # Recompute intermediate activation
     var depthwise_output = depthwise_conv2d_no_bias(

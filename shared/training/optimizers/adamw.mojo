@@ -92,6 +92,9 @@ fn adamw_step(
             Caller must capture all three return values and update their variables.
             Timestep t must be tracked by caller and incremented after each step.
             Weight decay is applied directly to params (decoupled), not through gradients.
+
+    Raises:
+            Error: If operation fails.
     """
     if params.shape() != gradients.shape():
         raise Error("Parameters and gradients must have the same shape")
@@ -212,6 +215,9 @@ fn adamw_step_simple(
                 (W, m, v) = adamw_step_simple(W, grad_W, m, v, t, 0.001)
                 t += 1
             ```
+
+    Raises:
+            Error: If operation fails.
     """
     return adamw_step(
         params,

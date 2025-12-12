@@ -40,8 +40,7 @@ fn top1_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float64:
             Accuracy as a fraction in [0, 1].
 
     Raises:
-            Error: If shapes are incompatible.
-            Error: If batch sizes don't match.
+            Error: If shapes are incompatible or batch sizes don't match.
 
     Examples:
     ```
@@ -248,6 +247,9 @@ fn get_topk_indices(
 
     Returns:
             Vector of k class indices with highest scores.
+
+    Raises:
+            Error: If operation fails.
     """
     var shape_vec = predictions.shape()
     var num_classes = shape_vec[1]

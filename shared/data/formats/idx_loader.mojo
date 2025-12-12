@@ -217,6 +217,9 @@ fn normalize_images(mut images: ExTensor) raises -> ExTensor:
 
     Note:
             Converts pixel values from [0, 255] to [0.0, 1.0].
+
+    Raises:
+            Error: If operation fails.
     """
     var shape = images.shape()
     var normalized = zeros(shape, DType.float32)
@@ -250,6 +253,9 @@ fn one_hot_encode(labels: ExTensor, num_classes: Int) raises -> ExTensor:
             #  [0.0, 0.0, 1.0],
             #  [0.0, 1.0, 0.0]]
             ```
+
+    Raises:
+            Error: If operation fails.
     """
     var num_samples = labels.shape()[0]
 
@@ -289,6 +295,9 @@ fn normalize_images_rgb(mut images: ExTensor) raises -> ExTensor:
             - mean=[0.485, 0.456, 0.406] for RGB channels
             - std=[0.229, 0.224, 0.225] for RGB channels
             - Converts pixel values from [0, 255] to normalized float.
+
+    Raises:
+            Error: If operation fails.
     """
     # ImageNet normalization parameters (R, G, B)
     # ImageNet normalization constants per channel

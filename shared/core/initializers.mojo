@@ -45,6 +45,9 @@ fn _fill_uniform_scaled[
             result: Tensor to fill (must be pre-allocated).
             scale: Scale factor for random values.
             offset: Offset to add to scaled values.
+
+    Raises:
+            Error: If operation fails.
     """
     var ptr = result._data.bitcast[Scalar[dtype]]()
     for i in range(result._numel):
@@ -65,6 +68,9 @@ fn _fill_normal_boxmuller[
             result: Tensor to fill (must be pre-allocated).
             mean: Mean of normal distribution.
             std: Standard deviation of normal distribution.
+
+    Raises:
+            Error: If operation fails.
     """
     var ptr = result._data.bitcast[Scalar[dtype]]()
     var i = 0
@@ -100,6 +106,9 @@ fn _fill_constant[dtype: DType](result: ExTensor, value: Float64) raises:
     Args:
             result: Tensor to fill (must be pre-allocated).
             value: Constant value to fill with.
+
+    Raises:
+            Error: If operation fails.
     """
     var ptr = result._data.bitcast[Scalar[dtype]]()
     var val = Scalar[dtype](value)
@@ -641,6 +650,9 @@ fn constant(
     Returns:
             Tensor filled with constant value.
 
+    Raises:
+        Error: If operation fails.
+
     Examples:
             # Initialize with ones
             var ones = constant([10, 10], 1.0)
@@ -677,6 +689,9 @@ fn he_uniform(
     This alias provides compatibility with code that uses 'he_uniform' naming.
 
     See kaiming_uniform() for full documentation.
+
+    Raises:
+        Error: If operation fails.
     """
     return kaiming_uniform(fan_in, fan_out, shape, fan_mode, dtype, seed_val)
 
@@ -695,6 +710,9 @@ fn he_normal(
     This alias provides compatibility with code that uses 'he_normal' naming.
 
     See kaiming_normal() for full documentation.
+
+    Raises:
+        Error: If operation fails.
     """
     return kaiming_normal(fan_in, fan_out, shape, fan_mode, dtype, seed_val)
 
@@ -752,6 +770,9 @@ fn he_uniform(
 
     Returns:
             Initialized tensor.
+
+    Raises:
+            Error: If shape is not 2D or 4D.
     """
     var fans = _compute_fan_from_shape(shape)
     var fan_in = fans[0]
@@ -779,6 +800,9 @@ fn xavier_uniform(
 
     Returns:
             Initialized tensor.
+
+    Raises:
+            Error: If shape is not 2D or 4D.
     """
     var fans = _compute_fan_from_shape(shape)
     var fan_in = fans[0]

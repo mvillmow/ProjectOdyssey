@@ -194,6 +194,9 @@ fn check_gradients_verbose(
                 print_all=True  # Print all gradient comparisons
             )
             ```
+
+    Raises:
+            Error: If operation fails.
     """
     # Run standard gradient check
     var passed = check_gradients(

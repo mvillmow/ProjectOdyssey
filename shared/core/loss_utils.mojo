@@ -36,6 +36,9 @@ fn clip_predictions(
     Returns:
             Clipped tensor with values in [epsilon, 1.0 - epsilon].
 
+    Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
             var predictions = sigmoid(logits)  # Some values may be 0 or 1
@@ -57,6 +60,9 @@ fn create_epsilon_tensor(
 
     Returns:
             Tensor filled with epsilon value, same shape as template.
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -123,6 +129,9 @@ fn compute_one_minus_tensor(tensor: ExTensor) raises -> ExTensor:
     Returns:
             Tensor with values: 1.0 - tensor[i] for each element.
 
+    Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
             var one_minus_pred = compute_one_minus_tensor(predictions)
@@ -142,6 +151,9 @@ fn compute_sign_tensor(tensor: ExTensor) raises -> ExTensor:
 
     Returns:
             Tensor with sign values (-1, 0, or 1).
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -184,6 +196,9 @@ fn blend_tensors(
     Returns:
             Blended tensor with shape of inputs.
 
+    Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
              In smooth L1 loss
@@ -212,6 +227,9 @@ fn compute_max_stable(tensor: ExTensor) raises -> ExTensor:
 
     Returns:
             Maximum value in tensor.
+
+    Raises:
+        Error: If operation fails.
 
     Note:
             This is a placeholder for max_reduce import.
@@ -303,6 +321,9 @@ fn negate_tensor(tensor: ExTensor) raises -> ExTensor:
 
     Returns:
             Negated tensor with opposite signs.
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo

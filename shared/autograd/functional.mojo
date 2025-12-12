@@ -57,6 +57,9 @@ fn multiply_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
 
     Returns:
             New tensor with result.
+
+    Raises:
+            Error: If operation fails.
     """
     var result = ExTensor(tensor.shape(), tensor.dtype())
     for i in range(tensor.numel()):
@@ -74,6 +77,9 @@ fn add_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
 
     Returns:
             New tensor with result.
+
+    Raises:
+            Error: If operation fails.
     """
     var result = ExTensor(tensor.shape(), tensor.dtype())
     for i in range(tensor.numel()):
@@ -91,6 +97,9 @@ fn subtract_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
 
     Returns:
             New tensor with result.
+
+    Raises:
+            Error: If operation fails.
     """
     var result = ExTensor(tensor.shape(), tensor.dtype())
     for i in range(tensor.numel()):
@@ -143,7 +152,7 @@ fn apply_gradient(
             Updated parameter tensor.
 
     Raises:
-            Error: If shapes don't match.
+            Error: If shapes don't match or operation fails.
     """
     if gradient.shape() != parameter.shape():
         raise Error("Gradient shape must match parameter shape")
@@ -168,8 +177,7 @@ fn apply_gradients(
             learning_rate: Learning rate (step size).
 
     Raises:
-            Error: If parameter count doesn't match gradient count.
-            Error: If any shape mismatch.
+            Error: If parameter count doesn't match gradient count or shape mismatch occurs.
     """
     if len(parameters) != len(gradients):
         raise Error("Parameter count must match gradient count")
@@ -226,6 +234,9 @@ fn mse_loss_and_grad(
 
     Returns:
             LossAndGrad containing scalar loss and gradient tensor.
+
+    Raises:
+            Error: If operation fails.
     """
     # Forward pass
     var squared_errors = mean_squared_error(predictions, targets)
@@ -259,6 +270,9 @@ fn bce_loss_and_grad(
 
     Returns:
             LossAndGrad containing scalar loss and gradient tensor.
+
+    Raises:
+            Error: If operation fails.
     """
     # Forward pass
     var bce_per_sample = binary_cross_entropy(predictions, targets, epsilon)
@@ -293,6 +307,9 @@ fn ce_loss_and_grad(
     Returns:
             LossAndGrad containing scalar loss and gradient tensor.
 
+    Raises:
+            Error: If operation fails.
+
     Note:
             The cross_entropy function already computes mean reduction internally.
     """
@@ -324,6 +341,9 @@ fn compute_gradient(
 
     Returns:
             Gradient tensor.
+
+    Raises:
+            Error: If unknown loss type or operation fails.
 
     Note:
             For more control, use the specific loss_and_grad functions directly.

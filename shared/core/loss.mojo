@@ -121,6 +121,9 @@ fn binary_cross_entropy_backward(
     Returns:
             Gradient with respect to predictions, same shape as predictions.
 
+    Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
              Forward
@@ -216,6 +219,9 @@ fn mean_squared_error_backward(
 
     Returns:
             Gradient with respect to predictions, same shape as predictions.
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -351,6 +357,9 @@ fn cross_entropy_backward(
 
     Returns:
         Gradient with respect to logits, shape (batch, num_classes).
+
+    Raises:
+            Error: If operation fails.
 
     Example:
         ```mojo
@@ -492,6 +501,9 @@ fn smooth_l1_loss_backward(
 
     Returns:
             Gradient with respect to predictions, same shape as predictions.
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -638,6 +650,9 @@ fn hinge_loss_backward(
 
     Returns:
             Gradient with respect to predictions, same shape as predictions.
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -803,6 +818,9 @@ fn focal_loss_backward(
 
     Returns:
             Gradient with respect to predictions, same shape as predictions.
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -977,6 +995,9 @@ fn kl_divergence_backward(
 
     Returns:
             Gradient with respect to q, same shape as q.
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo

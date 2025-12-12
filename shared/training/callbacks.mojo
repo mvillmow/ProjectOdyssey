@@ -128,6 +128,9 @@ struct EarlyStopping(Callback, Copyable, Movable):
 
         Returns:
             STOP if patience exhausted, CONTINUE otherwise.
+
+        Raises:
+            Error: If operation fails.
         """
         # Check if monitored metric exists
         if self.monitor not in state.metrics:
@@ -289,6 +292,9 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
 
         Returns:
             CONTINUE always (even if checkpoint save fails).
+
+        Raises:
+            Error: If operation fails.
         """
         var should_save = False
 
@@ -419,6 +425,9 @@ struct LoggingCallback(Callback, Copyable, Movable):
 
         Returns:
             CONTINUE always.
+
+        Raises:
+            Error: If operation fails.
         """
         if state.epoch % self.log_interval == 0:
             self.log_count += 1

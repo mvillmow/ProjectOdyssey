@@ -41,6 +41,9 @@ fn _broadcast_binary[
 
     Returns:
         Result tensor with operation applied element-wise with broadcasting.
+
+    Raises:
+        Error: If shapes are not broadcast-compatible.
     """
     # Compute broadcast shape
     var result_shape = broadcast_shapes(a.shape(), b.shape())
@@ -112,6 +115,9 @@ fn _dispatch_broadcast_binary[
 
     Raises:
         Error: If dtypes don't match or are unsupported.
+
+    Note:
+            Dispatches based on runtime dtype to appropriate specialized version.
     """
     # Validate dtypes match
     if a._dtype != b._dtype:
@@ -442,6 +448,9 @@ fn _reduce_broadcast_dims(
     Returns:
         Reduced gradient matching original_shape.
 
+    Raises:
+            Error: If operation fails.
+
     Examples:
         ```
         # Broadcasting (3, 1, 5) → (3, 4, 5)
@@ -505,6 +514,9 @@ fn add_backward(
     Returns:
         GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
 
+    Raises:
+        Error: If operation fails.
+
     Examples:
         ```
         # No broadcasting
@@ -550,6 +562,9 @@ fn subtract_backward(
 
     Returns:
         GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
+
+    Raises:
+        Error: If operation fails.
     """
     # Gradient for A passes through unchanged (but reduced for broadcasting)
     var grad_a = _reduce_broadcast_dims(grad_output, a.shape())
@@ -582,6 +597,9 @@ fn multiply_backward(
 
     Returns:
         GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
+
+    Raises:
+        Error: If operation fails.
 
     Examples:
         ```
@@ -623,6 +641,9 @@ fn divide_backward(
 
     Returns:
         GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
+
+    Raises:
+        Error: If operation fails.
 
     Examples:
         ```

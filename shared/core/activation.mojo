@@ -74,6 +74,9 @@ fn relu(tensor: ExTensor) raises -> ExTensor:
     Returns:
             New tensor with ReLU applied element-wise.
 
+    Raises:
+            Error: If operation fails.
+
     Examples:
     ```
         var x = ExTensor(...)  # [-2, -1, 0, 1, 2]
@@ -97,6 +100,9 @@ fn leaky_relu(tensor: ExTensor, alpha: Float64 = 0.01) raises -> ExTensor:
 
     Returns:
             New tensor with Leaky ReLU applied element-wise.
+
+    Raises:
+            Error: If operation fails.
 
     Examples:
     ```mojo
@@ -259,6 +265,9 @@ fn sigmoid(tensor: ExTensor) raises -> ExTensor:
     Returns:
             New tensor with sigmoid applied element-wise, values in (0, 1).
 
+    Raises:
+            Error: If operation fails.
+
     Examples:
     ```
             var x = ExTensor(...)  # [-2, 0, 2]
@@ -294,6 +303,9 @@ fn tanh(tensor: ExTensor) raises -> ExTensor:
 
     Returns:
             New tensor with tanh applied element-wise, values in (-1, 1).
+
+    Raises:
+            Error: If operation fails.
 
     Examples:
     ```
@@ -378,6 +390,9 @@ fn gelu(tensor: ExTensor, approximate: Bool = False) raises -> ExTensor:
     Returns:
             New tensor with GELU applied element-wise.
 
+    Raises:
+            Error: If operation fails.
+
     Examples:
     ```
             var x = ExTensor(...)     # [-2, 0, 2]
@@ -412,6 +427,9 @@ fn relu_backward(
 
     Returns:
             Gradient with respect to input (dL/dx).
+
+    Raises:
+            Error: If operation fails.
 
     Examples:
     ```
@@ -459,6 +477,9 @@ fn leaky_relu_backward(
 
     Returns:
             Gradient with respect to input (dL/dx).
+
+    Raises:
+            Error: If operation fails.
     """
     if grad_output._dtype != x._dtype:
         raise Error(
@@ -536,6 +557,9 @@ fn prelu_backward(
 
     Returns:
             GradientPair containing (grad_input, grad_alpha).
+
+    Raises:
+            Error: If operation fails.
     """
     if grad_output._dtype != x._dtype or grad_output._dtype != alpha._dtype:
         raise Error("prelu_backward: all tensors must have same dtype")
@@ -585,6 +609,9 @@ fn sigmoid_backward(
     Returns:
             Gradient with respect to input (dL/dx).
 
+    Raises:
+            Error: If operation fails.
+
     Note:
             Takes output instead of input to avoid recomputing sigmoid.
     """
@@ -621,6 +648,9 @@ fn tanh_backward(
     Returns:
             Gradient with respect to input (dL/dx).
 
+    Raises:
+            Error: If operation fails.
+
     Note:
             Takes output instead of input to avoid recomputing tanh.
     """
@@ -653,6 +683,9 @@ fn gelu_backward(
 
     Returns:
             Gradient with respect to input (dL/dx).
+
+    Raises:
+            Error: If operation fails.
     """
     if grad_output._dtype != x._dtype:
         raise Error("gelu_backward: grad_output and x must have same dtype")
@@ -737,6 +770,9 @@ fn swish(tensor: ExTensor) raises -> ExTensor:
     Returns:
             Output tensor with swish applied element-wise.
 
+    Raises:
+            Error: If operation fails.
+
         Reference:
             Ramachandran et al., "Searching for Activation Functions" (2017).
     """
@@ -760,6 +796,9 @@ fn mish(tensor: ExTensor) raises -> ExTensor:
 
     Returns:
             Output tensor with mish applied element-wise.
+
+    Raises:
+            Error: If operation fails.
 
         Reference:
             Misra, "Mish: A Self Regularized Non-Monotonic Activation Function" (2019).
@@ -799,6 +838,9 @@ fn elu(tensor: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
 
     Returns:
             Output tensor with ELU applied element-wise.
+
+    Raises:
+            Error: If operation fails.
 
         Reference:
             Clevert et al., "Fast and Accurate Deep Network Learning by.
@@ -866,6 +908,9 @@ fn swish_backward(
 
     Returns:
             Gradient with respect to input.
+
+    Raises:
+            Error: If operation fails.
     """
     # Compute sigmoid(x)
     var sig = sigmoid(x)
@@ -893,6 +938,9 @@ fn mish_backward(
 
     Returns:
             Gradient with respect to input.
+
+    Raises:
+            Error: If operation fails.
     """
     from .elementwise import clip, abs as abs_fn, exp as tensor_exp
 
@@ -942,6 +990,9 @@ fn elu_backward(
 
     Returns:
             Gradient with respect to input.
+
+    Raises:
+            Error: If operation fails.
     """
     var result = zeros_like(x)
     var x_ptr = x._data
@@ -1017,6 +1068,9 @@ fn hard_sigmoid(tensor: ExTensor) raises -> ExTensor:
     Returns:
             Output tensor with hard_sigmoid applied element-wise, values in [0, 1].
 
+    Raises:
+            Error: If operation fails.
+
         Reference:
             Howard et al., "Searching for MobileNetV3" (2019).
     """
@@ -1042,6 +1096,9 @@ fn hard_swish(tensor: ExTensor) raises -> ExTensor:
 
     Returns:
             Output tensor with hard_swish applied element-wise.
+
+    Raises:
+            Error: If operation fails.
 
         Reference:
             Howard et al., "Searching for MobileNetV3" (2019).
@@ -1072,6 +1129,9 @@ fn hard_tanh(
     Returns:
             Output tensor with hard_tanh applied element-wise.
 
+    Raises:
+            Error: If operation fails.
+
         Reference:
             Standard activation function used in various architectures.
     """
@@ -1098,6 +1158,9 @@ fn hard_sigmoid_backward(
 
     Returns:
             Gradient with respect to input.
+
+    Raises:
+            Error: If operation fails.
     """
     if grad_output._dtype != x._dtype:
         raise Error(
@@ -1129,6 +1192,9 @@ fn hard_swish_backward(
 
     Returns:
             Gradient with respect to input.
+
+    Raises:
+            Error: If operation fails.
     """
     if grad_output._dtype != x._dtype:
         raise Error(
@@ -1162,6 +1228,9 @@ fn hard_tanh_backward(
 
     Returns:
             Gradient with respect to input.
+
+    Raises:
+            Error: If operation fails.
     """
     if grad_output._dtype != x._dtype:
         raise Error(

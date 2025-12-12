@@ -151,6 +151,9 @@ fn create_alternating_pattern_tensor(
         # pattern[0] = -1.0, pattern[1] = -0.5, pattern[2] = 0.0
         # pattern[3] = 0.5, pattern[4] = 1.0, pattern[5] = 1.5
         ```
+
+    Raises:
+        Error: If operation fails.
     """
     # Create zero-initialized tensor
     var tensor = zeros(shape, dtype)
@@ -325,6 +328,9 @@ fn create_zeros_tensor(shape: List[Int], dtype: DType) raises -> ExTensor:
         var z = create_zeros_tensor([3, 3], DType.float32)
         verify_special_value_invariants(z, 0.0)  # Passes
         ```
+
+    Raises:
+        Error: If operation fails.
     """
     return create_special_value_tensor(shape, dtype, SPECIAL_VALUE_ZERO)
 
@@ -346,6 +352,9 @@ fn create_ones_tensor(shape: List[Int], dtype: DType) raises -> ExTensor:
         var o = create_ones_tensor([3, 3], DType.float32)
         verify_special_value_invariants(o, 1.0)  # Passes
         ```
+
+    Raises:
+        Error: If operation fails.
     """
     return create_special_value_tensor(shape, dtype, SPECIAL_VALUE_ONE)
 
@@ -367,6 +376,9 @@ fn create_halves_tensor(shape: List[Int], dtype: DType) raises -> ExTensor:
         var h = create_halves_tensor([3, 3], DType.float32)
         verify_special_value_invariants(h, 0.5)  # Passes
         ```
+
+    Raises:
+        Error: If operation fails.
     """
     return create_special_value_tensor(shape, dtype, SPECIAL_VALUE_HALF)
 
@@ -390,5 +402,8 @@ fn create_one_and_half_tensor(
         var t = create_one_and_half_tensor([3, 3], DType.float32)
         verify_special_value_invariants(t, 1.5)  # Passes
         ```
+
+    Raises:
+        Error: If operation fails.
     """
     return create_special_value_tensor(shape, dtype, SPECIAL_VALUE_ONE_HALF)

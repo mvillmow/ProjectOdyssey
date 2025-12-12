@@ -224,6 +224,7 @@ fn convert_to_fp32_master(params: ExTensor) raises -> ExTensor:
 
         Creates FP32 copy of parameters for optimizer state management
         Use when training with FP16/BF16 but need FP32 precision for updates.
+
     Args:
             params: Model parameters (any dtype).
 
@@ -355,6 +356,9 @@ fn check_gradients_finite(gradients: ExTensor) raises -> Bool:
                 scaler.backoff()
                 continue  # Skip this step
             ```
+
+    Raises:
+            Error: If operation fails.
     """
     return not (has_nan(gradients) or has_inf(gradients))
 

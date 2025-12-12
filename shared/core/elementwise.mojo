@@ -83,6 +83,9 @@ fn abs(tensor: ExTensor) raises -> ExTensor:
     Returns:
             A new tensor with absolute values.
 
+    Raises:
+            Error: If operation fails.
+
     Examples:
     ```
             var a = full(shape, -3.0, DType.float32)
@@ -112,6 +115,9 @@ fn sign(tensor: ExTensor) raises -> ExTensor:
     Returns:
             A new tensor with sign values (-1 for negative, 0 for zero, 1 for positive).
 
+    Raises:
+            Error: If operation fails.
+
     Examples:
     ```
             var a = tensor([-2.0, 0.0, 3.0])
@@ -140,6 +146,9 @@ fn exp(tensor: ExTensor) raises -> ExTensor:
 
     Returns:
             A new tensor with exponential values.
+
+    Raises:
+            Error: If operation fails.
 
     Examples:
     ```
@@ -234,6 +243,9 @@ fn sin(tensor: ExTensor) raises -> ExTensor:
     Returns:
             A new tensor with sine values.
 
+    Raises:
+            Error: If operation fails.
+
     Examples:
     ```
             var a = zeros(shape, DType.float32)
@@ -263,6 +275,9 @@ fn cos(tensor: ExTensor) raises -> ExTensor:
     Returns:
             A new tensor with cosine values.
 
+    Raises:
+            Error: If operation fails.
+
     Examples:
     ```
             var a = zeros(shape, DType.float32)
@@ -270,6 +285,38 @@ fn cos(tensor: ExTensor) raises -> ExTensor:
     ```
     """
     return dispatch_float_unary[_cos_op](tensor)
+
+
+@always_inline
+fn _tanh_op[T: DType](x: Scalar[T]) -> Scalar[T]:
+    """Hyperbolic tangent operation."""
+
+    @parameter
+    if T == DType.float16 or T == DType.float32:
+        return Scalar[T](math_tanh(Float32(x)))
+    else:
+        return Scalar[T](math_tanh(Float64(x)))
+
+
+fn tanh(tensor: ExTensor) raises -> ExTensor:
+    """Hyperbolic tangent function element-wise.
+
+    Args:
+            tensor: Input tensor.
+
+    Returns:
+            A new tensor with tanh values (range: -1 to 1).
+
+    Raises:
+            Error: If operation fails.
+
+    Examples:
+    ```
+            var a = zeros(shape, DType.float32)
+            var b = tanh(a)  # All values become 0.0 (tanh(0))
+    ```
+    """
+    return dispatch_float_unary[_tanh_op](tensor)
 
 
 fn clip(
@@ -336,6 +383,9 @@ fn ceil(tensor: ExTensor) raises -> ExTensor:
     Returns:
             A new tensor with ceiling values.
 
+    Raises:
+            Error: If operation fails.
+
     Examples:
     ```
             var a = tensor([1.2, 2.5, 3.9])
@@ -364,6 +414,9 @@ fn floor(tensor: ExTensor) raises -> ExTensor:
 
     Returns:
             A new tensor with floor values.
+
+    Raises:
+            Error: If operation fails.
 
     Examples:
     ```
@@ -394,6 +447,9 @@ fn round(tensor: ExTensor) raises -> ExTensor:
     Returns:
             A new tensor with rounded values.
 
+    Raises:
+            Error: If operation fails.
+
     Examples:
     ```
             var a = tensor([1.2, 2.5, 3.9])
@@ -422,6 +478,9 @@ fn trunc(tensor: ExTensor) raises -> ExTensor:
 
     Returns:
             A new tensor with truncated values.
+
+    Raises:
+            Error: If operation fails.
 
     Examples:
     ```
@@ -613,6 +672,9 @@ fn logical_not(tensor: ExTensor) raises -> ExTensor:
     Returns:
             Boolean tensor (True where input is zero).
 
+    Raises:
+            Error: If operation fails.
+
     Examples:
     ```
             var a = tensor([0.0, 1.0, 2.0])
@@ -798,6 +860,9 @@ fn exp_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     Returns:
             Gradient w.r.t. input (∂L/∂X).
 
+    Raises:
+            Error: If operation fails.
+
     Examples:
     ```
             var x = ones([3, 4])
@@ -830,6 +895,9 @@ fn log_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
 
     Returns:
             Gradient w.r.t. input (∂L/∂X).
+
+    Raises:
+            Error: If operation fails.
 
     Examples:
             var x = full([3, 4], 2.0)
@@ -865,6 +933,9 @@ fn sqrt_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
 
     Returns:
             Gradient w.r.t. input (∂L/∂X).
+
+    Raises:
+            Error: If operation fails.
 
     Examples:
             var x = full([3, 4], 4.0)
@@ -904,6 +975,9 @@ fn abs_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
 
     Returns:
             Gradient w.r.t. input (∂L/∂X).
+
+    Raises:
+            Error: If operation fails.
 
     Examples:
     ```
@@ -952,6 +1026,9 @@ fn clip_backward(
     Returns:
             Gradient w.r.t. input (∂L/∂X).
 
+    Raises:
+            Error: If operation fails.
+
     Examples:
     ```
             var x = tensor([-2.0, -1.0, 0.0, 1.0, 2.0])
@@ -988,6 +1065,9 @@ fn log10_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     Returns:
             Gradient w.r.t. input (∂L/∂X).
 
+    Raises:
+            Error: If operation fails.
+
         Numerical Stability:
             Uses epsilon = 1e-10 to prevent division by zero.
     """
@@ -1016,6 +1096,9 @@ fn log2_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
 
     Returns:
             Gradient w.r.t. input (∂L/∂X).
+
+    Raises:
+            Error: If operation fails.
 
         Numerical Stability:
             Uses epsilon = 1e-10 to prevent division by zero.

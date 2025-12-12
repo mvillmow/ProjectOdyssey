@@ -36,6 +36,9 @@ fn step_lr(
     Returns:
             Decayed learning rate for current epoch.
 
+    Raises:
+            Error: If step_size is not positive or gamma is not in range (0, 1).
+
         Example:
             ```mojo
             from shared.training.schedulers import step_lr
@@ -106,6 +109,9 @@ fn multistep_lr(
                 # Epoch 90+: lr = 0.0001
             ```
 
+    Raises:
+        Error: If operation fails.
+
     Note:
             - Used in ResNet paper: decay at epochs [30, 60, 90].
             - Allows fine-grained control over LR schedule.
@@ -156,6 +162,9 @@ fn exponential_lr(
                 var lr = exponential_lr(initial_lr, epoch, gamma=0.95)
                 # Smooth exponential decay
             ```
+
+    Raises:
+        Error: If operation fails.
 
     Note:
             - Smoother decay than step_lr.

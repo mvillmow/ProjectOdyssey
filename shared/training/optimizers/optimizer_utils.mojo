@@ -38,6 +38,9 @@ fn initialize_optimizer_state(
             List of state buffer lists. Each element is a list of ExTensor states
             for a single parameter.
 
+    Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
             # For Adam, which needs first moment (m) and second moment (v)
@@ -89,6 +92,9 @@ fn initialize_optimizer_state_from_params(
     Returns:
             List of state buffer lists with matching shapes and dtypes.
 
+    Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
             # Collect all model parameters
@@ -132,6 +138,9 @@ fn compute_weight_decay_term(
     Returns:
             Tensor of same shape as params containing weight_decay * params.
 
+    Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
             var params = xavier_uniform([784, 128], DType.float32)
@@ -157,6 +166,9 @@ fn apply_weight_decay(mut params: ExTensor, weight_decay: Float64) raises:
     Args:
             params: Model parameters to regularize (modified in-place).
             weight_decay: L2 regularization coefficient.
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -198,6 +210,9 @@ fn scale_tensor(tensor: ExTensor, scale: Float64) raises -> ExTensor:
     Returns:
             New tensor of same shape and dtype as input, with all elements scaled.
 
+    Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
             var grad = zeros([100], DType.float32)
@@ -217,6 +232,9 @@ fn scale_tensor_inplace(mut tensor: ExTensor, scale: Float64) raises:
     Args:
             tensor: Input tensor (modified in-place).
             scale: Scalar multiplier.
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -240,6 +258,9 @@ fn compute_tensor_norm(tensor: ExTensor) raises -> Float64:
 
     Returns:
             L2 norm of the tensor as Float64.
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -271,6 +292,9 @@ fn compute_global_norm(tensors: List[ExTensor]) raises -> Float64:
 
     Returns:
             Global L2 norm as Float64.
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -308,6 +332,9 @@ fn normalize_tensor_to_unit_norm(mut tensor: ExTensor) raises:
 
     Args:
             tensor: Input tensor (modified in-place).
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo

@@ -86,6 +86,9 @@ fn adam_step(
         This is a pure function - it returns new state rather than mutating.
         Caller must capture all three return values and update their variables.
         Timestep t must be tracked by caller and incremented after each step.
+
+    Raises:
+        Error: If operation fails.
     """
     if params.shape() != gradients.shape():
         raise Error("Parameters and gradients must have the same shape")
@@ -201,6 +204,9 @@ fn adam_step_simple(
                 (W, m, v) = adam_step_simple(W, grad_W, m, v, t, 0.001)
                 t += 1
             ```
+
+    Raises:
+        Error: If operation fails.
     """
     return adam_step(
         params,

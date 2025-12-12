@@ -24,6 +24,9 @@ fn extract_batch(
             Batch tensor of shape (actual_batch_size, ...) where actual_batch_size
             is min(batch_size, N - start_idx).
 
+    Raises:
+            Error: If start_idx is out of bounds.
+
         Example:
             ```mojo
             from shared.data import extract_batch
@@ -104,6 +107,9 @@ fn extract_batch_pair(
 
     Returns:
             Tuple of (batch_data, batch_labels) with matching first dimension.
+
+    Raises:
+            Error: If data and label sizes don't match.
 
     Example:
         ```mojo

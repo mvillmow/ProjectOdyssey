@@ -148,6 +148,9 @@ fn get_model_parameter_names(model_type: String) raises -> List[String]:
     Returns:
             List of parameter names in order.
 
+    Raises:
+            Error: If model_type is unknown.
+
     Note:
             Parameter names must match the struct field names in each model.mojo file.
 
