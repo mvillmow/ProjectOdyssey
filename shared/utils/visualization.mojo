@@ -25,14 +25,24 @@ struct PlotData(Copyable, Movable):
     """Data for a single plot."""
 
     var title: String
+    """Title of the plot."""
     var xlabel: String
+    """Label for X-axis."""
     var ylabel: String
+    """Label for Y-axis."""
     var x_data: List[Float32]
+    """X-axis data points."""
     var y_data: List[Float32]
+    """Y-axis data points."""
     var label: String
+    """Legend label for the data series."""
 
     fn __init__(out self):
-        """Create empty plot data."""
+        """Create empty plot data.
+
+        Returns:
+            None.
+        """
         self.title = ""
         self.xlabel = ""
         self.ylabel = ""
@@ -45,19 +55,31 @@ struct PlotSeries(Copyable, Movable):
     """Multiple data series for plotting."""
 
     var title: String
+    """Title of the plot."""
     var xlabel: String
+    """Label for X-axis."""
     var ylabel: String
+    """Label for Y-axis."""
     var series_data: List[PlotData]
+    """List of data series."""
 
     fn __init__(out self):
-        """Create empty plot with multiple series."""
+        """Create empty plot with multiple series.
+
+        Returns:
+            None.
+        """
         self.title = ""
         self.xlabel = ""
         self.ylabel = ""
         self.series_data = List[PlotData]()
 
     fn add_series(mut self, var series: PlotData):
-        """Add data series to plot."""
+        """Add data series to plot.
+
+        Args:
+            series: PlotData to add.
+        """
         self.series_data.append(series^)
 
 
@@ -65,13 +87,22 @@ struct ConfusionMatrixData(Copyable, Movable):
     """Data for confusion matrix visualization."""
 
     var class_names: List[String]
+    """List of class names."""
     var matrix: List[List[Int]]
+    """Confusion matrix data."""
     var accuracy: Float32
+    """Overall accuracy."""
     var precision: Float32
+    """Macro-averaged precision."""
     var recall: Float32
+    """Macro-averaged recall."""
 
     fn __init__(out self):
-        """Create empty confusion matrix."""
+        """Create empty confusion matrix.
+
+        Returns:
+            None.
+        """
         self.class_names = List[String]()
         self.matrix = List[List[Int]]()
         self.accuracy = 0.0

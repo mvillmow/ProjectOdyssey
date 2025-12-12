@@ -55,12 +55,20 @@ struct MetricResult(Copyable, Movable):
     """
 
     var name: String
+    """Name of the metric."""
     var is_scalar: Bool
+    """Whether this is a scalar or tensor metric."""
     var scalar_value: Float64
+    """Scalar metric value (if is_scalar=True)."""
     var tensor_value: ExTensor
+    """Tensor metric value (if is_scalar=False)."""
 
     fn __init__(out self, name: String, value: Float64) raises:
         """Create scalar metric result.
+
+        Args:
+            name: Name of the metric.
+            value: Scalar value of the metric.
 
         Raises:
             Error: If operation fails.
@@ -71,7 +79,12 @@ struct MetricResult(Copyable, Movable):
         self.tensor_value = ExTensor(List[Int](), DType.float32)  # Placeholder
 
     fn __init__(out self, name: String, var value: ExTensor):
-        """Create tensor metric result (ownership transferred)."""
+        """Create tensor metric result (ownership transferred).
+
+        Args:
+            name: Name of the metric.
+            value: Tensor value of the metric (ownership transferred).
+        """
         self.name = name
         self.is_scalar = False
         self.scalar_value = 0.0
@@ -133,7 +146,9 @@ struct MetricCollection(Sized):
     """
 
     var metric_names: List[String]
+    """Names of metrics in this collection."""
     var num_metrics: Int
+    """Number of metrics in this collection."""
 
     fn __init__(out self):
         """Initialize empty metric collection."""
@@ -201,18 +216,16 @@ fn create_metric_summary(results: List[MetricResult]) -> String:
     """Create human-readable summary of metric results.
 
     Args:
-            results: Vector of metric results.
+        results: Vector of metric results.
 
     Returns:
-            Formatted string with all metrics.
+        Formatted string with all metrics.
 
     Example output:
-    ```
         Metrics Summary:
             accuracy: 0.9234
             loss: 0.1523
             f1_score: 0.9102
-    ```
     """
     var summary = "Metrics Summary:\n"
 
@@ -241,9 +254,13 @@ struct MetricLogger:
     """
 
     var metric_names: List[String]
+    """Names of metrics being tracked."""
     var metric_history: List[List[Float64]]
+    """History of metric values across epochs."""
     var num_metrics: Int
+    """Number of metrics being tracked."""
     var num_epochs: Int
+    """Number of epochs logged."""
 
     fn __init__(out self):
         """Initialize empty metric logger."""

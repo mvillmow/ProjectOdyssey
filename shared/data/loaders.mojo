@@ -17,13 +17,17 @@ from .samplers import Sampler, SequentialSampler, RandomSampler
 struct Batch(Copyable, Movable):
     """Container for a batch of samples.
 
-    Holds data and labels for a batch, along with batch metadata
+    Holds data and labels for a batch, along with batch metadata.
     """
 
     var data: ExTensor
+    """Batch data tensor."""
     var labels: ExTensor
+    """Batch labels tensor."""
     var batch_size: Int
+    """Number of samples in the batch."""
     var indices: List[Int]
+    """Original indices of samples in the batch."""
 
     fn __init__(
         out self,
@@ -62,9 +66,13 @@ struct BaseLoader[D: Dataset & Copyable & Movable](Copyable, Movable):
     """
 
     var dataset: Self.D
+    """Dataset to load from."""
     var batch_size: Int
+    """Number of samples per batch."""
     var drop_last: Bool
+    """Whether to drop the last incomplete batch."""
     var _len: Int
+    """Cached number of batches."""
 
     fn __init__(
         out self,
@@ -80,7 +88,7 @@ struct BaseLoader[D: Dataset & Copyable & Movable](Copyable, Movable):
             drop_last: Whether to drop the last incomplete batch.
 
         Raises:
-            Error if batch_size is invalid.
+            Error: If batch_size is invalid.
         """
         if batch_size <= 0:
             raise Error(
@@ -121,11 +129,17 @@ struct BatchLoader[
     """
 
     var dataset: Self.D
+    """Dataset to load from."""
     var batch_size: Int
+    """Number of samples per batch."""
     var drop_last: Bool
+    """Whether to drop the last incomplete batch."""
     var _len: Int
+    """Cached number of batches."""
     var sampler: Self.S
+    """Sampler for generating indices."""
     var shuffle: Bool
+    """Whether to shuffle the data."""
 
     fn __init__(
         out self,
@@ -145,7 +159,7 @@ struct BatchLoader[
             drop_last: Whether to drop the last incomplete batch.
 
         Raises:
-            Error if batch_size is invalid.
+            Error: If batch_size is invalid.
         """
         # Validate batch size
         if batch_size <= 0:
@@ -221,16 +235,15 @@ struct BatchLoader[
         """Stack list of tensors into a batch tensor.
 
         Creates a new tensor with shape [batch_size, *tensor_shape] by
-        stacking the input tensors along a new first dimension
-
+        stacking the input tensors along a new first dimension.
         Supports arbitrary N-dimensional tensors. All tensors must have
-        identical shapes for proper stacking
+        identical shapes for proper stacking.
 
         Args:
-            tensors: List of tensors to stack
+            tensors: List of tensors to stack.
 
         Returns:
-            Stacked tensor with batch dimension prepended
+            ExTensor with batch dimension prepended (shape: [batch_size, *tensor_shape]).
 
         Raises:
             Error: If tensors list is empty or tensors have incompatible shapes.

@@ -807,11 +807,15 @@ fn assert_type[T: AnyType](value: T, expected_type: String) raises:
     is primarily for test documentation and clarity.
 
     Args:
-            value: The value to check.
-            expected_type: String describing the expected type (for documentation).
+        value: The value to check.
+        expected_type: String describing the expected type (for documentation).
 
     Raises:
-            Never raises - type checking is done at compile time.
+        Never raises - type checking is done at compile time.
+
+    Note:
+        This function exists for test API clarity and documentation.
+        Actual type checking is performed at compile time by Mojo.
     """
     # Type checking in Mojo is compile-time
     # This function exists for test API clarity

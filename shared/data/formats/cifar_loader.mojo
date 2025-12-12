@@ -43,7 +43,7 @@ from shared.data import (
 struct CIFARLoader(Copyable, Movable):
     """Loader for CIFAR-10 and CIFAR-100 binary format files.
 
-    Supports loading batches of images and labels from CIFAR binary format
+    Supports loading batches of images and labels from CIFAR binary format.
     Each batch file contains multiple images packed sequentially.
 
     Attributes:
@@ -54,7 +54,7 @@ struct CIFARLoader(Copyable, Movable):
 
     Example:
         ```mojo
-         Load CIFAR-10 batch
+        # Load CIFAR-10 batch
         var loader = CIFARLoader(10)
         var images = loader.load_images("data/data_batch_1.bin")
         var labels = loader.load_labels("data/data_batch_1.bin")
@@ -62,9 +62,13 @@ struct CIFARLoader(Copyable, Movable):
     """
 
     var cifar_version: Int
+    """Version of CIFAR format (10 or 100)."""
     var image_size: Int
+    """Size of each square image (32 for standard CIFAR)."""
     var channels: Int
+    """Number of color channels (3 for RGB)."""
     var bytes_per_image: Int
+    """Total bytes per image including label(s)."""
 
     fn __init__(out self, cifar_version: Int) raises:
         """Initialize CIFAR loader with specified version.
@@ -93,10 +97,10 @@ struct CIFARLoader(Copyable, Movable):
         """Validate that file size is consistent with CIFAR format.
 
         Args:
-            file_size: Size of file in bytes
+            file_size: Size of file in bytes.
 
         Raises:
-            Error: If file size is not a multiple of bytes_per_image
+            Error: If file size is not a multiple of bytes_per_image.
         """
         if file_size % self.bytes_per_image != 0:
             raise Error(

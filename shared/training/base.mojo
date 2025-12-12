@@ -27,6 +27,7 @@ struct CallbackSignal(Copyable, ImplicitlyCopyable, Movable):
     """
 
     var value: Int
+    """Signal value (0=CONTINUE, 1=STOP)."""
 
     fn __init__(out self, value: Int):
         """Initialize callback signal.
@@ -67,10 +68,15 @@ struct TrainingState(Copyable, Movable):
     """
 
     var epoch: Int
+    """Current epoch number (0-indexed)."""
     var batch: Int
+    """Current batch number within epoch (0-indexed)."""
     var metrics: Dict[String, Float64]
+    """Dictionary of metric name -> value."""
     var learning_rate: Float64
+    """Current learning rate."""
     var should_stop: Bool
+    """Flag set by callbacks to request training stop."""
 
     fn __init__(
         out self,
@@ -261,28 +267,26 @@ trait LRScheduler:
 fn has_nan_or_inf(tensor: ExTensor) -> Bool:
     """Check if tensor contains NaN or Inf values (numerical instability detection).
 
-        Detects numerical instability in gradients during training by checking for:
-        - NaN (Not a Number) values indicating undefined operations.
-        - Inf (positive or negative infinity) indicating overflow.
+    Detects numerical instability in gradients during training by checking for:
+    - NaN (Not a Number) values indicating undefined operations.
+    - Inf (positive or negative infinity) indicating overflow.
 
     Args:
-            tensor: Tensor to check for numerical instability.
+        tensor: Tensor to check for numerical instability.
 
     Returns:
-            True if tensor contains any NaN or Inf values, False otherwise.
+        True if tensor contains any NaN or Inf values, False otherwise.
 
-        Example:
-            ```mojo
-            var gradients = ...  # Computed gradients
-            if has_nan_or_inf(gradients):
-                print("Numerical instability detected! Stopping training.")
-                break
-            ```
+    Example:
+        var gradients = ...  # Computed gradients
+        if has_nan_or_inf(gradients):
+            print("Numerical instability detected! Stopping training.")
+            break
 
     Note:
-            - Works with all tensor dtypes (float32, float64, float16, integer types).
-            - Integer tensors cannot have NaN/Inf and will always return False.
-            - Used for gradient validation during training.
+        - Works with all tensor dtypes (float32, float64, float16, integer types).
+        - Integer tensors cannot have NaN/Inf and will always return False.
+        - Used for gradient validation during training.
     """
     return has_nan(tensor) or has_inf(tensor)
 
@@ -291,23 +295,21 @@ fn is_valid_loss(loss: Float64) raises -> Bool:
     """Check if loss value is valid (not NaN or inf).
 
     Args:
-            loss: Loss value to check.
+        loss: Loss value to check.
 
     Returns:
-            True if loss is finite (not NaN, not inf), False otherwise.
+        True if loss is finite (not NaN, not inf), False otherwise.
 
     Raises:
-            Error: If operation fails.
+        Error: If operation fails.
 
-        Example:
-            ```mojo
-            f not is_valid_loss(loss):
-                print("Training diverged! Loss is", loss)
-                break
-            ```
+    Example:
+        if not is_valid_loss(loss):
+            print("Training diverged! Loss is", loss)
+            break
 
     Note:
-            Uses has_nan_or_inf internally for consistency with gradient validation.
+        Uses has_nan_or_inf internally for consistency with gradient validation.
     """
     # Create a single-element tensor for loss value
     var shape = List[Int]()
@@ -327,35 +329,33 @@ fn compute_gradient_norm(
 ) -> Float64:
     """Compute gradient norm for training diagnostics and exploding gradient detection.
 
-        Computes the global norm of all gradients in a parameter list using either
-        L1 or L2 norm. Used for:
-        - Gradient clipping (by computing norm to clip by).
-        - Training diagnostics (monitoring gradient magnitude).
-        - Exploding gradient detection (norm > threshold).
+    Computes the global norm of all gradients in a parameter list using either
+    L1 or L2 norm. Used for:
+    - Gradient clipping (by computing norm to clip by).
+    - Training diagnostics (monitoring gradient magnitude).
+    - Exploding gradient detection (norm > threshold).
 
     Args:
-            parameters: List of gradient tensors to compute norm over.
-            norm_type: Type of norm to compute ("L2" or "L1"). Defaults to "L2".
+        parameters: List of gradient tensors to compute norm over.
+        norm_type: Type of norm to compute ("L2" or "L1"). Defaults to "L2".
 
     Returns:
-            Global norm of all gradients as Float64.
+        Global norm of all gradients as Float64.
 
-        Example:
-            ```mojo
-            var grad_norm = compute_gradient_norm(gradients, "L2")
-            if grad_norm > max_grad_norm:
-                # Clip gradients
-                ...
-            ```
+    Example:
+        var grad_norm = compute_gradient_norm(gradients, "L2")
+        if grad_norm > max_grad_norm:
+            # Clip gradients
+            ...
 
-        Notes:
-            - L2 norm: sqrt(sum of all gradient elements squared).
-            - L1 norm: sum of absolute values of all gradient elements.
-            - Returns 0.0 for empty parameter list.
-            - Aggregates norms across all tensors in the list.
+    Notes:
+        - L2 norm: sqrt(sum of all gradient elements squared).
+        - L1 norm: sum of absolute values of all gradient elements.
+        - Returns 0.0 for empty parameter list.
+        - Aggregates norms across all tensors in the list.
 
-        Reference:
-            Used in Gradient Clipping by Global Norm (arXiv:1308.0850).
+    Reference:
+        Used in Gradient Clipping by Global Norm (arXiv:1308.0850).
     """
     var total_norm_sq = Float64(0.0)
     var total_abs_norm = Float64(0.0)
@@ -408,21 +408,19 @@ fn clip_gradients(
     """Clip gradients by global norm to prevent exploding gradients.
 
     Args:
-            gradients: List of gradient values.
-            max_norm: Maximum allowed gradient norm.
+        gradients: List of gradient values.
+        max_norm: Maximum allowed gradient norm.
 
     Returns:
-            Clipped gradients with norm <= max_norm.
+        Clipped gradients with norm <= max_norm.
 
-        Example:
-            ```mojo
-            lipped_grads = clip_gradients(grads, max_norm=1.0)
-            ```
+    Example:
+        clipped_grads = clip_gradients(grads, max_norm=1.0)
 
     Note:
-            This is a legacy function that works with lists of Float64.
-            For tensor-based gradient clipping, use compute_gradient_norm()
-            with ExTensor parameters instead.
+        This is a legacy function that works with lists of Float64.
+        For tensor-based gradient clipping, use compute_gradient_norm()
+        with ExTensor parameters instead.
     """
     # Compute L2 norm of the gradient list
     var norm_sq = Float64(0.0)

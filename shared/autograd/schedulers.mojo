@@ -67,10 +67,15 @@ struct StepLR:
     """
 
     var base_lr: Float64
+    """Initial learning rate (unchanged)."""
     var current_lr: Float64
+    """Current learning rate (updated by step())."""
     var last_epoch: Int
+    """Last epoch for which step() was called."""
     var step_size: Int
+    """Number of epochs before decay."""
     var gamma: Float64
+    """Multiplicative decay factor."""
 
     fn __init__(
         out self,
@@ -179,9 +184,13 @@ struct ExponentialLR:
     """
 
     var base_lr: Float64
+    """Initial learning rate (unchanged)."""
     var current_lr: Float64
+    """Current learning rate (updated by step())."""
     var last_epoch: Int
+    """Last epoch for which step() was called."""
     var gamma: Float64
+    """Multiplicative decay per epoch."""
 
     fn __init__(out self, base_lr: Float64, gamma: Float64):
         """Initialize ExponentialLR scheduler.

@@ -1,10 +1,10 @@
 """Text transformation and augmentation utilities.
 
-This module provides transformations for augmenting text data for NLP tasks
+This module provides transformations for augmenting text data for NLP tasks.
 Implements basic word-level augmentations including synonym replacement,
 random insertion, random swap, and random deletion.
 
-All Random* text transforms use RandomTransformBase for probability handling
+All Random* text transforms use RandomTransformBase for probability handling.
 
 Limitations:
 - Basic word-level operations (split on spaces)
@@ -117,8 +117,10 @@ struct RandomSwap(Copyable, Movable, TextTransform):
         ```
     """
 
-    var base: RandomTransformBase  # Probability handling
-    var n: Int  # Number of swaps to perform
+    var base: RandomTransformBase
+    """Random transform base for probability handling."""
+    var n: Int
+    """Number of swap operations to attempt."""
 
     fn __init__(out self, p: Float64 = 0.15, n: Int = 2):
         """Create random swap transform.
@@ -184,7 +186,8 @@ struct RandomDeletion(Copyable, Movable, TextTransform):
         ```
     """
 
-    var base: RandomTransformBase  # Probability handling
+    var base: RandomTransformBase
+    """Random transform base for probability handling."""
 
     fn __init__(out self, p: Float64 = 0.1):
         """Create random deletion transform.
@@ -250,9 +253,12 @@ struct RandomInsertion(Copyable, Movable, TextTransform):
         ```
     """
 
-    var base: RandomTransformBase  # Probability handling
-    var n: Int  # Number of words to insert
-    var vocabulary: List[String]  # Words to insert from
+    var base: RandomTransformBase
+    """Random transform base for probability handling."""
+    var n: Int
+    """Number of words to insert."""
+    var vocabulary: List[String]
+    """List of words to choose from for insertion."""
 
     fn __init__(
         out self, var vocabulary: List[String], p: Float64 = 0.1, n: Int = 1
@@ -331,8 +337,10 @@ struct RandomSynonymReplacement(Copyable, Movable, TextTransform):
         ```
     """
 
-    var base: RandomTransformBase  # Probability handling
-    var synonyms: Dict[String, List[String]]  # Synonym dictionary
+    var base: RandomTransformBase
+    """Random transform base for probability handling."""
+    var synonyms: Dict[String, List[String]]
+    """Dictionary mapping words to lists of synonyms."""
 
     fn __init__(
         out self, var synonyms: Dict[String, List[String]], p: Float64 = 0.2

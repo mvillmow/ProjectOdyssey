@@ -40,9 +40,13 @@ struct BenchmarkConfig(Copyable, Movable):
     """
 
     var warmup_iters: Int
+    """Number of warmup iterations before measurement."""
     var measure_iters: Int
+    """Number of measurement iterations."""
     var compute_percentiles: Bool
+    """Whether to compute percentiles (p50, p95, p99)."""
     var report_throughput: Bool
+    """Whether to report items per second."""
 
 
 # ============================================================================
@@ -74,15 +78,25 @@ struct BenchmarkStatistics(Copyable, ImplicitlyCopyable, Movable):
     """
 
     var mean_latency_ms: Float64
+    """Mean execution time in milliseconds."""
     var std_dev_ms: Float64
+    """Standard deviation in milliseconds."""
     var p50_ms: Float64
+    """50th percentile (median) latency in milliseconds."""
     var p95_ms: Float64
+    """95th percentile latency in milliseconds."""
     var p99_ms: Float64
+    """99th percentile latency in milliseconds."""
     var min_latency_ms: Float64
+    """Minimum latency in milliseconds."""
     var max_latency_ms: Float64
+    """Maximum latency in milliseconds."""
     var throughput: Float64
+    """Operations per second (ops/sec)."""
     var iterations: Int
+    """Total measurement iterations."""
     var warmup_iterations: Int
+    """Warmup iterations performed."""
 
 
 # ============================================================================
@@ -303,8 +317,11 @@ struct BenchmarkRunner(Movable):
     """
 
     var name: String
+    """Descriptive name for the benchmarked operation."""
     var warmup_iters: Int
+    """Number of warmup iterations."""
     var result: LowLevelBenchmarkResult
+    """Low-level result tracker for timing data."""
 
     fn __init__(out self, name: String, warmup_iters: Int = 10):
         """Initialize a benchmark runner.
@@ -529,7 +546,9 @@ struct LegacyBenchmarkConfig(Copyable, Movable):
     """
 
     var warmup_iterations: Int
+    """Number of warmup iterations."""
     var measure_iterations: Int
+    """Number of measurement iterations."""
 
     fn __init__(
         out self,
@@ -553,17 +572,29 @@ struct LegacyBenchmarkResult(Copyable, Movable):
     """
 
     var name: String
+    """Name of the benchmarked operation."""
     var mean_time_us: Float64
+    """Mean execution time in microseconds."""
     var std_dev_us: Float64
+    """Standard deviation in microseconds."""
     var min_time_us: Float64
+    """Minimum execution time in microseconds."""
     var max_time_us: Float64
+    """Maximum execution time in microseconds."""
     var p50_us: Float64
+    """50th percentile (median) time in microseconds."""
     var p95_us: Float64
+    """95th percentile time in microseconds."""
     var p99_us: Float64
+    """99th percentile time in microseconds."""
     var throughput_ops_per_sec: Float64
+    """Operations per second (ops/sec)."""
     var memory_mb: Float64
+    """Memory used in megabytes (optional)."""
     var input_shape: String
+    """Input shape description (optional)."""
     var dtype: String
+    """Data type description (optional)."""
 
     fn __init__(
         out self,

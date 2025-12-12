@@ -75,9 +75,13 @@ struct SGD:
     """
 
     var learning_rate: Float64
+    """Step size for gradient descent updates."""
     var momentum: Float64
+    """Momentum coefficient for accelerated gradient descent."""
     var velocities: List[ExTensor]
+    """Velocity buffers for each parameter (initialized on first step)."""
     var _initialized: Bool
+    """Flag indicating whether velocity buffers have been initialized."""
 
     fn __init__(out self, learning_rate: Float64, momentum: Float64 = 0.0):
         """Initialize SGD optimizer.
@@ -237,14 +241,23 @@ struct Adam:
     """
 
     var learning_rate: Float64
+    """Step size for parameter updates."""
     var beta1: Float64
+    """Decay rate for first moment moving average."""
     var beta2: Float64
+    """Decay rate for second moment moving average."""
     var epsilon: Float64
+    """Small constant for numerical stability."""
     var weight_decay: Float64
+    """L2 regularization coefficient."""
     var t: Int
+    """Current step counter."""
     var m_buffers: List[ExTensor]
+    """First moment buffers for each parameter ID."""
     var v_buffers: List[ExTensor]
+    """Second moment buffers for each parameter ID."""
     var has_buffer: List[Bool]
+    """Flags indicating whether moment buffers exist for each parameter ID."""
 
     fn __init__(
         out self,
@@ -488,9 +501,13 @@ struct AdaGrad:
     """
 
     var learning_rate: Float64
+    """Step size for parameter updates."""
     var epsilon: Float64
+    """Small constant for numerical stability."""
     var weight_decay: Float64
+    """L2 regularization coefficient."""
     var G_buffers: Dict[Int, ExTensor]
+    """Accumulated squared gradients for each parameter ID."""
 
     fn __init__(
         out self,
@@ -678,13 +695,21 @@ struct RMSprop:
     """
 
     var learning_rate: Float64
+    """Step size for parameter updates."""
     var alpha: Float64
+    """Smoothing constant for running average of squared gradients."""
     var epsilon: Float64
+    """Small constant for numerical stability."""
     var weight_decay: Float64
+    """L2 regularization coefficient."""
     var momentum: Float64
+    """Momentum factor for accelerated updates."""
     var v_buffers: List[ExTensor]
+    """Running average of squared gradients per parameter ID."""
     var m_buffers: List[ExTensor]
+    """Momentum buffers per parameter ID (if momentum > 0)."""
     var has_buffer: List[Bool]
+    """Flags indicating initialized buffers for each parameter ID."""
 
     fn __init__(
         out self,
@@ -724,12 +749,19 @@ struct RMSprop:
     ) raises:
         """Update parameters using RMSprop algorithm.
 
+        Performs one step of RMSprop optimization using adaptive learning rates
+        and optional momentum.
+
         Args:
             parameters: List of Variables to update.
             tape: The gradient tape containing computed gradients.
 
         Raises:
-            Error: Any parameter has incompatible gradient shape.
+            Error: If any parameter has incompatible gradient shape.
+
+        Note:
+            Updates running average v_t and optional momentum buffer m_t.
+            Parameters without gradients in the tape are skipped.
         """
         for i in range(len(parameters)):
             # Skip parameters that don't require gradients
@@ -827,7 +859,14 @@ struct RMSprop:
     fn zero_grad(self, mut tape: GradientTape):
         """Reset all gradients in the tape.
 
+        Should be called after each optimizer step to clear gradients before
+        the next backward pass.
+
         Args:
             tape: The gradient tape to clear.
+
+        Note:
+            This does NOT clear the v_buffers and m_buffers. RMSprop maintains
+            these accumulators across optimization steps.
         """
         tape.registry.clear()

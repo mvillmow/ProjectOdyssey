@@ -54,7 +54,17 @@ from .activation_ops import exp_scalar_f32, exp_scalar_f64
 
 @always_inline
 fn _relu_op[T: DType](x: Scalar[T]) -> Scalar[T]:
-    """ReLU operation: max(0, x)."""
+    """ReLU operation: max(0, x).
+
+    Parameters:
+        T: Data type of the scalar (float16, float32, float64, int8, etc.).
+
+    Args:
+        x: Input scalar value.
+
+    Returns:
+        max(0, x).
+    """
     return max(Scalar[T](0), x)
 
 
@@ -229,7 +239,17 @@ fn prelu(tensor: ExTensor, alpha: ExTensor) raises -> ExTensor:
 
 @always_inline
 fn _sigmoid_op[T: DType](x: Scalar[T]) -> Scalar[T]:
-    """Sigmoid operation with numerical stability: 1 / (1 + exp(-x))."""
+    """Sigmoid operation with numerical stability: 1 / (1 + exp(-x)).
+
+    Parameters:
+        T: Data type of the scalar (float16, float32, float64).
+
+    Args:
+        x: Input scalar value.
+
+    Returns:
+        Sigmoid(x) = 1 / (1 + exp(-x)), with clipping for numerical stability.
+    """
     # Numerically stable sigmoid with clipping
     if x > Scalar[T](20.0):
         return Scalar[T](1.0)
@@ -279,7 +299,17 @@ fn sigmoid(tensor: ExTensor) raises -> ExTensor:
 
 @always_inline
 fn _tanh_op[T: DType](x: Scalar[T]) -> Scalar[T]:
-    """Tanh operation for float dtypes."""
+    """Tanh operation for float dtypes.
+
+    Parameters:
+        T: Data type of the scalar (float16, float32, float64).
+
+    Args:
+        x: Input scalar value.
+
+    Returns:
+        tanh(x), computed using the math library function.
+    """
 
     @parameter
     if T == DType.float16:
@@ -410,7 +440,18 @@ fn gelu(tensor: ExTensor, approximate: Bool = False) raises -> ExTensor:
 
 @always_inline
 fn _relu_backward_op[T: DType](grad: Scalar[T], x: Scalar[T]) -> Scalar[T]:
-    """ReLU backward: grad * (x > 0)."""
+    """ReLU backward: grad * (x > 0).
+
+    Parameters:
+        T: Data type of the scalars (float16, float32, float64, int8, etc.).
+
+    Args:
+        grad: Gradient of loss w.r.t. output (∂L/∂output).
+        x: Input to forward pass (cached from forward).
+
+    Returns:
+        Gradient w.r.t. input (∂L/∂input) = grad if x > 0 else 0.
+    """
     return grad if x > Scalar[T](0) else Scalar[T](0)
 
 
@@ -590,7 +631,18 @@ fn prelu_backward(
 
 @always_inline
 fn _sigmoid_backward_op[T: DType](grad: Scalar[T], y: Scalar[T]) -> Scalar[T]:
-    """Sigmoid backward: grad * y * (1 - y)."""
+    """Sigmoid backward: grad * y * (1 - y).
+
+    Parameters:
+        T: Data type of the scalars (float16, float32, float64).
+
+    Args:
+        grad: Gradient of loss w.r.t. output (∂L/∂output).
+        y: Output from forward pass sigmoid(x).
+
+    Returns:
+        Gradient w.r.t. input = grad * y * (1 - y).
+    """
     return grad * y * (Scalar[T](1.0) - y)
 
 
@@ -629,7 +681,18 @@ fn sigmoid_backward(
 
 @always_inline
 fn _tanh_backward_op[T: DType](grad: Scalar[T], y: Scalar[T]) -> Scalar[T]:
-    """Tanh backward: grad * (1 - y^2)."""
+    """Tanh backward: grad * (1 - y^2).
+
+    Parameters:
+        T: Data type of the scalars (float16, float32, float64).
+
+    Args:
+        grad: Gradient of loss w.r.t. output (∂L/∂output).
+        y: Output from forward pass tanh(x).
+
+    Returns:
+        Gradient w.r.t. input = grad * (1 - y^2).
+    """
     return grad * (Scalar[T](1.0) - y * y)
 
 
