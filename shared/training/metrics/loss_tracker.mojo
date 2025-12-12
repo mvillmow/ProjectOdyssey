@@ -279,6 +279,9 @@ struct LossTracker(Metric):
         Args:
             loss: Loss value to track.
             component: Component name (default: "total").
+
+        Raises:
+            Error: If operation fails.
         """
         var idx = self._get_or_create_component(component)
         self.trackers[idx].update(loss)
@@ -291,6 +294,9 @@ struct LossTracker(Metric):
 
         Returns:
             Most recent loss value, or 0.0 if component doesn't exist.
+
+        Raises:
+            Error: If operation fails.
         """
         for i in range(len(self.components)):
             if self.components[i] == component:
@@ -306,6 +312,9 @@ struct LossTracker(Metric):
 
         Returns:
             Moving average over window, or 0.0 if component doesn't exist.
+
+        Raises:
+            Error: If operation fails.
         """
         for i in range(len(self.components)):
             if self.components[i] == component:
@@ -321,6 +330,9 @@ struct LossTracker(Metric):
 
         Returns:
             Statistics struct with mean, std, min, max, count.
+
+        Raises:
+            Error: If operation fails.
         """
         for i in range(len(self.components)):
             if self.components[i] == component:

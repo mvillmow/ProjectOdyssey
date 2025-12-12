@@ -82,6 +82,9 @@ fn lars_step(
 
             LARS is particularly useful for large-batch training where the learning
             rate must be carefully scaled to prevent divergence.
+
+    Raises:
+            Error: If operation fails.
     """
     if params.shape() != gradients.shape():
         raise Error("Parameters and gradients must have the same shape")
@@ -178,6 +181,9 @@ fn lars_step_simple(
             var grad_W = ...  # Computed gradients
             (W, W_vel) = lars_step_simple(W, grad_W, W_vel, 0.1)
         ```
+
+    Raises:
+            Error: If operation fails.
     """
     return lars_step(
         params,

@@ -43,6 +43,9 @@ fn sgd_step(
     Returns:
             Tuple of (new_params, new_velocity)
 
+    Raises:
+            Error: If operation fails.
+
         Example (basic SGD without momentum):
             ```mojo
             from shared.core import ExTensor, zeros_like
@@ -132,6 +135,9 @@ fn sgd_step_simple(
     Returns:
             Updated parameters
 
+    Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
             var W1 = xavier_uniform(784, 128, shape, DType.float32)
@@ -174,6 +180,9 @@ fn sgd_momentum_update_inplace(
             velocity: Momentum velocity tensor (modified in-place).
             lr: Learning rate.
             momentum: Momentum coefficient (typically 0.9).
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -259,6 +268,9 @@ fn initialize_velocities(
     Returns:
             List of zero-initialized tensors matching parameter shapes.
 
+    Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
             from shared.training.optimizers import initialize_velocities
@@ -306,6 +318,9 @@ fn initialize_velocities_from_params(
 
     Returns:
             List of zero-initialized velocity tensors with matching shapes and dtypes.
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo

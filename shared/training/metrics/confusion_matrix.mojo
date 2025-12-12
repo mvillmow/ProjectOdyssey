@@ -153,7 +153,7 @@ struct ConfusionMatrix(Metric):
             Normalized confusion matrix as Float64 tensor.
 
         Raises:
-            Error: If mode is invalid.
+            Error: If mode is invalid or operation fails.
         """
         var result_shape = List[Int]()
         result_shape.append(self.num_classes)
@@ -234,6 +234,9 @@ struct ConfusionMatrix(Metric):
         Returns:
             Tensor of shape [num_classes] with precision for each class.
 
+        Raises:
+            Error: If operation fails.
+
         Note: Returns 0.0 for classes with no predictions.
         """
         var result_shape = List[Int]()
@@ -268,6 +271,9 @@ struct ConfusionMatrix(Metric):
         Returns:
             Tensor of shape [num_classes] with recall for each class.
 
+        Raises:
+            Error: If operation fails.
+
         Note: Returns 0.0 for classes with no samples.
         """
         var result_shape = List[Int]()
@@ -301,6 +307,9 @@ struct ConfusionMatrix(Metric):
         Returns:
             Tensor of shape [num_classes] with F1-score for each class.
 
+        Raises:
+            Error: If operation fails.
+
         Note: Returns 0.0 when precision + recall = 0.
         """
         var precision = self.get_precision()
@@ -331,6 +340,9 @@ fn argmax(var tensor: ExTensor) raises -> ExTensor:
 
     Returns:
             Tensor of indices [batch_size].
+
+    Raises:
+            Error: If tensor is not 2D.
     """
     var shape_vec = tensor.shape()
     if len(shape_vec) != 2:

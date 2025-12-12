@@ -75,6 +75,9 @@ fn parse_inference_args() raises -> InferenceConfig:
             var config = parse_inference_args()
             # config.weights_dir == "./trained", config.verbose == True
             ```
+
+    Raises:
+            Error: If operation fails.
     """
     var result = InferenceConfig()
 
@@ -129,6 +132,9 @@ fn parse_inference_args_with_defaults(
                 default_batch_size=128
             )
             ```
+
+    Raises:
+            Error: If operation fails.
     """
     var result = InferenceConfig()
     result.weights_dir = default_weights_dir
@@ -189,6 +195,9 @@ fn evaluate_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float32:
 
     Note:
             Both tensors must have the same shape and contain integer class indices.
+
+    Raises:
+            Error: If operation fails.
     """
     var pred_shape = predictions.shape()
     var label_shape = labels.shape()
@@ -271,6 +280,9 @@ fn count_correct(predictions: ExTensor, labels: ExTensor) raises -> Int:
 
             var accuracy = Float32(total_correct) / Float32(total_samples)
             ```
+
+    Raises:
+            Error: If operation fails.
     """
     var pred_shape = predictions.shape()
     var label_shape = labels.shape()

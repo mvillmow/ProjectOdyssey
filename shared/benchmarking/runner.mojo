@@ -618,6 +618,9 @@ fn benchmark_operation(
 
     Returns:
             LegacyBenchmarkResult with timing statistics in microseconds.
+
+    Raises:
+            Error: If benchmarking operation fails.
     """
     # Use the new benchmark_function internally
     var result = benchmark_function(

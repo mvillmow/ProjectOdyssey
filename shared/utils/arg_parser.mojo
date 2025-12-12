@@ -95,6 +95,9 @@ struct ParsedArgs(Copyable, Movable):
 
         Returns:
             String value or default.
+
+        Raises:
+            Error: If operation fails.
         """
         if name in self.values:
             return self.values[name]
@@ -305,6 +308,9 @@ fn create_parser() raises -> ArgumentParser:
 
     Returns:
             New ArgumentParser instance.
+
+    Raises:
+            Error: If operation fails.
     """
     return ArgumentParser()
 
@@ -330,6 +336,9 @@ fn create_training_parser() raises -> ArgumentParser:
 
     Returns:
             ArgumentParser configured with ML training arguments.
+
+    Raises:
+            Error: If operation fails.
     """
     var parser = ArgumentParser()
 

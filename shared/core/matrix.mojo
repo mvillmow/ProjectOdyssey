@@ -340,6 +340,9 @@ fn dot(a: ExTensor, b: ExTensor) raises -> ExTensor:
     Returns:
             Dot product (scalar for 1D, matrix product for 2D)
 
+    Raises:
+            Error: If tensor shapes are incompatible.
+
     Examples:
         ```
             var a = ones(List[Int](), DType.float32)
@@ -385,6 +388,9 @@ fn outer(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
     Returns:
             A 2D tensor containing the outer product
+
+    Raises:
+            Error: If tensors are not 1D.
 
     Examples:
         ```
@@ -448,6 +454,9 @@ fn matmul_backward(
 
     Returns:
             GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs
+
+    Raises:
+            Error: If tensor shapes are incompatible.
 
     Examples:
         ```
@@ -559,6 +568,9 @@ fn transpose_backward(
 
     Returns:
             Gradient w.r.t. input (∂L/∂X)
+
+    Raises:
+            Error: If operation fails.
 
     Examples:
         ```

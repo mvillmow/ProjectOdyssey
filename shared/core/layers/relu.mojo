@@ -108,6 +108,9 @@ struct ReLULayer(Copyable, Movable):
         Returns:
             Empty list since ReLU has no learnable parameters
 
+        Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
             var layer = ReLULayer()

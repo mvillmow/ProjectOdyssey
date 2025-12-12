@@ -89,6 +89,9 @@ struct SGD(Movable, Optimizer):
         Args:
             params: List of parameter tensors to update.
 
+        Raises:
+            Error: If operation fails.
+
         Note:
             This is a stub implementation for Issue #2397.
             Full gradient-based updates will be implemented later.
@@ -98,6 +101,9 @@ struct SGD(Movable, Optimizer):
 
     fn zero_grad(mut self) raises:
         """Reset optimizer state.
+
+        Raises:
+            Error: If operation fails.
 
         Note:
             SGD has no internal state, so this is a no-op.
@@ -134,6 +140,9 @@ struct MSELoss(Loss, Movable):
         Returns:
             Scalar loss value as ExTensor.
 
+        Raises:
+            Error: If operation fails.
+
         Note:
             This is a stub implementation for Issue #2397.
             Full MSE computation will be implemented later.
@@ -153,6 +162,9 @@ struct MSELoss(Loss, Movable):
 
         Returns:
             Loss value.
+
+        Raises:
+            Error: If operation fails.
         """
         return Float32(0.0)
 
@@ -164,6 +176,9 @@ struct MSELoss(Loss, Movable):
 
         Returns:
             Gradient tensor.
+
+        Raises:
+            Error: If operation fails.
         """
         # Placeholder implementation - returns gradient same shape as input
         return grad_output
@@ -227,6 +242,9 @@ struct TrainingLoop[
         Returns:
             Scalar loss value as ExTensor.
 
+        Raises:
+            Error: If operation fails.
+
         Note:
             Uses trait methods for type-safe dispatch.
             Backward pass stub until gradient system is implemented.
@@ -250,6 +268,9 @@ struct TrainingLoop[
 
         Returns:
             Model output ExTensor.
+
+        Raises:
+            Error: If operation fails.
         """
         # Call model.forward() via Model trait
         return self.model.forward(inputs)
@@ -265,6 +286,9 @@ struct TrainingLoop[
 
         Returns:
             Scalar loss value as ExTensor.
+
+        Raises:
+            Error: If operation fails.
         """
         # Call loss_fn.compute() via Loss trait
         return self.loss_fn.compute(outputs, targets)
@@ -280,6 +304,9 @@ struct TrainingLoop[
 
         Returns:
             Average loss for the epoch.
+
+        Raises:
+            Error: If operation fails.
 
         Note:
             data_loader remains PythonObject until Track 4 implements
@@ -352,6 +379,9 @@ struct CrossEntropyLoss(Loss, Movable):
 
         Returns:
             Scalar loss value as ExTensor.
+
+        Raises:
+            Error: If operation fails.
         """
         from shared.core.loss import cross_entropy
 

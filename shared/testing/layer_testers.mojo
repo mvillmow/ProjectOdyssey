@@ -119,6 +119,9 @@ struct LayerTester:
             - No NaN/Inf in output
             - Output values in expected range
 
+        Raises:
+            Error: If assertions fail during testing.
+
         Example:
             ```mojo
             # Test conv layer with FP32
@@ -192,6 +195,9 @@ struct LayerTester:
             - No NaN/Inf in output
             - Output is matrix multiply result (predictable with input=1.0)
 
+        Raises:
+            Error: If assertions fail during testing.
+
         Example:
             ```mojo
             # Test FC layer with FP16
@@ -257,6 +263,9 @@ struct LayerTester:
             - No NaN/Inf in output
             - Max pooling returns max value
             - Avg pooling returns average value
+
+        Raises:
+            Error: If assertions fail during testing.
 
         Example:
             ```mojo
@@ -329,6 +338,9 @@ struct LayerTester:
             - Output dtype matches input dtype
             - No NaN/Inf in output
             - Activation property holds (e.g., ReLU zeros negatives)
+
+        Raises:
+            Error: If assertions fail during testing or unknown activation.
 
         Example:
             ```mojo
@@ -412,6 +424,9 @@ struct LayerTester:
         Verifies:
             - Output dtype matches input dtype
 
+        Raises:
+            Error: If assertions fail during testing.
+
         Example:
             ```mojo
             var input = create_ones_tensor([1, 3, 32, 32], DType.float16)
@@ -436,6 +451,9 @@ struct LayerTester:
         Verifies:
             - No NaN values in output
             - No Inf values in output
+
+        Raises:
+            Error: If NaN or Inf found in output.
 
         Example:
             ```mojo
@@ -494,6 +512,9 @@ struct LayerTester:
             - Output shape is correct
             - Backward pass computes valid gradients
             - Analytical and numerical gradients match
+
+        Raises:
+            Error: If assertions fail during testing.
 
         Example:
             ```mojo
@@ -592,6 +613,9 @@ struct LayerTester:
             - Backward pass computes valid gradients
             - Analytical and numerical gradients match
 
+        Raises:
+            Error: If assertions fail during testing.
+
         Example:
             ```mojo
             # Test FC layer backward with FP32
@@ -671,6 +695,9 @@ struct LayerTester:
             - Output dtype matches input
             - Backward pass computes valid gradients
             - Analytical and numerical gradients match
+
+        Raises:
+            Error: If assertions fail during testing or unknown activation.
 
         Example:
             ```mojo
@@ -774,6 +801,9 @@ struct LayerTester:
             - In training: running statistics are updated
             - In inference: uses frozen statistics
 
+        Raises:
+            Error: If assertions fail during testing.
+
         Example:
             ```mojo
             # Test BatchNorm training mode
@@ -848,6 +878,9 @@ struct LayerTester:
             - Output shape matches input shape
             - Backward pass computes valid gradients
             - Analytical and numerical gradients match
+
+        Raises:
+            Error: If assertions fail during testing.
 
         Example:
             ```mojo

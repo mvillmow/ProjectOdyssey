@@ -157,6 +157,9 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         Args:
             value: Integer literal to convert.
 
+        Raises:
+            Error: If tensor allocation fails.
+
         Example:
             ```mojo
             var x: ExTensor = 42  # Implicit conversion from IntLiteral
@@ -184,6 +187,9 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         Args:
             value: Float literal to convert.
+
+        Raises:
+            Error: If tensor allocation fails.
 
         Example:
             ```mojo
@@ -213,6 +219,9 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         Args:
             value: Int value to convert.
 
+        Raises:
+            Error: If tensor allocation fails.
+
         """
         # Initialize scalar tensor (0D shape)
         self._shape = List[Int]()
@@ -235,6 +244,9 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         Args:
             value: Float64 value to convert.
+
+        Raises:
+            Error: If tensor allocation fails.
 
         Example:
             ```mojo
@@ -259,6 +271,9 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         Args:
             data: List of Float32 values.
+
+        Raises:
+            Error: If tensor size exceeds MAX_TENSOR_BYTES or allocation fails.
 
         Example:
             ```mojo
@@ -310,6 +325,9 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         Args:
             data: List of Int values.
+
+        Raises:
+            Error: If tensor size exceeds MAX_TENSOR_BYTES or allocation fails.
 
         Example:
             ```mojo
@@ -847,85 +865,155 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
     # ========================================================================
 
     fn __add__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise addition: a + b."""
+        """Element-wise addition: a + b.
+
+        Raises:
+            Error: If tensors have incompatible shapes.
+
+        """
         from .arithmetic import add
 
         return add(self, other)
 
     fn __sub__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise subtraction: a - b."""
+        """Element-wise subtraction: a - b.
+
+        Raises:
+            Error: If tensors have incompatible shapes.
+
+        """
         from .arithmetic import subtract
 
         return subtract(self, other)
 
     fn __mul__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise multiplication: `a * b`."""
+        """Element-wise multiplication: `a * b`.
+
+        Raises:
+            Error: If tensors have incompatible shapes.
+
+        """
         from .arithmetic import multiply
 
         return multiply(self, other)
 
     fn __truediv__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise division: `a / b`."""
+        """Element-wise division: `a / b`.
+
+        Raises:
+            Error: If tensors have incompatible shapes or division by zero.
+
+        """
         from .arithmetic import divide
 
         return divide(self, other)
 
     fn __floordiv__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise floor division: `a // b`."""
+        """Element-wise floor division: `a // b`.
+
+        Raises:
+            Error: If tensors have incompatible shapes or division by zero.
+
+        """
         from .arithmetic import floor_divide
 
         return floor_divide(self, other)
 
     fn __mod__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise modulo: `a % b`."""
+        """Element-wise modulo: `a % b`.
+
+        Raises:
+            Error: If tensors have incompatible shapes.
+
+        """
         from .arithmetic import modulo
 
         return modulo(self, other)
 
     fn __pow__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise power: `a ** b`."""
+        """Element-wise power: `a ** b`.
+
+        Raises:
+            Error: If tensors have incompatible shapes.
+
+        """
         from .arithmetic import power
 
         return power(self, other)
 
     fn __matmul__(self, other: ExTensor) raises -> ExTensor:
-        """Matrix multiplication: `a @ b`."""
+        """Matrix multiplication: `a @ b`.
+
+        Raises:
+            Error: If tensors have incompatible dimensions for multiplication.
+
+        """
         from .matrix import matmul
 
         return matmul(self, other)
 
     fn __eq__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise equality: `a == b`."""
+        """Element-wise equality: `a == b`.
+
+        Raises:
+            Error: If tensors have incompatible shapes.
+
+        """
         from .comparison import equal
 
         return equal(self, other)
 
     fn __ne__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise inequality: `a != b`."""
+        """Element-wise inequality: `a != b`.
+
+        Raises:
+            Error: If tensors have incompatible shapes.
+
+        """
         from .comparison import not_equal
 
         return not_equal(self, other)
 
     fn __lt__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise less than: `a < b`."""
+        """Element-wise less than: `a < b`.
+
+        Raises:
+            Error: If tensors have incompatible shapes.
+
+        """
         from .comparison import less
 
         return less(self, other)
 
     fn __le__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise less or equal: `a <= b`."""
+        """Element-wise less or equal: `a <= b`.
+
+        Raises:
+            Error: If tensors have incompatible shapes.
+
+        """
         from .comparison import less_equal
 
         return less_equal(self, other)
 
     fn __gt__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise greater than: `a > b`."""
+        """Element-wise greater than: `a > b`.
+
+        Raises:
+            Error: If tensors have incompatible shapes.
+
+        """
         from .comparison import greater
 
         return greater(self, other)
 
     fn __ge__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise greater or equal: `a >= b`."""
+        """Element-wise greater or equal: `a >= b`.
+
+        Raises:
+            Error: If tensors have incompatible shapes.
+
+        """
         from .comparison import greater_equal
 
         return greater_equal(self, other)
@@ -1114,6 +1202,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         Returns:
             A new ExTensor with dtype=int16 containing converted values.
+
+        Raises:
+            Error: If conversion fails or bounds check error occurs.
+
         """
         var result = ExTensor(self._shape, DType.int16)
 
@@ -1166,6 +1258,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         Returns:
             A new ExTensor with dtype=int32 containing converted values.
+
+        Raises:
+            Error: If conversion fails or bounds check error occurs.
+
         """
         var result = ExTensor(self._shape, DType.int32)
 
@@ -1213,6 +1309,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         Returns:
             A new ExTensor with dtype=int64 containing converted values.
+
+        Raises:
+            Error: If conversion fails or bounds check error occurs.
+
         """
         var result = ExTensor(self._shape, DType.int64)
 
@@ -1262,6 +1362,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         Returns:
             A new ExTensor with dtype=uint8 containing converted values.
+
+        Raises:
+            Error: If conversion fails or bounds check error occurs.
+
         """
         var result = ExTensor(self._shape, DType.uint8)
 
@@ -1314,6 +1418,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         Returns:
             A new ExTensor with dtype=uint16 containing converted values.
+
+        Raises:
+            Error: If conversion fails or bounds check error occurs.
+
         """
         var result = ExTensor(self._shape, DType.uint16)
 
@@ -1363,6 +1471,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         Returns:
             A new ExTensor with dtype=uint32 containing converted values.
+
+        Raises:
+            Error: If conversion fails or bounds check error occurs.
+
         """
         var result = ExTensor(self._shape, DType.uint32)
 
@@ -1411,6 +1523,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         Returns:
             A new ExTensor with dtype=uint64 containing converted values.
+
+        Raises:
+            Error: If conversion fails or bounds check error occurs.
+
         """
         var result = ExTensor(self._shape, DType.uint64)
 
@@ -1976,11 +2092,19 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
     # These are called when the left operand doesn't support the operation
     fn __radd__(self, other: ExTensor) raises -> ExTensor:
         """Reflected addition: `other + self` (commutative, so same as __add__).
+
+        Raises:
+            Error: If tensors have incompatible shapes.
+
         """
         return self.__add__(other)
 
     fn __rsub__(self, other: ExTensor) raises -> ExTensor:
         """Reflected subtraction: `other - self` (order matters: returns other - self).
+
+        Raises:
+            Error: If tensors have incompatible shapes.
+
         """
         from .arithmetic import subtract
 
@@ -1988,11 +2112,19 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
     fn __rmul__(self, other: ExTensor) raises -> ExTensor:
         """Reflected multiplication: other * self (commutative, so same as __mul__).
+
+        Raises:
+            Error: If tensors have incompatible shapes.
+
         """
         return self.__mul__(other)
 
     fn __rtruediv__(self, other: ExTensor) raises -> ExTensor:
         """Reflected division: other / self (order matters: returns other / self).
+
+        Raises:
+            Error: If tensors have incompatible shapes or division by zero.
+
         """
         from .arithmetic import divide
 
@@ -2000,7 +2132,12 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
     # In-place operators - mutate self instead of creating new tensor
     fn __iadd__(mut self, other: ExTensor) raises:
-        """In-place addition: `self += other`."""
+        """In-place addition: `self += other`.
+
+        Raises:
+            Error: If tensors have incompatible shapes or dtypes.
+
+        """
         from .arithmetic import add
 
         var result = add(self, other)
@@ -2014,7 +2151,12 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             )
 
     fn __isub__(mut self, other: ExTensor) raises:
-        """In-place subtraction: `self -= other`."""
+        """In-place subtraction: `self -= other`.
+
+        Raises:
+            Error: If tensors have incompatible shapes or dtypes.
+
+        """
         from .arithmetic import subtract
 
         var result = subtract(self, other)
@@ -2028,7 +2170,12 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             )
 
     fn __imul__(mut self, other: ExTensor) raises:
-        """In-place multiplication: `self *= other`."""
+        """In-place multiplication: `self *= other`.
+
+        Raises:
+            Error: If tensors have incompatible shapes or dtypes.
+
+        """
         from .arithmetic import multiply
 
         var result = multiply(self, other)
@@ -2042,7 +2189,12 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             )
 
     fn __itruediv__(mut self, other: ExTensor) raises:
-        """In-place division: `self /= other`."""
+        """In-place division: `self /= other`.
+
+        Raises:
+            Error: If tensors have incompatible shapes or dtypes, or division by zero.
+
+        """
         from .arithmetic import divide
 
         var result = divide(self, other)
@@ -2057,7 +2209,12 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
     # Unary operators - operate on single tensor
     fn __neg__(self) raises -> ExTensor:
-        """Negation: `-self`."""
+        """Negation: `-self`.
+
+        Raises:
+            Error: If tensor allocation fails.
+
+        """
         # Create result tensor with same shape and dtype
         var result = ExTensor(self._shape, self._dtype)
 
@@ -2123,13 +2280,23 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         return result^
 
     fn __pos__(self) raises -> ExTensor:
-        """Positive: +self (returns a copy)."""
+        """Positive: +self (returns a copy).
+
+        Raises:
+            Error: If tensor allocation fails.
+
+        """
         # Return a copy of the tensor using Mojo's copy semantics
         var copy = self
         return copy^
 
     fn __abs__(self) raises -> ExTensor:
-        """Absolute value: abs(self)."""
+        """Absolute value: abs(self).
+
+        Raises:
+            Error: If operation fails.
+
+        """
         from .elementwise import abs
 
         return abs(self)
@@ -2149,6 +2316,9 @@ fn zeros(shape: List[Int], dtype: DType) raises -> ExTensor:
 
     Returns:
             A new ExTensor filled with zeros.
+
+    Raises:
+            Error: If tensor size exceeds MAX_TENSOR_BYTES or allocation fails.
 
     Examples:
     ```
@@ -2173,6 +2343,9 @@ fn ones(shape: List[Int], dtype: DType) raises -> ExTensor:
 
     Returns:
             A new ExTensor filled with ones.
+
+    Raises:
+            Error: If tensor size exceeds MAX_TENSOR_BYTES or allocation fails.
 
     Examples:
     ```
@@ -2206,6 +2379,9 @@ fn full(shape: List[Int], fill_value: Float64, dtype: DType) raises -> ExTensor:
     Returns:
             A new ExTensor filled with fill_value.
 
+    Raises:
+            Error: If tensor size exceeds MAX_TENSOR_BYTES or allocation fails.
+
     Examples:
             ```var t = full([3, 4], 42.0, DType.float32)
             # Creates a 3x4 tensor filled with 42.0
@@ -2236,7 +2412,10 @@ fn empty(shape: List[Int], dtype: DType) raises -> ExTensor:
     Returns:
             A new ExTensor with uninitialized memory.
 
-        Warning:
+    Raises:
+            Error: If tensor size exceeds MAX_TENSOR_BYTES or allocation fails.
+
+    Warning:
             The tensor contains uninitialized memory. Values are undefined until written.
             Use this for performance when you will immediately write to all elements.
 
@@ -2264,6 +2443,9 @@ fn arange(
 
     Returns:
             A new 1D ExTensor with values in range [start, stop) with given step.
+
+    Raises:
+            Error: If tensor size exceeds MAX_TENSOR_BYTES or allocation fails.
 
     Examples:
         ```
@@ -2308,6 +2490,9 @@ fn eye(n: Int, m: Int, k: Int, dtype: DType) raises -> ExTensor:
 
     Returns:
             A new 2D ExTensor with ones on the k-th diagonal.
+
+    Raises:
+            Error: If tensor size exceeds MAX_TENSOR_BYTES or allocation fails.
 
     Examples:
     ```
@@ -2355,6 +2540,9 @@ fn linspace(
 
     Returns:
             A new 1D ExTensor with num evenly spaced values.
+
+    Raises:
+            Error: If tensor size exceeds MAX_TENSOR_BYTES or allocation fails.
 
     Examples:
         ```var t = linspace(0.0, 10.0, 11, DType.float32)
@@ -2407,6 +2595,9 @@ fn ones_like(tensor: ExTensor) raises -> ExTensor:
     Returns:
             A new ExTensor filled with ones, same shape and dtype as input.
 
+    Raises:
+            Error: If tensor creation fails.
+
     Example:
         ```mojo
         var x = zeros([3, 4], DType.float32)
@@ -2426,6 +2617,9 @@ fn zeros_like(tensor: ExTensor) raises -> ExTensor:
 
     Returns:
             A new ExTensor filled with zeros, same shape and dtype as input.
+
+    Raises:
+            Error: If tensor creation fails.
 
     Example:
         ```mojo
@@ -2447,6 +2641,9 @@ fn full_like(tensor: ExTensor, fill_value: Float64) raises -> ExTensor:
 
     Returns:
             A new ExTensor filled with fill_value, same shape and dtype as input.
+
+    Raises:
+            Error: If tensor creation fails.
 
     Example:
         ```mojo
@@ -2474,7 +2671,7 @@ fn randn(shape: List[Int], dtype: DType, seed: Int = 0) raises -> ExTensor:
             A new ExTensor filled with random values from N(0, 1).
 
     Raises:
-            Error: If dtype is not a floating-point type.
+            Error: If tensor size exceeds MAX_TENSOR_BYTES or allocation fails.
 
     Examples:
             ```var t = randn([3, 4], DType.float32)
@@ -2562,7 +2759,10 @@ fn calculate_max_batch_size(
     Returns:
             Maximum batch size that fits in memory.
 
-        Example:
+    Raises:
+            Error: If sample shape is invalid or no batch size can fit in memory.
+
+    Example:
             ```mojo
             # For MNIST: (1, 28, 28) images
             var sample_shape = List[Int]()

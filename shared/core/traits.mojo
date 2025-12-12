@@ -139,6 +139,9 @@ trait Parameterized:
         Returns:
             List of parameter tensors.
 
+        Raises:
+            Error: If operation fails.
+
         Note:
             Order must match gradients() return order.
             Do not include non-trainable parameters (e.g., batch norm running stats).
@@ -151,6 +154,9 @@ trait Parameterized:
         Returns:
             List of gradient tensors.
 
+        Raises:
+            Error: If operation fails.
+
         Note:
             Must correspond 1:1 with parameters().
             Gradients are accumulated across mini-batches.
@@ -162,6 +168,9 @@ trait Parameterized:
 
         Called at the beginning of each mini-batch to clear
         accumulated gradients from previous iteration.
+
+        Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -280,7 +289,7 @@ trait Composable(Differentiable):
             Composed operation result.
 
         Raises:
-            Error: This method is not yet supported due to Mojo limitation.
+            Error: This method is not yet supported due to Mojo limitation. If operation fails.
 
         Workaround:
         ```
@@ -440,6 +449,9 @@ trait Model:
         Returns:
             List of parameter tensors.
 
+        Raises:
+            Error: If operation fails.
+
         Note:
             Used by optimizers to update weights.
         """
@@ -447,6 +459,9 @@ trait Model:
 
     fn zero_grad(mut self) raises:
         """Reset all parameter gradients to zero.
+
+        Raises:
+            Error: If operation fails.
 
         Note:
             Should be called before each backward pass.
@@ -516,6 +531,9 @@ trait Optimizer:
         Args:
             params: List of parameter tensors to update.
 
+        Raises:
+            Error: If operation fails.
+
         Note:
             Assumes gradients are already computed.
         """
@@ -523,6 +541,9 @@ trait Optimizer:
 
     fn zero_grad(mut self) raises:
         """Reset optimizer state.
+
+        Raises:
+            Error: If operation fails.
 
         Note:
             May be called before parameter zero_grad().

@@ -119,6 +119,9 @@ struct SimpleCNN(Copyable, Movable):
         Returns:
             Output tensor (batch_size, num_classes).
 
+        Raises:
+            Error: If tensor creation fails.
+
         Note:
             This is a placeholder for testing. Real implementations should
             contain actual neural network operations.
@@ -201,6 +204,9 @@ struct LinearModel(Copyable, Movable):
 
         Returns:
             Output tensor (batch_size, out_features).
+
+        Raises:
+            Error: If tensor creation fails.
 
         Note:
             This is a placeholder for testing. Real implementations should
@@ -466,7 +472,7 @@ struct Parameter(Copyable, Movable):
             data: The parameter tensor.
 
         Raises:
-            Error: If gradient tensor cannot be created.
+            Error: If gradient tensor cannot be created or if memory allocation fails.
 
         Example:
             ```mojo
@@ -619,6 +625,9 @@ struct SimpleMLP(Copyable, Model, Movable):
         Returns:
             Output tensor.
 
+        Note:
+            Uses ReLU activation between layers: ReLU(x) = max(0, x).
+
         Example:
             ```mojo
             var mlp = SimpleMLP(10, 20, 5)
@@ -626,9 +635,6 @@ struct SimpleMLP(Copyable, Model, Movable):
             var output = mlp.forward(input)
             # output has shape [5]
         ```
-
-        Note:
-            Uses ReLU activation between layers: ReLU(x) = max(0, x).
         """
         # Layer 1: input -> hidden
         var hidden1 = self._linear_forward(
@@ -682,7 +688,7 @@ struct SimpleMLP(Copyable, Model, Movable):
             Output ExTensor.
 
         Raises:
-            Error: If tensor conversion fails.
+            Error: If tensor conversion fails or memory allocation fails.
 
         Example:
             ```mojo
@@ -759,6 +765,9 @@ struct SimpleMLP(Copyable, Model, Movable):
         Returns:
             ExTensor containing all weights flattened.
 
+        Raises:
+            Error: If tensor creation fails.
+
         Example:
             ```mojo
             var mlp = SimpleMLP(10, 20, 5)
@@ -795,6 +804,9 @@ struct SimpleMLP(Copyable, Model, Movable):
 
         Returns:
             List of ExTensor objects containing weights and biases.
+
+        Raises:
+            Error: If tensor creation fails.
 
         Example:
             ```mojo
@@ -862,6 +874,9 @@ struct SimpleMLP(Copyable, Model, Movable):
             var mlp = SimpleMLP(10, 20, 5)
             mlp.zero_grad()
         ```
+
+        Raises:
+            Error: If operation fails.
         """
         # This is a placeholder - actual gradient zeroing would happen
         # on Parameter objects during backpropagation
@@ -872,6 +887,9 @@ struct SimpleMLP(Copyable, Model, Movable):
 
         Returns:
             Dictionary mapping parameter names to their tensor values.
+
+        Raises:
+            Error: If tensor creation fails.
 
         Example:
             ```mojo

@@ -97,6 +97,9 @@ fn rmsprop_step(
             This is a pure function - it returns new state rather than mutating.
             Caller must capture all three return values and update their variables.
             Timestep t must be tracked by caller and incremented after each step.
+
+    Raises:
+            Error: If operation fails.
     """
     if params.shape() != gradients.shape():
         raise Error("Parameters and gradients must have the same shape")
@@ -201,6 +204,9 @@ fn rmsprop_step_simple(
             var grad_W = ...  # Compute gradients
             (W, square_avg) = rmsprop_step_simple(W, grad_W, square_avg, lr=0.01)
         ```
+
+    Raises:
+            Error: If operation fails.
     """
     var (new_params, new_square_avg, _) = rmsprop_step(
         params,

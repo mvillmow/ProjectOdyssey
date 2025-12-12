@@ -249,6 +249,9 @@ struct DropoutLayer(Copyable, Movable):
         Returns:
             Empty list since Dropout has no learnable parameters
 
+        Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
             var layer = DropoutLayer(0.5)

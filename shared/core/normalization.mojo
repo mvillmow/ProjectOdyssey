@@ -49,6 +49,9 @@ fn batch_norm2d(
                 - new_running_mean: Updated running mean, shape (channels,).
                 - new_running_var: Updated running variance, shape (channels,).
 
+    Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
             from shared.core import batch_norm2d, zeros, ones
@@ -363,6 +366,9 @@ fn batch_norm2d_backward(
                 - grad_input: Gradient w.r.t. input (batch, channels, height, width).
                 - grad_gamma: Gradient w.r.t. gamma (channels,).
                 - grad_beta: Gradient w.r.t. beta (channels,).
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -887,6 +893,9 @@ fn layer_norm(
     Returns:
             Normalized tensor, same shape as input.
 
+    Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
             from shared.core import layer_norm, zeros, ones
@@ -1134,6 +1143,9 @@ fn layer_norm_backward(
                 - grad_input: Gradient w.r.t. input (same shape as input).
                 - grad_gamma: Gradient w.r.t. gamma (same shape as gamma).
                 - grad_beta: Gradient w.r.t. beta (same shape as gamma).
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -1726,6 +1738,9 @@ fn group_norm(
     Returns:
             Normalized tensor, same shape as input.
 
+    Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
             from shared.core import group_norm, zeros, ones
@@ -1908,6 +1923,9 @@ fn group_norm_backward(
                 - grad_input: Gradient w.r.t. input (batch, channels, height, width).
                 - grad_gamma: Gradient w.r.t. gamma (channels,).
                 - grad_beta: Gradient w.r.t. beta (channels,).
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -2284,6 +2302,9 @@ fn instance_norm(
     Returns:
             Normalized tensor, same shape as input.
 
+    Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
             from shared.core import instance_norm, zeros, ones
@@ -2446,6 +2467,9 @@ fn instance_norm_backward(
                 - grad_input: Gradient w.r.t. input (batch, channels, height, width).
                 - grad_gamma: Gradient w.r.t. gamma (channels,).
                 - grad_beta: Gradient w.r.t. beta (channels,).
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo

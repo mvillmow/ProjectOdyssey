@@ -136,7 +136,11 @@ struct SavedTensors(Copyable, Movable):
         self.scalars = existing.scalars^
 
     fn add_tensor(mut self, tensor: ExTensor) raises:
-        """Save a tensor for backward pass."""
+        """Save a tensor for backward pass.
+
+        Raises:
+            Error: If operation fails.
+        """
         # Create a copy of the tensor using typed access for float32
         var copy = zeros_like(tensor)
         var size = tensor.numel()
@@ -274,6 +278,9 @@ struct VariableRegistry:
 
         Returns:
             The unique ID assigned to this variable.
+
+        Raises:
+            Error: If operation fails.
         """
         var id = self.next_id
         self.next_id += 1
@@ -295,6 +302,9 @@ struct VariableRegistry:
         Args:
             id: Variable ID.
             grad: Gradient tensor to set/accumulate.
+
+        Raises:
+            Error: If operation fails.
         """
         if id >= len(self.grads):
             return
@@ -326,6 +336,9 @@ struct VariableRegistry:
 
         Returns:
             The gradient tensor (or placeholder if not computed).
+
+        Raises:
+            Error: If operation fails.
         """
         if id < len(self.grads):
             return self.grads[id]
@@ -438,6 +451,9 @@ struct GradientTape:
 
         Returns:
             Unique ID for the variable.
+
+        Raises:
+            Error: If operation fails.
         """
         return self.registry.register(requires_grad)
 
@@ -529,6 +545,9 @@ struct GradientTape:
         Args:
             output_id: ID of the output variable to backprop from.
             output_grad: Gradient of the loss with respect to output.
+
+        Raises:
+            Error: If operation fails.
 
         Examples:
             var loss = compute_loss(x)

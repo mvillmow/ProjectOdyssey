@@ -32,6 +32,9 @@ fn dropout(
                 - output: Dropped-out tensor (scaled by 1/(1-p) during training)
                 - mask: Binary mask showing which elements were kept (1.0) or dropped (0.0)
 
+    Raises:
+        Error: If operation fails.
+
         Example:
             ```mojo
             from shared.core import ExTensor, dropout, dropout_backward
@@ -118,6 +121,9 @@ fn dropout2d(
             Tuple of (output, mask):
                 - output: Dropped-out tensor (entire channels zeroed)
                 - mask: Binary mask at channel level (batch, channels, 1, 1)
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -261,6 +267,9 @@ fn dropout_backward(
     Returns:
             Gradient with respect to input
 
+    Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
             # Forward pass
@@ -295,6 +304,9 @@ fn dropout2d_backward(
 
     Returns:
             Gradient with respect to input
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo

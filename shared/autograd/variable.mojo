@@ -102,6 +102,9 @@ struct Variable(Copyable, Movable):
         Examples:
             var tape = GradientTape()
             var x = Variable(zeros(shape, dtype), True, tape)
+
+        Raises:
+            Error: If operation fails.
         """
         self.data = data^
         self.requires_grad = requires_grad
@@ -161,6 +164,9 @@ struct Variable(Copyable, Movable):
                 loss.backward(tape)  # Computes gradients for all inputs
                 print(tape.get_grad(x.id))  # dLoss/dx
         ```
+
+        Raises:
+            Error: If operation fails.
         """
         # Initialize gradient of output to ones
         var grad = ones_like(self.data)
@@ -227,6 +233,9 @@ fn variable_add(
 
     Returns:
             New `Variable` containing `a + b`.
+
+    Raises:
+            Error: If operation fails.
     """
     var result_data = add(a.data, b.data)
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
@@ -260,6 +269,9 @@ fn variable_subtract(
 
     Returns:
             New `Variable` containing `a - b`.
+
+    Raises:
+            Error: If operation fails.
     """
     var result_data = subtract(a.data, b.data)
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
@@ -292,6 +304,9 @@ fn variable_multiply(
 
     Returns:
             New `Variable` containing `a * b`.
+
+    Raises:
+            Error: If operation fails.
     """
     var result_data = multiply(a.data, b.data)
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
@@ -324,6 +339,9 @@ fn variable_divide(
 
     Returns:
             New `Variable` containing `a / b`.
+
+    Raises:
+            Error: If operation fails.
     """
     var result_data = divide(a.data, b.data)
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
@@ -356,6 +374,9 @@ fn variable_matmul(
 
     Returns:
             New `Variable` containing `a @ b`.
+
+    Raises:
+            Error: If operation fails.
     """
     var result_data = matmul(a.data, b.data)
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
@@ -388,6 +409,9 @@ fn variable_sum(
 
     Returns:
             New Variable containing the sum.
+
+    Raises:
+            Error: If operation fails.
     """
     var result_data = tensor_sum(x.data, axis)
     var result_id = tape.register_variable(x.requires_grad)
@@ -419,6 +443,9 @@ fn variable_mean(
 
     Returns:
             New Variable containing the mean.
+
+    Raises:
+            Error: If operation fails.
     """
     var result_data = tensor_mean(x.data, axis)
     var result_id = tape.register_variable(x.requires_grad)
@@ -448,6 +475,9 @@ fn variable_relu(
 
     Returns:
             New Variable containing `ReLU(x)`.
+
+    Raises:
+            Error: If operation fails.
     """
     var result_data = relu(x.data)
     var result_id = tape.register_variable(x.requires_grad)
@@ -476,6 +506,9 @@ fn variable_sigmoid(
 
     Returns:
             New Variable containing `sigmoid(x)`.
+
+    Raises:
+            Error: If operation fails.
     """
     var result_data = sigmoid(x.data)
     var result_id = tape.register_variable(x.requires_grad)
@@ -504,6 +537,9 @@ fn variable_tanh(
 
     Returns:
             New Variable containing `tanh(x)`.
+
+    Raises:
+            Error: If operation fails.
     """
     var result_data = tanh(x.data)
     var result_id = tape.register_variable(x.requires_grad)
@@ -532,6 +568,9 @@ fn variable_neg(
 
     Returns:
             New Variable containing `-x`.
+
+    Raises:
+            Error: If operation fails.
     """
     # Create negated tensor
     var result_data = zeros_like(x.data)

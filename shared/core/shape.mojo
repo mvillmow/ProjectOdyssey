@@ -68,6 +68,9 @@ fn as_contiguous(tensor: ExTensor) raises -> ExTensor:
     Returns:
             A new contiguous tensor with the same data.
 
+    Raises:
+            Error: If operation fails.
+
     Note:
             This function always copies data. For zero-copy operations, check
             is_contiguous() first.
@@ -299,6 +302,9 @@ fn unsqueeze(tensor: ExTensor, dim: Int) raises -> ExTensor:
     Returns:
             Tensor with additional size-1 dimension.
 
+    Raises:
+            Error: If operation fails.
+
     Examples:
     ```
             var a = ones([3, 4], DType.float32)  # Shape (3, 4)
@@ -339,6 +345,9 @@ fn expand_dims(tensor: ExTensor, dim: Int) raises -> ExTensor:
 
     Returns:
             Tensor with additional size-1 dimension.
+
+    Raises:
+            Error: If operation fails.
     """
     return unsqueeze(tensor, dim)
 
@@ -351,6 +360,9 @@ fn flatten(tensor: ExTensor) raises -> ExTensor:
 
     Returns:
             1D tensor with all elements in row-major (C) order.
+
+    Raises:
+            Error: If operation fails.
 
     Examples:
     ```
@@ -377,6 +389,9 @@ fn ravel(tensor: ExTensor) raises -> ExTensor:
 
     Returns:
             1D tensor with all elements (may be a view if contiguous).
+
+    Raises:
+            Error: If operation fails.
 
     Examples:
     ```
@@ -699,6 +714,9 @@ fn flatten_to_2d(tensor: ExTensor) raises -> ExTensor:
             var fc_input = flatten_to_2d(conv_output)
             var fc_output = linear(fc_input, weights, bias)
     ```
+
+    Note:
+            Raises error if input is not 4D.
     """
     var shape = tensor.shape()
 

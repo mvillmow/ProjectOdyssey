@@ -64,6 +64,9 @@ struct IdentityTransform(Copyable, Movable, Transform):
 
         Returns:
             Input tensor unchanged.
+
+        Raises:
+            Error: If operation fails.
         """
         return data
 
@@ -111,6 +114,9 @@ struct LambdaTransform(Copyable, Movable, Transform):
 
         Returns:
             Transformed tensor with function applied to each element.
+
+        Raises:
+            Error: If tensor creation fails.
         """
         var result_values = List[Float32](capacity=data.num_elements())
 
@@ -173,6 +179,9 @@ struct ConditionalTransform[T: Transform & Copyable & Movable](
 
         Returns:
             Transformed tensor if predicate true, otherwise original.
+
+        Raises:
+            Error: If predicate evaluation or transform fails.
         """
         if self.predicate(data):
             return self.transform(data)
@@ -228,6 +237,9 @@ struct ClampTransform(Copyable, Movable, Transform):
 
         Returns:
             ExTensor with all values clamped to range.
+
+        Raises:
+            Error: If tensor creation fails.
         """
         var result_values = List[Float32](capacity=data.num_elements())
 
@@ -285,6 +297,9 @@ struct DebugTransform(Copyable, Movable, Transform):
 
         Returns:
             Input tensor unchanged.
+
+        Raises:
+            Error: If operation fails.
         """
         print("[DEBUG: " + self.name + "]")
         print("  Elements:", data.num_elements())
@@ -345,7 +360,11 @@ struct AnyTransform(Copyable, Movable, Transform):
         self._sequential = None
 
     fn __init__(out self, var transform: ClampTransform) raises:
-        """Create from ClampTransform."""
+        """Create from ClampTransform.
+
+        Raises:
+            Error: If operation fails.
+        """
         self._lambda = None
         self._clamp = transform^
         self._identity = None
@@ -405,7 +424,17 @@ struct AnyTransform(Copyable, Movable, Transform):
         self._sequential = transform^
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
-        """Apply the wrapped transform."""
+        """Apply the wrapped transform.
+
+        Args:
+            data: Input tensor.
+
+        Returns:
+            Transformed tensor.
+
+        Raises:
+            Error: If no transform is set or wrapped transform fails.
+        """
         if self._lambda:
             return self._lambda.value()(data)
         if self._clamp:
@@ -466,6 +495,9 @@ struct SequentialTransform(Copyable, Movable, Transform):
 
         Returns:
             ExTensor after all transforms applied.
+
+        Raises:
+            Error: If any transform fails.
         """
         var result = data
 
@@ -518,6 +550,9 @@ struct BatchTransform(Copyable, Movable):
 
         Returns:
             List of transformed tensors (same order as input).
+
+        Raises:
+            Error: If any transform fails.
         """
         var results = List[ExTensor](capacity=len(batch))
 
@@ -561,6 +596,9 @@ struct ToFloat32(Copyable, Movable, Transform):
 
         Returns:
             ExTensor with all values as Float32.
+
+        Raises:
+            Error: If tensor creation fails.
         """
         # ExTensor is already Float32 in current implementation
         # Just create a copy with Float32 values
@@ -602,6 +640,9 @@ struct ToInt32(Copyable, Movable, Transform):
         Returns:
             ExTensor with all values truncated to Int32.
 
+        Raises:
+            Error: If tensor creation fails.
+
         Note:
             Truncates toward zero: 2.9 -> 2, -2.9 -> -2.
         """
@@ -636,6 +677,9 @@ fn apply_to_tensor(
     Returns:
         Transformed tensor.
 
+    Raises:
+        Error: If tensor creation fails.
+
     Example:
         ```mojo
         >> fn square(x: Float32) -> Float32:
@@ -660,6 +704,9 @@ fn compose_transforms(
 
     Returns:
         SequentialTransform that applies all transforms in order.
+
+    Raises:
+        Error: If composition fails.
 
     Example:
         ```mojo

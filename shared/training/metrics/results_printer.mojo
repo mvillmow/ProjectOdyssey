@@ -43,6 +43,9 @@ fn print_training_progress(
             loss: Current batch loss value.
             learning_rate: Current learning rate (default: 0.01).
 
+    Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
             rint_training_progress(1, 200, 10, 100, 0.234, 0.01)
@@ -87,6 +90,9 @@ fn print_evaluation_summary(
             train_accuracy: Training accuracy (0.0 to 1.0).
             test_loss: Test/validation loss value.
             test_accuracy: Test/validation accuracy (0.0 to 1.0).
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -136,6 +142,9 @@ fn print_per_class_accuracy(per_class_accuracies: ExTensor) raises:
     Args:
             per_class_accuracies: Tensor of shape [num_classes] with per-class accuracy.
 
+    Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
             var per_class = ExTensor([10], DType.float64)
@@ -177,6 +186,9 @@ fn print_per_class_accuracy(
             per_class_accuracies: Tensor of shape [num_classes] with per-class accuracy.
             class_names: List of class name strings.
             column_width: Width of each column in characters (default: 15).
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -256,6 +268,9 @@ fn print_confusion_matrix(matrix: ExTensor) raises:
     Args:
             matrix: Confusion matrix tensor of shape [num_classes, num_classes].
 
+    Raises:
+            Error: If operation fails.
+
         Example:
             ```mojo
             var cm_shape = [3, 3]
@@ -307,6 +322,9 @@ fn print_confusion_matrix(
             class_names: List of class name strings.
             normalized: If True, display as percentages (default: False).
             column_width: Width of each column in characters (default: 10).
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -442,6 +460,9 @@ fn print_training_summary(
             best_test_loss: Best test/validation loss achieved.
             best_accuracy: Best accuracy achieved (0.0 to 1.0).
             best_epoch: Epoch at which best accuracy was achieved.
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo

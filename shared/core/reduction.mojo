@@ -29,6 +29,9 @@ fn sum(
     Returns:
             A new tensor with sum along specified axis.
 
+    Raises:
+            Error: If operation fails.
+
     Examples:
         ```
             var t = ones([3, 4], DType.float32)
@@ -92,6 +95,9 @@ fn mean(
     Returns:
             A new tensor with mean along specified axis.
 
+    Raises:
+            Error: If operation fails.
+
     Examples:
         ```
             var t = ones([3, 4], DType.float32)
@@ -142,6 +148,9 @@ fn max_reduce(
 
     Returns:
             A new tensor with maximum along specified axis.
+
+    Raises:
+            Error: If operation fails.
 
     Examples:
         ```
@@ -207,6 +216,9 @@ fn min_reduce(
 
     Returns:
             A new tensor with minimum along specified axis.
+
+    Raises:
+            Error: If operation fails.
 
     Examples:
         ```
@@ -283,6 +295,9 @@ fn sum_backward(
 
     Returns:
             Gradient w.r.t. input (∂L/∂X) - broadcast back to input_shape.
+
+    Raises:
+            Error: If operation fails.
 
     Examples:
         ```
@@ -366,6 +381,9 @@ fn mean_backward(
     Returns:
             Gradient w.r.t. input (∂L/∂X) - broadcast and scaled.
 
+    Raises:
+            Error: If operation fails.
+
     Examples:
         ```
             var x = ones([3, 4], DType.float32)
@@ -417,6 +435,9 @@ fn max_reduce_backward(
 
     Returns:
             Gradient w.r.t. input (∂L/∂X).
+
+    Raises:
+            Error: If operation fails.
 
     Examples:
         ```
@@ -546,6 +567,9 @@ fn min_reduce_backward(
 
     Returns:
             Gradient w.r.t. input (∂L/∂X).
+
+    Raises:
+            Error: If operation fails.
 
     Examples:
         ```

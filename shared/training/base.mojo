@@ -171,6 +171,9 @@ trait Callback:
 
         Returns:
             CallbackSignal (CONTINUE or STOP).
+
+        Raises:
+            Error: If operation fails.
         """
         ...
 
@@ -292,6 +295,9 @@ fn is_valid_loss(loss: Float64) raises -> Bool:
 
     Returns:
             True if loss is finite (not NaN, not inf), False otherwise.
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo

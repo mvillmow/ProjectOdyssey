@@ -37,6 +37,9 @@ struct Batch(Copyable, Movable):
             data: Batch data tensor.
             labels: Batch labels tensor.
             indices: Original indices of samples in the batch.
+
+        Raises:
+            Error: If batch initialization fails.
         """
         self.data = data^
         self.labels = labels^
@@ -176,6 +179,9 @@ struct BatchLoader[
 
         Returns:
             List of batches for the epoch.
+
+        Raises:
+            Error: If operation fails.
         """
         var batches = List[Batch](capacity=self.__len__())
         var indices = self.sampler.__iter__()
@@ -227,7 +233,7 @@ struct BatchLoader[
             Stacked tensor with batch dimension prepended
 
         Raises:
-            Error if tensors list is empty or tensors have incompatible shapes
+            Error: If tensors list is empty or tensors have incompatible shapes.
         """
         if len(tensors) == 0:
             raise Error("Cannot stack empty list of tensors")

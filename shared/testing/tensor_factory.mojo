@@ -50,6 +50,9 @@ fn zeros_tensor(shape: List[Int], dtype: DType) raises -> ExTensor:
         var weights = zeros_tensor([10, 5], DType.float32)
         # Creates 10x5 tensor filled with zeros
     ```
+
+    Raises:
+        Error: If operation fails.
     """
     return zeros(shape, dtype)
 
@@ -69,6 +72,9 @@ fn ones_tensor(shape: List[Int], dtype: DType) raises -> ExTensor:
         var weights = ones_tensor([10, 5], DType.float32)
         # Creates 10x5 tensor filled with ones
     ```
+
+    Raises:
+        Error: If operation fails.
     """
     return ones(shape, dtype)
 
@@ -91,6 +97,9 @@ fn full_tensor(
         var weights = full_tensor([10, 5], 3.14, DType.float32)
         # Creates 10x5 tensor filled with 3.14
     ```
+
+    Raises:
+        Error: If operation fails.
     """
     return full(shape, fill_value, dtype)
 
@@ -124,6 +133,9 @@ fn random_tensor(
     Note:
         Values are uniformly distributed in [low, high) regardless of dtype.
         For integer dtypes, values are truncated to Int.
+
+    Raises:
+        Error: If operation fails.
     """
     # Create empty tensor with the specified shape
     var tensor = zeros(shape, dtype)
@@ -197,6 +209,9 @@ fn random_normal_tensor(
     Note:
         Uses Box-Muller transform for efficiency.
         For integer dtypes, values are truncated to Int after sampling.
+
+    Raises:
+        Error: If operation fails.
     """
     # Create empty tensor with the specified shape
     var tensor = zeros(shape, dtype)

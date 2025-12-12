@@ -149,7 +149,11 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         self.data[key] = ConfigValue(value^)
 
     fn set(mut self, key: String, value: StringSlice) raises:
-        """Set configuration value from StringSlice."""
+        """Set configuration value from StringSlice.
+
+        Raises:
+            Error: If value conversion fails.
+        """
         self.set(key, String(value))
 
     fn has(self, key: String) -> Bool:

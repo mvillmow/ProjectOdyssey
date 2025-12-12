@@ -60,6 +60,9 @@ fn split_words(text: String) raises -> List[String]:
 
     Returns:
         List of words (space-separated tokens).
+
+    Raises:
+        Error: If splitting operation fails.
     """
     # Use built-in split method
     var parts = text.split(" ")
@@ -81,6 +84,9 @@ fn join_words(words: List[String]) raises -> String:
 
     Returns:
         Joined text with spaces between words.
+
+    Raises:
+        Error: If joining operation fails.
     """
     if len(words) == 0:
         return String("")

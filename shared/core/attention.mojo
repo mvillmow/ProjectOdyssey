@@ -29,6 +29,9 @@ fn scaled_dot_product_attention(
 ) raises -> ExTensor:
     """Scaled dot-product attention without mask.
 
+    Raises:
+            Error: If operation fails.
+
     See scaled_dot_product_attention_masked for version with mask support.
     """
     var empty_shape = List[Int]()
@@ -60,6 +63,9 @@ fn scaled_dot_product_attention_masked(
 
     Returns:
             Attention output of shape (batch, seq_len, d_v) or (batch, heads, seq_len, d_v).
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -149,7 +155,11 @@ fn scaled_dot_product_attention_backward(
     value: ExTensor,
     attention_weights: ExTensor,
 ) raises -> GradientTriple:
-    """Backward pass for scaled dot-product attention without mask."""
+    """Backward pass for scaled dot-product attention without mask.
+
+    Raises:
+            Error: If operation fails.
+    """
     var empty_shape = List[Int]()
     var empty_mask = zeros(empty_shape, DType.float32)
     return scaled_dot_product_attention_backward_masked(
@@ -183,6 +193,9 @@ fn scaled_dot_product_attention_backward_masked(
                 - grad_input  -> gradient w.r.t. query.
                 - grad_weights -> gradient w.r.t. key.
                 - grad_bias  -> gradient w.r.t. value.
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -258,6 +271,9 @@ fn _softmax_backward(
 
     Computes gradient through softmax: d_softmax/d_input = s * (g - sum(g * s)).
     where s = softmax_output and g = grad_output.
+
+    Raises:
+            Error: If operation fails.
     """
     var shape = grad_output.shape()
     var result = zeros_like(grad_output)
@@ -325,6 +341,9 @@ fn create_causal_mask(
 
     Returns:
             Mask tensor of shape (seq_len, seq_len) suitable for attention.
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -432,6 +451,9 @@ fn multi_head_attention(
 ) raises -> MultiHeadAttentionResult:
     """Multi-head attention mechanism without mask.
 
+    Raises:
+            Error: If operation fails.
+
     See multi_head_attention_masked for version with mask support.
     """
     var empty_shape = List[Int]()
@@ -467,6 +489,9 @@ fn multi_head_attention_masked(
             MultiHeadAttentionResult containing:
                 - output: Attended output of shape (batch, seq_len, d_model).
                 - attention_weights: Attention weights for visualization.
+
+    Raises:
+            Error: If operation fails.
 
         Example:
             ```mojo
@@ -565,6 +590,9 @@ fn _reshape_for_heads(
     """Reshape from (batch, seq, d_model) to (batch, num_heads, seq, d_k).
 
     Internal helper for multi-head attention.
+
+    Raises:
+            Error: If operation fails.
     """
     # x shape: (batch, seq_len, d_model) where d_model = num_heads * d_k
     # Target: (batch, num_heads, seq_len, d_k)
@@ -626,6 +654,9 @@ fn _reshape_from_heads(
     """Reshape from (batch, num_heads, seq, d_k) to (batch, seq, d_model).
 
     Internal helper for multi-head attention.
+
+    Raises:
+            Error: If operation fails.
     """
     # x shape: (batch, num_heads, seq_len, d_k)
     # Target: (batch, seq_len, d_model) where d_model = num_heads * d_k
@@ -746,6 +777,9 @@ fn multi_head_attention_backward(
 
     Returns:
             MultiHeadAttentionBackwardResult containing gradients for all inputs/weights.
+
+    Raises:
+            Error: If operation fails.
 
     Note:
             Caller must save attention_weights from forward pass.
