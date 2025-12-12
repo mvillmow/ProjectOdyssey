@@ -67,8 +67,11 @@ struct SimpleCNN(Copyable, Movable):
     """
 
     var in_channels: Int
+    """Number of input channels."""
     var out_channels: Int
+    """Number of output channels from first conv layer."""
     var num_classes: Int
+    """Number of output classes."""
 
     fn __init__(
         out self,
@@ -161,7 +164,9 @@ struct LinearModel(Copyable, Movable):
     """
 
     var in_features: Int
+    """Input feature dimension."""
     var out_features: Int
+    """Output feature dimension."""
 
     fn __init__(out self, in_features: Int, out_features: Int):
         """Initialize linear model.
@@ -238,8 +243,11 @@ struct MockLayer:
     """
 
     var input_dim: Int
+    """Input feature dimension."""
     var output_dim: Int
+    """Output feature dimension."""
     var scale: Float32
+    """Scale factor applied to inputs."""
 
     fn __init__(
         out self, input_dim: Int, output_dim: Int, scale: Float32 = 1.0
@@ -340,10 +348,15 @@ struct SimpleLinearModel:
     """
 
     var input_dim: Int
+    """Input feature dimension."""
     var output_dim: Int
+    """Output feature dimension."""
     var weights: List[Float32]
+    """Model weights (flattened weight matrix)."""
     var bias: List[Float32]
+    """Model bias."""
     var use_bias: Bool
+    """Whether to use bias."""
 
     fn __init__(
         out self,
@@ -463,7 +476,9 @@ struct Parameter(Copyable, Movable):
     """
 
     var data: ExTensor
+    """The parameter tensor (weights or bias)."""
     var grad: ExTensor
+    """The gradient tensor for backpropagation."""
 
     fn __init__(out self, data: ExTensor) raises:
         """Initialize parameter with data tensor and zero gradient.
@@ -523,15 +538,25 @@ struct SimpleMLP(Copyable, Model, Movable):
     """
 
     var input_dim: Int
+    """Input dimension."""
     var hidden_dim: Int
+    """Hidden layer dimension."""
     var output_dim: Int
+    """Output dimension."""
     var num_hidden_layers: Int
+    """Number of hidden layers (1 or 2)."""
     var layer1_weights: List[Float32]
+    """First layer weights."""
     var layer1_bias: List[Float32]
+    """First layer bias."""
     var layer2_weights: List[Float32]
+    """Second layer weights (hidden to hidden or hidden to output)."""
     var layer2_bias: List[Float32]
+    """Second layer bias."""
     var layer3_weights: List[Float32]
+    """Third layer weights (only if num_hidden_layers=2)."""
     var layer3_bias: List[Float32]
+    """Third layer bias (only if num_hidden_layers=2)."""
 
     fn __init__(
         out self,
@@ -726,7 +751,18 @@ struct SimpleMLP(Copyable, Model, Movable):
         out_dim: Int,
         in_dim: Int,
     ) -> List[Float32]:
-        """Linear layer forward pass: output = weights @ input + bias."""
+        """Linear layer forward pass: output = weights @ input + bias.
+
+        Args:
+            input: Input list.
+            weights: Weight matrix (flattened).
+            bias: Bias vector.
+            out_dim: Output dimension.
+            in_dim: Input dimension.
+
+        Returns:
+            Output tensor from linear transformation.
+        """
         var output = List[Float32](capacity=out_dim)
 
         for i in range(out_dim):
@@ -740,7 +776,14 @@ struct SimpleMLP(Copyable, Model, Movable):
         return output^
 
     fn _relu(self, input: List[Float32]) -> List[Float32]:
-        """ReLU activation: max(0, x)."""
+        """ReLU activation: max(0, x).
+
+        Args:
+            input: Input tensor.
+
+        Returns:
+            Output tensor with ReLU applied.
+        """
         var output = List[Float32](capacity=len(input))
         for i in range(len(input)):
             var val = input[i]

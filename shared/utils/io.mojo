@@ -14,7 +14,7 @@ Example:
     var loaded = load_checkpoint("checkpoint.pt")
     ```
 
-FIXME(#2715): Placeholder tests in tests/shared/fixtures/io_helpers.mojo require:
+FIXME: Placeholder tests in tests/shared/fixtures/io_helpers.mojo require:
 - create_temp_dir() (line 26)
 - cleanup_temp_dir() (line 65)
 - create_mock_config() (line 131)

@@ -98,8 +98,11 @@ struct SavedTensors(Copyable, Movable):
     """
 
     var tensors: List[ExTensor]
+    """Saved tensors for backward computation."""
     var shapes: List[List[Int]]
+    """Saved shapes for tensor reconstruction."""
     var scalars: List[Float64]
+    """Saved scalar values for backward computation."""
 
     fn __init__(out self):
         """Initialize empty saved tensors."""
@@ -182,9 +185,13 @@ struct TapeNode(Copyable, Movable):
     """
 
     var op_type: String
+    """String identifier for the operation type."""
     var input_ids: List[Int]
+    """IDs of input variables for dependency tracking."""
     var output_id: Int
+    """ID of the output variable produced by this operation."""
     var saved: SavedTensors
+    """Tensors saved during forward pass for backward computation."""
 
     fn __init__(
         out self, op_type: String, input_ids: List[Int], output_id: Int
@@ -259,9 +266,13 @@ struct VariableRegistry:
     """
 
     var grads: List[ExTensor]
+    """Gradient tensors indexed by variable ID."""
     var has_grad: List[Bool]
+    """Flag indicating whether gradient has been computed for each variable."""
     var requires_grad: List[Bool]
+    """Flag indicating whether each variable requires gradients."""
     var next_id: Int
+    """Counter for assigning unique IDs to variables."""
 
     fn __init__(out self):
         """Initialize empty registry."""
@@ -396,8 +407,11 @@ struct GradientTape:
     """
 
     var nodes: List[TapeNode]
+    """Chronological list of recorded operations."""
     var enabled: Bool
+    """Flag indicating whether the tape is currently recording."""
     var registry: VariableRegistry
+    """Registry mapping variable IDs to gradient tensors."""
 
     fn __init__(out self):
         """Initialize an empty gradient tape."""
@@ -898,23 +912,29 @@ struct NoGradContext(Copyable, Movable):
 
         This is a stub implementation. The full context manager is blocked
         by Mojo's UnsafePointer parametric mutability limitation.
+
+        Note:
+            This constructor does not perform any initialization due to the
+            implementation limitation documented in the struct docstring.
         """
         pass
 
-    fn __enter__(mut self):
+    fn __enter__(mut self) -> None:
         """Enter no-grad context (stub).
 
-        TODO(#2400): Implement gradient tracking disable when Mojo supports
-        UnsafePointer with parametric mutability. For now, use:
-            tape.disable()
+        Note:
+            TODO(#2400): Implement gradient tracking disable when Mojo supports
+            UnsafePointer with parametric mutability. For now, use:
+                tape.disable()
         """
         pass
 
-    fn __exit__(mut self):
+    fn __exit__(mut self) -> None:
         """Exit no-grad context (stub).
 
-        TODO(#2400): Implement gradient tracking restore when Mojo supports
-        UnsafePointer with parametric mutability. For now, use:
-            tape.enable()
+        Note:
+            TODO(#2400): Implement gradient tracking restore when Mojo supports
+            UnsafePointer with parametric mutability. For now, use:
+                tape.enable()
         """
         pass

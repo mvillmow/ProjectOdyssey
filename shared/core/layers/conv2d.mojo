@@ -32,13 +32,21 @@ struct Conv2dLayer(Copyable, Movable):
     """
 
     var weight: ExTensor
+    """Filter weights of shape (out_channels, in_channels, kernel_h, kernel_w)."""
     var bias: ExTensor
+    """Bias vector of shape (out_channels,)."""
     var in_channels: Int
+    """Number of input channels."""
     var out_channels: Int
+    """Number of output channels (filters)."""
     var kernel_h: Int
+    """Kernel height."""
     var kernel_w: Int
+    """Kernel width."""
     var stride: Int
+    """Stride for convolution."""
     var padding: Int
+    """Zero-padding added to input."""
 
     fn __init__(
         out self,

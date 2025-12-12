@@ -63,12 +63,19 @@ struct BenchmarkResult(Copyable, Movable):
     """
 
     var name: String
+    """Descriptive name for the benchmarked operation."""
     var iterations: Int
+    """Total number of iterations recorded."""
     var total_time_ns: Int
+    """Sum of all iteration times in nanoseconds."""
     var min_time_ns: Int
+    """Minimum iteration time in nanoseconds."""
     var max_time_ns: Int
+    """Maximum iteration time in nanoseconds."""
     var _mean: Float64
+    """Mean iteration time computed via Welford's algorithm."""
     var _M2: Float64
+    """Second moment accumulator for variance (Welford's algorithm)."""
 
     fn __init__(out self, name: String, iterations: Int):
         """Initialize a benchmark result tracker.

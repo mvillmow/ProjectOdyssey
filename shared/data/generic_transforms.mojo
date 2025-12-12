@@ -97,6 +97,7 @@ struct LambdaTransform(Copyable, Movable, Transform):
     """
 
     var func: fn (Float32) -> Float32
+    """Function to apply element-wise to tensor values."""
 
     fn __init__(out self, func: fn (Float32) -> Float32):
         """Create lambda transform.
@@ -155,7 +156,9 @@ struct ConditionalTransform[T: Transform & Copyable & Movable](
     """
 
     var predicate: fn (ExTensor) raises -> Bool
+    """Predicate function to evaluate on tensor."""
     var transform: Self.T
+    """Transform to apply if predicate is true."""
 
     fn __init__(
         out self,
@@ -211,7 +214,9 @@ struct ClampTransform(Copyable, Movable, Transform):
     """
 
     var min_val: Float32
+    """Minimum allowed value for clamping."""
     var max_val: Float32
+    """Maximum allowed value for clamping."""
 
     fn __init__(out self, min_val: Float32, max_val: Float32) raises:
         """Create clamp transform.
@@ -280,6 +285,7 @@ struct DebugTransform(Copyable, Movable, Transform):
     """
 
     var name: String
+    """Name to display in debug output."""
 
     fn __init__(out self, name: String):
         """Create debug transform.
@@ -342,15 +348,26 @@ struct AnyTransform(Copyable, Movable, Transform):
     # Internal storage using trait object pattern
     # We store the transform as a variant that can hold different types
     var _lambda: Optional[LambdaTransform]
+    """Wrapped LambdaTransform if set."""
     var _clamp: Optional[ClampTransform]
+    """Wrapped ClampTransform if set."""
     var _identity: Optional[IdentityTransform]
+    """Wrapped IdentityTransform if set."""
     var _debug: Optional[DebugTransform]
+    """Wrapped DebugTransform if set."""
     var _to_float32: Optional[ToFloat32]
+    """Wrapped ToFloat32 if set."""
     var _to_int32: Optional[ToInt32]
+    """Wrapped ToInt32 if set."""
     var _sequential: Optional[SequentialTransform]
+    """Wrapped SequentialTransform if set."""
 
     fn __init__(out self, var transform: LambdaTransform):
-        """Create from LambdaTransform."""
+        """Create from LambdaTransform.
+
+        Args:
+            transform: LambdaTransform to wrap.
+        """
         self._lambda = transform^
         self._clamp = None
         self._identity = None
@@ -361,6 +378,9 @@ struct AnyTransform(Copyable, Movable, Transform):
 
     fn __init__(out self, var transform: ClampTransform) raises:
         """Create from ClampTransform.
+
+        Args:
+            transform: ClampTransform to wrap.
 
         Raises:
             Error: If operation fails.
@@ -374,7 +394,11 @@ struct AnyTransform(Copyable, Movable, Transform):
         self._sequential = None
 
     fn __init__(out self, var transform: IdentityTransform):
-        """Create from IdentityTransform."""
+        """Create from IdentityTransform.
+
+        Args:
+            transform: IdentityTransform to wrap.
+        """
         self._lambda = None
         self._clamp = None
         self._identity = transform^
@@ -384,7 +408,11 @@ struct AnyTransform(Copyable, Movable, Transform):
         self._sequential = None
 
     fn __init__(out self, var transform: DebugTransform):
-        """Create from DebugTransform."""
+        """Create from DebugTransform.
+
+        Args:
+            transform: DebugTransform to wrap.
+        """
         self._lambda = None
         self._clamp = None
         self._identity = None
@@ -394,7 +422,11 @@ struct AnyTransform(Copyable, Movable, Transform):
         self._sequential = None
 
     fn __init__(out self, var transform: ToFloat32):
-        """Create from ToFloat32."""
+        """Create from ToFloat32.
+
+        Args:
+            transform: ToFloat32 to wrap.
+        """
         self._lambda = None
         self._clamp = None
         self._identity = None
@@ -404,7 +436,11 @@ struct AnyTransform(Copyable, Movable, Transform):
         self._sequential = None
 
     fn __init__(out self, var transform: ToInt32):
-        """Create from ToInt32."""
+        """Create from ToInt32.
+
+        Args:
+            transform: ToInt32 to wrap.
+        """
         self._lambda = None
         self._clamp = None
         self._identity = None
@@ -414,7 +450,11 @@ struct AnyTransform(Copyable, Movable, Transform):
         self._sequential = None
 
     fn __init__(out self, var transform: SequentialTransform):
-        """Create from SequentialTransform."""
+        """Create from SequentialTransform.
+
+        Args:
+            transform: SequentialTransform to wrap.
+        """
         self._lambda = None
         self._clamp = None
         self._identity = None
@@ -478,6 +518,11 @@ struct SequentialTransform(Copyable, Movable, Transform):
     """
 
     var transforms: List[AnyTransform]
+    """List of transforms to apply in sequence."""
+
+    fn __init__(out self):
+        """Create empty sequential transform."""
+        self.transforms = List[AnyTransform]()
 
     fn __init__(out self, var transforms: List[AnyTransform]):
         """Create sequential composition.
@@ -507,6 +552,22 @@ struct SequentialTransform(Copyable, Movable, Transform):
 
         return result
 
+    fn __len__(self) -> Int:
+        """Return number of transforms in sequence.
+
+        Returns:
+            Number of transforms in this sequential transform.
+        """
+        return len(self.transforms)
+
+    fn append(mut self, var transform: AnyTransform):
+        """Add a transform to the pipeline.
+
+        Args:
+            transform: Transform to add to the sequence.
+        """
+        self.transforms.append(transform^)
+
 
 # ============================================================================
 # Batch Transform
@@ -533,6 +594,7 @@ struct BatchTransform(Copyable, Movable):
     """
 
     var transform: AnyTransform
+    """Transform to apply to each tensor in the batch."""
 
     fn __init__(out self, var transform: AnyTransform):
         """Create batch transform.
@@ -561,6 +623,14 @@ struct BatchTransform(Copyable, Movable):
             results.append(transformed)
 
         return results^
+
+    fn __len__(self) -> Int:
+        """Return number of tensors in batch.
+
+        Returns:
+            Batch size.
+        """
+        return 0  # Placeholder - batch size not tracked in current design
 
 
 # ============================================================================
@@ -675,7 +745,7 @@ fn apply_to_tensor(
         func: Function to apply to each element.
 
     Returns:
-        Transformed tensor.
+        ExTensor with function applied element-wise to all values.
 
     Raises:
         Error: If tensor creation fails.
@@ -700,10 +770,10 @@ fn compose_transforms(
     Convenience function for building transform pipelines.
 
     Args:
-        transforms: List of transforms to compose.
+        transforms: List of transforms to compose in order.
 
     Returns:
-        SequentialTransform that applies all transforms in order.
+        SequentialTransform that applies all transforms sequentially.
 
     Raises:
         Error: If composition fails.

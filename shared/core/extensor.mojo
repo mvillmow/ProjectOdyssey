@@ -73,16 +73,22 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             print(a.numel())  # 12.
     """
 
-    var _data: UnsafePointer[UInt8, origin=MutAnyOrigin]  # Raw byte storage
+    var _data: UnsafePointer[UInt8, origin=MutAnyOrigin]
+    """Raw byte storage for tensor elements."""
     var _shape: List[Int]
+    """List of dimension sizes."""
     var _strides: List[Int]
+    """Row-major strides for each dimension."""
     var _dtype: DType
+    """Data type of tensor elements."""
     var _numel: Int
+    """Total number of elements."""
     var _is_view: Bool
-    var _refcount: UnsafePointer[
-        Int, origin=MutAnyOrigin
-    ]  # Shared reference count (fixes MOJO-003)
-    var _original_numel_quantized: Int  # Metadata for quantization: -1 if not quantized, original numel if quantized (fixes DATA-001)
+    """Whether this tensor shares data with another."""
+    var _refcount: UnsafePointer[Int, origin=MutAnyOrigin]
+    """Reference count for shared memory management."""
+    var _original_numel_quantized: Int
+    """Original element count before quantization padding."""
 
     fn __init__(out self, shape: List[Int], dtype: DType) raises:
         """Initialize a new ExTensor with given shape and dtype.
@@ -221,7 +227,6 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
         Raises:
             Error: If tensor allocation fails.
-
         """
         # Initialize scalar tensor (0D shape)
         self._shape = List[Int]()
@@ -677,6 +682,12 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
     fn _get_float64(self, index: Int) -> Float64:
         """Internal: Get value at index as Float64 (assumes float-compatible dtype).
+
+        Args:
+            index: The element index to retrieve.
+
+        Returns:
+            The value at the index as Float64.
         """
         var dtype_size = self._get_dtype_size()
         var offset = index * dtype_size
@@ -695,7 +706,12 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             return Float64(self._get_int64(index))
 
     fn _set_float64(self, index: Int, value: Float64):
-        """Internal: Set value at index (assumes float-compatible dtype)."""
+        """Internal: Set value at index (assumes float-compatible dtype).
+
+        Args:
+            index: The element index to set.
+            value: The value to set (as Float64).
+        """
         var dtype_size = self._get_dtype_size()
         var offset = index * dtype_size
 
@@ -765,6 +781,12 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
     fn _get_int64(self, index: Int) -> Int64:
         """Internal: Get value at index as Int64 (assumes integer-compatible dtype).
+
+        Args:
+            index: The element index to retrieve.
+
+        Returns:
+            The value at the index as Int64.
         """
         var dtype_size = self._get_dtype_size()
         var offset = index * dtype_size
@@ -800,7 +822,12 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             return 0  # Default fallback
 
     fn _set_int64(self, index: Int, value: Int64):
-        """Internal: Set value at index (assumes integer-compatible dtype)."""
+        """Internal: Set value at index (assumes integer-compatible dtype).
+
+        Args:
+            index: The element index to set.
+            value: The value to set (as Int64).
+        """
         var dtype_size = self._get_dtype_size()
         var offset = index * dtype_size
 
@@ -851,12 +878,20 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         memset_zero(self._data, total_bytes)
 
     fn _fill_value_float(mut self, value: Float64):
-        """Internal: Fill tensor with float value."""
+        """Internal: Fill tensor with float value.
+
+        Args:
+            value: The float value to fill with.
+        """
         for i in range(self._numel):
             self._set_float64(i, value)
 
     fn _fill_value_int(mut self, value: Int64):
-        """Internal: Fill tensor with integer value."""
+        """Internal: Fill tensor with integer value.
+
+        Args:
+            value: The integer value to fill with.
+        """
         for i in range(self._numel):
             self._set_int64(i, value)
 
@@ -867,9 +902,14 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
     fn __add__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise addition: a + b.
 
+        Args:
+            other: The tensor to add.
+
+        Returns:
+            New tensor with element-wise sum.
+
         Raises:
             Error: If tensors have incompatible shapes.
-
         """
         from .arithmetic import add
 
@@ -878,27 +918,43 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
     fn __sub__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise subtraction: a - b.
 
+        Args:
+            other: The tensor to subtract.
+
+        Returns:
+            New tensor with element-wise difference.
+
         Raises:
             Error: If tensors have incompatible shapes.
-
         """
         from .arithmetic import subtract
 
         return subtract(self, other)
 
     fn __mul__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise multiplication: `a * b`.
+        """Element-wise multiplication: a * b.
+
+        Args:
+            other: The tensor to multiply.
+
+        Returns:
+            New tensor with element-wise product.
 
         Raises:
             Error: If tensors have incompatible shapes.
-
         """
         from .arithmetic import multiply
 
         return multiply(self, other)
 
     fn __truediv__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise division: `a / b`.
+        """Element-wise division: a / b.
+
+        Args:
+            other: The tensor to divide by.
+
+        Returns:
+            New tensor with element-wise quotient.
 
         Raises:
             Error: If tensors have incompatible shapes or division by zero.
@@ -909,110 +965,160 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         return divide(self, other)
 
     fn __floordiv__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise floor division: `a // b`.
+        """Element-wise floor division: a // b.
+
+        Args:
+            other: The tensor to divide by.
+
+        Returns:
+            New tensor with element-wise floor quotient.
 
         Raises:
             Error: If tensors have incompatible shapes or division by zero.
-
         """
         from .arithmetic import floor_divide
 
         return floor_divide(self, other)
 
     fn __mod__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise modulo: `a % b`.
+        """Element-wise modulo: a % b.
+
+        Args:
+            other: The tensor to take modulo with.
+
+        Returns:
+            New tensor with element-wise remainder.
 
         Raises:
             Error: If tensors have incompatible shapes.
-
         """
         from .arithmetic import modulo
 
         return modulo(self, other)
 
     fn __pow__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise power: `a ** b`.
+        """Element-wise power: a ** b.
+
+        Args:
+            other: The tensor of exponents.
+
+        Returns:
+            New tensor with element-wise powers.
 
         Raises:
             Error: If tensors have incompatible shapes.
-
         """
         from .arithmetic import power
 
         return power(self, other)
 
     fn __matmul__(self, other: ExTensor) raises -> ExTensor:
-        """Matrix multiplication: `a @ b`.
+        """Matrix multiplication: a @ b.
+
+        Args:
+            other: The tensor to multiply with.
+
+        Returns:
+            New tensor with matrix product.
 
         Raises:
             Error: If tensors have incompatible dimensions for multiplication.
-
         """
         from .matrix import matmul
 
         return matmul(self, other)
 
     fn __eq__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise equality: `a == b`.
+        """Element-wise equality: a == b.
+
+        Args:
+            other: The tensor to compare.
+
+        Returns:
+            New tensor with 1.0 where equal, 0.0 otherwise.
 
         Raises:
             Error: If tensors have incompatible shapes.
-
         """
         from .comparison import equal
 
         return equal(self, other)
 
     fn __ne__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise inequality: `a != b`.
+        """Element-wise inequality: a != b.
+
+        Args:
+            other: The tensor to compare.
+
+        Returns:
+            New tensor with 1.0 where not equal, 0.0 otherwise.
 
         Raises:
             Error: If tensors have incompatible shapes.
-
         """
         from .comparison import not_equal
 
         return not_equal(self, other)
 
     fn __lt__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise less than: `a < b`.
+        """Element-wise less than: a < b.
+
+        Args:
+            other: The tensor to compare.
+
+        Returns:
+            New tensor with 1.0 where less than, 0.0 otherwise.
 
         Raises:
             Error: If tensors have incompatible shapes.
-
         """
         from .comparison import less
 
         return less(self, other)
 
     fn __le__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise less or equal: `a <= b`.
+        """Element-wise less or equal: a <= b.
+
+        Args:
+            other: The tensor to compare.
+
+        Returns:
+            New tensor with 1.0 where less or equal, 0.0 otherwise.
 
         Raises:
             Error: If tensors have incompatible shapes.
-
         """
         from .comparison import less_equal
 
         return less_equal(self, other)
 
     fn __gt__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise greater than: `a > b`.
+        """Element-wise greater than: a > b.
+
+        Args:
+            other: The tensor to compare.
+
+        Returns:
+            New tensor with 1.0 where greater than, 0.0 otherwise.
 
         Raises:
             Error: If tensors have incompatible shapes.
-
         """
         from .comparison import greater
 
         return greater(self, other)
 
     fn __ge__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise greater or equal: `a >= b`.
+        """Element-wise greater or equal: a >= b.
+
+        Args:
+            other: The tensor to compare.
+
+        Returns:
+            New tensor with 1.0 where greater or equal, 0.0 otherwise.
 
         Raises:
             Error: If tensors have incompatible shapes.
-
         """
         from .comparison import greater_equal
 

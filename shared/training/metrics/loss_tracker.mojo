@@ -35,10 +35,15 @@ struct Statistics(Copyable, Movable):
     """
 
     var mean: Float32
+    """Mean loss value."""
     var std: Float32
+    """Standard deviation of loss values."""
     var min: Float32
+    """Minimum loss value seen."""
     var max: Float32
+    """Maximum loss value seen."""
     var count: Int
+    """Total number of values tracked."""
 
     fn __init__(out self):
         """Initialize with zero values."""
@@ -56,7 +61,15 @@ struct Statistics(Copyable, Movable):
         max_val: Float32,
         count: Int,
     ):
-        """Initialize with specific values."""
+        """Initialize with specific values.
+
+        Args:
+            mean: Mean loss value.
+            std: Standard deviation of loss values.
+            min_val: Minimum loss value.
+            max_val: Maximum loss value.
+            count: Total number of values tracked.
+        """
         self.mean = mean
         self.std = std
         self.min = min_val
@@ -79,19 +92,25 @@ struct ComponentTracker(Copyable, Movable):
     """
 
     var window_size: Int
+    """Size of circular buffer for moving average."""
     var buffer: List[Float32]
+    """Circular buffer of loss values."""
     var buffer_idx: Int
+    """Current index in circular buffer."""
     var buffer_full: Bool
-
-    # Welford's algorithm state
+    """Whether circular buffer has wrapped around."""
     var count: Int
+    """Total number of values processed (Welford's algorithm)."""
     var mean: Float64
-    var m2: Float64  # Sum of squared differences from mean
-
-    # Min/max tracking
+    """Running mean value (Welford's algorithm)."""
+    var m2: Float64
+    """Sum of squared differences from mean (Welford's algorithm)."""
     var min_value: Float32
+    """Minimum loss value seen."""
     var max_value: Float32
+    """Maximum loss value seen."""
     var last_value: Float32
+    """Most recent loss value."""
 
     fn __init__(out self, window_size: Int):
         """Initialize tracker with specified window size.
@@ -150,11 +169,19 @@ struct ComponentTracker(Copyable, Movable):
             self.max_value = value
 
     fn get_current(self) -> Float32:
-        """Get most recent loss value."""
+        """Get most recent loss value.
+
+        Returns:
+            Most recent loss value.
+        """
         return self.last_value
 
     fn get_average(self) -> Float32:
-        """Get moving average over window."""
+        """Get moving average over window.
+
+        Returns:
+            Moving average of values in the circular buffer.
+        """
         if self.count == 0:
             return 0.0
 
@@ -241,8 +268,11 @@ struct LossTracker(Metric):
     """
 
     var window_size: Int
+    """Size of circular buffer for moving average."""
     var components: List[String]
+    """Names of tracked loss components."""
     var trackers: List[ComponentTracker]
+    """Tracker for each component."""
 
     fn __init__(out self, window_size: Int = 100):
         """Initialize loss tracker.
@@ -258,10 +288,10 @@ struct LossTracker(Metric):
         """Get index of component tracker, creating if needed.
 
         Args:
-            component: Component name
+            component: Component name.
 
         Returns:
-            Index of component tracker in trackers list
+            Index of component tracker in trackers list.
         """
         # Search for existing component
         for i in range(len(self.components)):
@@ -374,8 +404,12 @@ struct LossTracker(Metric):
         This method exists for trait compliance but should not be called
         Use update(loss: Float32, component: String) instead.
 
+        Args:
+            predictions: Unused.
+            labels: Unused.
+
         Raises:
-            Error indicating this method should not be used.
+            Error: Indicating this method should not be used.
         """
         raise Error(
             "LossTracker.update(predictions, labels) not applicable - use"

@@ -400,10 +400,14 @@ struct MultiHeadAttentionWeights(Movable):
     Holds the projection matrices for Q, K, V and output projection.
     """
 
-    var wq: ExTensor  # Query projection: (d_model, d_model)
-    var wk: ExTensor  # Key projection: (d_model, d_model)
-    var wv: ExTensor  # Value projection: (d_model, d_model)
-    var wo: ExTensor  # Output projection: (d_model, d_model)
+    var wq: ExTensor
+    """Query projection weight matrix of shape (d_model, d_model)."""
+    var wk: ExTensor
+    """Key projection weight matrix of shape (d_model, d_model)."""
+    var wv: ExTensor
+    """Value projection weight matrix of shape (d_model, d_model)."""
+    var wo: ExTensor
+    """Output projection weight matrix of shape (d_model, d_model)."""
 
     fn __init__(
         out self,
@@ -431,7 +435,9 @@ struct MultiHeadAttentionResult(Movable):
     """
 
     var output: ExTensor
+    """Attention output of shape (batch, seq_len, d_model)."""
     var attention_weights: ExTensor
+    """Attention weights for visualization and analysis."""
 
     fn __init__(out self, output: ExTensor, attention_weights: ExTensor):
         self.output = output
@@ -718,12 +724,19 @@ struct MultiHeadAttentionBackwardResult(Movable):
     """
 
     var grad_query: ExTensor
+    """Gradient with respect to query tensor."""
     var grad_key: ExTensor
+    """Gradient with respect to key tensor."""
     var grad_value: ExTensor
+    """Gradient with respect to value tensor."""
     var grad_wq: ExTensor
+    """Gradient with respect to query projection weight matrix."""
     var grad_wk: ExTensor
+    """Gradient with respect to key projection weight matrix."""
     var grad_wv: ExTensor
+    """Gradient with respect to value projection weight matrix."""
     var grad_wo: ExTensor
+    """Gradient with respect to output projection weight matrix."""
 
     fn __init__(
         out self,

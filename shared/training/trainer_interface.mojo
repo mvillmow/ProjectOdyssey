@@ -52,18 +52,27 @@ struct TrainerConfig(Copyable, Movable):
     """
 
     var num_epochs: Int
+    """Number of epochs to train for."""
     var batch_size: Int
+    """Batch size for training."""
     var learning_rate: Float64
-    var log_interval: Int  # Log metrics every N batches
-    var validate_interval: Int  # Validate every N epochs (0 = every epoch)
+    """Learning rate for optimizer."""
+    var log_interval: Int
+    """Log metrics every N batches."""
+    var validate_interval: Int
+    """Validate every N epochs (0 = every epoch)."""
     var save_checkpoints: Bool
-    var checkpoint_interval: Int  # Save checkpoint every N epochs
-
-    # Mixed precision training settings
-    var use_mixed_precision: Bool  # Enable FP16/BF16 training
-    var precision_dtype: DType  # DType.float16 or DType.float32 (DType.bfloat16 when available)
-    var loss_scale: Float32  # Initial loss scale for gradient scaling (default: 65536.0)
-    var gradient_clip_norm: Float32  # Clip gradients by norm (0 = no clipping)
+    """Whether to save checkpoints."""
+    var checkpoint_interval: Int
+    """Save checkpoint every N epochs."""
+    var use_mixed_precision: Bool
+    """Enable FP16/BF16 training."""
+    var precision_dtype: DType
+    """DType for mixed precision training."""
+    var loss_scale: Float32
+    """Initial loss scale for gradient scaling."""
+    var gradient_clip_norm: Float32
+    """Clip gradients by norm (0 = no clipping)."""
 
     fn __init__(
         out self,
@@ -79,7 +88,21 @@ struct TrainerConfig(Copyable, Movable):
         loss_scale: Float32 = 65536.0,
         gradient_clip_norm: Float32 = 0.0,
     ):
-        """Initialize trainer configuration with defaults."""
+        """Initialize trainer configuration with defaults.
+
+        Args:
+            num_epochs: Number of epochs to train for.
+            batch_size: Batch size for training.
+            learning_rate: Learning rate for optimizer.
+            log_interval: Log metrics every N batches.
+            validate_interval: Validate every N epochs (0 = every epoch).
+            save_checkpoints: Whether to save checkpoints.
+            checkpoint_interval: Save checkpoint every N epochs.
+            use_mixed_precision: Enable FP16/BF16 training.
+            precision_dtype: DType for mixed precision training.
+            loss_scale: Initial loss scale for gradient scaling.
+            gradient_clip_norm: Clip gradients by norm (0 = no clipping).
+        """
         self.num_epochs = num_epochs
         self.batch_size = batch_size
         self.learning_rate = learning_rate
@@ -100,15 +123,25 @@ struct TrainingMetrics(Copyable, Movable):
     """
 
     var current_epoch: Int
+    """Current epoch number."""
     var current_batch: Int
+    """Current batch number within epoch."""
     var total_batches: Int
+    """Total number of batches in epoch."""
     var train_loss: Float64
+    """Training loss value."""
     var train_accuracy: Float64
+    """Training accuracy value."""
     var val_loss: Float64
+    """Validation loss value."""
     var val_accuracy: Float64
+    """Validation accuracy value."""
     var best_val_loss: Float64
+    """Best validation loss seen so far."""
     var best_val_accuracy: Float64
+    """Best validation accuracy seen so far."""
     var best_epoch: Int
+    """Epoch with best validation loss."""
 
     fn __init__(out self):
         """Initialize training metrics with defaults."""
@@ -211,7 +244,7 @@ trait Trainer:
             num_epochs: Number of epochs to train.
 
         Raises:
-            Error if training fails.
+            Error: If training fails.
         """
         ...
 
@@ -222,7 +255,7 @@ trait Trainer:
             Validation loss.
 
         Raises:
-            Error if validation fails.
+            Error: If validation fails.
         """
         ...
 
@@ -234,7 +267,7 @@ trait Trainer:
             validate_every: Validate every N epochs (default=1).
 
         Raises:
-            Error if training or validation fails.
+            Error: If training or validation fails.
         """
         ...
 
@@ -245,9 +278,12 @@ struct DataBatch(Copyable, Movable):
     Represents a mini-batch with input features and labels
     """
 
-    var data: ExTensor  # Input features [batch_size, feature_dim]
-    var labels: ExTensor  # Labels [batch_size] or [batch_size, num_classes]
+    var data: ExTensor
+    """Input features tensor."""
+    var labels: ExTensor
+    """Labels tensor."""
     var batch_size: Int
+    """Size of this batch."""
 
     fn __init__(out self, var data: ExTensor, var labels: ExTensor):
         """Initialize data batch.
@@ -270,11 +306,17 @@ struct DataLoader(Copyable, Movable):
     """
 
     var data: ExTensor
+    """Full dataset features."""
     var labels: ExTensor
+    """Full dataset labels."""
     var batch_size: Int
+    """Batch size for iteration."""
     var num_samples: Int
+    """Total number of samples."""
     var num_batches: Int
+    """Total number of batches."""
     var current_batch: Int
+    """Current batch index."""
 
     fn __init__(
         out self, var data: ExTensor, var labels: ExTensor, batch_size: Int
@@ -301,7 +343,7 @@ struct DataLoader(Copyable, Movable):
         """Check if more batches available.
 
         Returns:
-            True if more batches available.
+            True if more batches available, False otherwise.
         """
         return self.current_batch < self.num_batches
 
@@ -312,7 +354,7 @@ struct DataLoader(Copyable, Movable):
             Next data batch.
 
         Raises:
-            Error if no more batches.
+            Error: If no more batches available.
         """
         if not self.has_next():
             raise Error("No more batches available")
@@ -346,11 +388,11 @@ fn create_simple_dataloader(
     """Create a simple dataloader for training.
 
     Args:
-            data: Full dataset features (ownership transferred).
-            labels: Full dataset labels (ownership transferred).
-            batch_size: Batch size.
+        data: Full dataset features (ownership transferred).
+        labels: Full dataset labels (ownership transferred).
+        batch_size: Batch size.
 
     Returns:
-            DataLoader instance.
+        DataLoader instance.
     """
     return DataLoader(data^, labels^, batch_size)

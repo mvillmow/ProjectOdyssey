@@ -63,13 +63,21 @@ struct GradientScaler(Copyable, Movable):
     """
 
     var scale: Float32
+    """Current loss scale factor."""
     var growth_factor: Float32
+    """Multiplicative factor for scale growth."""
     var backoff_factor: Float32
+    """Multiplicative factor for scale reduction."""
     var growth_interval: Int
+    """Steps between automatic scale increases."""
     var _steps_since_growth: Int
+    """Counter for steps since last scale increase."""
     var _num_steps: Int
+    """Total number of steps taken."""
     var min_scale: Float32
+    """Minimum allowed scale factor."""
     var max_scale: Float32
+    """Maximum allowed scale factor."""
 
     fn __init__(
         out self,
@@ -162,14 +170,12 @@ struct GradientScaler(Copyable, Movable):
     fn step(mut self):
         """Update scale factor after successful optimizer step.
 
-        Increases scale if no overflow occurred for growth_interval steps
-        Should be called after each successful optimizer update
+        Increases scale if no overflow occurred for growth_interval steps.
+        Should be called after each successful optimizer update.
 
         Example:
-            ```mojo
-            f optimizer_step_successful:
+            if optimizer_step_successful:
                 scaler.step()
-        ```
         """
         self._num_steps += 1
         self._steps_since_growth += 1
@@ -187,15 +193,13 @@ struct GradientScaler(Copyable, Movable):
     fn backoff(mut self):
         """Reduce scale factor after gradient overflow.
 
-        Called when NaN or Inf detected in gradients
-        Reduces scale and resets growth counter
+        Called when NaN or Inf detected in gradients.
+        Reduces scale and resets growth counter.
 
         Example:
-            ```mojo
-            f has_nan(gradients) or has_inf(gradients):
+            if has_nan(gradients) or has_inf(gradients):
                 scaler.backoff()
                 continue  # Skip optimizer step
-        ```
         """
         var new_scale = self.scale * self.backoff_factor
         if new_scale >= self.min_scale:
@@ -222,21 +226,20 @@ struct GradientScaler(Copyable, Movable):
 fn convert_to_fp32_master(params: ExTensor) raises -> ExTensor:
     """Convert model parameters to FP32 master weights with SIMD optimization.
 
-        Creates FP32 copy of parameters for optimizer state management
-        Use when training with FP16/BF16 but need FP32 precision for updates.
+    Creates FP32 copy of parameters for optimizer state management.
+    Use when training with FP16/BF16 but need FP32 precision for updates.
 
     Args:
-            params: Model parameters (any dtype).
+        params: Model parameters (any dtype).
 
     Returns:
-            FP32 copy of parameters.
+        FP32 copy of parameters.
 
     Raises:
-            Error: If params is empty.
+        Error: If params is empty.
 
-        Example:
-            ```mojo
-             Model params in FP16
+    Example:
+        Model params in FP16
             var fp16_params = ExTensor.zeros((1000, 1000), DType.float16)
 
             # Create FP32 master weights for optimizer

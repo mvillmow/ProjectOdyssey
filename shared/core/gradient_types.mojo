@@ -30,7 +30,9 @@ struct GradientPair(Copyable, Movable):
     """
 
     var grad_a: ExTensor
+    """Gradient with respect to first input."""
     var grad_b: ExTensor
+    """Gradient with respect to second input."""
 
     fn __init__(out self, var grad_a: ExTensor, var grad_b: ExTensor):
         """Initialize gradient pair.
@@ -64,8 +66,11 @@ struct GradientTriple(Copyable, Movable):
     """
 
     var grad_input: ExTensor
+    """Gradient with respect to input activation."""
     var grad_weights: ExTensor
+    """Gradient with respect to weights."""
     var grad_bias: ExTensor
+    """Gradient with respect to bias."""
 
     fn __init__(
         out self,
@@ -108,9 +113,13 @@ struct GradientQuad(Copyable, Movable):
     """
 
     var grad_a: ExTensor
+    """Gradient with respect to first input."""
     var grad_b: ExTensor
+    """Gradient with respect to second input."""
     var grad_c: ExTensor
+    """Gradient with respect to third input."""
     var grad_d: ExTensor
+    """Gradient with respect to fourth input."""
 
     fn __init__(
         out self,

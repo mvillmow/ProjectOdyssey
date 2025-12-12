@@ -62,12 +62,19 @@ struct EarlyStopping(Callback, Copyable, Movable):
     """
 
     var monitor: String
+    """Name of metric to monitor."""
     var patience: Int
+    """Number of epochs with no improvement before stopping."""
     var min_delta: Float64
+    """Minimum change to qualify as improvement."""
     var mode: String
+    """Mode for monitoring metric ("min" or "max")."""
     var best_value: Float64
+    """Best value seen so far."""
     var wait_count: Int
+    """Number of epochs since last improvement."""
     var stopped: Bool
+    """Whether training has been stopped."""
 
     fn __init__(
         out self,
@@ -99,7 +106,14 @@ struct EarlyStopping(Callback, Copyable, Movable):
         self.stopped = False
 
     fn on_train_begin(mut self, mut state: TrainingState) -> CallbackSignal:
-        """Reset state at training start."""
+        """Reset state at training start.
+
+        Args:
+            state: Training state.
+
+        Returns:
+            CONTINUE signal.
+        """
         # Reset best_value based on mode
         if self.mode == "max":
             self.best_value = Float64(-1e9)
@@ -111,11 +125,25 @@ struct EarlyStopping(Callback, Copyable, Movable):
         return CallbackSignal(0)
 
     fn on_train_end(mut self, mut state: TrainingState) -> CallbackSignal:
-        """No-op at training end."""
+        """No-op at training end.
+
+        Args:
+            state: Training state.
+
+        Returns:
+            CONTINUE signal.
+        """
         return CallbackSignal(0)
 
     fn on_epoch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
-        """No-op at epoch begin."""
+        """No-op at epoch begin.
+
+        Args:
+            state: Training state.
+
+        Returns:
+            CONTINUE signal.
+        """
         return CallbackSignal(0)
 
     fn on_epoch_end(
@@ -161,11 +189,25 @@ struct EarlyStopping(Callback, Copyable, Movable):
         return CallbackSignal(0)
 
     fn on_batch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
-        """No-op at batch begin."""
+        """No-op at batch begin.
+
+        Args:
+            state: Training state.
+
+        Returns:
+            CONTINUE signal.
+        """
         return CallbackSignal(0)
 
     fn on_batch_end(mut self, mut state: TrainingState) -> CallbackSignal:
-        """No-op at batch end."""
+        """No-op at batch end.
+
+        Args:
+            state: Training state.
+
+        Returns:
+            CONTINUE signal.
+        """
         return CallbackSignal(0)
 
     fn should_stop(self) -> Bool:
@@ -223,13 +265,21 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
     """
 
     var filepath: String
+    """Path template for saving checkpoints."""
     var monitor: String
+    """Metric to monitor for best model tracking."""
     var save_best_only: Bool
+    """If True, only save when monitored metric improves."""
     var save_frequency: Int
+    """Save every N epochs (ignored if save_best_only=True)."""
     var mode: String
+    """Mode for monitored metric ("min" or "max")."""
     var best_value: Float64
+    """Best value of monitored metric."""
     var save_count: Int
+    """Number of checkpoints saved."""
     var error_count: Int
+    """Number of failed checkpoint save attempts."""
 
     fn __init__(
         out self,
@@ -264,15 +314,36 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
         self.error_count = 0
 
     fn on_train_begin(mut self, mut state: TrainingState) -> CallbackSignal:
-        """No-op at training start."""
+        """No-op at training start.
+
+        Args:
+            state: Training state.
+
+        Returns:
+            CONTINUE signal.
+        """
         return CallbackSignal(0)
 
     fn on_train_end(mut self, mut state: TrainingState) -> CallbackSignal:
-        """No-op at training end."""
+        """No-op at training end.
+
+        Args:
+            state: Training state.
+
+        Returns:
+            CONTINUE signal.
+        """
         return CallbackSignal(0)
 
     fn on_epoch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
-        """No-op at epoch begin."""
+        """No-op at epoch begin.
+
+        Args:
+            state: Training state.
+
+        Returns:
+            CONTINUE signal.
+        """
         return CallbackSignal(0)
 
     fn on_epoch_end(
@@ -346,11 +417,25 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
         return CallbackSignal(0)
 
     fn on_batch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
-        """No-op at batch begin."""
+        """No-op at batch begin.
+
+        Args:
+            state: Training state.
+
+        Returns:
+            CONTINUE signal.
+        """
         return CallbackSignal(0)
 
     fn on_batch_end(mut self, mut state: TrainingState) -> CallbackSignal:
-        """No-op at batch end."""
+        """No-op at batch end.
+
+        Args:
+            state: Training state.
+
+        Returns:
+            CONTINUE signal.
+        """
         return CallbackSignal(0)
 
     fn get_save_count(self) -> Int:
@@ -392,7 +477,9 @@ struct LoggingCallback(Callback, Copyable, Movable):
     """
 
     var log_interval: Int
+    """Log every N epochs."""
     var log_count: Int
+    """Number of times logged."""
 
     fn __init__(out self, log_interval: Int = 1):
         """Initialize logging callback.
@@ -404,15 +491,36 @@ struct LoggingCallback(Callback, Copyable, Movable):
         self.log_count = 0
 
     fn on_train_begin(mut self, mut state: TrainingState) -> CallbackSignal:
-        """Log training start."""
+        """Log training start.
+
+        Args:
+            state: Training state.
+
+        Returns:
+            CONTINUE signal.
+        """
         return CallbackSignal(0)
 
     fn on_train_end(mut self, mut state: TrainingState) -> CallbackSignal:
-        """Log training end."""
+        """Log training end.
+
+        Args:
+            state: Training state.
+
+        Returns:
+            CONTINUE signal.
+        """
         return CallbackSignal(0)
 
     fn on_epoch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
-        """No-op at epoch begin."""
+        """No-op at epoch begin.
+
+        Args:
+            state: Training state.
+
+        Returns:
+            CONTINUE signal.
+        """
         return CallbackSignal(0)
 
     fn on_epoch_end(
@@ -445,11 +553,25 @@ struct LoggingCallback(Callback, Copyable, Movable):
         return CallbackSignal(0)
 
     fn on_batch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
-        """No-op at batch begin."""
+        """No-op at batch begin.
+
+        Args:
+            state: Training state.
+
+        Returns:
+            CONTINUE signal.
+        """
         return CallbackSignal(0)
 
     fn on_batch_end(mut self, mut state: TrainingState) -> CallbackSignal:
-        """No-op at batch end."""
+        """No-op at batch end.
+
+        Args:
+            state: Training state.
+
+        Returns:
+            CONTINUE signal.
+        """
         return CallbackSignal(0)
 
     fn get_log_count(self) -> Int:

@@ -64,7 +64,8 @@ struct E4M3Scale(Copyable, Movable, Representable, Stringable):
     Valid range: Similar to FP8 E4M3 format.
     """
 
-    var value: UInt8  # Only lower 7 bits are used
+    var value: UInt8
+    """7-bit E4M3 scale value."""
 
     fn __init__(out self, value: UInt8 = 0x38):
         """Initialize E4M3 scale from raw 7-bit value.
@@ -219,7 +220,9 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
     """
 
     var value: FP4_E2M1
+    """4-bit E2M1 encoded value."""
     var scale: E4M3Scale
+    """7-bit E4M3 scale factor."""
 
     fn __init__(
         out self, value: FP4_E2M1 = FP4_E2M1(), scale: E4M3Scale = E4M3Scale()
@@ -598,8 +601,10 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
         ```
     """
 
-    var data: SIMD[DType.uint8, 8]  # 16 E2M1 values (2 per byte)
-    var scale: E4M3Scale  # Shared E4M3 scale
+    var data: SIMD[DType.uint8, 8]
+    """8 bytes containing 16 packed E2M1 values (2 per byte)."""
+    var scale: E4M3Scale
+    """Shared E4M3 scale factor for all 16 values."""
 
     fn __init__(out self):
         """Initialize NVFP4Block with zeros."""

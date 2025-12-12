@@ -28,18 +28,18 @@ fn infer_image_dimensions(
 ) raises -> Tuple[Int, Int, Int]:
     """Infer image dimensions from flattened tensor.
 
-        Assumes square images: H = W = sqrt(num_elements / channels).
-        Auto-detects channels if default doesn't work (tries 3, then 1).
+    Assumes square images: H = W = sqrt(num_elements / channels).
+    Auto-detects channels if default doesn't work (tries 3, then 1).
 
     Args:
-            data: Flattened image tensor.
-            channels: Number of channels (default: 3 for RGB, auto-detects if mismatch).
+        data: Flattened image tensor.
+        channels: Number of channels (default: 3 for RGB, auto-detects if mismatch).
 
     Returns:
-            Tuple of (height, width, channels).
+        Tuple of (height, width, channels).
 
     Raises:
-            Error: If dimensions don't work out to square image with any supported channel count.
+        Error: If dimensions don't work out to square image with any supported channel count.
     """
     var total_elements = data.num_elements()
 
@@ -103,6 +103,11 @@ struct Compose[T: Transform & Copyable & Movable](Copyable, Movable, Transform):
     """
 
     var transforms: List[Self.T]
+    """List of transforms to apply in order."""
+
+    fn __init__(out self):
+        """Create empty composition of transforms."""
+        self.transforms = List[Self.T]()
 
     fn __init__(out self, var transforms: List[Self.T]):
         """Create composition of transforms.
@@ -157,6 +162,10 @@ struct ToExTensor(Copyable, Movable, Transform):
     Ensures data is in tensor format with appropriate dtype.
     """
 
+    fn __init__(out self):
+        """Create ToExTensor converter."""
+        pass
+
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Convert to tensor.
 
@@ -180,7 +189,9 @@ struct Normalize(Copyable, Movable, Transform):
     """
 
     var mean: Float64
+    """Mean value to subtract from all elements."""
     var std: Float64
+    """Standard deviation to divide all elements by."""
 
     fn __init__(out self, mean: Float64 = 0.0, std: Float64 = 1.0):
         """Create normalize transform.
@@ -229,6 +240,7 @@ struct Reshape(Copyable, Movable, Transform):
     """
 
     var target_shape: List[Int]
+    """Target shape dimensions for the tensor."""
 
     fn __init__(out self, var target_shape: List[Int]):
         """Create reshape transform.
@@ -292,7 +304,9 @@ struct Resize(Copyable, Movable, Transform):
     """
 
     var size: Tuple[Int, Int]
+    """Target (height, width) dimensions for resizing."""
     var interpolation: String
+    """Interpolation method to use."""
 
     fn __init__(
         out self, size: Tuple[Int, Int], interpolation: String = "bilinear"
@@ -405,6 +419,7 @@ struct CenterCrop(Copyable, Movable, Transform):
     """
 
     var size: Tuple[Int, Int]
+    """Target (height, width) dimensions of the crop region."""
 
     fn __init__(out self, size: Tuple[Int, Int]):
         """Create center crop transform.
@@ -469,7 +484,9 @@ struct RandomCrop(Copyable, Movable, Transform):
     """
 
     var size: Tuple[Int, Int]
+    """Target (height, width) dimensions of the crop region."""
     var padding: Optional[Int]
+    """Optional padding to apply before cropping."""
 
     fn __init__(out self, size: Tuple[Int, Int], padding: Optional[Int] = None):
         """Create random crop transform.
@@ -569,6 +586,7 @@ struct RandomHorizontalFlip(Copyable, Movable, Transform):
     """
 
     var base: RandomTransformBase
+    """Random transform base for probability handling."""
 
     fn __init__(out self, p: Float64 = 0.5):
         """Create random horizontal flip transform.
@@ -629,6 +647,7 @@ struct RandomVerticalFlip(Copyable, Movable, Transform):
     """
 
     var base: RandomTransformBase
+    """Random transform base for probability handling."""
 
     fn __init__(out self, p: Float64 = 0.5):
         """Create random vertical flip transform.
@@ -689,7 +708,9 @@ struct RandomRotation(Copyable, Movable, Transform):
     """
 
     var degrees: Tuple[Float64, Float64]
+    """Range of rotation degrees (min, max)."""
     var fill_value: Float64
+    """Value to fill empty pixels after rotation."""
 
     fn __init__(
         out self, degrees: Tuple[Float64, Float64], fill_value: Float64 = 0.0
@@ -795,10 +816,14 @@ struct RandomErasing(Copyable, Movable, Transform):
     Reference: "Random Erasing Data Augmentation" (Zhong et al., 2017).
     """
 
-    var base: RandomTransformBase  # Probability handling
-    var scale: Tuple[Float64, Float64]  # Min/max area fraction to erase
-    var ratio: Tuple[Float64, Float64]  # Min/max aspect ratio of erased region
-    var value: Float64  # Fill value (0 for black, can be random)
+    var base: RandomTransformBase
+    """Random transform base for probability handling."""
+    var scale: Tuple[Float64, Float64]
+    """Range of proportion of area to erase (min, max)."""
+    var ratio: Tuple[Float64, Float64]
+    """Range of aspect ratio of erased region (min, max)."""
+    var value: Float64
+    """Pixel value to fill erased region with."""
 
     fn __init__(
         out self,

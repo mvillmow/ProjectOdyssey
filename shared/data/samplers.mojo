@@ -1,6 +1,6 @@
 """Sampling strategies for data loading.
 
-This module provides various sampling strategies for iterating through datasets
+This module provides various sampling strategies for iterating through datasets.
 """
 
 from .sampler_utils import (
@@ -24,7 +24,7 @@ from .sampler_utils import (
 trait Sampler:
     """Base interface for all samplers.
 
-    Samplers determine the order in which samples are accessed from a dataset
+    Samplers determine the order in which samples are accessed from a dataset.
     """
 
     fn __len__(self) -> Int:
@@ -36,6 +36,9 @@ trait Sampler:
 
         Returns:
             List of indices in the order they should be accessed.
+
+        Raises:
+            Error: If iteration fails.
         """
         ...
 
@@ -48,12 +51,15 @@ trait Sampler:
 struct SequentialSampler(Copyable, Movable, Sampler):
     """Samples elements sequentially in order.
 
-    Always returns indices in the same order: 0, 1, 2, ..., n-1
+    Always returns indices in the same order: 0, 1, 2, ..., n-1.
     """
 
     var data_source_len: Int
+    """Total length of the data source."""
     var start_index: Int
+    """Starting index (inclusive)."""
     var end_index: Int
+    """Ending index (exclusive)."""
 
     fn __init__(
         out self,
@@ -94,13 +100,17 @@ struct SequentialSampler(Copyable, Movable, Sampler):
 struct RandomSampler(Copyable, Movable, Sampler):
     """Samples elements randomly without replacement.
 
-    Generates a random permutation of indices for each iteration
+    Generates a random permutation of indices for each iteration.
     """
 
     var data_source_len: Int
+    """Total length of the data source."""
     var replacement: Bool
+    """Whether to sample with replacement."""
     var num_samples: Int
+    """Number of samples to draw."""
     var seed_value: Optional[Int]
+    """Random seed for reproducibility."""
 
     fn __init__(
         out self,
@@ -156,13 +166,17 @@ struct RandomSampler(Copyable, Movable, Sampler):
 struct WeightedSampler(Copyable, Movable, Sampler):
     """Samples elements according to given weights.
 
-    Each sample is drawn with probability proportional to its weight
+    Each sample is drawn with probability proportional to its weight.
     """
 
     var weights: List[Float64]
+    """Normalized weights for each sample."""
     var num_samples: Int
+    """Number of samples to draw."""
     var replacement: Bool
+    """Whether to sample with replacement."""
     var seed_value: Optional[Int]
+    """Random seed for reproducibility."""
 
     fn __init__(
         out self,
@@ -180,7 +194,7 @@ struct WeightedSampler(Copyable, Movable, Sampler):
             seed_value: Random seed for reproducibility.
 
         Raises:
-            Error if weights are invalid.
+            Error: If weights are invalid.
         """
         # Validate weights
         var total_weight = Float64(0)

@@ -28,15 +28,28 @@ struct ConfigValue(Copyable, ImplicitlyCopyable, Movable):
     strings, booleans, and lists.
     """
 
-    var value_type: String  # "int", "float", "string", "bool", "list"
+    var value_type: String
+    """Type of the value: 'int', 'float', 'string', 'bool', or 'list'."""
     var int_val: Int
+    """Integer value if type is 'int'."""
     var float_val: Float64
+    """Float value if type is 'float'."""
     var str_val: String
+    """String value if type is 'string'."""
     var bool_val: Bool
+    """Boolean value if type is 'bool'."""
     var list_val: List[String]
+    """List value if type is 'list'."""
 
     fn __init__(out self, value: Int):
-        """Create ConfigValue from Int."""
+        """Create ConfigValue from Int.
+
+        Args:
+            value: Integer value.
+
+        Returns:
+            None.
+        """
         self.value_type = "int"
         self.int_val = value
         self.float_val = 0.0
@@ -45,7 +58,14 @@ struct ConfigValue(Copyable, ImplicitlyCopyable, Movable):
         self.list_val = List[String]()
 
     fn __init__(out self, value: Float64):
-        """Create ConfigValue from Float64."""
+        """Create ConfigValue from Float64.
+
+        Args:
+            value: Float64 value.
+
+        Returns:
+            None.
+        """
         self.value_type = "float"
         self.int_val = 0
         self.float_val = value
@@ -54,7 +74,14 @@ struct ConfigValue(Copyable, ImplicitlyCopyable, Movable):
         self.list_val = List[String]()
 
     fn __init__(out self, value: String):
-        """Create ConfigValue from String."""
+        """Create ConfigValue from String.
+
+        Args:
+            value: String value.
+
+        Returns:
+            None.
+        """
         self.value_type = "string"
         self.int_val = 0
         self.float_val = 0.0
@@ -63,7 +90,14 @@ struct ConfigValue(Copyable, ImplicitlyCopyable, Movable):
         self.list_val = List[String]()
 
     fn __init__(out self, value: Bool):
-        """Create ConfigValue from Bool."""
+        """Create ConfigValue from Bool.
+
+        Args:
+            value: Boolean value.
+
+        Returns:
+            None.
+        """
         self.value_type = "bool"
         self.int_val = 0
         self.float_val = 0.0
@@ -72,7 +106,14 @@ struct ConfigValue(Copyable, ImplicitlyCopyable, Movable):
         self.list_val = List[String]()
 
     fn __init__(out self, var value: List[String]):
-        """Create ConfigValue from List[String]."""
+        """Create ConfigValue from List[String].
+
+        Args:
+            value: List of strings.
+
+        Returns:
+            None.
+        """
         self.value_type = "list"
         self.int_val = 0
         self.float_val = 0.0
@@ -81,7 +122,14 @@ struct ConfigValue(Copyable, ImplicitlyCopyable, Movable):
         self.list_val = value^
 
     fn __init__(out self, value: List[Int]):
-        """Create ConfigValue from List[Int]."""
+        """Create ConfigValue from List[Int].
+
+        Args:
+            value: List of integers.
+
+        Returns:
+            None.
+        """
         self.value_type = "list"
         self.int_val = 0
         self.float_val = 0.0
@@ -93,7 +141,14 @@ struct ConfigValue(Copyable, ImplicitlyCopyable, Movable):
             self.list_val.append(String(value[i]))
 
     fn __copyinit__(out self, existing: Self):
-        """Copy constructor for ConfigValue."""
+        """Copy constructor for ConfigValue.
+
+        Args:
+            existing: Existing ConfigValue to copy from.
+
+        Returns:
+            None.
+        """
         self.value_type = existing.value_type
         self.int_val = existing.int_val
         self.float_val = existing.float_val
@@ -115,41 +170,87 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
     """
 
     var data: Dict[String, ConfigValue]
+    """Dictionary storing configuration key-value pairs."""
 
     fn __init__(out self):
-        """Create empty configuration."""
+        """Create empty configuration.
+
+        Returns:
+            None.
+        """
         self.data = Dict[String, ConfigValue]()
 
     fn __copyinit__(out self, existing: Self):
-        """Copy constructor for Config."""
+        """Copy constructor for Config.
+
+        Args:
+            existing: Existing Config to copy from.
+
+        Returns:
+            None.
+        """
         self.data = existing.data.copy()
 
     fn set(mut self, key: String, value: Int):
-        """Set integer configuration value."""
+        """Set integer configuration value.
+
+        Args:
+            key: Configuration key.
+            value: Integer value to set.
+        """
         self.data[key] = ConfigValue(value)
 
     fn set(mut self, key: String, value: Float64):
-        """Set float configuration value."""
+        """Set float configuration value.
+
+        Args:
+            key: Configuration key.
+            value: Float64 value to set.
+        """
         self.data[key] = ConfigValue(value)
 
     fn set(mut self, key: String, value: String):
-        """Set string configuration value."""
+        """Set string configuration value.
+
+        Args:
+            key: Configuration key.
+            value: String value to set.
+        """
         self.data[key] = ConfigValue(value)
 
     fn set(mut self, key: String, value: Bool):
-        """Set boolean configuration value."""
+        """Set boolean configuration value.
+
+        Args:
+            key: Configuration key.
+            value: Boolean value to set.
+        """
         self.data[key] = ConfigValue(value)
 
     fn set(mut self, key: String, var value: List[Int]):
-        """Set list of integers configuration value."""
+        """Set list of integers configuration value.
+
+        Args:
+            key: Configuration key.
+            value: List of integers to set.
+        """
         self.data[key] = ConfigValue(value)
 
     fn set(mut self, key: String, var value: List[String]):
-        """Set list of strings configuration value."""
+        """Set list of strings configuration value.
+
+        Args:
+            key: Configuration key.
+            value: List of strings to set.
+        """
         self.data[key] = ConfigValue(value^)
 
     fn set(mut self, key: String, value: StringSlice) raises:
         """Set configuration value from StringSlice.
+
+        Args:
+            key: Configuration key.
+            value: StringSlice value to set.
 
         Raises:
             Error: If value conversion fails.
@@ -803,7 +904,7 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         Supports default syntax: ${VAR_NAME:-default}.
 
         Returns:
-            New config with substituted values.
+            New configuration with substituted environment variable values.
         """
         var result = Config()
 
@@ -829,7 +930,7 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
             value: String that may contain ${VAR} patterns.
 
         Returns:
-            String with substituted values.
+            String with environment variable values substituted.
         """
         var result = value
 
@@ -884,7 +985,7 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
             name: Template name (e.g., "training_default", "lenet5").
 
         Returns:
-            Template configuration.
+            Template configuration object.
         """
         var config = Config()
 
@@ -1000,15 +1101,28 @@ struct ConfigValidator(Copyable, ImplicitlyCopyable, Movable):
     """Validator for configuration values."""
 
     var required_keys: List[String]
-    var allowed_keys: Dict[String, String]  # key -> type name
+    """List of required configuration keys."""
+    var allowed_keys: Dict[String, String]
+    """Dictionary mapping keys to their expected type names."""
 
     fn __init__(out self):
-        """Create empty validator."""
+        """Create empty validator.
+
+        Returns:
+            None.
+        """
         self.required_keys = List[String]()
         self.allowed_keys = Dict[String, String]()
 
     fn __copyinit__(out self, existing: Self):
-        """Copy constructor for ConfigValidator."""
+        """Copy constructor for ConfigValidator.
+
+        Args:
+            existing: Existing ConfigValidator to copy from.
+
+        Returns:
+            None.
+        """
         self.required_keys = existing.required_keys.copy()
         self.allowed_keys = existing.allowed_keys.copy()
 
@@ -1016,7 +1130,7 @@ struct ConfigValidator(Copyable, ImplicitlyCopyable, Movable):
         """Mark key as required.
 
         Args:
-            key: Configuration key.
+            key: Configuration key to mark as required.
 
         Returns:
             Self for method chaining.
@@ -1028,8 +1142,8 @@ struct ConfigValidator(Copyable, ImplicitlyCopyable, Movable):
         """Mark key as allowed with specific type.
 
         Args:
-            key: Configuration key.
-            type_name: Expected type name.
+            key: Configuration key to allow.
+            type_name: Expected type name for the key.
 
         Returns:
             Self for method chaining.

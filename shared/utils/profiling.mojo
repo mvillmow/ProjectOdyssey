@@ -119,15 +119,12 @@ struct ProfilingReport(Copyable, Movable):
         self.memory_end = MemoryStats()
         self.total_time_ms = 0.0
 
-    fn add_timing(mut self, name: String, stats: TimingStats) raises:
+    fn add_timing(mut self, name: String, stats: TimingStats):
         """Add timing statistics to report.
 
         Args:
             name: Statistics name.
             stats: Timing statistics to add.
-
-        Raises:
-            Error: If operation fails.
         """
         # Create a new TimingStats with the same values
         var stats_copy = TimingStats()
@@ -145,9 +142,6 @@ struct ProfilingReport(Copyable, Movable):
 
         Returns:
             Human-readable string representation of the report.
-
-        Raises:
-            Error: If string formatting fails.
         """
         var result = String("Profiling Report\n")
         result += String("================\n")
@@ -208,9 +202,6 @@ struct ProfilingReport(Copyable, Movable):
 
         Returns:
             JSON string representation of the report.
-
-        Raises:
-            Error: If JSON formatting fails.
         """
         var result = String("{\n")
         result += (
@@ -440,9 +431,6 @@ fn profile_function(
 
     Returns:
         Timing statistics for function.
-
-    Raises:
-        Error: If function execution or statistics creation fails.
     """
     var start = perf_counter_ns()
     func_ptr()
@@ -474,9 +462,6 @@ fn benchmark_function(
 
     Returns:
         Timing statistics with min, max, average, std dev.
-
-    Raises:
-        Error: If function execution or statistics creation fails.
     """
     var times = List[Float32](capacity=iterations)
 
@@ -595,9 +580,6 @@ fn generate_timing_report(
 
     Returns:
         Complete profiling report.
-
-    Raises:
-        Error: If report generation fails.
     """
     var report = ProfilingReport()
     var total_time: Float32 = 0.0
@@ -627,9 +609,6 @@ fn print_timing_report(report: ProfilingReport) raises:
 
     Args:
         report: Report to print.
-
-    Raises:
-        Error: If printing fails.
     """
     print(report.to_string())
 
@@ -646,12 +625,9 @@ fn export_profiling_report(
 
     Returns:
         True if successful.
-
-    Raises:
-        Error: If export fails.
     """
     # Determine format and convert report accordingly
-    # FIXME(#2714): need to write to a file!
+    # FIXME: need to write to a file!
     # var content: String
     # if format == "json":
     #     content = report.to_json()
@@ -705,9 +681,6 @@ fn measure_profiling_overhead(num_measurements: Int = 100) raises -> Float32:
 
     Returns:
         Overhead as percentage of total time.
-
-    Raises:
-        Error: If measurement fails.
     """
     # Measure time spent on profiling operations themselves
     var overhead_times = List[Float32](capacity=num_measurements)
@@ -790,9 +763,6 @@ fn detect_performance_regression(
 
     Returns:
         List of functions with regressions.
-
-    Raises:
-        Error: If regression detection fails.
     """
     var regressions = List[String]()
 

@@ -32,12 +32,19 @@ struct BatchNorm2dLayer(Copyable, Movable):
     """
 
     var gamma: ExTensor
+    """Scale parameter of shape (channels,)."""
     var beta: ExTensor
+    """Shift parameter of shape (channels,)."""
     var running_mean: ExTensor
+    """Running mean of shape (channels,)."""
     var running_var: ExTensor
+    """Running variance of shape (channels,)."""
     var num_channels: Int
+    """Number of channels to normalize."""
     var momentum: Float32
+    """Momentum for exponential moving average."""
     var eps: Float32
+    """Small constant for numerical stability."""
 
     fn __init__(
         out self,
