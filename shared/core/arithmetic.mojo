@@ -59,16 +59,26 @@ fn _broadcast_binary[
         total_elems *= result_shape[i]
 
     # Precompute row-major strides for result shape
+    # Pre-allocate lists to avoid repeated reallocation during append operations
+    var ndim = len(result_shape)
     var result_strides = List[Int]()
+    # Pre-allocate with dummy values to avoid growth during append
+    for _ in range(ndim):
+        result_strides.append(0)
+
     var stride = 1
-    for i in range(len(result_shape) - 1, -1, -1):
-        result_strides.append(stride)
+    for i in range(ndim - 1, -1, -1):
+        result_strides[i] = stride
         stride *= result_shape[i]
 
     # Reverse to get correct order (left-to-right)
+    # Pre-allocate final strides list with dummy values
     var result_strides_final = List[Int]()
-    for i in range(len(result_strides) - 1, -1, -1):
-        result_strides_final.append(result_strides[i])
+    for _ in range(ndim):
+        result_strides_final.append(0)
+
+    for i in range(ndim - 1, -1, -1):
+        result_strides_final[i] = result_strides[ndim - 1 - i]
 
     # Get typed pointers for zero-overhead access
     var a_ptr = a._data.bitcast[Scalar[dtype]]()

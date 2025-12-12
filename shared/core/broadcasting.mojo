@@ -131,17 +131,13 @@ fn compute_broadcast_strides(
     var broadcast_strides = List[Int]()
 
     # Calculate original row-major strides
-    var orig_strides = List[Int]()
-    var stride = 1
-    # Build strides in reverse (right to left) then reverse the list
-    for i in range(ndim_orig - 1, -1, -1):
-        orig_strides.append(stride)
-        stride *= original_shape[i]
-
-    # Reverse to get correct order (we built it backwards)
+    # For shape [D0, D1, D2], strides are [D1*D2, D2, 1]
     var orig_strides_final = List[Int]()
-    for i in range(len(orig_strides) - 1, -1, -1):
-        orig_strides_final.append(orig_strides[i])
+    for i in range(ndim_orig):
+        var stride = 1
+        for j in range(i + 1, ndim_orig):
+            stride *= original_shape[j]
+        orig_strides_final.append(stride)
 
     # Compute broadcast strides
     for i in range(ndim_broad):
