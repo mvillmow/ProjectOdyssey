@@ -194,6 +194,32 @@ fn leaky_relu(tensor: ExTensor, alpha: Float64 = 0.01) raises -> ExTensor:
     return result
 
 
+@always_inline
+fn _prelu_impl[
+    dtype: DType
+](result: ExTensor, tensor: ExTensor, alpha: ExTensor, is_scalar: Bool) raises:
+    """Dtype-generic implementation of PReLU forward pass.
+
+    Parameters:
+            dtype: Compile-time dtype parameter.
+            result: Output tensor (pre-allocated with same shape as input).
+            tensor: Input tensor.
+            alpha: Learnable slope parameter (scalar or element-wise).
+            is_scalar: Whether alpha is a scalar or element-wise.
+
+    Note:
+            This is an internal helper - use prelu() for the public API.
+    """
+    var data_ptr = tensor._data.bitcast[Scalar[dtype]]()
+    var alpha_ptr = alpha._data.bitcast[Scalar[dtype]]()
+    var result_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    for i in range(tensor._numel):
+        var val = data_ptr[i]
+        var a = alpha_ptr[0] if is_scalar else alpha_ptr[i]
+        result_ptr[i] = max(a * val, val)
+
+
 fn prelu(tensor: ExTensor, alpha: ExTensor) raises -> ExTensor:
     """Apply PReLU (Parametric ReLU) activation: max(alpha*x, x).
 
@@ -231,26 +257,11 @@ fn prelu(tensor: ExTensor, alpha: ExTensor) raises -> ExTensor:
     var is_scalar = alpha._numel == 1
 
     if tensor._dtype == DType.float16:
-        for i in range(tensor._numel):
-            var val = tensor._data.bitcast[Float16]()[i]
-            var a = alpha._data.bitcast[Float16]()[
-                0
-            ] if is_scalar else alpha._data.bitcast[Float16]()[i]
-            result._data.bitcast[Float16]()[i] = max(a * val, val)
+        _prelu_impl[DType.float16](result, tensor, alpha, is_scalar)
     elif tensor._dtype == DType.float32:
-        for i in range(tensor._numel):
-            var val = tensor._data.bitcast[Float32]()[i]
-            var a = alpha._data.bitcast[Float32]()[
-                0
-            ] if is_scalar else alpha._data.bitcast[Float32]()[i]
-            result._data.bitcast[Float32]()[i] = max(a * val, val)
+        _prelu_impl[DType.float32](result, tensor, alpha, is_scalar)
     elif tensor._dtype == DType.float64:
-        for i in range(tensor._numel):
-            var val = tensor._data.bitcast[Float64]()[i]
-            var a = alpha._data.bitcast[Float64]()[
-                0
-            ] if is_scalar else alpha._data.bitcast[Float64]()[i]
-            result._data.bitcast[Float64]()[i] = max(a * val, val)
+        _prelu_impl[DType.float64](result, tensor, alpha, is_scalar)
     else:
         raise Error(
             "prelu: only float16, float32, and float64 dtypes supported"
