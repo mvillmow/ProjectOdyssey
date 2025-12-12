@@ -15,13 +15,14 @@ Exit Codes:
 """
 
 import argparse
-import re
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from common import get_agents_dir
+
+from agent_utils import extract_frontmatter_raw
 
 try:
     import yaml
@@ -44,19 +45,6 @@ class AgentInfo:
         return f"AgentInfo(name={self.name}, file={self.file_path.name})"
 
 
-def extract_frontmatter(content: str) -> Optional[str]:
-    """
-    Extract YAML frontmatter from markdown content.
-
-    Args:
-        content: The markdown file content
-
-    Returns:
-        Frontmatter text or None if not found
-    """
-    pattern = r'^---\s*\n(.*?\n)---\s*\n'
-    match = re.match(pattern, content, re.DOTALL)
-    return match.group(1) if match else None
 
 
 def load_agent(file_path: Path, verbose: bool = False) -> Optional[AgentInfo]:
@@ -77,7 +65,7 @@ def load_agent(file_path: Path, verbose: bool = False) -> Optional[AgentInfo]:
         return None
 
     # Extract frontmatter
-    frontmatter_text = extract_frontmatter(content)
+    frontmatter_text = extract_frontmatter_raw(content)
     if frontmatter_text is None:
         print(f"✗ {file_path.name}: No YAML frontmatter found", file=sys.stderr)
         return None

@@ -15,13 +15,14 @@ Exit Codes:
 """
 
 import argparse
-import re
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from common import get_agents_dir
+
+from agent_utils import extract_frontmatter_with_lines
 
 try:
     import yaml
@@ -47,30 +48,6 @@ OPTIONAL_FIELDS = {
 
 # Valid model names
 VALID_MODELS = {"sonnet", "opus", "haiku", "claude-3-5-sonnet", "claude-3-opus", "claude-3-haiku"}
-
-
-def extract_frontmatter(content: str) -> Optional[Tuple[str, int, int]]:
-    """
-    Extract YAML frontmatter from markdown content.
-
-    Args:
-        content: The markdown file content
-
-    Returns:
-        Tuple of (frontmatter_text, start_line, end_line) or None if no frontmatter found
-    """
-    # Match YAML frontmatter between --- delimiters
-    pattern = r"^---\s*\n(.*?\n)---\s*\n"
-    match = re.match(pattern, content, re.DOTALL)
-
-    if not match:
-        return None
-
-    frontmatter_text = match.group(1)
-    start_line = 1
-    end_line = content[: match.end()].count("\n")
-
-    return frontmatter_text, start_line, end_line
 
 
 def validate_field_type(field_name: str, value: Any, expected_type: type) -> Optional[str]:
@@ -167,7 +144,7 @@ def check_file(file_path: Path, verbose: bool = False) -> Tuple[bool, List[str]]
         return False, [f"Failed to read file: {e}"]
 
     # Extract frontmatter
-    result = extract_frontmatter(content)
+    result = extract_frontmatter_with_lines(content)
     if result is None:
         return False, ["No YAML frontmatter found (should start with --- and end with ---)"]
 

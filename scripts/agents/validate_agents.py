@@ -20,13 +20,14 @@ Exit Codes:
 """
 
 import argparse
-import re
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from common import get_agents_dir
+
+from agent_utils import extract_frontmatter_parsed
 
 try:
     import yaml
@@ -123,35 +124,6 @@ class ValidationResult:
     def has_issues(self) -> bool:
         """Check if there are any errors or warnings."""
         return len(self.errors) > 0 or len(self.warnings) > 0
-
-
-def extract_frontmatter(content: str) -> Optional[Tuple[str, Dict]]:
-    """
-    Extract and parse YAML frontmatter from markdown content.
-
-    Args:
-        content: The markdown file content
-
-    Returns:
-        Tuple of (frontmatter_text, parsed_dict) or None if extraction fails
-    """
-    pattern = r"^---\s*\n(.*?\n)---\s*\n"
-    match = re.match(pattern, content, re.DOTALL)
-
-    if not match:
-        return None
-
-    frontmatter_text = match.group(1)
-
-    try:
-        frontmatter = yaml.safe_load(frontmatter_text)
-    except yaml.YAMLError:
-        return None
-
-    if not isinstance(frontmatter, dict):
-        return None
-
-    return frontmatter_text, frontmatter
 
 
 def validate_frontmatter(frontmatter: Dict, result: ValidationResult):
@@ -330,7 +302,7 @@ def validate_file(file_path: Path, verbose: bool = False) -> ValidationResult:
         return result
 
     # Extract and validate frontmatter
-    fm_result = extract_frontmatter(content)
+    fm_result = extract_frontmatter_parsed(content)
     if fm_result is None:
         result.add_error("No valid YAML frontmatter found")
         return result
