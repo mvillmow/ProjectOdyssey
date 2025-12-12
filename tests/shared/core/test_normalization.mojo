@@ -326,8 +326,8 @@ fn test_batch_norm2d_backward_gradient_input() raises:
         epsilon=1e-5,
     )
     var grad_input = result7[0]
-    var grad_gamma = result7[1]
-    var grad_beta = result7[2]
+    # FIXME(unused) var grad_gamma = result7[1]
+    # FIXME(unused) var grad_beta = result7[2]
 
     # Numerical gradient via finite differences
     fn forward_for_grad(inp: ExTensor) raises -> ExTensor:

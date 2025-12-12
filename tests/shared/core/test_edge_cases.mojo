@@ -136,9 +136,7 @@ fn test_large_1d_tensor() raises:
 
 fn test_large_dimension_count() raises:
     """Test tensor with many dimensions (10D)."""
-    var shape = List[Int]()
-    for i in range(10):
-        shape.append(2)
+    var shape = List[Int](length=10, fill=2)
     var t = zeros(shape, DType.float32)
 
     assert_dim(t, 10, "Should have 10 dimensions")
@@ -152,8 +150,7 @@ fn test_large_dimension_count() raises:
 
 fn test_nan_propagation_add() raises:
     """Test that NaN propagates through addition."""
-    var shape = List[Int]()
-    shape.append(3)
+    var shape = [3]
     # var a = full(shape, Float32.nan, DType.float32)  # TODO(#2723): Create NaN tensor
     # var b = ones(shape, DType.float32)
     # var c = add(a, b)

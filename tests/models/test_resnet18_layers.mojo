@@ -61,32 +61,34 @@ fn create_basic_block(
     """Forward pass for a basic residual block without projection.
 
     Formula:
-        out = relu(conv_block2(bn(relu(conv_block1(bn(x, bn1), conv1), conv1_weight) + x)))
+        `out = relu(conv_block2(bn(relu(conv_block1(bn(x, bn1), conv1), conv1_weight) + x)))`
 
     Simple version showing the residual connection (skip):
+        ```
         identity = x
         out = conv2(bn(relu(conv1(bn(x)))))
         out = out + identity
         out = relu(out)
+        ```
 
     Args:
-        x: Input tensor (batch, channels, height, width)
-        conv1_weight: First conv kernel (out_channels, in_channels, 3, 3)
-        conv1_bias: First conv bias (out_channels,)
-        bn1_gamma: First BN scale (out_channels,)
-        bn1_beta: First BN shift (out_channels,)
-        bn1_running_mean: First BN running mean (out_channels,)
-        bn1_running_var: First BN running variance (out_channels,)
-        conv2_weight: Second conv kernel (out_channels, out_channels, 3, 3)
-        conv2_bias: Second conv bias (out_channels,)
-        bn2_gamma: Second BN scale (out_channels,)
-        bn2_beta: Second BN shift (out_channels,)
-        bn2_running_mean: Second BN running mean (out_channels,)
-        bn2_running_var: Second BN running variance (out_channels,)
-        training: Whether in training mode for BatchNorm
+        x: Input tensor (batch, channels, height, width).
+        conv1_weight: First conv kernel (out_channels, in_channels, 3, 3).
+        conv1_bias: First conv bias (out_channels,).
+        bn1_gamma: First BN scale (out_channels,).
+        bn1_beta: First BN shift (out_channels,).
+        bn1_running_mean: First BN running mean (out_channels,).
+        bn1_running_var: First BN running variance (out_channels,).
+        conv2_weight: Second conv kernel (out_channels, out_channels, 3, 3).
+        conv2_bias: Second conv bias (out_channels,).
+        bn2_gamma: Second BN scale (out_channels,).
+        bn2_beta: Second BN shift (out_channels,).
+        bn2_running_mean: Second BN running mean (out_channels,).
+        bn2_running_var: Second BN running variance (out_channels,).
+        training: Whether in training mode for BatchNorm.
 
     Returns:
-        Output tensor after residual block
+        Output tensor after residual block.
     """
     # First conv -> BN -> ReLU
     var conv1_out = conv2d(x, conv1_weight, conv1_bias, stride=1, padding=1)

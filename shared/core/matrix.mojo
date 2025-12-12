@@ -167,15 +167,18 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
     # For batched case: apply same logic to each batch
 
     if len(a_shape) == 2:
-        # Simple 2D matrix multiplication
+        # Simple 2D matrix multiplication with cache-friendly loop order
+        # Original: for i, for j, for k - column-major access to b (bad cache locality)
+        # Optimized: for i, for k, for j - row-major access to b (good cache locality)
         for i in range(a_rows):
-            for j in range(b_cols):
-                var sum_val: Float64 = 0.0
-                for k in range(a_cols):
-                    var a_val = a._get_float64(i * a_cols + k)
+            for k in range(a_cols):
+                var a_val = a._get_float64(i * a_cols + k)
+                for j in range(b_cols):
+                    # b[k, j] accesses are now sequential in memory (j varies fastest)
                     var b_val = b._get_float64(k * b_cols + j)
-                    sum_val += a_val * b_val
-                result._set_float64(i * b_cols + j, sum_val)
+                    var result_idx = i * b_cols + j
+                    var current = result._get_float64(result_idx)
+                    result._set_float64(result_idx, current + a_val * b_val)
     else:
         # Batched matrix multiplication (3D+)
         # Compute batch size (product of all dimensions except last 2)

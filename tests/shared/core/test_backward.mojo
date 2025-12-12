@@ -258,7 +258,7 @@ fn test_conv2d_backward_shapes() raises:
 
     # Forward pass to get output shape
     var output = conv2d(x, kernel, bias, stride=1, padding=0)
-    var out_shape = output.shape()
+    # FIXME(unusued) var out_shape = output.shape()
 
     # Create grad_output with same shape as output
     var grad_output = ones_like(output)

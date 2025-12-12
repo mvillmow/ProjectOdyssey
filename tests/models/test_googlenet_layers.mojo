@@ -174,10 +174,10 @@ fn concatenate_depthwise(
     """Concatenate 4 tensors along the channel dimension (axis=1).
 
     Args:
-        t1: Tensor 1 (batch, C1, H, W)
-        t2: Tensor 2 (batch, C2, H, W)
-        t3: Tensor 3 (batch, C3, H, W)
-        t4: Tensor 4 (batch, C4, H, W)
+        t1: Tensor 1 (batch, C1, H, W).
+        t2: Tensor 2 (batch, C2, H, W).
+        t3: Tensor 3 (batch, C3, H, W).
+        t4: Tensor 4 (batch, C4, H, W).
 
     Returns:
         Concatenated tensor (batch, C1+C2+C3+C4, H, W).

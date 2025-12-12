@@ -455,9 +455,7 @@ fn test_high_dimensional_tensor() raises:
     assert_equal(t4.numel(), 120)
 
     # 5D tensor
-    var shape5 = List[Int]()
-    for i in range(5):
-        shape5.append(2)
+    var shape5 = List[Int](length=5, fill=2)
     var t5 = zeros(shape5, DType.float32)
     assert_equal(t5.dim(), 5)
     assert_equal(t5.numel(), 32)

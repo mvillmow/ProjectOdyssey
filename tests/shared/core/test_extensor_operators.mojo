@@ -18,7 +18,7 @@ from tests.shared.conftest import assert_true, assert_almost_equal, assert_equal
 
 
 fn test_radd_tensors() raises:
-    """Test __radd__: reflected addition a + b = b + a (commutative)"""
+    """Test __radd__: reflected addition a + b = b + a (commutative)."""
     var a = full([2, 3], 2.0, DType.float32)
     var b = full([2, 3], 3.0, DType.float32)
 
@@ -41,7 +41,7 @@ fn test_radd_tensors() raises:
 
 
 fn test_rsub_tensors() raises:
-    """Test __rsub__: reflected subtraction (order matters)"""
+    """Test __rsub__: reflected subtraction (order matters)."""
     var a = full([2, 3], 2.0, DType.float32)
     var b = full([2, 3], 5.0, DType.float32)
 
@@ -60,7 +60,7 @@ fn test_rsub_tensors() raises:
 
 
 fn test_rmul_tensors() raises:
-    """Test __rmul__: reflected multiplication (commutative)"""
+    """Test __rmul__: reflected multiplication (commutative)."""
     var a = full([3, 2], 2.0, DType.float32)
     var b = full([3, 2], 3.0, DType.float32)
 
@@ -79,7 +79,7 @@ fn test_rmul_tensors() raises:
 
 
 fn test_rtruediv_tensors() raises:
-    """Test __rtruediv__: reflected division (order matters)"""
+    """Test __rtruediv__: reflected division (order matters)."""
     var a = full([2, 2], 2.0, DType.float32)
     var b = full([2, 2], 8.0, DType.float32)
 
@@ -103,24 +103,20 @@ fn test_rtruediv_tensors() raises:
 
 
 fn test_iadd_basic() raises:
-    """Test __iadd__: in-place addition tensor += other"""
+    """Test __iadd__: in-place addition tensor += other."""
     var a = full([2, 3], 2.0, DType.float32)
     var b = full([2, 3], 3.0, DType.float32)
-
-    # Store original value
-    var original_a = a._get_float32(0)
 
     # In-place add
     a += b
 
     # Verify result: 2.0 + 3.0 = 5.0
-    assert_almost_equal(Float64(a._get_float32(0)), 5.0, tolerance=1e-6)
     for i in range(a.numel()):
         assert_almost_equal(Float64(a._get_float32(i)), 5.0, tolerance=1e-6)
 
 
 fn test_isub_basic() raises:
-    """Test __isub__: in-place subtraction tensor -= other"""
+    """Test __isub__: in-place subtraction tensor -= other."""
     var a = full([2, 3], 5.0, DType.float32)
     var b = full([2, 3], 2.0, DType.float32)
 
@@ -133,7 +129,7 @@ fn test_isub_basic() raises:
 
 
 fn test_imul_basic() raises:
-    """Test __imul__: in-place multiplication tensor *= other"""
+    """Test __imul__: in-place multiplication tensor *= other."""
     var a = full([2, 3], 2.0, DType.float32)
     var b = full([2, 3], 3.0, DType.float32)
 
@@ -146,7 +142,7 @@ fn test_imul_basic() raises:
 
 
 fn test_itruediv_basic() raises:
-    """Test __itruediv__: in-place division tensor /= other"""
+    """Test __itruediv__: in-place division tensor /= other."""
     var a = full([2, 3], 8.0, DType.float32)
     var b = full([2, 3], 2.0, DType.float32)
 
@@ -159,7 +155,7 @@ fn test_itruediv_basic() raises:
 
 
 fn test_inplace_operators_chain() raises:
-    """Test chaining multiple in-place operators"""
+    """Test chaining multiple in-place operators."""
     var a = full([2, 2], 10.0, DType.float32)
     var b = full([2, 2], 2.0, DType.float32)
     var c = full([2, 2], 3.0, DType.float32)
@@ -179,7 +175,7 @@ fn test_inplace_operators_chain() raises:
 
 
 fn test_neg_basic() raises:
-    """Test __neg__: negation -tensor"""
+    """Test __neg__: negation -tensor."""
     var a = full([2, 3], 3.0, DType.float32)
 
     # Negate
@@ -193,7 +189,7 @@ fn test_neg_basic() raises:
 
 
 fn test_neg_negative_values() raises:
-    """Test __neg__: negation of negative values"""
+    """Test __neg__: negation of negative values."""
     var a = full([2, 3], -5.0, DType.float32)
 
     # Negate negative value
@@ -207,7 +203,7 @@ fn test_neg_negative_values() raises:
 
 
 fn test_neg_zeros() raises:
-    """Test __neg__: negation of zeros"""
+    """Test __neg__: negation of zeros."""
     var a = zeros([2, 3], DType.float32)
 
     # Negate zeros
@@ -221,7 +217,7 @@ fn test_neg_zeros() raises:
 
 
 fn test_pos_basic() raises:
-    """Test __pos__: positive +tensor (returns copy)"""
+    """Test __pos__: positive +tensor (returns copy)."""
     var a = full([2, 3], 3.0, DType.float32)
 
     # Positive (copy)
@@ -238,7 +234,7 @@ fn test_pos_basic() raises:
 
 
 fn test_pos_preserves_values() raises:
-    """Test __pos__: positive preserves values including negative"""
+    """Test __pos__: positive preserves values including negative."""
     var a = full([3, 2], -2.5, DType.float32)
 
     # Positive (copy)
@@ -252,7 +248,7 @@ fn test_pos_preserves_values() raises:
 
 
 fn test_abs_positive_values() raises:
-    """Test __abs__: absolute value of positive numbers"""
+    """Test __abs__: absolute value of positive numbers."""
     var a = full([2, 3], 3.5, DType.float32)
 
     # Absolute value
@@ -266,7 +262,7 @@ fn test_abs_positive_values() raises:
 
 
 fn test_abs_negative_values() raises:
-    """Test __abs__: absolute value of negative numbers"""
+    """Test __abs__: absolute value of negative numbers."""
     var a = full([2, 3], -3.5, DType.float32)
 
     # Absolute value
@@ -280,7 +276,7 @@ fn test_abs_negative_values() raises:
 
 
 fn test_abs_mixed_values() raises:
-    """Test __abs__: absolute value with mixed positive/negative"""
+    """Test __abs__: absolute value with mixed positive/negative."""
     var a = zeros([4], DType.float32)
 
     # Set mixed values
@@ -300,7 +296,7 @@ fn test_abs_mixed_values() raises:
 
 
 fn test_abs_zeros() raises:
-    """Test __abs__: absolute value of zeros"""
+    """Test __abs__: absolute value of zeros."""
     var a = zeros([2, 3], DType.float32)
 
     # Absolute value
@@ -319,7 +315,7 @@ fn test_abs_zeros() raises:
 
 
 fn test_combined_unary_binary_ops() raises:
-    """Test combining unary and binary operators"""
+    """Test combining unary and binary operators."""
     var a = full([2, 2], 2.0, DType.float32)
     var b = full([2, 2], -3.0, DType.float32)
 
@@ -336,7 +332,7 @@ fn test_combined_unary_binary_ops() raises:
 
 
 fn test_double_negation() raises:
-    """Test double negation: -(-a) == a"""
+    """Test double negation: -(-a) == a."""
     var a = full([2, 2], 3.0, DType.float32)
 
     # Double negate
@@ -350,7 +346,7 @@ fn test_double_negation() raises:
 
 
 fn test_operators_preserve_shape() raises:
-    """Test that all operators preserve tensor shape"""
+    """Test that all operators preserve tensor shape."""
     var shape: List[Int] = [3, 4, 2]
     var a = zeros(shape, DType.float32)
     var b = ones(shape, DType.float32)

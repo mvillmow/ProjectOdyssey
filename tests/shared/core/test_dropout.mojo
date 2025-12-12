@@ -170,7 +170,7 @@ fn test_dropout_backward_shapes() raises:
 
     # Forward pass
     var result7 = dropout(x, p=0.5, training=True, seed=42)
-    var output = result7[0]
+    # FIXME(unused) var output = result7[0]
     var mask = result7[1]
 
     # Backward pass
@@ -274,7 +274,7 @@ fn test_dropout2d_shapes() raises:
     # Training mode
     var result10 = dropout2d(x, p=0.2, training=True, seed=42)
     var output = result10[0]
-    var mask = result10[1]
+    # FIXME(unused) var mask = result10[1]
 
     # Check shapes match input
     assert_equal(output.shape()[0], 2)
@@ -350,7 +350,7 @@ fn test_dropout2d_backward_shapes() raises:
 
     # Forward pass
     var result13 = dropout2d(x, p=0.2, training=True, seed=42)
-    var output = result13[0]
+    # FIXME(unused) var output = result13[0]
     var mask = result13[1]
 
     # Backward pass

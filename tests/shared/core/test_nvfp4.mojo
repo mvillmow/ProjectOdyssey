@@ -163,7 +163,7 @@ fn test_nvfp4_special_values_nan() raises:
     """Test NVFP4 encoding of NaN."""
     var nan_val = Float32(0.0) / Float32(0.0)
     var nvfp4_nan = NVFP4.from_float32(nan_val)
-    var result = nvfp4_nan.to_float32()
+    # FIXME(unused) var result = nvfp4_nan.to_float32()
 
     # NaN encoding: E2M1 value should be max (0b0111)
     assert_equal(nvfp4_nan.value.value, 0b0111)
@@ -174,7 +174,7 @@ fn test_nvfp4_special_values_inf() raises:
     # Positive infinity
     var pos_inf = Float32(1.0) / Float32(0.0)
     var nvfp4_pos_inf = NVFP4.from_float32(pos_inf)
-    var result_pos = nvfp4_pos_inf.to_float32()
+    # FIXME(unused) var result_pos = nvfp4_pos_inf.to_float32()
 
     # Should encode as max E2M1 value
     assert_equal(nvfp4_pos_inf.value.value, 0b0111)
@@ -182,7 +182,7 @@ fn test_nvfp4_special_values_inf() raises:
     # Negative infinity
     var neg_inf = Float32(-1.0) / Float32(0.0)
     var nvfp4_neg_inf = NVFP4.from_float32(neg_inf)
-    var result_neg = nvfp4_neg_inf.to_float32()
+    # FIXME(unused) var result_neg = nvfp4_neg_inf.to_float32()
 
     # Should encode as max negative E2M1 value
     assert_equal(nvfp4_neg_inf.value.value, 0b1111)

@@ -378,7 +378,7 @@ fn test_compute_difference_shape_mismatch() raises:
 
     var error_raised = False
     try:
-        compute_difference(tensor1, tensor2)
+        _ = compute_difference(tensor1, tensor2)
     except:
         error_raised = True
 
