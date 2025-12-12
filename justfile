@@ -281,7 +281,7 @@ native-ci-full:
 # CI-Specific Recipes (Match GitHub Actions workflows)
 # ==============================================================================
 
-# CI: Test single Mojo file with -Werror enforcement
+# CI: Test single Mojo file
 ci-test-file file:
     pixi run mojo -I . "{{file}}"
 
@@ -393,12 +393,12 @@ ci-compile:
     echo "Compiling shared package for validation..."
     pixi run mojo package -I "$REPO_ROOT" shared -o /tmp/shared.mojopkg
 
-# CI: Run all Mojo tests with -Werror
+# CI: Run all Mojo tests
 ci-test-mojo:
     #!/usr/bin/env bash
     set -e
     REPO_ROOT="$(pwd)"
-    echo "Running all Mojo tests with -Werror..."
+    echo "Running all Mojo tests..."
 
     failed=0
     for test_file in tests/**/*.mojo; do

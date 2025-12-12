@@ -233,7 +233,7 @@ jobs:
             pattern: "test_*.mojo"
           - name: "Models"
             path: "tests/models"
-            pattern: "test_*.mojo"
+            pattern: "test_*_layers.mojo"  # Unit tests only; E2E tests run weekly
           - name: "Data Loaders"
             path: "tests/shared/data/loaders"
             pattern: "test_*.mojo"
@@ -246,18 +246,8 @@ jobs:
           - name: "Benchmark Framework"
             path: "benchmarks"
             pattern: "test_*.mojo"
-          - name: "DenseNet121-CIFAR10"
-            path: "examples/densenet121-cifar10"
-            pattern: "test_model.mojo"
-          - name: "GoogleNet-CIFAR10"
-            path: "examples/googlenet-cifar10"
-            pattern: "test_model.mojo"
-          - name: "MobileNetV1-CIFAR10"
-            path: "examples/mobilenetv1-cifar10"
-            pattern: "test_model.mojo"
-          - name: "ResNet18-CIFAR10"
-            path: "examples/resnet18-cifar10"
-            pattern: "test_model.mojo"
+          # NOTE: Model-specific CIFAR10 E2E tests (DenseNet121, GoogleNet, MobileNetV1, ResNet18)
+          # moved to weekly workflow to avoid dataset downloads on every PR
 
     name: "${{ matrix.test-group.name }}"
 
@@ -371,54 +361,8 @@ jobs:
           retention-days: 7
 
   # ============================================================================
-  # Training Tests - Non-blocking (known dataset download issues)
+  # NOTE: Training tests moved to weekly workflow (requires dataset downloads)
   # ============================================================================
-  test-training:
-    needs: [mojo-compilation, validate-test-coverage]
-    runs-on: ubuntu-latest
-    continue-on-error: true  # Non-blocking - investigating 403 download errors
-    timeout-minutes: 15
-    name: "Training"
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Set up Pixi
-        uses: prefix-dev/setup-pixi@v0.9.3
-        with:
-          pixi-version: latest
-          cache: true
-
-      - name: Cache datasets
-        uses: actions/cache@v4
-        id: dataset-cache
-        with:
-          path: datasets/
-          key: datasets-${{ hashFiles('scripts/download_*.py') }}
-          restore-keys: |
-            datasets-
-
-      - name: Download datasets if not cached
-        if: steps.dataset-cache.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p datasets/cifar10
-          python3 scripts/download_cifar10.py datasets/cifar10
-          python3 scripts/download_emnist.py --output-dir datasets/emnist
-
-      - name: Install Just
-        uses: extractions/setup-just@v2
-
-      - name: Run Training tests
-        run: just ci-test-group tests/shared/training "test_*.mojo"
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v5
-        with:
-          name: test-results-Training
-          path: test-results/
-          retention-days: 7
 
   # ============================================================================
   # Benchmarks Tests - Non-blocking (known test discovery issues)
@@ -734,7 +678,7 @@ jobs:
   # Combined Test Report with Metrics
   # ============================================================================
   test-report:
-    needs: [mojo-compilation, validate-test-coverage, test-mojo-comprehensive, test-configs, test-training, test-benchmarks, test-core-layers, test-example-arithmetic, test-python, code-quality]
+    needs: [mojo-compilation, validate-test-coverage, test-mojo-comprehensive, test-configs, test-benchmarks, test-core-layers, test-example-arithmetic, test-python, code-quality]
     runs-on: ubuntu-latest
     if: always()
     name: "Test Report"
