@@ -5,7 +5,7 @@ Implements element-wise arithmetic operations following NumPy-style broadcasting
 
 from collections import List
 from math import nan
-from .extensor import ExTensor
+from .extensor import ExTensor, full
 from .broadcasting import broadcast_shapes, compute_broadcast_strides
 from .gradient_types import GradientPair
 
@@ -41,9 +41,6 @@ fn _broadcast_binary[
 
     Returns:
         Result tensor with operation applied element-wise with broadcasting.
-
-    Raises:
-        Error: If shapes are not broadcast-compatible.
     """
     # Compute broadcast shape
     var result_shape = broadcast_shapes(a.shape(), b.shape())
@@ -59,20 +56,16 @@ fn _broadcast_binary[
         total_elems *= result_shape[i]
 
     # Precompute row-major strides for result shape
-    # Pre-allocate lists to avoid repeated reallocation during append operations
-    var ndim = len(result_shape)
     var result_strides = List[Int]()
-    # Pre-allocate with dummy values to avoid growth during append
-    for _ in range(ndim):
-        result_strides.append(0)
-
     var stride = 1
-    for i in range(ndim - 1, -1, -1):
-        result_strides[i] = stride
+    for i in range(len(result_shape) - 1, -1, -1):
+        result_strides.append(stride)
         stride *= result_shape[i]
 
-    # Use strides directly (already in correct left-to-right order)
-    var result_strides_final = result_strides^
+    # Reverse to get correct order (left-to-right)
+    var result_strides_final = List[Int]()
+    for i in range(len(result_strides) - 1, -1, -1):
+        result_strides_final.append(result_strides[i])
 
     # Get typed pointers for zero-overhead access
     var a_ptr = a._data.bitcast[Scalar[dtype]]()
@@ -119,9 +112,6 @@ fn _dispatch_broadcast_binary[
 
     Raises:
         Error: If dtypes don't match or are unsupported.
-
-    Note:
-            Dispatches based on runtime dtype to appropriate specialized version.
     """
     # Validate dtypes match
     if a._dtype != b._dtype:
@@ -452,9 +442,6 @@ fn _reduce_broadcast_dims(
     Returns:
         Reduced gradient matching original_shape.
 
-    Raises:
-            Error: If operation fails.
-
     Examples:
         ```
         # Broadcasting (3, 1, 5) → (3, 4, 5)
@@ -498,151 +485,6 @@ fn _reduce_broadcast_dims(
     return result
 
 
-fn _unary_negate[dtype: DType](tensor: ExTensor) raises -> ExTensor:
-    """Negate a tensor using dtype-aware operation (replaces per-element Float64 casts).
-
-    This helper applies negation to each element using the actual tensor dtype,
-    avoiding expensive per-element Float64 conversions.
-
-    Parameters:
-        dtype: Compile-time dtype parameter for specialization.
-
-    Args:
-        tensor: Input tensor to negate.
-
-    Returns:
-        New tensor with all elements negated (same shape and dtype as input).
-    """
-    var result = ExTensor(tensor.shape(), tensor.dtype())
-    var ptr_in = tensor._data.bitcast[Scalar[dtype]]()
-    var ptr_out = result._data.bitcast[Scalar[dtype]]()
-
-    for i in range(tensor.numel()):
-        ptr_out[i] = -ptr_in[i]
-
-    return result^
-
-
-fn _dispatch_unary_negate(tensor: ExTensor) raises -> ExTensor:
-    """Runtime dispatch for dtype-aware negation.
-
-    Args:
-        tensor: Input tensor to negate.
-
-    Returns:
-        Negated tensor with same dtype as input.
-
-    Raises:
-        Error: If dtype is unsupported.
-    """
-    # Runtime dispatch to compile-time specialized version
-    if tensor._dtype == DType.float16:
-        return _unary_negate[DType.float16](tensor)
-    elif tensor._dtype == DType.float32:
-        return _unary_negate[DType.float32](tensor)
-    elif tensor._dtype == DType.float64:
-        return _unary_negate[DType.float64](tensor)
-    elif tensor._dtype == DType.int8:
-        return _unary_negate[DType.int8](tensor)
-    elif tensor._dtype == DType.int16:
-        return _unary_negate[DType.int16](tensor)
-    elif tensor._dtype == DType.int32:
-        return _unary_negate[DType.int32](tensor)
-    elif tensor._dtype == DType.int64:
-        return _unary_negate[DType.int64](tensor)
-    elif tensor._dtype == DType.uint8:
-        return _unary_negate[DType.uint8](tensor)
-    elif tensor._dtype == DType.uint16:
-        return _unary_negate[DType.uint16](tensor)
-    elif tensor._dtype == DType.uint32:
-        return _unary_negate[DType.uint32](tensor)
-    elif tensor._dtype == DType.uint64:
-        return _unary_negate[DType.uint64](tensor)
-    else:
-        raise Error("Unsupported dtype for negation")
-
-
-fn _unary_negate(tensor: ExTensor) raises -> ExTensor:
-    """Convenience wrapper for dtype-aware negation."""
-    return _dispatch_unary_negate(tensor)
-
-
-fn _unary_add_epsilon[
-    dtype: DType
-](tensor: ExTensor, epsilon: Float64) raises -> ExTensor:
-    """Add epsilon to a tensor using dtype-aware operation (replaces per-element Float64 casts).
-
-    This helper adds epsilon to each element using the actual tensor dtype,
-    avoiding expensive per-element Float64 conversions.
-
-    Parameters:
-        dtype: Compile-time dtype parameter for specialization.
-
-    Args:
-        tensor: Input tensor.
-        epsilon: Value to add to each element.
-
-    Returns:
-        New tensor with epsilon added to all elements (same shape and dtype as input).
-    """
-    var result = ExTensor(tensor.shape(), tensor.dtype())
-    var ptr_in = tensor._data.bitcast[Scalar[dtype]]()
-    var ptr_out = result._data.bitcast[Scalar[dtype]]()
-    var eps = Scalar[dtype](epsilon)
-
-    for i in range(tensor.numel()):
-        ptr_out[i] = ptr_in[i] + eps
-
-    return result^
-
-
-fn _dispatch_unary_add_epsilon(
-    tensor: ExTensor, epsilon: Float64
-) raises -> ExTensor:
-    """Runtime dispatch for dtype-aware add-epsilon operation.
-
-    Args:
-        tensor: Input tensor.
-        epsilon: Value to add to each element.
-
-    Returns:
-        Tensor with epsilon added, same dtype as input.
-
-    Raises:
-        Error: If dtype is unsupported.
-    """
-    # Runtime dispatch to compile-time specialized version
-    if tensor._dtype == DType.float16:
-        return _unary_add_epsilon[DType.float16](tensor, epsilon)
-    elif tensor._dtype == DType.float32:
-        return _unary_add_epsilon[DType.float32](tensor, epsilon)
-    elif tensor._dtype == DType.float64:
-        return _unary_add_epsilon[DType.float64](tensor, epsilon)
-    elif tensor._dtype == DType.int8:
-        return _unary_add_epsilon[DType.int8](tensor, epsilon)
-    elif tensor._dtype == DType.int16:
-        return _unary_add_epsilon[DType.int16](tensor, epsilon)
-    elif tensor._dtype == DType.int32:
-        return _unary_add_epsilon[DType.int32](tensor, epsilon)
-    elif tensor._dtype == DType.int64:
-        return _unary_add_epsilon[DType.int64](tensor, epsilon)
-    elif tensor._dtype == DType.uint8:
-        return _unary_add_epsilon[DType.uint8](tensor, epsilon)
-    elif tensor._dtype == DType.uint16:
-        return _unary_add_epsilon[DType.uint16](tensor, epsilon)
-    elif tensor._dtype == DType.uint32:
-        return _unary_add_epsilon[DType.uint32](tensor, epsilon)
-    elif tensor._dtype == DType.uint64:
-        return _unary_add_epsilon[DType.uint64](tensor, epsilon)
-    else:
-        raise Error("Unsupported dtype for add-epsilon")
-
-
-fn _unary_add_epsilon(tensor: ExTensor, epsilon: Float64) raises -> ExTensor:
-    """Convenience wrapper for dtype-aware add-epsilon operation."""
-    return _dispatch_unary_add_epsilon(tensor, epsilon)
-
-
 fn add_backward(
     grad_output: ExTensor, a: ExTensor, b: ExTensor
 ) raises -> GradientPair:
@@ -662,9 +504,6 @@ fn add_backward(
 
     Returns:
         GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
-
-    Raises:
-        Error: If operation fails.
 
     Examples:
         ```
@@ -711,15 +550,15 @@ fn subtract_backward(
 
     Returns:
         GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
-
-    Raises:
-        Error: If operation fails.
     """
     # Gradient for A passes through unchanged (but reduced for broadcasting)
     var grad_a = _reduce_broadcast_dims(grad_output, a.shape())
 
-    # Gradient for B is negated using dtype-aware unary operation
-    var neg_grad = _unary_negate(grad_output)
+    # Gradient for B is negated
+    # Create a tensor of -1s with same shape as grad_output
+    var neg_grad = ExTensor(grad_output.shape(), grad_output.dtype())
+    for i in range(grad_output.numel()):
+        neg_grad._set_float64(i, -grad_output._get_float64(i))
 
     # Reduce for broadcasting
     var grad_b = _reduce_broadcast_dims(neg_grad, b.shape())
@@ -743,9 +582,6 @@ fn multiply_backward(
 
     Returns:
         GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
-
-    Raises:
-        Error: If operation fails.
 
     Examples:
         ```
@@ -788,9 +624,6 @@ fn divide_backward(
     Returns:
         GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
 
-    Raises:
-        Error: If operation fails.
-
     Examples:
         ```
         var a = ones(List[Int](), DType.float32)
@@ -815,15 +648,17 @@ fn divide_backward(
     # Add epsilon to b² for numerical stability
     var b_squared = multiply(b, b)
 
-    # Add epsilon to prevent division by zero using dtype-aware operation
-    var b_squared_safe = _unary_add_epsilon(b_squared, EPSILON)
+    # Add epsilon to prevent division by zero using tensor operations
+    var epsilon_tensor = full(b_squared.shape(), EPSILON, b_squared.dtype())
+    var b_squared_safe = add(b_squared, epsilon_tensor)
 
     # Compute -grad_output * a / b²
     var temp = multiply(grad_output, a)
     var grad_b_positive = divide(temp, b_squared_safe)
 
-    # Negate it using dtype-aware unary operation
-    var grad_b_unreduced = _unary_negate(grad_b_positive)
+    # Negate it using tensor operations (multiply by -1.0)
+    var neg_one = full(grad_b_positive.shape(), -1.0, grad_b_positive.dtype())
+    var grad_b_unreduced = multiply(grad_b_positive, neg_one)
 
     # Reduce for broadcasting
     var grad_b = _reduce_broadcast_dims(grad_b_unreduced, b.shape())
