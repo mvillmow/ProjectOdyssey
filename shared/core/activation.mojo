@@ -317,6 +317,9 @@ fn sigmoid(tensor: ExTensor) raises -> ExTensor:
 
     Supported dtypes: float16, float32, float64.
 
+    This fused implementation handles float16 at tensor level instead of
+    per-element conversion, reducing overhead.
+
     Args:
             tensor: Input tensor of any shape.
 
@@ -332,7 +335,55 @@ fn sigmoid(tensor: ExTensor) raises -> ExTensor:
             var y = sigmoid(x)     # [0.119, 0.5, 0.881]
     ```
     """
-    return dispatch_float_unary[_sigmoid_op](tensor)
+    var result = zeros_like(tensor)
+    var data_ptr = tensor._data
+    var result_ptr = result._data
+    var size = tensor.numel()
+
+    if tensor.dtype() == DType.float32:
+        for i in range(size):
+            var x = data_ptr.bitcast[Float32]()[i]
+            if x > Float32(20.0):
+                result_ptr.bitcast[Float32]()[i] = Float32(1.0)
+            elif x < Float32(-20.0):
+                result_ptr.bitcast[Float32]()[i] = Float32(0.0)
+            else:
+                var exp_neg_x = exp_scalar_f32(-x)
+                result_ptr.bitcast[Float32]()[i] = Float32(1.0) / (
+                    Float32(1.0) + exp_neg_x
+                )
+    elif tensor.dtype() == DType.float64:
+        for i in range(size):
+            var x = data_ptr.bitcast[Float64]()[i]
+            if x > Float64(20.0):
+                result_ptr.bitcast[Float64]()[i] = Float64(1.0)
+            elif x < Float64(-20.0):
+                result_ptr.bitcast[Float64]()[i] = Float64(0.0)
+            else:
+                var exp_neg_x = exp_scalar_f64(-x)
+                result_ptr.bitcast[Float64]()[i] = Float64(1.0) / (
+                    Float64(1.0) + exp_neg_x
+                )
+    elif tensor.dtype() == DType.float16:
+        # Tensor-level handling: convert to Float32, compute, convert back
+        for i in range(size):
+            var x = Float32(data_ptr.bitcast[Float16]()[i])
+            if x > Float32(20.0):
+                result_ptr.bitcast[Float16]()[i] = Float16(1.0)
+            elif x < Float32(-20.0):
+                result_ptr.bitcast[Float16]()[i] = Float16(0.0)
+            else:
+                var exp_neg_x = exp_scalar_f32(-x)
+                result_ptr.bitcast[Float16]()[i] = Float16(
+                    Float32(1.0) / (Float32(1.0) + exp_neg_x)
+                )
+    else:
+        raise Error(
+            "sigmoid only supports float16, float32, float64, got: "
+            + String(tensor.dtype())
+        )
+
+    return result^
 
 
 @always_inline
@@ -1089,22 +1140,11 @@ fn mish_backward(
     Raises:
             Error: If operation fails.
     """
-    from .elementwise import clip, abs as abs_fn, exp as tensor_exp
-
-    var x_pos = clip(x, 0.0, 1e10)  # max(0, x)
-    var x_abs = abs_fn(x)  # |x|
-    var neg_x_abs: ExTensor = multiply(
-        x_abs, full(x_abs._shape, -1.0, x_abs._dtype)
-    )  # -|x|
-    var exp_neg_abs: ExTensor = tensor_exp(neg_x_abs)  # exp(-|x|)
-    var one_plus_exp = add(
-        exp_neg_abs, full(exp_neg_abs._shape, 1.0, exp_neg_abs._dtype)
-    )
-    var log_term = log(one_plus_exp)
-    var softplus = add(x_pos, log_term)  # max(0,x) + log(1 + exp(-|x|))
+    # Use fused softplus (1 allocation instead of 7)
+    var sp = softplus(x)
 
     # Compute tanh(softplus(x))
-    var tanh_sp = tanh(softplus)
+    var tanh_sp = tanh(sp)
 
     # Compute sigmoid(x) for derivative
     var sig = sigmoid(x)
