@@ -38,7 +38,7 @@ fn sum(
     """
     if axis == -1:
         # Sum all elements
-        var result_shape = List[Int]()
+        var result_shape = List[Int](capacity=tensor.dim() if keepdims else 0)
         if keepdims:
             for _ in range(tensor.dim()):
                 result_shape.append(1)
@@ -162,7 +162,7 @@ fn max_reduce(
     """
     if axis == -1:
         # Max of all elements
-        var result_shape = List[Int]()
+        var result_shape = List[Int](capacity=tensor.dim() if keepdims else 0)
         if keepdims:
             for _ in range(tensor.dim()):
                 result_shape.append(1)
@@ -239,7 +239,7 @@ fn min_reduce(
     """
     if axis == -1:
         # Min of all elements
-        var result_shape = List[Int]()
+        var result_shape = List[Int](capacity=tensor.dim() if keepdims else 0)
         if keepdims:
             for _ in range(tensor.dim()):
                 result_shape.append(1)
@@ -360,7 +360,7 @@ fn sum_backward(
 
             # Map to grad_output coordinates (remove axis dimension)
             var grad_dim = grad_output.dim()
-            var grad_coords = List[Int]()
+            var grad_coords = List[Int](capacity=grad_dim)
             for _ in range(grad_dim):
                 grad_coords.append(0)
             var coord_idx = 0
@@ -519,7 +519,7 @@ fn max_reduce_backward(
 
             # Map to grad_output coordinates (remove axis dimension)
             var grad_dim = grad_output.dim()
-            var grad_coords = List[Int]()
+            var grad_coords = List[Int](capacity=grad_dim)
             for _ in range(grad_dim):
                 grad_coords.append(0)
             var coord_idx = 0
@@ -640,7 +640,7 @@ fn min_reduce_backward(
 
             # Map to grad_output coordinates
             var grad_dim = grad_output.dim()
-            var grad_coords = List[Int]()
+            var grad_coords = List[Int](capacity=grad_dim)
             for _ in range(grad_dim):
                 grad_coords.append(0)
             var coord_idx = 0

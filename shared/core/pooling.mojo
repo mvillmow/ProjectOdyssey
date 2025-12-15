@@ -75,7 +75,7 @@ fn maxpool2d(
     var out_width = out_w
 
     # Create output tensor
-    var out_shape = List[Int]()
+    var out_shape = List[Int](capacity=4)
     out_shape.append(batch)
     out_shape.append(channels)
     out_shape.append(out_height)
@@ -284,7 +284,7 @@ fn avgpool2d(
     var out_width = out_w
 
     # Create output tensor
-    var out_shape = List[Int]()
+    var out_shape = List[Int](capacity=4)
     out_shape.append(batch)
     out_shape.append(channels)
     out_shape.append(out_height)
@@ -386,7 +386,7 @@ fn global_avgpool2d(x: ExTensor, method: String = "direct") raises -> ExTensor:
     var width = x_shape[3]
 
     # Create output tensor (B, C, 1, 1)
-    var out_shape = List[Int]()
+    var out_shape = List[Int](capacity=4)
     out_shape.append(batch)
     out_shape.append(channels)
     out_shape.append(1)
