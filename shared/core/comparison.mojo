@@ -8,6 +8,443 @@ from .extensor import ExTensor
 from .broadcasting import broadcast_shapes, compute_broadcast_strides
 
 
+# ============================================================================
+# Dtype-specialized comparison helpers
+# ============================================================================
+
+
+fn _compare_equal_impl[
+    dtype: DType
+](
+    result: ExTensor,
+    a: ExTensor,
+    b: ExTensor,
+    strides_a: List[Int],
+    strides_b: List[Int],
+    result_shape: List[Int],
+    total_elems: Int,
+):
+    """Dtype-specialized equal comparison."""
+    var a_ptr = a._data.bitcast[Scalar[dtype]]()
+    var b_ptr = b._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[DType.bool]]()
+
+    for result_idx in range(total_elems):
+        var remaining = result_idx
+        var idx_a = 0
+        var idx_b = 0
+        for d in range(len(result_shape) - 1, -1, -1):
+            var coord = remaining % result_shape[d]
+            remaining //= result_shape[d]
+            idx_a += coord * strides_a[d]
+            idx_b += coord * strides_b[d]
+
+        out_ptr[result_idx] = a_ptr[idx_a] == b_ptr[idx_b]
+
+
+fn _dispatch_compare_equal(
+    result: ExTensor,
+    a: ExTensor,
+    b: ExTensor,
+    strides_a: List[Int],
+    strides_b: List[Int],
+    result_shape: List[Int],
+    total_elems: Int,
+) raises:
+    """Runtime dispatch for equal comparison."""
+    var dtype = a.dtype()
+    if dtype == DType.float16:
+        _compare_equal_impl[DType.float16](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.float32:
+        _compare_equal_impl[DType.float32](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.float64:
+        _compare_equal_impl[DType.float64](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int8:
+        _compare_equal_impl[DType.int8](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int16:
+        _compare_equal_impl[DType.int16](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int32:
+        _compare_equal_impl[DType.int32](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int64:
+        _compare_equal_impl[DType.int64](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    else:
+        raise Error("equal: unsupported dtype")
+
+
+fn _compare_not_equal_impl[
+    dtype: DType
+](
+    result: ExTensor,
+    a: ExTensor,
+    b: ExTensor,
+    strides_a: List[Int],
+    strides_b: List[Int],
+    result_shape: List[Int],
+    total_elems: Int,
+):
+    """Dtype-specialized not_equal comparison."""
+    var a_ptr = a._data.bitcast[Scalar[dtype]]()
+    var b_ptr = b._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[DType.bool]]()
+
+    for result_idx in range(total_elems):
+        var remaining = result_idx
+        var idx_a = 0
+        var idx_b = 0
+        for d in range(len(result_shape) - 1, -1, -1):
+            var coord = remaining % result_shape[d]
+            remaining //= result_shape[d]
+            idx_a += coord * strides_a[d]
+            idx_b += coord * strides_b[d]
+
+        out_ptr[result_idx] = a_ptr[idx_a] != b_ptr[idx_b]
+
+
+fn _dispatch_compare_not_equal(
+    result: ExTensor,
+    a: ExTensor,
+    b: ExTensor,
+    strides_a: List[Int],
+    strides_b: List[Int],
+    result_shape: List[Int],
+    total_elems: Int,
+) raises:
+    """Runtime dispatch for not_equal comparison."""
+    var dtype = a.dtype()
+    if dtype == DType.float16:
+        _compare_not_equal_impl[DType.float16](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.float32:
+        _compare_not_equal_impl[DType.float32](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.float64:
+        _compare_not_equal_impl[DType.float64](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int8:
+        _compare_not_equal_impl[DType.int8](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int16:
+        _compare_not_equal_impl[DType.int16](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int32:
+        _compare_not_equal_impl[DType.int32](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int64:
+        _compare_not_equal_impl[DType.int64](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    else:
+        raise Error("not_equal: unsupported dtype")
+
+
+fn _compare_less_impl[
+    dtype: DType
+](
+    result: ExTensor,
+    a: ExTensor,
+    b: ExTensor,
+    strides_a: List[Int],
+    strides_b: List[Int],
+    result_shape: List[Int],
+    total_elems: Int,
+):
+    """Dtype-specialized less comparison."""
+    var a_ptr = a._data.bitcast[Scalar[dtype]]()
+    var b_ptr = b._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[DType.bool]]()
+
+    for result_idx in range(total_elems):
+        var remaining = result_idx
+        var idx_a = 0
+        var idx_b = 0
+        for d in range(len(result_shape) - 1, -1, -1):
+            var coord = remaining % result_shape[d]
+            remaining //= result_shape[d]
+            idx_a += coord * strides_a[d]
+            idx_b += coord * strides_b[d]
+
+        out_ptr[result_idx] = a_ptr[idx_a] < b_ptr[idx_b]
+
+
+fn _dispatch_compare_less(
+    result: ExTensor,
+    a: ExTensor,
+    b: ExTensor,
+    strides_a: List[Int],
+    strides_b: List[Int],
+    result_shape: List[Int],
+    total_elems: Int,
+) raises:
+    """Runtime dispatch for less comparison."""
+    var dtype = a.dtype()
+    if dtype == DType.float16:
+        _compare_less_impl[DType.float16](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.float32:
+        _compare_less_impl[DType.float32](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.float64:
+        _compare_less_impl[DType.float64](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int8:
+        _compare_less_impl[DType.int8](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int16:
+        _compare_less_impl[DType.int16](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int32:
+        _compare_less_impl[DType.int32](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int64:
+        _compare_less_impl[DType.int64](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    else:
+        raise Error("less: unsupported dtype")
+
+
+fn _compare_less_equal_impl[
+    dtype: DType
+](
+    result: ExTensor,
+    a: ExTensor,
+    b: ExTensor,
+    strides_a: List[Int],
+    strides_b: List[Int],
+    result_shape: List[Int],
+    total_elems: Int,
+):
+    """Dtype-specialized less_equal comparison."""
+    var a_ptr = a._data.bitcast[Scalar[dtype]]()
+    var b_ptr = b._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[DType.bool]]()
+
+    for result_idx in range(total_elems):
+        var remaining = result_idx
+        var idx_a = 0
+        var idx_b = 0
+        for d in range(len(result_shape) - 1, -1, -1):
+            var coord = remaining % result_shape[d]
+            remaining //= result_shape[d]
+            idx_a += coord * strides_a[d]
+            idx_b += coord * strides_b[d]
+
+        out_ptr[result_idx] = a_ptr[idx_a] <= b_ptr[idx_b]
+
+
+fn _dispatch_compare_less_equal(
+    result: ExTensor,
+    a: ExTensor,
+    b: ExTensor,
+    strides_a: List[Int],
+    strides_b: List[Int],
+    result_shape: List[Int],
+    total_elems: Int,
+) raises:
+    """Runtime dispatch for less_equal comparison."""
+    var dtype = a.dtype()
+    if dtype == DType.float16:
+        _compare_less_equal_impl[DType.float16](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.float32:
+        _compare_less_equal_impl[DType.float32](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.float64:
+        _compare_less_equal_impl[DType.float64](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int8:
+        _compare_less_equal_impl[DType.int8](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int16:
+        _compare_less_equal_impl[DType.int16](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int32:
+        _compare_less_equal_impl[DType.int32](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int64:
+        _compare_less_equal_impl[DType.int64](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    else:
+        raise Error("less_equal: unsupported dtype")
+
+
+fn _compare_greater_impl[
+    dtype: DType
+](
+    result: ExTensor,
+    a: ExTensor,
+    b: ExTensor,
+    strides_a: List[Int],
+    strides_b: List[Int],
+    result_shape: List[Int],
+    total_elems: Int,
+):
+    """Dtype-specialized greater comparison."""
+    var a_ptr = a._data.bitcast[Scalar[dtype]]()
+    var b_ptr = b._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[DType.bool]]()
+
+    for result_idx in range(total_elems):
+        var remaining = result_idx
+        var idx_a = 0
+        var idx_b = 0
+        for d in range(len(result_shape) - 1, -1, -1):
+            var coord = remaining % result_shape[d]
+            remaining //= result_shape[d]
+            idx_a += coord * strides_a[d]
+            idx_b += coord * strides_b[d]
+
+        out_ptr[result_idx] = a_ptr[idx_a] > b_ptr[idx_b]
+
+
+fn _dispatch_compare_greater(
+    result: ExTensor,
+    a: ExTensor,
+    b: ExTensor,
+    strides_a: List[Int],
+    strides_b: List[Int],
+    result_shape: List[Int],
+    total_elems: Int,
+) raises:
+    """Runtime dispatch for greater comparison."""
+    var dtype = a.dtype()
+    if dtype == DType.float16:
+        _compare_greater_impl[DType.float16](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.float32:
+        _compare_greater_impl[DType.float32](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.float64:
+        _compare_greater_impl[DType.float64](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int8:
+        _compare_greater_impl[DType.int8](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int16:
+        _compare_greater_impl[DType.int16](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int32:
+        _compare_greater_impl[DType.int32](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int64:
+        _compare_greater_impl[DType.int64](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    else:
+        raise Error("greater: unsupported dtype")
+
+
+fn _compare_greater_equal_impl[
+    dtype: DType
+](
+    result: ExTensor,
+    a: ExTensor,
+    b: ExTensor,
+    strides_a: List[Int],
+    strides_b: List[Int],
+    result_shape: List[Int],
+    total_elems: Int,
+):
+    """Dtype-specialized greater_equal comparison."""
+    var a_ptr = a._data.bitcast[Scalar[dtype]]()
+    var b_ptr = b._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[DType.bool]]()
+
+    for result_idx in range(total_elems):
+        var remaining = result_idx
+        var idx_a = 0
+        var idx_b = 0
+        for d in range(len(result_shape) - 1, -1, -1):
+            var coord = remaining % result_shape[d]
+            remaining //= result_shape[d]
+            idx_a += coord * strides_a[d]
+            idx_b += coord * strides_b[d]
+
+        out_ptr[result_idx] = a_ptr[idx_a] >= b_ptr[idx_b]
+
+
+fn _dispatch_compare_greater_equal(
+    result: ExTensor,
+    a: ExTensor,
+    b: ExTensor,
+    strides_a: List[Int],
+    strides_b: List[Int],
+    result_shape: List[Int],
+    total_elems: Int,
+) raises:
+    """Runtime dispatch for greater_equal comparison."""
+    var dtype = a.dtype()
+    if dtype == DType.float16:
+        _compare_greater_equal_impl[DType.float16](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.float32:
+        _compare_greater_equal_impl[DType.float32](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.float64:
+        _compare_greater_equal_impl[DType.float64](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int8:
+        _compare_greater_equal_impl[DType.int8](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int16:
+        _compare_greater_equal_impl[DType.int16](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int32:
+        _compare_greater_equal_impl[DType.int32](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int64:
+        _compare_greater_equal_impl[DType.int64](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    else:
+        raise Error("greater_equal: unsupported dtype")
+
+
 fn equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise equality comparison with broadcasting.
 
@@ -34,46 +471,16 @@ fn equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     var result_shape = broadcast_shapes(a.shape(), b.shape())
     var result = ExTensor(result_shape, DType.bool)
 
-    # Compute broadcast strides
     var strides_a = compute_broadcast_strides(a.shape(), result_shape)
     var strides_b = compute_broadcast_strides(b.shape(), result_shape)
 
-    # Calculate total elements in result
     var total_elems = 1
     for i in range(len(result_shape)):
         total_elems *= result_shape[i]
 
-    # Precompute row-major strides for result shape
-    var result_strides = List[Int]()
-    var stride = 1
-    for i in range(len(result_shape) - 1, -1, -1):
-        result_strides.append(stride)
-        stride *= result_shape[i]
-
-    # Reverse to get correct order (left-to-right)
-    var result_strides_final = List[Int]()
-    for i in range(len(result_strides) - 1, -1, -1):
-        result_strides_final.append(result_strides[i])
-
-    # Iterate over all result elements
-    for result_idx in range(total_elems):
-        var idx_a = 0
-        var idx_b = 0
-        var temp_idx = result_idx
-
-        # Convert flat index to multi-dimensional coordinates, then compute source indices
-        for dim in range(len(result_shape)):
-            var coord = temp_idx // result_strides_final[dim]
-            temp_idx = temp_idx % result_strides_final[dim]
-
-            idx_a += coord * strides_a[dim]
-            idx_b += coord * strides_b[dim]
-
-        # Perform comparison
-        var a_val = a._get_float64(idx_a)
-        var b_val = b._get_float64(idx_b)
-        result._set_int64(result_idx, 1 if a_val == b_val else 0)
-
+    _dispatch_compare_equal(
+        result, a, b, strides_a, strides_b, result_shape, total_elems
+    )
     return result^
 
 
@@ -103,46 +510,16 @@ fn not_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     var result_shape = broadcast_shapes(a.shape(), b.shape())
     var result = ExTensor(result_shape, DType.bool)
 
-    # Compute broadcast strides
     var strides_a = compute_broadcast_strides(a.shape(), result_shape)
     var strides_b = compute_broadcast_strides(b.shape(), result_shape)
 
-    # Calculate total elements in result
     var total_elems = 1
     for i in range(len(result_shape)):
         total_elems *= result_shape[i]
 
-    # Precompute row-major strides for result shape
-    var result_strides = List[Int]()
-    var stride = 1
-    for i in range(len(result_shape) - 1, -1, -1):
-        result_strides.append(stride)
-        stride *= result_shape[i]
-
-    # Reverse to get correct order (left-to-right)
-    var result_strides_final = List[Int]()
-    for i in range(len(result_strides) - 1, -1, -1):
-        result_strides_final.append(result_strides[i])
-
-    # Iterate over all result elements
-    for result_idx in range(total_elems):
-        var idx_a = 0
-        var idx_b = 0
-        var temp_idx = result_idx
-
-        # Convert flat index to multi-dimensional coordinates, then compute source indices
-        for dim in range(len(result_shape)):
-            var coord = temp_idx // result_strides_final[dim]
-            temp_idx = temp_idx % result_strides_final[dim]
-
-            idx_a += coord * strides_a[dim]
-            idx_b += coord * strides_b[dim]
-
-        # Perform comparison
-        var a_val = a._get_float64(idx_a)
-        var b_val = b._get_float64(idx_b)
-        result._set_int64(result_idx, 1 if a_val != b_val else 0)
-
+    _dispatch_compare_not_equal(
+        result, a, b, strides_a, strides_b, result_shape, total_elems
+    )
     return result^
 
 
@@ -172,46 +549,16 @@ fn less(a: ExTensor, b: ExTensor) raises -> ExTensor:
     var result_shape = broadcast_shapes(a.shape(), b.shape())
     var result = ExTensor(result_shape, DType.bool)
 
-    # Compute broadcast strides
     var strides_a = compute_broadcast_strides(a.shape(), result_shape)
     var strides_b = compute_broadcast_strides(b.shape(), result_shape)
 
-    # Calculate total elements in result
     var total_elems = 1
     for i in range(len(result_shape)):
         total_elems *= result_shape[i]
 
-    # Precompute row-major strides for result shape
-    var result_strides = List[Int]()
-    var stride = 1
-    for i in range(len(result_shape) - 1, -1, -1):
-        result_strides.append(stride)
-        stride *= result_shape[i]
-
-    # Reverse to get correct order (left-to-right)
-    var result_strides_final = List[Int]()
-    for i in range(len(result_strides) - 1, -1, -1):
-        result_strides_final.append(result_strides[i])
-
-    # Iterate over all result elements
-    for result_idx in range(total_elems):
-        var idx_a = 0
-        var idx_b = 0
-        var temp_idx = result_idx
-
-        # Convert flat index to multi-dimensional coordinates, then compute source indices
-        for dim in range(len(result_shape)):
-            var coord = temp_idx // result_strides_final[dim]
-            temp_idx = temp_idx % result_strides_final[dim]
-
-            idx_a += coord * strides_a[dim]
-            idx_b += coord * strides_b[dim]
-
-        # Perform comparison
-        var a_val = a._get_float64(idx_a)
-        var b_val = b._get_float64(idx_b)
-        result._set_int64(result_idx, 1 if a_val < b_val else 0)
-
+    _dispatch_compare_less(
+        result, a, b, strides_a, strides_b, result_shape, total_elems
+    )
     return result^
 
 
@@ -241,46 +588,16 @@ fn less_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     var result_shape = broadcast_shapes(a.shape(), b.shape())
     var result = ExTensor(result_shape, DType.bool)
 
-    # Compute broadcast strides
     var strides_a = compute_broadcast_strides(a.shape(), result_shape)
     var strides_b = compute_broadcast_strides(b.shape(), result_shape)
 
-    # Calculate total elements in result
     var total_elems = 1
     for i in range(len(result_shape)):
         total_elems *= result_shape[i]
 
-    # Precompute row-major strides for result shape
-    var result_strides = List[Int]()
-    var stride = 1
-    for i in range(len(result_shape) - 1, -1, -1):
-        result_strides.append(stride)
-        stride *= result_shape[i]
-
-    # Reverse to get correct order (left-to-right)
-    var result_strides_final = List[Int]()
-    for i in range(len(result_strides) - 1, -1, -1):
-        result_strides_final.append(result_strides[i])
-
-    # Iterate over all result elements
-    for result_idx in range(total_elems):
-        var idx_a = 0
-        var idx_b = 0
-        var temp_idx = result_idx
-
-        # Convert flat index to multi-dimensional coordinates, then compute source indices
-        for dim in range(len(result_shape)):
-            var coord = temp_idx // result_strides_final[dim]
-            temp_idx = temp_idx % result_strides_final[dim]
-
-            idx_a += coord * strides_a[dim]
-            idx_b += coord * strides_b[dim]
-
-        # Perform comparison
-        var a_val = a._get_float64(idx_a)
-        var b_val = b._get_float64(idx_b)
-        result._set_int64(result_idx, 1 if a_val <= b_val else 0)
-
+    _dispatch_compare_less_equal(
+        result, a, b, strides_a, strides_b, result_shape, total_elems
+    )
     return result^
 
 
@@ -310,46 +627,16 @@ fn greater(a: ExTensor, b: ExTensor) raises -> ExTensor:
     var result_shape = broadcast_shapes(a.shape(), b.shape())
     var result = ExTensor(result_shape, DType.bool)
 
-    # Compute broadcast strides
     var strides_a = compute_broadcast_strides(a.shape(), result_shape)
     var strides_b = compute_broadcast_strides(b.shape(), result_shape)
 
-    # Calculate total elements in result
     var total_elems = 1
     for i in range(len(result_shape)):
         total_elems *= result_shape[i]
 
-    # Precompute row-major strides for result shape
-    var result_strides = List[Int]()
-    var stride = 1
-    for i in range(len(result_shape) - 1, -1, -1):
-        result_strides.append(stride)
-        stride *= result_shape[i]
-
-    # Reverse to get correct order (left-to-right)
-    var result_strides_final = List[Int]()
-    for i in range(len(result_strides) - 1, -1, -1):
-        result_strides_final.append(result_strides[i])
-
-    # Iterate over all result elements
-    for result_idx in range(total_elems):
-        var idx_a = 0
-        var idx_b = 0
-        var temp_idx = result_idx
-
-        # Convert flat index to multi-dimensional coordinates, then compute source indices
-        for dim in range(len(result_shape)):
-            var coord = temp_idx // result_strides_final[dim]
-            temp_idx = temp_idx % result_strides_final[dim]
-
-            idx_a += coord * strides_a[dim]
-            idx_b += coord * strides_b[dim]
-
-        # Perform comparison
-        var a_val = a._get_float64(idx_a)
-        var b_val = b._get_float64(idx_b)
-        result._set_int64(result_idx, 1 if a_val > b_val else 0)
-
+    _dispatch_compare_greater(
+        result, a, b, strides_a, strides_b, result_shape, total_elems
+    )
     return result^
 
 
@@ -379,44 +666,14 @@ fn greater_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     var result_shape = broadcast_shapes(a.shape(), b.shape())
     var result = ExTensor(result_shape, DType.bool)
 
-    # Compute broadcast strides
     var strides_a = compute_broadcast_strides(a.shape(), result_shape)
     var strides_b = compute_broadcast_strides(b.shape(), result_shape)
 
-    # Calculate total elements in result
     var total_elems = 1
     for i in range(len(result_shape)):
         total_elems *= result_shape[i]
 
-    # Precompute row-major strides for result shape
-    var result_strides = List[Int]()
-    var stride = 1
-    for i in range(len(result_shape) - 1, -1, -1):
-        result_strides.append(stride)
-        stride *= result_shape[i]
-
-    # Reverse to get correct order (left-to-right)
-    var result_strides_final = List[Int]()
-    for i in range(len(result_strides) - 1, -1, -1):
-        result_strides_final.append(result_strides[i])
-
-    # Iterate over all result elements
-    for result_idx in range(total_elems):
-        var idx_a = 0
-        var idx_b = 0
-        var temp_idx = result_idx
-
-        # Convert flat index to multi-dimensional coordinates, then compute source indices
-        for dim in range(len(result_shape)):
-            var coord = temp_idx // result_strides_final[dim]
-            temp_idx = temp_idx % result_strides_final[dim]
-
-            idx_a += coord * strides_a[dim]
-            idx_b += coord * strides_b[dim]
-
-        # Perform comparison
-        var a_val = a._get_float64(idx_a)
-        var b_val = b._get_float64(idx_b)
-        result._set_int64(result_idx, 1 if a_val >= b_val else 0)
-
+    _dispatch_compare_greater_equal(
+        result, a, b, strides_a, strides_b, result_shape, total_elems
+    )
     return result^

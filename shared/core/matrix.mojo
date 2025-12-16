@@ -15,132 +15,113 @@ from .gradient_types import GradientPair
 
 
 # ============================================================================
-# Dtype-Specialized Matmul Helpers (Eliminates Float64 Conversions)
+# Dtype-specialized matrix operation helpers
 # ============================================================================
-
-
-fn _matmul_2d_2d_impl[
-    dtype: DType
-](
-    result: ExTensor,
-    a: ExTensor,
-    b: ExTensor,
-    a_rows: Int,
-    a_cols: Int,
-    b_cols: Int,
-):
-    """Compile-time specialized 2D@2D matrix multiplication.
-
-    Uses Float64 accumulation for float16/float32 to maintain precision,
-    while using typed pointers to avoid per-element conversion overhead.
-
-    Parameters:
-        dtype: Compile-time dtype parameter.
-
-    Args:
-        result: Pre-allocated result tensor.
-        a: Left matrix (a_rows, a_cols).
-        b: Right matrix (a_cols, b_cols).
-        a_rows: Number of rows in a.
-        a_cols: Number of columns in a (= rows in b).
-        b_cols: Number of columns in b.
-    """
-    var a_ptr = a._data.bitcast[Scalar[dtype]]()
-    var b_ptr = b._data.bitcast[Scalar[dtype]]()
-    var result_ptr = result._data.bitcast[Scalar[dtype]]()
-
-    # Use Float64 accumulation for float16/float32 to preserve precision
-    @parameter
-    if dtype == DType.float16 or dtype == DType.float32:
-        for i in range(a_rows):
-            for j in range(b_cols):
-                var sum_val: Float64 = 0.0
-                for k in range(a_cols):
-                    sum_val += Float64(a_ptr[i * a_cols + k]) * Float64(
-                        b_ptr[k * b_cols + j]
-                    )
-                result_ptr[i * b_cols + j] = Scalar[dtype](sum_val)
-    else:
-        for i in range(a_rows):
-            for j in range(b_cols):
-                var sum_val = Scalar[dtype](0)
-                for k in range(a_cols):
-                    sum_val += a_ptr[i * a_cols + k] * b_ptr[k * b_cols + j]
-                result_ptr[i * b_cols + j] = sum_val
 
 
 fn _matmul_2d_1d_impl[
     dtype: DType
 ](result: ExTensor, a: ExTensor, b: ExTensor, m: Int, k: Int):
-    """Compile-time specialized 2D@1D matrix-vector multiplication.
-
-    Uses Float64 accumulation for float16/float32 to maintain precision.
-
-    Parameters:
-        dtype: Compile-time dtype parameter.
-
-    Args:
-        result: Pre-allocated result tensor (m,).
-        a: Matrix (m, k).
-        b: Vector (k,).
-        m: Number of rows.
-        k: Number of columns (= vector length).
-    """
+    """Dtype-specialized 2D @ 1D matmul."""
     var a_ptr = a._data.bitcast[Scalar[dtype]]()
     var b_ptr = b._data.bitcast[Scalar[dtype]]()
-    var result_ptr = result._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
 
-    # Use Float64 accumulation for float16/float32 to preserve precision
-    @parameter
-    if dtype == DType.float16 or dtype == DType.float32:
-        for i in range(m):
-            var sum_val: Float64 = 0.0
-            for j in range(k):
-                sum_val += Float64(a_ptr[i * k + j]) * Float64(b_ptr[j])
-            result_ptr[i] = Scalar[dtype](sum_val)
+    for i in range(m):
+        var sum_val: Scalar[dtype] = 0
+        for j in range(k):
+            sum_val += a_ptr[i * k + j] * b_ptr[j]
+        out_ptr[i] = sum_val
+
+
+fn _dispatch_matmul_2d_1d(
+    result: ExTensor, a: ExTensor, b: ExTensor, m: Int, k: Int
+) raises:
+    """Runtime dispatch for 2D @ 1D matmul."""
+    var dt = a.dtype()
+    if dt == DType.float16:
+        _matmul_2d_1d_impl[DType.float16](result, a, b, m, k)
+    elif dt == DType.float32:
+        _matmul_2d_1d_impl[DType.float32](result, a, b, m, k)
+    elif dt == DType.float64:
+        _matmul_2d_1d_impl[DType.float64](result, a, b, m, k)
+    elif dt == DType.int32:
+        _matmul_2d_1d_impl[DType.int32](result, a, b, m, k)
+    elif dt == DType.int64:
+        _matmul_2d_1d_impl[DType.int64](result, a, b, m, k)
     else:
-        for i in range(m):
-            var sum_val = Scalar[dtype](0)
-            for j in range(k):
-                sum_val += a_ptr[i * k + j] * b_ptr[j]
-            result_ptr[i] = sum_val
+        raise Error("matmul: unsupported dtype")
 
 
 fn _matmul_1d_2d_impl[
     dtype: DType
 ](result: ExTensor, a: ExTensor, b: ExTensor, m: Int, n: Int):
-    """Compile-time specialized 1D@2D vector-matrix multiplication.
-
-    Uses Float64 accumulation for float16/float32 to maintain precision.
-
-    Parameters:
-        dtype: Compile-time dtype parameter.
-
-    Args:
-        result: Pre-allocated result tensor (n,).
-        a: Vector (m,).
-        b: Matrix (m, n).
-        m: Vector length (= matrix rows).
-        n: Matrix columns.
-    """
+    """Dtype-specialized 1D @ 2D matmul."""
     var a_ptr = a._data.bitcast[Scalar[dtype]]()
     var b_ptr = b._data.bitcast[Scalar[dtype]]()
-    var result_ptr = result._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
 
-    # Use Float64 accumulation for float16/float32 to preserve precision
-    @parameter
-    if dtype == DType.float16 or dtype == DType.float32:
-        for j in range(n):
-            var sum_val: Float64 = 0.0
-            for i in range(m):
-                sum_val += Float64(a_ptr[i]) * Float64(b_ptr[i * n + j])
-            result_ptr[j] = Scalar[dtype](sum_val)
+    for j in range(n):
+        var sum_val: Scalar[dtype] = 0
+        for i in range(m):
+            sum_val += a_ptr[i] * b_ptr[i * n + j]
+        out_ptr[j] = sum_val
+
+
+fn _dispatch_matmul_1d_2d(
+    result: ExTensor, a: ExTensor, b: ExTensor, m: Int, n: Int
+) raises:
+    """Runtime dispatch for 1D @ 2D matmul."""
+    var dt = a.dtype()
+    if dt == DType.float16:
+        _matmul_1d_2d_impl[DType.float16](result, a, b, m, n)
+    elif dt == DType.float32:
+        _matmul_1d_2d_impl[DType.float32](result, a, b, m, n)
+    elif dt == DType.float64:
+        _matmul_1d_2d_impl[DType.float64](result, a, b, m, n)
+    elif dt == DType.int32:
+        _matmul_1d_2d_impl[DType.int32](result, a, b, m, n)
+    elif dt == DType.int64:
+        _matmul_1d_2d_impl[DType.int64](result, a, b, m, n)
     else:
-        for j in range(n):
-            var sum_val = Scalar[dtype](0)
-            for i in range(m):
-                sum_val += a_ptr[i] * b_ptr[i * n + j]
-            result_ptr[j] = sum_val
+        raise Error("matmul: unsupported dtype")
+
+
+fn _matmul_2d_2d_impl[
+    dtype: DType
+](
+    result: ExTensor, a: ExTensor, b: ExTensor, a_rows: Int, a_cols: Int, b_cols: Int
+):
+    """Dtype-specialized 2D @ 2D matmul."""
+    var a_ptr = a._data.bitcast[Scalar[dtype]]()
+    var b_ptr = b._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    for i in range(a_rows):
+        for j in range(b_cols):
+            var sum_val: Scalar[dtype] = 0
+            for k in range(a_cols):
+                sum_val += a_ptr[i * a_cols + k] * b_ptr[k * b_cols + j]
+            out_ptr[i * b_cols + j] = sum_val
+
+
+fn _dispatch_matmul_2d_2d(
+    result: ExTensor, a: ExTensor, b: ExTensor, a_rows: Int, a_cols: Int, b_cols: Int
+) raises:
+    """Runtime dispatch for 2D @ 2D matmul."""
+    var dt = a.dtype()
+    if dt == DType.float16:
+        _matmul_2d_2d_impl[DType.float16](result, a, b, a_rows, a_cols, b_cols)
+    elif dt == DType.float32:
+        _matmul_2d_2d_impl[DType.float32](result, a, b, a_rows, a_cols, b_cols)
+    elif dt == DType.float64:
+        _matmul_2d_2d_impl[DType.float64](result, a, b, a_rows, a_cols, b_cols)
+    elif dt == DType.int32:
+        _matmul_2d_2d_impl[DType.int32](result, a, b, a_rows, a_cols, b_cols)
+    elif dt == DType.int64:
+        _matmul_2d_2d_impl[DType.int64](result, a, b, a_rows, a_cols, b_cols)
+    else:
+        raise Error("matmul: unsupported dtype")
 
 
 fn _matmul_batched_impl[
@@ -157,259 +138,25 @@ fn _matmul_batched_impl[
     matrix_size_b: Int,
     matrix_size_result: Int,
 ):
-    """Compile-time specialized batched matrix multiplication.
-
-    Uses Float64 accumulation for float16/float32 to maintain precision.
-
-    Parameters:
-        dtype: Compile-time dtype parameter.
-
-    Args:
-        result: Pre-allocated result tensor.
-        a: Left batched matrix.
-        b: Right batched matrix.
-        batch_size: Number of batches.
-        a_rows: Rows per matrix in a.
-        a_cols: Columns per matrix in a.
-        b_cols: Columns per matrix in b.
-        matrix_size_a: Elements per matrix in a.
-        matrix_size_b: Elements per matrix in b.
-        matrix_size_result: Elements per result matrix.
-    """
+    """Dtype-specialized batched matmul."""
     var a_ptr = a._data.bitcast[Scalar[dtype]]()
     var b_ptr = b._data.bitcast[Scalar[dtype]]()
-    var result_ptr = result._data.bitcast[Scalar[dtype]]()
-
-    # Use Float64 accumulation for float16/float32 to preserve precision
-    @parameter
-    if dtype == DType.float16 or dtype == DType.float32:
-        for batch in range(batch_size):
-            var a_offset = batch * matrix_size_a
-            var b_offset = batch * matrix_size_b
-            var result_offset = batch * matrix_size_result
-
-            for i in range(a_rows):
-                for j in range(b_cols):
-                    var sum_val: Float64 = 0.0
-                    for k in range(a_cols):
-                        var a_idx = a_offset + i * a_cols + k
-                        var b_idx = b_offset + k * b_cols + j
-                        sum_val += Float64(a_ptr[a_idx]) * Float64(b_ptr[b_idx])
-                    var result_idx = result_offset + i * b_cols + j
-                    result_ptr[result_idx] = Scalar[dtype](sum_val)
-    else:
-        for batch in range(batch_size):
-            var a_offset = batch * matrix_size_a
-            var b_offset = batch * matrix_size_b
-            var result_offset = batch * matrix_size_result
-
-            for i in range(a_rows):
-                for j in range(b_cols):
-                    var sum_val = Scalar[dtype](0)
-                    for k in range(a_cols):
-                        var a_idx = a_offset + i * a_cols + k
-                        var b_idx = b_offset + k * b_cols + j
-                        sum_val += a_ptr[a_idx] * b_ptr[b_idx]
-                    var result_idx = result_offset + i * b_cols + j
-                    result_ptr[result_idx] = sum_val
-
-
-fn _dispatch_matmul_2d_2d(
-    result: ExTensor,
-    a: ExTensor,
-    b: ExTensor,
-    a_rows: Int,
-    a_cols: Int,
-    b_cols: Int,
-) raises:
-    """Runtime dispatch for 2D@2D matmul."""
-    if a._dtype == DType.float16:
-        _matmul_2d_2d_impl[DType.float16](result, a, b, a_rows, a_cols, b_cols)
-    elif a._dtype == DType.float32:
-        _matmul_2d_2d_impl[DType.float32](result, a, b, a_rows, a_cols, b_cols)
-    elif a._dtype == DType.float64:
-        _matmul_2d_2d_impl[DType.float64](result, a, b, a_rows, a_cols, b_cols)
-    elif a._dtype == DType.int8:
-        _matmul_2d_2d_impl[DType.int8](result, a, b, a_rows, a_cols, b_cols)
-    elif a._dtype == DType.int16:
-        _matmul_2d_2d_impl[DType.int16](result, a, b, a_rows, a_cols, b_cols)
-    elif a._dtype == DType.int32:
-        _matmul_2d_2d_impl[DType.int32](result, a, b, a_rows, a_cols, b_cols)
-    elif a._dtype == DType.int64:
-        _matmul_2d_2d_impl[DType.int64](result, a, b, a_rows, a_cols, b_cols)
-    else:
-        raise Error("matmul: unsupported dtype")
-
-
-fn _dispatch_matmul_2d_1d(
-    result: ExTensor, a: ExTensor, b: ExTensor, m: Int, k: Int
-) raises:
-    """Runtime dispatch for 2D@1D matmul."""
-    if a._dtype == DType.float16:
-        _matmul_2d_1d_impl[DType.float16](result, a, b, m, k)
-    elif a._dtype == DType.float32:
-        _matmul_2d_1d_impl[DType.float32](result, a, b, m, k)
-    elif a._dtype == DType.float64:
-        _matmul_2d_1d_impl[DType.float64](result, a, b, m, k)
-    elif a._dtype == DType.int8:
-        _matmul_2d_1d_impl[DType.int8](result, a, b, m, k)
-    elif a._dtype == DType.int16:
-        _matmul_2d_1d_impl[DType.int16](result, a, b, m, k)
-    elif a._dtype == DType.int32:
-        _matmul_2d_1d_impl[DType.int32](result, a, b, m, k)
-    elif a._dtype == DType.int64:
-        _matmul_2d_1d_impl[DType.int64](result, a, b, m, k)
-    else:
-        raise Error("matmul: unsupported dtype")
-
-
-fn _dispatch_matmul_1d_2d(
-    result: ExTensor, a: ExTensor, b: ExTensor, m: Int, n: Int
-) raises:
-    """Runtime dispatch for 1D@2D matmul."""
-    if a._dtype == DType.float16:
-        _matmul_1d_2d_impl[DType.float16](result, a, b, m, n)
-    elif a._dtype == DType.float32:
-        _matmul_1d_2d_impl[DType.float32](result, a, b, m, n)
-    elif a._dtype == DType.float64:
-        _matmul_1d_2d_impl[DType.float64](result, a, b, m, n)
-    elif a._dtype == DType.int8:
-        _matmul_1d_2d_impl[DType.int8](result, a, b, m, n)
-    elif a._dtype == DType.int16:
-        _matmul_1d_2d_impl[DType.int16](result, a, b, m, n)
-    elif a._dtype == DType.int32:
-        _matmul_1d_2d_impl[DType.int32](result, a, b, m, n)
-    elif a._dtype == DType.int64:
-        _matmul_1d_2d_impl[DType.int64](result, a, b, m, n)
-    else:
-        raise Error("matmul: unsupported dtype")
-
-
-fn _dot_1d_impl[
-    dtype: DType
-](result: ExTensor, a: ExTensor, b: ExTensor, length: Int):
-    """Compile-time specialized 1D dot product.
-
-    Uses Float64 accumulation for float16/float32 to maintain precision.
-    """
-    var a_ptr = a._data.bitcast[Scalar[dtype]]()
-    var b_ptr = b._data.bitcast[Scalar[dtype]]()
-    var result_ptr = result._data.bitcast[Scalar[dtype]]()
-
-    # Use Float64 accumulation for float16/float32 to preserve precision
-    @parameter
-    if dtype == DType.float16 or dtype == DType.float32:
-        var sum_val: Float64 = 0.0
-        for i in range(length):
-            sum_val += Float64(a_ptr[i]) * Float64(b_ptr[i])
-        result_ptr[0] = Scalar[dtype](sum_val)
-    else:
-        var sum_val = Scalar[dtype](0)
-        for i in range(length):
-            sum_val += a_ptr[i] * b_ptr[i]
-        result_ptr[0] = sum_val
-
-
-fn _dispatch_dot_1d(
-    result: ExTensor, a: ExTensor, b: ExTensor, length: Int
-) raises:
-    """Runtime dispatch for 1D dot product."""
-    if a._dtype == DType.float16:
-        _dot_1d_impl[DType.float16](result, a, b, length)
-    elif a._dtype == DType.float32:
-        _dot_1d_impl[DType.float32](result, a, b, length)
-    elif a._dtype == DType.float64:
-        _dot_1d_impl[DType.float64](result, a, b, length)
-    elif a._dtype == DType.int8:
-        _dot_1d_impl[DType.int8](result, a, b, length)
-    elif a._dtype == DType.int16:
-        _dot_1d_impl[DType.int16](result, a, b, length)
-    elif a._dtype == DType.int32:
-        _dot_1d_impl[DType.int32](result, a, b, length)
-    elif a._dtype == DType.int64:
-        _dot_1d_impl[DType.int64](result, a, b, length)
-    else:
-        raise Error("dot: unsupported dtype")
-
-
-fn _outer_impl[
-    dtype: DType
-](result: ExTensor, a: ExTensor, b: ExTensor, len_a: Int, len_b: Int):
-    """Compile-time specialized outer product."""
-    var a_ptr = a._data.bitcast[Scalar[dtype]]()
-    var b_ptr = b._data.bitcast[Scalar[dtype]]()
-    var result_ptr = result._data.bitcast[Scalar[dtype]]()
-
-    for i in range(len_a):
-        for j in range(len_b):
-            result_ptr[i * len_b + j] = a_ptr[i] * b_ptr[j]
-
-
-fn _dispatch_outer(
-    result: ExTensor, a: ExTensor, b: ExTensor, len_a: Int, len_b: Int
-) raises:
-    """Runtime dispatch for outer product."""
-    if a._dtype == DType.float16:
-        _outer_impl[DType.float16](result, a, b, len_a, len_b)
-    elif a._dtype == DType.float32:
-        _outer_impl[DType.float32](result, a, b, len_a, len_b)
-    elif a._dtype == DType.float64:
-        _outer_impl[DType.float64](result, a, b, len_a, len_b)
-    elif a._dtype == DType.int8:
-        _outer_impl[DType.int8](result, a, b, len_a, len_b)
-    elif a._dtype == DType.int16:
-        _outer_impl[DType.int16](result, a, b, len_a, len_b)
-    elif a._dtype == DType.int32:
-        _outer_impl[DType.int32](result, a, b, len_a, len_b)
-    elif a._dtype == DType.int64:
-        _outer_impl[DType.int64](result, a, b, len_a, len_b)
-    else:
-        raise Error("outer: unsupported dtype")
-
-
-fn _transpose_indexed_copy_impl[
-    dtype: DType
-](result: ExTensor, tensor: ExTensor, result_idx: Int, input_idx: Int):
-    """Compile-time specialized indexed copy for transpose."""
-    var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
     var out_ptr = result._data.bitcast[Scalar[dtype]]()
-    out_ptr[result_idx] = in_ptr[input_idx]
 
+    for batch in range(batch_size):
+        var a_offset = batch * matrix_size_a
+        var b_offset = batch * matrix_size_b
+        var result_offset = batch * matrix_size_result
 
-fn _dispatch_transpose_indexed_copy(
-    result: ExTensor, tensor: ExTensor, result_idx: Int, input_idx: Int
-) raises:
-    """Runtime dispatch for transpose indexed copy."""
-    if tensor._dtype == DType.float16:
-        _transpose_indexed_copy_impl[DType.float16](
-            result, tensor, result_idx, input_idx
-        )
-    elif tensor._dtype == DType.float32:
-        _transpose_indexed_copy_impl[DType.float32](
-            result, tensor, result_idx, input_idx
-        )
-    elif tensor._dtype == DType.float64:
-        _transpose_indexed_copy_impl[DType.float64](
-            result, tensor, result_idx, input_idx
-        )
-    elif tensor._dtype == DType.int8:
-        _transpose_indexed_copy_impl[DType.int8](
-            result, tensor, result_idx, input_idx
-        )
-    elif tensor._dtype == DType.int16:
-        _transpose_indexed_copy_impl[DType.int16](
-            result, tensor, result_idx, input_idx
-        )
-    elif tensor._dtype == DType.int32:
-        _transpose_indexed_copy_impl[DType.int32](
-            result, tensor, result_idx, input_idx
-        )
-    elif tensor._dtype == DType.int64:
-        _transpose_indexed_copy_impl[DType.int64](
-            result, tensor, result_idx, input_idx
-        )
-    else:
-        raise Error("transpose: unsupported dtype")
+        for i in range(a_rows):
+            for j in range(b_cols):
+                var sum_val: Scalar[dtype] = 0
+                for k in range(a_cols):
+                    var a_idx = a_offset + i * a_cols + k
+                    var b_idx = b_offset + k * b_cols + j
+                    sum_val += a_ptr[a_idx] * b_ptr[b_idx]
+                var result_idx = result_offset + i * b_cols + j
+                out_ptr[result_idx] = sum_val
 
 
 fn _dispatch_matmul_batched(
@@ -425,7 +172,8 @@ fn _dispatch_matmul_batched(
     matrix_size_result: Int,
 ) raises:
     """Runtime dispatch for batched matmul."""
-    if a._dtype == DType.float16:
+    var dt = a.dtype()
+    if dt == DType.float16:
         _matmul_batched_impl[DType.float16](
             result,
             a,
@@ -438,7 +186,7 @@ fn _dispatch_matmul_batched(
             matrix_size_b,
             matrix_size_result,
         )
-    elif a._dtype == DType.float32:
+    elif dt == DType.float32:
         _matmul_batched_impl[DType.float32](
             result,
             a,
@@ -451,7 +199,7 @@ fn _dispatch_matmul_batched(
             matrix_size_b,
             matrix_size_result,
         )
-    elif a._dtype == DType.float64:
+    elif dt == DType.float64:
         _matmul_batched_impl[DType.float64](
             result,
             a,
@@ -464,33 +212,7 @@ fn _dispatch_matmul_batched(
             matrix_size_b,
             matrix_size_result,
         )
-    elif a._dtype == DType.int8:
-        _matmul_batched_impl[DType.int8](
-            result,
-            a,
-            b,
-            batch_size,
-            a_rows,
-            a_cols,
-            b_cols,
-            matrix_size_a,
-            matrix_size_b,
-            matrix_size_result,
-        )
-    elif a._dtype == DType.int16:
-        _matmul_batched_impl[DType.int16](
-            result,
-            a,
-            b,
-            batch_size,
-            a_rows,
-            a_cols,
-            b_cols,
-            matrix_size_a,
-            matrix_size_b,
-            matrix_size_result,
-        )
-    elif a._dtype == DType.int32:
+    elif dt == DType.int32:
         _matmul_batched_impl[DType.int32](
             result,
             a,
@@ -503,7 +225,7 @@ fn _dispatch_matmul_batched(
             matrix_size_b,
             matrix_size_result,
         )
-    elif a._dtype == DType.int64:
+    elif dt == DType.int64:
         _matmul_batched_impl[DType.int64](
             result,
             a,
@@ -518,6 +240,213 @@ fn _dispatch_matmul_batched(
         )
     else:
         raise Error("matmul: unsupported dtype")
+
+
+fn _transpose_copy_impl[
+    dtype: DType
+](
+    result: ExTensor,
+    tensor: ExTensor,
+    ndim: Int,
+    result_shape: List[Int],
+    input_strides: List[Int],
+    perm: List[Int],
+    numel: Int,
+):
+    """Dtype-specialized transpose copy."""
+    var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    for result_idx in range(numel):
+        # Convert linear result index to coordinates
+        var temp_idx = result_idx
+        var input_idx = 0
+
+        # Compute input index from result index via permutation
+        for i in range(ndim - 1, -1, -1):
+            var coord = temp_idx % result_shape[i]
+            temp_idx //= result_shape[i]
+            # Map result axis i to input axis perm[i]
+            input_idx += coord * input_strides[perm[i]]
+
+        out_ptr[result_idx] = in_ptr[input_idx]
+
+
+fn _dispatch_transpose_copy(
+    result: ExTensor,
+    tensor: ExTensor,
+    ndim: Int,
+    result_shape: List[Int],
+    input_strides: List[Int],
+    perm: List[Int],
+    numel: Int,
+) raises:
+    """Runtime dispatch for transpose copy."""
+    var dt = tensor.dtype()
+    if dt == DType.float16:
+        _transpose_copy_impl[DType.float16](
+            result, tensor, ndim, result_shape, input_strides, perm, numel
+        )
+    elif dt == DType.float32:
+        _transpose_copy_impl[DType.float32](
+            result, tensor, ndim, result_shape, input_strides, perm, numel
+        )
+    elif dt == DType.float64:
+        _transpose_copy_impl[DType.float64](
+            result, tensor, ndim, result_shape, input_strides, perm, numel
+        )
+    elif dt == DType.int8:
+        _transpose_copy_impl[DType.int8](
+            result, tensor, ndim, result_shape, input_strides, perm, numel
+        )
+    elif dt == DType.int16:
+        _transpose_copy_impl[DType.int16](
+            result, tensor, ndim, result_shape, input_strides, perm, numel
+        )
+    elif dt == DType.int32:
+        _transpose_copy_impl[DType.int32](
+            result, tensor, ndim, result_shape, input_strides, perm, numel
+        )
+    elif dt == DType.int64:
+        _transpose_copy_impl[DType.int64](
+            result, tensor, ndim, result_shape, input_strides, perm, numel
+        )
+    elif dt == DType.bool:
+        _transpose_copy_impl[DType.bool](
+            result, tensor, ndim, result_shape, input_strides, perm, numel
+        )
+    else:
+        raise Error("transpose: unsupported dtype")
+
+
+fn _dot_impl[dtype: DType](result: ExTensor, a: ExTensor, b: ExTensor, length: Int):
+    """Dtype-specialized dot product."""
+    var a_ptr = a._data.bitcast[Scalar[dtype]]()
+    var b_ptr = b._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    var sum_val: Scalar[dtype] = 0
+    for i in range(length):
+        sum_val += a_ptr[i] * b_ptr[i]
+    out_ptr[0] = sum_val
+
+
+fn _dispatch_dot(
+    result: ExTensor, a: ExTensor, b: ExTensor, length: Int
+) raises:
+    """Runtime dispatch for dot product."""
+    var dt = a.dtype()
+    if dt == DType.float16:
+        _dot_impl[DType.float16](result, a, b, length)
+    elif dt == DType.float32:
+        _dot_impl[DType.float32](result, a, b, length)
+    elif dt == DType.float64:
+        _dot_impl[DType.float64](result, a, b, length)
+    elif dt == DType.int32:
+        _dot_impl[DType.int32](result, a, b, length)
+    elif dt == DType.int64:
+        _dot_impl[DType.int64](result, a, b, length)
+    else:
+        raise Error("dot: unsupported dtype")
+
+
+fn _outer_impl[
+    dtype: DType
+](result: ExTensor, a: ExTensor, b: ExTensor, len_a: Int, len_b: Int):
+    """Dtype-specialized outer product."""
+    var a_ptr = a._data.bitcast[Scalar[dtype]]()
+    var b_ptr = b._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    for i in range(len_a):
+        var a_val = a_ptr[i]
+        for j in range(len_b):
+            out_ptr[i * len_b + j] = a_val * b_ptr[j]
+
+
+fn _dispatch_outer(
+    result: ExTensor, a: ExTensor, b: ExTensor, len_a: Int, len_b: Int
+) raises:
+    """Runtime dispatch for outer product."""
+    var dt = a.dtype()
+    if dt == DType.float16:
+        _outer_impl[DType.float16](result, a, b, len_a, len_b)
+    elif dt == DType.float32:
+        _outer_impl[DType.float32](result, a, b, len_a, len_b)
+    elif dt == DType.float64:
+        _outer_impl[DType.float64](result, a, b, len_a, len_b)
+    elif dt == DType.int32:
+        _outer_impl[DType.int32](result, a, b, len_a, len_b)
+    elif dt == DType.int64:
+        _outer_impl[DType.int64](result, a, b, len_a, len_b)
+    else:
+        raise Error("outer: unsupported dtype")
+
+
+fn _matmul_backward_2d_1d_impl[
+    dtype: DType
+](grad_a: ExTensor, grad_output: ExTensor, b: ExTensor, m: Int, k: Int):
+    """Dtype-specialized grad_a for 2D @ 1D backward."""
+    var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
+    var b_ptr = b._data.bitcast[Scalar[dtype]]()
+    var out_ptr = grad_a._data.bitcast[Scalar[dtype]]()
+
+    for i in range(m):
+        var grad_val = grad_ptr[i]
+        for j in range(k):
+            out_ptr[i * k + j] = grad_val * b_ptr[j]
+
+
+fn _dispatch_matmul_backward_2d_1d(
+    grad_a: ExTensor, grad_output: ExTensor, b: ExTensor, m: Int, k: Int
+) raises:
+    """Runtime dispatch for 2D @ 1D backward."""
+    var dt = grad_output.dtype()
+    if dt == DType.float16:
+        _matmul_backward_2d_1d_impl[DType.float16](grad_a, grad_output, b, m, k)
+    elif dt == DType.float32:
+        _matmul_backward_2d_1d_impl[DType.float32](grad_a, grad_output, b, m, k)
+    elif dt == DType.float64:
+        _matmul_backward_2d_1d_impl[DType.float64](grad_a, grad_output, b, m, k)
+    elif dt == DType.int32:
+        _matmul_backward_2d_1d_impl[DType.int32](grad_a, grad_output, b, m, k)
+    elif dt == DType.int64:
+        _matmul_backward_2d_1d_impl[DType.int64](grad_a, grad_output, b, m, k)
+    else:
+        raise Error("matmul_backward: unsupported dtype")
+
+
+fn _matmul_backward_1d_2d_impl[
+    dtype: DType
+](grad_b: ExTensor, a: ExTensor, grad_output: ExTensor, k: Int, n: Int):
+    """Dtype-specialized grad_b for 1D @ 2D backward."""
+    var a_ptr = a._data.bitcast[Scalar[dtype]]()
+    var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
+    var out_ptr = grad_b._data.bitcast[Scalar[dtype]]()
+
+    for i in range(k):
+        var a_val = a_ptr[i]
+        for j in range(n):
+            out_ptr[i * n + j] = a_val * grad_ptr[j]
+
+
+fn _dispatch_matmul_backward_1d_2d(
+    grad_b: ExTensor, a: ExTensor, grad_output: ExTensor, k: Int, n: Int
+) raises:
+    """Runtime dispatch for 1D @ 2D backward."""
+    var dt = a.dtype()
+    if dt == DType.float16:
+        _matmul_backward_1d_2d_impl[DType.float16](grad_b, a, grad_output, k, n)
+    elif dt == DType.float32:
+        _matmul_backward_1d_2d_impl[DType.float32](grad_b, a, grad_output, k, n)
+    elif dt == DType.float64:
+        _matmul_backward_1d_2d_impl[DType.float64](grad_b, a, grad_output, k, n)
+    elif dt == DType.int32:
+        _matmul_backward_1d_2d_impl[DType.int32](grad_b, a, grad_output, k, n)
+    elif dt == DType.int64:
+        _matmul_backward_1d_2d_impl[DType.int64](grad_b, a, grad_output, k, n)
+    else:
+        raise Error("matmul_backward: unsupported dtype")
 
 
 fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
@@ -590,9 +519,7 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
         result_shape.append(m)
         var result = ExTensor(result_shape, a.dtype())
 
-        # Compute using dtype-specialized implementation
         _dispatch_matmul_2d_1d(result, a, b, m, k)
-
         return result^
 
     # Handle vector @ matrix (1D @ 2D)
@@ -617,9 +544,7 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
         result_shape.append(n)
         var result = ExTensor(result_shape, a.dtype())
 
-        # Compute using dtype-specialized implementation
         _dispatch_matmul_1d_2d(result, a, b, m, n)
-
         return result^
 
     # For 2D and higher, require at least 2D tensors
@@ -661,11 +586,9 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
     # For batched case: apply same logic to each batch
 
     if len(a_shape) == 2:
-        # Simple 2D matrix multiplication using dtype-specialized implementation
         _dispatch_matmul_2d_2d(result, a, b, a_rows, a_cols, b_cols)
     else:
         # Batched matrix multiplication (3D+)
-        # Compute batch size (product of all dimensions except last 2)
         var batch_size = 1
         for i in range(len(a_shape) - 2):
             batch_size *= a_shape[i]
@@ -674,7 +597,6 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var matrix_size_b = b_rows * b_cols
         var matrix_size_result = a_rows * b_cols
 
-        # Use dtype-specialized batched implementation
         _dispatch_matmul_batched(
             result,
             a,
@@ -783,33 +705,9 @@ fn transpose(
         temp_strides.append(input_strides[i])
     input_strides = temp_strides^
 
-    # For each element in result, map to input position
-    for result_idx in range(result.numel()):
-        # Convert linear result index to coordinates
-        var result_coords = List[Int](capacity=ndim)
-        for _ in range(ndim):
-            result_coords.append(0)
-        var temp_idx = result_idx
-        for i in range(ndim - 1, -1, -1):
-            result_coords[i] = temp_idx % result_shape[i]
-            temp_idx //= result_shape[i]
-
-        # Map result coordinates to input coordinates using permutation
-        var input_coords = List[Int](capacity=ndim)
-        for _ in range(ndim):
-            input_coords.append(0)
-        for result_axis in range(ndim):
-            var input_axis = perm.value()[result_axis]
-            input_coords[input_axis] = result_coords[result_axis]
-
-        # Convert input coordinates to linear index
-        var input_idx = 0
-        for i in range(ndim):
-            input_idx += input_coords[i] * input_strides[i]
-
-        # Copy value using dtype-specialized implementation
-        _dispatch_transpose_indexed_copy(result, tensor, result_idx, input_idx)
-
+    _dispatch_transpose_copy(
+        result, tensor, ndim, result_shape, input_strides, perm.value(), result.numel()
+    )
     return result^
 
 
@@ -847,10 +745,8 @@ fn dot(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var result_shape = List[Int]()  # Scalar (0D)
         var result = ExTensor(result_shape, a.dtype())
 
-        # Compute dot product using dtype-specialized implementation
         var length = a.shape()[0]
-        _dispatch_dot_1d(result, a, b, length)
-
+        _dispatch_dot(result, a, b, length)
         return result^
     else:
         # Delegate to matmul
@@ -891,12 +787,10 @@ fn outer(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
     var result = ExTensor(result_shape, a.dtype())
 
-    # Implement outer product using dtype-specialized implementation
     var len_a = a.shape()[0]
     var len_b = b.shape()[0]
 
     _dispatch_outer(result, a, b, len_a, len_b)
-
     return result^
 
 
@@ -972,8 +866,7 @@ fn matmul_backward(
         var m = a_shape[0]
         var k = a_shape[1]
 
-        # grad_a[i, j] = grad_output[i] * b[j] (outer product)
-        _dispatch_outer(grad_a, grad_output, b, m, k)
+        _dispatch_matmul_backward_2d_1d(grad_a, grad_output, b, m, k)
 
         # grad_b: A^T @ grad_output
         var a_t = transpose(a)  # Transpose A to get (k, m)
@@ -999,8 +892,7 @@ fn matmul_backward(
         var k = b_shape[0]
         var n = b_shape[1]
 
-        # grad_b[i, j] = a[i] * grad_output[j] (outer product)
-        _dispatch_outer(grad_b, a, grad_output, k, n)
+        _dispatch_matmul_backward_1d_2d(grad_b, a, grad_output, k, n)
 
         return GradientPair(grad_a, grad_b)
 
