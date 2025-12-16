@@ -312,27 +312,18 @@ CMDEOF
         > "$log_file"
 
         # Run Claude - tools and permissions vary by mode
-        # stdout -> plan file, stderr -> log file
+        # Show live output with tee while saving to file
+        echo ""
+        echo "  -------- Claude Output --------"
         claude --model opus \
                --permission-mode "$PERMISSION_MODE" \
                --allowedTools "$ALLOWED_TOOLS" \
                --add-dir "$REPO_ROOT" \
                --system-prompt "$CHIEF_ARCHITECT_PROMPT" \
                -p \
-               "$PROMPT" > "$plan_file" 2> "$log_file" &
-
-        CLAUDE_PID=$!
-
-        # Progress indicator while waiting
-        spin='-\|/'
-        i=0
-        while kill -0 $CLAUDE_PID 2>/dev/null; do
-            i=$(( (i+1) % 4 ))
-            printf "\r  Generating... ${spin:$i:1} (elapsed: $(($(date +%s) - start_time))s) "
-            sleep 0.5
-        done
-        wait $CLAUDE_PID || true
-        printf "\r                                              \r"
+               "$PROMPT" 2>&1 | tee "$plan_file"
+        echo "  --------------------------------"
+        echo ""
 
         end_time=$(date +%s)
         echo "  Generation completed in $((end_time - start_time))s"
