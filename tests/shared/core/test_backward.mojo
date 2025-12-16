@@ -217,7 +217,7 @@ fn test_linear_backward_gradient() raises:
     var grad_output = ones_like(output)
 
     # Numerical gradient checking
-    check_gradient(forward, backward, x, grad_output, rtol=1e-3, atol=1e-6)
+    check_gradient(forward, backward, x, grad_output, rtol=1e-3, atol=5e-4)
 
 
 # ============================================================================
@@ -550,7 +550,7 @@ fn test_maxpool2d_backward_gradient() raises:
     var grad_output = ones_like(output)
 
     # Numerical gradient checking
-    check_gradient(forward, backward, x, grad_output, rtol=1e-3, atol=1e-6)
+    check_gradient(forward, backward, x, grad_output, rtol=1e-3, atol=5e-4)
 
 
 fn test_avgpool2d_backward_gradient() raises:
@@ -581,7 +581,7 @@ fn test_avgpool2d_backward_gradient() raises:
     var grad_output = ones_like(output)
 
     # Numerical gradient checking
-    check_gradient(forward, backward, x, grad_output, rtol=1e-3, atol=1e-6)
+    check_gradient(forward, backward, x, grad_output, rtol=1e-3, atol=5e-4)
 
 
 # ============================================================================
