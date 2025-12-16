@@ -391,7 +391,9 @@ fn _log2_forward_impl[
         out_ptr[i] = math_log(val) / ln2
 
 
-fn _dispatch_log2_forward(result: ExTensor, tensor: ExTensor, numel: Int) raises:
+fn _dispatch_log2_forward(
+    result: ExTensor, tensor: ExTensor, numel: Int
+) raises:
     """Runtime dispatch for log2 forward pass."""
     var dtype = tensor.dtype()
     if dtype == DType.float16:
@@ -559,7 +561,9 @@ fn _dispatch_logical_or(
         raise Error("logical_or: unsupported dtype")
 
 
-fn _logical_not_impl[dtype: DType](result: ExTensor, tensor: ExTensor, numel: Int):
+fn _logical_not_impl[
+    dtype: DType
+](result: ExTensor, tensor: ExTensor, numel: Int):
     """Dtype-specialized logical NOT."""
     alias zero = Scalar[dtype](0)
     alias one = Scalar[dtype](1)
@@ -570,9 +574,7 @@ fn _logical_not_impl[dtype: DType](result: ExTensor, tensor: ExTensor, numel: In
         out_ptr[i] = one if bool_result else zero
 
 
-fn _dispatch_logical_not(
-    result: ExTensor, tensor: ExTensor, numel: Int
-) raises:
+fn _dispatch_logical_not(result: ExTensor, tensor: ExTensor, numel: Int) raises:
     """Runtime dispatch for logical NOT."""
     var dtype = tensor.dtype()
     if dtype == DType.float16:
