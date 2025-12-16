@@ -16,6 +16,381 @@ from .reduction_utils import (
 )
 
 
+# ============================================================================
+# Dtype-Specialized Reduction Helpers (Eliminates Float64 Conversions)
+# ============================================================================
+
+
+fn _sum_all_impl[dtype: DType](result: ExTensor, tensor: ExTensor, numel: Int):
+    """Compile-time specialized sum over all elements.
+
+    Uses Float64 accumulation for float16/float32 to maintain precision.
+
+    Parameters:
+        dtype: Compile-time dtype parameter.
+
+    Args:
+        result: Pre-allocated result tensor (scalar or 1-element).
+        tensor: Input tensor.
+        numel: Number of elements to sum.
+    """
+    var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    @parameter
+    if dtype == DType.float16 or dtype == DType.float32:
+        var sum_val: Float64 = 0.0
+        for i in range(numel):
+            sum_val += Float64(in_ptr[i])
+        out_ptr[0] = Scalar[dtype](sum_val)
+    else:
+        var sum_val = Scalar[dtype](0)
+        for i in range(numel):
+            sum_val += in_ptr[i]
+        out_ptr[0] = sum_val
+
+
+fn _dispatch_sum_all(result: ExTensor, tensor: ExTensor, numel: Int) raises:
+    """Runtime dispatch for sum over all elements."""
+    if tensor._dtype == DType.float16:
+        _sum_all_impl[DType.float16](result, tensor, numel)
+    elif tensor._dtype == DType.float32:
+        _sum_all_impl[DType.float32](result, tensor, numel)
+    elif tensor._dtype == DType.float64:
+        _sum_all_impl[DType.float64](result, tensor, numel)
+    elif tensor._dtype == DType.int8:
+        _sum_all_impl[DType.int8](result, tensor, numel)
+    elif tensor._dtype == DType.int16:
+        _sum_all_impl[DType.int16](result, tensor, numel)
+    elif tensor._dtype == DType.int32:
+        _sum_all_impl[DType.int32](result, tensor, numel)
+    elif tensor._dtype == DType.int64:
+        _sum_all_impl[DType.int64](result, tensor, numel)
+    else:
+        raise Error("sum: unsupported dtype")
+
+
+fn _sum_axis_impl[dtype: DType](
+    result: ExTensor,
+    tensor: ExTensor,
+    outer_size: Int,
+    axis_size: Int,
+    inner_size: Int,
+):
+    """Compile-time specialized sum along axis.
+
+    Uses Float64 accumulation for float16/float32 to maintain precision.
+
+    Parameters:
+        dtype: Compile-time dtype parameter.
+
+    Args:
+        result: Pre-allocated result tensor.
+        tensor: Input tensor.
+        outer_size: Product of dimensions before axis.
+        axis_size: Size of axis dimension.
+        inner_size: Product of dimensions after axis.
+    """
+    var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    @parameter
+    if dtype == DType.float16 or dtype == DType.float32:
+        for outer in range(outer_size):
+            for inner in range(inner_size):
+                var sum_val: Float64 = 0.0
+                for k in range(axis_size):
+                    var input_idx = outer * axis_size * inner_size + k * inner_size + inner
+                    sum_val += Float64(in_ptr[input_idx])
+                var result_idx = outer * inner_size + inner
+                out_ptr[result_idx] = Scalar[dtype](sum_val)
+    else:
+        for outer in range(outer_size):
+            for inner in range(inner_size):
+                var sum_val = Scalar[dtype](0)
+                for k in range(axis_size):
+                    var input_idx = outer * axis_size * inner_size + k * inner_size + inner
+                    sum_val += in_ptr[input_idx]
+                var result_idx = outer * inner_size + inner
+                out_ptr[result_idx] = sum_val
+
+
+fn _dispatch_sum_axis(
+    result: ExTensor,
+    tensor: ExTensor,
+    outer_size: Int,
+    axis_size: Int,
+    inner_size: Int,
+) raises:
+    """Runtime dispatch for sum along axis."""
+    if tensor._dtype == DType.float16:
+        _sum_axis_impl[DType.float16](result, tensor, outer_size, axis_size, inner_size)
+    elif tensor._dtype == DType.float32:
+        _sum_axis_impl[DType.float32](result, tensor, outer_size, axis_size, inner_size)
+    elif tensor._dtype == DType.float64:
+        _sum_axis_impl[DType.float64](result, tensor, outer_size, axis_size, inner_size)
+    elif tensor._dtype == DType.int8:
+        _sum_axis_impl[DType.int8](result, tensor, outer_size, axis_size, inner_size)
+    elif tensor._dtype == DType.int16:
+        _sum_axis_impl[DType.int16](result, tensor, outer_size, axis_size, inner_size)
+    elif tensor._dtype == DType.int32:
+        _sum_axis_impl[DType.int32](result, tensor, outer_size, axis_size, inner_size)
+    elif tensor._dtype == DType.int64:
+        _sum_axis_impl[DType.int64](result, tensor, outer_size, axis_size, inner_size)
+    else:
+        raise Error("sum: unsupported dtype")
+
+
+fn _mean_divide_impl[dtype: DType](result: ExTensor, count: Int):
+    """Divide result tensor by count for mean computation.
+
+    Parameters:
+        dtype: Compile-time dtype parameter.
+
+    Args:
+        result: Result tensor to modify in-place.
+        count: Divisor for mean computation.
+    """
+    var ptr = result._data.bitcast[Scalar[dtype]]()
+    var numel = result.numel()
+
+    @parameter
+    if dtype == DType.float16 or dtype == DType.float32:
+        var scale = 1.0 / Float64(count)
+        for i in range(numel):
+            ptr[i] = Scalar[dtype](Float64(ptr[i]) * scale)
+    else:
+        # For float64 and integers, divide directly
+        for i in range(numel):
+            ptr[i] = ptr[i] / Scalar[dtype](count)
+
+
+fn _dispatch_mean_divide(result: ExTensor, count: Int) raises:
+    """Runtime dispatch for mean division."""
+    if result._dtype == DType.float16:
+        _mean_divide_impl[DType.float16](result, count)
+    elif result._dtype == DType.float32:
+        _mean_divide_impl[DType.float32](result, count)
+    elif result._dtype == DType.float64:
+        _mean_divide_impl[DType.float64](result, count)
+    elif result._dtype == DType.int8:
+        _mean_divide_impl[DType.int8](result, count)
+    elif result._dtype == DType.int16:
+        _mean_divide_impl[DType.int16](result, count)
+    elif result._dtype == DType.int32:
+        _mean_divide_impl[DType.int32](result, count)
+    elif result._dtype == DType.int64:
+        _mean_divide_impl[DType.int64](result, count)
+    else:
+        raise Error("mean: unsupported dtype")
+
+
+fn _max_all_impl[dtype: DType](result: ExTensor, tensor: ExTensor, numel: Int):
+    """Compile-time specialized max over all elements.
+
+    Parameters:
+        dtype: Compile-time dtype parameter.
+
+    Args:
+        result: Pre-allocated result tensor (scalar or 1-element).
+        tensor: Input tensor.
+        numel: Number of elements.
+    """
+    var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    var max_val = in_ptr[0]
+    for i in range(1, numel):
+        if in_ptr[i] > max_val:
+            max_val = in_ptr[i]
+    out_ptr[0] = max_val
+
+
+fn _dispatch_max_all(result: ExTensor, tensor: ExTensor, numel: Int) raises:
+    """Runtime dispatch for max over all elements."""
+    if tensor._dtype == DType.float16:
+        _max_all_impl[DType.float16](result, tensor, numel)
+    elif tensor._dtype == DType.float32:
+        _max_all_impl[DType.float32](result, tensor, numel)
+    elif tensor._dtype == DType.float64:
+        _max_all_impl[DType.float64](result, tensor, numel)
+    elif tensor._dtype == DType.int8:
+        _max_all_impl[DType.int8](result, tensor, numel)
+    elif tensor._dtype == DType.int16:
+        _max_all_impl[DType.int16](result, tensor, numel)
+    elif tensor._dtype == DType.int32:
+        _max_all_impl[DType.int32](result, tensor, numel)
+    elif tensor._dtype == DType.int64:
+        _max_all_impl[DType.int64](result, tensor, numel)
+    else:
+        raise Error("max: unsupported dtype")
+
+
+fn _max_axis_impl[dtype: DType](
+    result: ExTensor,
+    tensor: ExTensor,
+    outer_size: Int,
+    axis_size: Int,
+    inner_size: Int,
+):
+    """Compile-time specialized max along axis.
+
+    Parameters:
+        dtype: Compile-time dtype parameter.
+
+    Args:
+        result: Pre-allocated result tensor.
+        tensor: Input tensor.
+        outer_size: Product of dimensions before axis.
+        axis_size: Size of axis dimension.
+        inner_size: Product of dimensions after axis.
+    """
+    var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    for outer in range(outer_size):
+        for inner in range(inner_size):
+            # Initialize with first value along axis
+            var first_idx = outer * axis_size * inner_size + inner
+            var max_val = in_ptr[first_idx]
+            # Compare with remaining values
+            for k in range(1, axis_size):
+                var input_idx = outer * axis_size * inner_size + k * inner_size + inner
+                if in_ptr[input_idx] > max_val:
+                    max_val = in_ptr[input_idx]
+            var result_idx = outer * inner_size + inner
+            out_ptr[result_idx] = max_val
+
+
+fn _dispatch_max_axis(
+    result: ExTensor,
+    tensor: ExTensor,
+    outer_size: Int,
+    axis_size: Int,
+    inner_size: Int,
+) raises:
+    """Runtime dispatch for max along axis."""
+    if tensor._dtype == DType.float16:
+        _max_axis_impl[DType.float16](result, tensor, outer_size, axis_size, inner_size)
+    elif tensor._dtype == DType.float32:
+        _max_axis_impl[DType.float32](result, tensor, outer_size, axis_size, inner_size)
+    elif tensor._dtype == DType.float64:
+        _max_axis_impl[DType.float64](result, tensor, outer_size, axis_size, inner_size)
+    elif tensor._dtype == DType.int8:
+        _max_axis_impl[DType.int8](result, tensor, outer_size, axis_size, inner_size)
+    elif tensor._dtype == DType.int16:
+        _max_axis_impl[DType.int16](result, tensor, outer_size, axis_size, inner_size)
+    elif tensor._dtype == DType.int32:
+        _max_axis_impl[DType.int32](result, tensor, outer_size, axis_size, inner_size)
+    elif tensor._dtype == DType.int64:
+        _max_axis_impl[DType.int64](result, tensor, outer_size, axis_size, inner_size)
+    else:
+        raise Error("max: unsupported dtype")
+
+
+fn _min_all_impl[dtype: DType](result: ExTensor, tensor: ExTensor, numel: Int):
+    """Compile-time specialized min over all elements.
+
+    Parameters:
+        dtype: Compile-time dtype parameter.
+
+    Args:
+        result: Pre-allocated result tensor (scalar or 1-element).
+        tensor: Input tensor.
+        numel: Number of elements.
+    """
+    var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    var min_val = in_ptr[0]
+    for i in range(1, numel):
+        if in_ptr[i] < min_val:
+            min_val = in_ptr[i]
+    out_ptr[0] = min_val
+
+
+fn _dispatch_min_all(result: ExTensor, tensor: ExTensor, numel: Int) raises:
+    """Runtime dispatch for min over all elements."""
+    if tensor._dtype == DType.float16:
+        _min_all_impl[DType.float16](result, tensor, numel)
+    elif tensor._dtype == DType.float32:
+        _min_all_impl[DType.float32](result, tensor, numel)
+    elif tensor._dtype == DType.float64:
+        _min_all_impl[DType.float64](result, tensor, numel)
+    elif tensor._dtype == DType.int8:
+        _min_all_impl[DType.int8](result, tensor, numel)
+    elif tensor._dtype == DType.int16:
+        _min_all_impl[DType.int16](result, tensor, numel)
+    elif tensor._dtype == DType.int32:
+        _min_all_impl[DType.int32](result, tensor, numel)
+    elif tensor._dtype == DType.int64:
+        _min_all_impl[DType.int64](result, tensor, numel)
+    else:
+        raise Error("min: unsupported dtype")
+
+
+fn _min_axis_impl[dtype: DType](
+    result: ExTensor,
+    tensor: ExTensor,
+    outer_size: Int,
+    axis_size: Int,
+    inner_size: Int,
+):
+    """Compile-time specialized min along axis.
+
+    Parameters:
+        dtype: Compile-time dtype parameter.
+
+    Args:
+        result: Pre-allocated result tensor.
+        tensor: Input tensor.
+        outer_size: Product of dimensions before axis.
+        axis_size: Size of axis dimension.
+        inner_size: Product of dimensions after axis.
+    """
+    var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    for outer in range(outer_size):
+        for inner in range(inner_size):
+            # Initialize with first value along axis
+            var first_idx = outer * axis_size * inner_size + inner
+            var min_val = in_ptr[first_idx]
+            # Compare with remaining values
+            for k in range(1, axis_size):
+                var input_idx = outer * axis_size * inner_size + k * inner_size + inner
+                if in_ptr[input_idx] < min_val:
+                    min_val = in_ptr[input_idx]
+            var result_idx = outer * inner_size + inner
+            out_ptr[result_idx] = min_val
+
+
+fn _dispatch_min_axis(
+    result: ExTensor,
+    tensor: ExTensor,
+    outer_size: Int,
+    axis_size: Int,
+    inner_size: Int,
+) raises:
+    """Runtime dispatch for min along axis."""
+    if tensor._dtype == DType.float16:
+        _min_axis_impl[DType.float16](result, tensor, outer_size, axis_size, inner_size)
+    elif tensor._dtype == DType.float32:
+        _min_axis_impl[DType.float32](result, tensor, outer_size, axis_size, inner_size)
+    elif tensor._dtype == DType.float64:
+        _min_axis_impl[DType.float64](result, tensor, outer_size, axis_size, inner_size)
+    elif tensor._dtype == DType.int8:
+        _min_axis_impl[DType.int8](result, tensor, outer_size, axis_size, inner_size)
+    elif tensor._dtype == DType.int16:
+        _min_axis_impl[DType.int16](result, tensor, outer_size, axis_size, inner_size)
+    elif tensor._dtype == DType.int32:
+        _min_axis_impl[DType.int32](result, tensor, outer_size, axis_size, inner_size)
+    elif tensor._dtype == DType.int64:
+        _min_axis_impl[DType.int64](result, tensor, outer_size, axis_size, inner_size)
+    else:
+        raise Error("min: unsupported dtype")
+
+
 fn sum(
     tensor: ExTensor, axis: Int = -1, keepdims: Bool = False
 ) raises -> ExTensor:
@@ -44,13 +419,8 @@ fn sum(
                 result_shape.append(1)
         var result = ExTensor(result_shape, tensor.dtype())
 
-        # Compute sum of all elements
-        var sum_val: Float64 = 0.0
-        for i in range(tensor.numel()):
-            sum_val += tensor._get_float64(i)
-
-        # Set result value (scalar or 1-element tensor)
-        result._set_float64(0, sum_val)
+        # Compute sum using dtype-specialized implementation
+        _dispatch_sum_all(result, tensor, tensor.numel())
         return result^
     else:
         # Sum along specific axis
@@ -66,7 +436,6 @@ fn sum(
         # Use direct index computation (no coordinate allocations)
         var result_shape = build_reduced_shape(tensor.shape(), axis, keepdims)
         var result = ExTensor(result_shape, tensor.dtype())
-        result._fill_zero()
 
         # Compute outer/inner sizes for direct indexing
         var sizes = compute_axis_strides(tensor.shape(), axis)
@@ -74,18 +443,8 @@ fn sum(
         var axis_size = sizes[1]
         var inner_size = sizes[2]
 
-        # Direct iteration: O(1) index computation per element
-        for outer in range(outer_size):
-            for inner in range(inner_size):
-                var sum_val: Float64 = 0.0
-                for k in range(axis_size):
-                    # Direct index: outer * axis_size * inner_size + k * inner_size + inner
-                    var input_idx = (
-                        outer * axis_size * inner_size + k * inner_size + inner
-                    )
-                    sum_val += tensor._get_float64(input_idx)
-                var result_idx = outer * inner_size + inner
-                result._set_float64(result_idx, sum_val)
+        # Use dtype-specialized implementation
+        _dispatch_sum_axis(result, tensor, outer_size, axis_size, inner_size)
 
         return result^
 
@@ -112,9 +471,8 @@ fn mean(
     if axis == -1:
         # Mean of all elements
         var sum_result = sum(tensor, axis, keepdims)
-        var count = Float64(tensor.numel())
-        var mean_val = sum_result._get_float64(0) / count
-        sum_result._set_float64(0, mean_val)
+        # Divide by count using dtype-specialized implementation
+        _dispatch_mean_divide(sum_result, tensor.numel())
         return sum_result^
     else:
         # Mean along specific axis
@@ -130,13 +488,8 @@ fn mean(
         # Compute sum along axis
         var sum_result = sum(tensor, axis, keepdims)
 
-        # Divide by count along the reduction axis
-        var count = Float64(tensor.shape()[axis])
-
-        # Divide each element by count
-        for i in range(sum_result.numel()):
-            var mean_val = sum_result._get_float64(i) / count
-            sum_result._set_float64(i, mean_val)
+        # Divide by count using dtype-specialized implementation
+        _dispatch_mean_divide(sum_result, tensor.shape()[axis])
 
         return sum_result^
 
@@ -168,14 +521,8 @@ fn max_reduce(
                 result_shape.append(1)
         var result = ExTensor(result_shape, tensor.dtype())
 
-        # Find maximum value
-        var max_val = tensor._get_float64(0)
-        for i in range(1, tensor.numel()):
-            var val = tensor._get_float64(i)
-            if val > max_val:
-                max_val = val
-
-        result._set_float64(0, max_val)
+        # Find maximum using dtype-specialized implementation
+        _dispatch_max_all(result, tensor, tensor.numel())
         return result^
     else:
         # Max along specific axis
@@ -198,22 +545,8 @@ fn max_reduce(
         var axis_size = sizes[1]
         var inner_size = sizes[2]
 
-        # Direct iteration: O(1) index computation per element
-        for outer in range(outer_size):
-            for inner in range(inner_size):
-                # Initialize with first value along axis
-                var first_idx = outer * axis_size * inner_size + inner
-                var max_val = tensor._get_float64(first_idx)
-                # Compare with remaining values
-                for k in range(1, axis_size):
-                    var input_idx = (
-                        outer * axis_size * inner_size + k * inner_size + inner
-                    )
-                    var val = tensor._get_float64(input_idx)
-                    if val > max_val:
-                        max_val = val
-                var result_idx = outer * inner_size + inner
-                result._set_float64(result_idx, max_val)
+        # Use dtype-specialized implementation
+        _dispatch_max_axis(result, tensor, outer_size, axis_size, inner_size)
 
         return result^
 
@@ -245,14 +578,8 @@ fn min_reduce(
                 result_shape.append(1)
         var result = ExTensor(result_shape, tensor.dtype())
 
-        # Find minimum value
-        var min_val = tensor._get_float64(0)
-        for i in range(1, tensor.numel()):
-            var val = tensor._get_float64(i)
-            if val < min_val:
-                min_val = val
-
-        result._set_float64(0, min_val)
+        # Find minimum using dtype-specialized implementation
+        _dispatch_min_all(result, tensor, tensor.numel())
         return result^
     else:
         # Min along specific axis
@@ -275,22 +602,8 @@ fn min_reduce(
         var axis_size = sizes[1]
         var inner_size = sizes[2]
 
-        # Direct iteration: O(1) index computation per element
-        for outer in range(outer_size):
-            for inner in range(inner_size):
-                # Initialize with first value along axis
-                var first_idx = outer * axis_size * inner_size + inner
-                var min_val = tensor._get_float64(first_idx)
-                # Compare with remaining values
-                for k in range(1, axis_size):
-                    var input_idx = (
-                        outer * axis_size * inner_size + k * inner_size + inner
-                    )
-                    var val = tensor._get_float64(input_idx)
-                    if val < min_val:
-                        min_val = val
-                var result_idx = outer * inner_size + inner
-                result._set_float64(result_idx, min_val)
+        # Use dtype-specialized implementation
+        _dispatch_min_axis(result, tensor, outer_size, axis_size, inner_size)
 
         return result^
 
