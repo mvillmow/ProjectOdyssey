@@ -554,11 +554,9 @@ fn subtract_backward(
     # Gradient for A passes through unchanged (but reduced for broadcasting)
     var grad_a = _reduce_broadcast_dims(grad_output, a.shape())
 
-    # Gradient for B is negated
-    # Create a tensor of -1s with same shape as grad_output
-    var neg_grad = ExTensor(grad_output.shape(), grad_output.dtype())
-    for i in range(grad_output.numel()):
-        neg_grad._set_float64(i, -grad_output._get_float64(i))
+    # Gradient for B is negated using tensor operations (multiply by -1.0)
+    var neg_one = full(grad_output.shape(), -1.0, grad_output.dtype())
+    var neg_grad = multiply(grad_output, neg_one)
 
     # Reduce for broadcasting
     var grad_b = _reduce_broadcast_dims(neg_grad, b.shape())
