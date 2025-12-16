@@ -9,6 +9,99 @@
 #
 set -euo pipefail
 
+# Function to parse reset time and wait until it expires
+wait_for_rate_limit_reset() {
+    local reset_time_str="$1"
+    local timezone="$2"
+
+    echo ""
+    echo "=========================================="
+    echo "  RATE LIMIT REACHED"
+    echo "  Resets at: $reset_time_str ($timezone)"
+    echo "=========================================="
+
+    # Convert reset time to seconds since epoch
+    # Handle formats like "2pm", "2:30pm", "14:00"
+    local reset_time
+    if [[ "$reset_time_str" =~ ^([0-9]{1,2}):?([0-9]{2})?(am|pm)?$ ]]; then
+        local hour="${BASH_REMATCH[1]}"
+        local min="${BASH_REMATCH[2]:-00}"
+        local ampm="${BASH_REMATCH[3]:-}"
+
+        # Convert to 24-hour format
+        if [[ "$ampm" == "pm" && "$hour" -lt 12 ]]; then
+            hour=$((hour + 12))
+        elif [[ "$ampm" == "am" && "$hour" -eq 12 ]]; then
+            hour=0
+        fi
+
+        # Get today's date and construct full datetime
+        local today=$(TZ="$timezone" date +%Y-%m-%d)
+        reset_time=$(TZ="$timezone" date -d "$today $hour:$min:00" +%s 2>/dev/null || echo "")
+
+        # If reset time is in the past, it might be tomorrow
+        local now=$(date +%s)
+        if [[ -n "$reset_time" && "$reset_time" -lt "$now" ]]; then
+            reset_time=$((reset_time + 86400))
+        fi
+    fi
+
+    if [[ -z "$reset_time" ]]; then
+        echo "  Could not parse reset time, waiting 60 minutes..."
+        reset_time=$(($(date +%s) + 3600))
+    fi
+
+    # Countdown loop
+    while true; do
+        local now=$(date +%s)
+        local remaining=$((reset_time - now))
+
+        if [[ $remaining -le 0 ]]; then
+            echo ""
+            echo "  Rate limit reset! Resuming..."
+            echo "=========================================="
+            echo ""
+            break
+        fi
+
+        local hours=$((remaining / 3600))
+        local mins=$(((remaining % 3600) / 60))
+        local secs=$((remaining % 60))
+
+        printf "\r  Resuming in: %02d:%02d:%02d " $hours $mins $secs
+        sleep 1
+    done
+}
+
+# Function to check if plan output indicates rate limit
+check_rate_limit() {
+    local plan_file="$1"
+
+    if grep -q "Limit reached" "$plan_file" 2>/dev/null; then
+        # Extract reset time and timezone
+        local limit_line=$(grep "Limit reached" "$plan_file" | head -1)
+        if [[ "$limit_line" =~ resets[[:space:]]+([0-9]{1,2}:?[0-9]{0,2}[ap]?m?)[[:space:]]*\(([^)]+)\) ]]; then
+            echo "${BASH_REMATCH[1]}|${BASH_REMATCH[2]}"
+            return 0
+        fi
+        # Return generic indicator if we can't parse
+        echo "unknown|America/Los_Angeles"
+        return 0
+    fi
+    return 1
+}
+
+# Function to check if existing plan on GitHub has rate limit message
+check_existing_plan_has_limit() {
+    local issue_number="$1"
+
+    local comments=$(gh issue view "$issue_number" --comments --json comments --jq '.comments[].body' 2>/dev/null || echo "")
+    if echo "$comments" | grep -q "## Detailed Implementation Plan" && echo "$comments" | grep -q "Limit reached"; then
+        return 0
+    fi
+    return 1
+}
+
 # Parse arguments
 LIMIT=""
 AUTO_MODE=false
@@ -124,7 +217,10 @@ for issue_number in "${issues[@]}"; do
 
     # Check if issue already has a plan (unless in replan mode)
     if ! $REPLAN_MODE; then
-        if gh issue view "$issue_number" --comments --json comments --jq '.comments[].body' 2>/dev/null | grep -q "## Detailed Implementation Plan"; then
+        # Check if existing plan was rate-limited (auto-replan these)
+        if check_existing_plan_has_limit "$issue_number"; then
+            echo "  Existing plan was rate-limited, will replan..."
+        elif gh issue view "$issue_number" --comments --json comments --jq '.comments[].body' 2>/dev/null | grep -q "## Detailed Implementation Plan"; then
             echo "  SKIPPED (already has plan - use --replan to override)"
             skipped=$((skipped + 1))
             echo ""
@@ -201,36 +297,64 @@ claude --model opus \\
 CMDEOF
 
     # Generate plan using Claude with opus and chief architect prompt
-    echo "  Generating plan with Claude Opus..."
-    echo "  (This may take 1-3 minutes. Check $log_file for progress)"
-    start_time=$(date +%s)
+    # Retry loop for rate limiting
+    while true; do
+        echo "  Generating plan with Claude Opus..."
+        echo "  (This may take 1-3 minutes. Check $log_file for progress)"
+        start_time=$(date +%s)
 
-    # Run Claude - tools and permissions vary by mode
-    # stdout -> plan file, stderr -> log file
-    claude --model opus \
-           --permission-mode "$PERMISSION_MODE" \
-           --allowedTools "$ALLOWED_TOOLS" \
-           --add-dir "$REPO_ROOT" \
-           --system-prompt "$CHIEF_ARCHITECT_PROMPT" \
-           -p \
-           "$PROMPT" > "$plan_file" 2> "$log_file" &
+        # Clear previous attempt
+        > "$plan_file"
+        > "$log_file"
 
-    CLAUDE_PID=$!
+        # Run Claude - tools and permissions vary by mode
+        # stdout -> plan file, stderr -> log file
+        claude --model opus \
+               --permission-mode "$PERMISSION_MODE" \
+               --allowedTools "$ALLOWED_TOOLS" \
+               --add-dir "$REPO_ROOT" \
+               --system-prompt "$CHIEF_ARCHITECT_PROMPT" \
+               -p \
+               "$PROMPT" > "$plan_file" 2> "$log_file" &
 
-    # Progress indicator while waiting
-    spin='-\|/'
-    i=0
-    while kill -0 $CLAUDE_PID 2>/dev/null; do
-        i=$(( (i+1) % 4 ))
-        printf "\r  Generating... ${spin:$i:1} (elapsed: $(($(date +%s) - start_time))s) "
-        sleep 0.5
+        CLAUDE_PID=$!
+
+        # Progress indicator while waiting
+        spin='-\|/'
+        i=0
+        while kill -0 $CLAUDE_PID 2>/dev/null; do
+            i=$(( (i+1) % 4 ))
+            printf "\r  Generating... ${spin:$i:1} (elapsed: $(($(date +%s) - start_time))s) "
+            sleep 0.5
+        done
+        wait $CLAUDE_PID || true
+        printf "\r                                              \r"
+
+        end_time=$(date +%s)
+        echo "  Generation completed in $((end_time - start_time))s"
+        echo "  Plan size: $(wc -c < "$plan_file") bytes"
+
+        # Check for rate limit in output
+        if limit_info=$(check_rate_limit "$plan_file"); then
+            reset_time=$(echo "$limit_info" | cut -d'|' -f1)
+            timezone=$(echo "$limit_info" | cut -d'|' -f2)
+            wait_for_rate_limit_reset "$reset_time" "$timezone"
+            echo "  Retrying plan generation..."
+            continue
+        fi
+
+        # Also check stderr/log file for rate limit
+        if limit_info=$(check_rate_limit "$log_file"); then
+            reset_time=$(echo "$limit_info" | cut -d'|' -f1)
+            timezone=$(echo "$limit_info" | cut -d'|' -f2)
+            wait_for_rate_limit_reset "$reset_time" "$timezone"
+            echo "  Retrying plan generation..."
+            continue
+        fi
+
+        # No rate limit, break out of retry loop
+        break
     done
-    wait $CLAUDE_PID || true
-    printf "\r                                              \r"
-
-    end_time=$(date +%s)
-    echo "  Generation completed in $((end_time - start_time))s"
-    echo "  Plan size: $(wc -c < "$plan_file") bytes"
 
     # Interactive mode: open vim for review
     if ! $AUTO_MODE; then
