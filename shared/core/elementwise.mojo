@@ -302,6 +302,377 @@ fn tanh(tensor: ExTensor) raises -> ExTensor:
     return dispatch_float_unary[_tanh_op](tensor)
 
 
+# ============================================================================
+# Dtype-specialized forward pass helpers
+# ============================================================================
+
+
+fn _clip_forward_impl[
+    dtype: DType
+](result: ExTensor, tensor: ExTensor, min_val: Float64, max_val: Float64):
+    """Dtype-specialized clip forward: clamp values to [min, max]."""
+    var min_t = Scalar[dtype](min_val)
+    var max_t = Scalar[dtype](max_val)
+    var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+    for i in range(tensor.numel()):
+        var val = in_ptr[i]
+        if val < min_t:
+            out_ptr[i] = min_t
+        elif val > max_t:
+            out_ptr[i] = max_t
+        else:
+            out_ptr[i] = val
+
+
+fn _dispatch_clip_forward(
+    result: ExTensor, tensor: ExTensor, min_val: Float64, max_val: Float64
+) raises:
+    """Runtime dispatch for clip forward pass."""
+    var dtype = tensor.dtype()
+    if dtype == DType.float16:
+        _clip_forward_impl[DType.float16](result, tensor, min_val, max_val)
+    elif dtype == DType.float32:
+        _clip_forward_impl[DType.float32](result, tensor, min_val, max_val)
+    elif dtype == DType.float64:
+        _clip_forward_impl[DType.float64](result, tensor, min_val, max_val)
+    elif dtype == DType.int8:
+        _clip_forward_impl[DType.int8](result, tensor, min_val, max_val)
+    elif dtype == DType.int16:
+        _clip_forward_impl[DType.int16](result, tensor, min_val, max_val)
+    elif dtype == DType.int32:
+        _clip_forward_impl[DType.int32](result, tensor, min_val, max_val)
+    elif dtype == DType.int64:
+        _clip_forward_impl[DType.int64](result, tensor, min_val, max_val)
+    else:
+        raise Error("clip: unsupported dtype")
+
+
+fn _log10_forward_impl[
+    dtype: DType
+](result: ExTensor, tensor: ExTensor, numel: Int) raises:
+    """Dtype-specialized log10 forward: log(x) / log(10)."""
+    alias ln10 = Scalar[dtype](2.302585092994046)
+    var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+    for i in range(numel):
+        var val = in_ptr[i]
+        if val <= Scalar[dtype](0):
+            raise Error("log10 requires positive values")
+        out_ptr[i] = math_log(val) / ln10
+
+
+fn _dispatch_log10_forward(
+    result: ExTensor, tensor: ExTensor, numel: Int
+) raises:
+    """Runtime dispatch for log10 forward pass."""
+    var dtype = tensor.dtype()
+    if dtype == DType.float16:
+        _log10_forward_impl[DType.float16](result, tensor, numel)
+    elif dtype == DType.float32:
+        _log10_forward_impl[DType.float32](result, tensor, numel)
+    elif dtype == DType.float64:
+        _log10_forward_impl[DType.float64](result, tensor, numel)
+    else:
+        raise Error("log10: unsupported dtype (requires float type)")
+
+
+fn _log2_forward_impl[
+    dtype: DType
+](result: ExTensor, tensor: ExTensor, numel: Int) raises:
+    """Dtype-specialized log2 forward: log(x) / log(2)."""
+    alias ln2 = Scalar[dtype](0.6931471805599453)
+    var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+    for i in range(numel):
+        var val = in_ptr[i]
+        if val <= Scalar[dtype](0):
+            raise Error("log2 requires positive values")
+        out_ptr[i] = math_log(val) / ln2
+
+
+fn _dispatch_log2_forward(result: ExTensor, tensor: ExTensor, numel: Int) raises:
+    """Runtime dispatch for log2 forward pass."""
+    var dtype = tensor.dtype()
+    if dtype == DType.float16:
+        _log2_forward_impl[DType.float16](result, tensor, numel)
+    elif dtype == DType.float32:
+        _log2_forward_impl[DType.float32](result, tensor, numel)
+    elif dtype == DType.float64:
+        _log2_forward_impl[DType.float64](result, tensor, numel)
+    else:
+        raise Error("log2: unsupported dtype (requires float type)")
+
+
+fn _logical_and_impl[
+    dtype: DType
+](
+    result: ExTensor,
+    a: ExTensor,
+    b: ExTensor,
+    strides_a: List[Int],
+    strides_b: List[Int],
+    result_shape: List[Int],
+    total_elems: Int,
+):
+    """Dtype-specialized logical AND."""
+    alias zero = Scalar[dtype](0)
+    alias one = Scalar[dtype](1)
+    var a_ptr = a._data.bitcast[Scalar[dtype]]()
+    var b_ptr = b._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    for result_idx in range(total_elems):
+        # Convert result_idx to multi-dimensional index
+        var remaining = result_idx
+        var idx_a = 0
+        var idx_b = 0
+        for d in range(len(result_shape) - 1, -1, -1):
+            var coord = remaining % result_shape[d]
+            remaining //= result_shape[d]
+            idx_a += coord * strides_a[d]
+            idx_b += coord * strides_b[d]
+
+        var val_a = a_ptr[idx_a]
+        var val_b = b_ptr[idx_b]
+        var bool_result = val_a != zero and val_b != zero
+        out_ptr[result_idx] = one if bool_result else zero
+
+
+fn _dispatch_logical_and(
+    result: ExTensor,
+    a: ExTensor,
+    b: ExTensor,
+    strides_a: List[Int],
+    strides_b: List[Int],
+    result_shape: List[Int],
+    total_elems: Int,
+) raises:
+    """Runtime dispatch for logical AND."""
+    var dtype = a.dtype()
+    if dtype == DType.float16:
+        _logical_and_impl[DType.float16](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.float32:
+        _logical_and_impl[DType.float32](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.float64:
+        _logical_and_impl[DType.float64](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int8:
+        _logical_and_impl[DType.int8](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int16:
+        _logical_and_impl[DType.int16](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int32:
+        _logical_and_impl[DType.int32](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int64:
+        _logical_and_impl[DType.int64](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    else:
+        raise Error("logical_and: unsupported dtype")
+
+
+fn _logical_or_impl[
+    dtype: DType
+](
+    result: ExTensor,
+    a: ExTensor,
+    b: ExTensor,
+    strides_a: List[Int],
+    strides_b: List[Int],
+    result_shape: List[Int],
+    total_elems: Int,
+):
+    """Dtype-specialized logical OR."""
+    alias zero = Scalar[dtype](0)
+    alias one = Scalar[dtype](1)
+    var a_ptr = a._data.bitcast[Scalar[dtype]]()
+    var b_ptr = b._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    for result_idx in range(total_elems):
+        var remaining = result_idx
+        var idx_a = 0
+        var idx_b = 0
+        for d in range(len(result_shape) - 1, -1, -1):
+            var coord = remaining % result_shape[d]
+            remaining //= result_shape[d]
+            idx_a += coord * strides_a[d]
+            idx_b += coord * strides_b[d]
+
+        var val_a = a_ptr[idx_a]
+        var val_b = b_ptr[idx_b]
+        var bool_result = val_a != zero or val_b != zero
+        out_ptr[result_idx] = one if bool_result else zero
+
+
+fn _dispatch_logical_or(
+    result: ExTensor,
+    a: ExTensor,
+    b: ExTensor,
+    strides_a: List[Int],
+    strides_b: List[Int],
+    result_shape: List[Int],
+    total_elems: Int,
+) raises:
+    """Runtime dispatch for logical OR."""
+    var dtype = a.dtype()
+    if dtype == DType.float16:
+        _logical_or_impl[DType.float16](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.float32:
+        _logical_or_impl[DType.float32](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.float64:
+        _logical_or_impl[DType.float64](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int8:
+        _logical_or_impl[DType.int8](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int16:
+        _logical_or_impl[DType.int16](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int32:
+        _logical_or_impl[DType.int32](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int64:
+        _logical_or_impl[DType.int64](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    else:
+        raise Error("logical_or: unsupported dtype")
+
+
+fn _logical_not_impl[dtype: DType](result: ExTensor, tensor: ExTensor, numel: Int):
+    """Dtype-specialized logical NOT."""
+    alias zero = Scalar[dtype](0)
+    alias one = Scalar[dtype](1)
+    var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+    for i in range(numel):
+        var bool_result = in_ptr[i] == zero
+        out_ptr[i] = one if bool_result else zero
+
+
+fn _dispatch_logical_not(
+    result: ExTensor, tensor: ExTensor, numel: Int
+) raises:
+    """Runtime dispatch for logical NOT."""
+    var dtype = tensor.dtype()
+    if dtype == DType.float16:
+        _logical_not_impl[DType.float16](result, tensor, numel)
+    elif dtype == DType.float32:
+        _logical_not_impl[DType.float32](result, tensor, numel)
+    elif dtype == DType.float64:
+        _logical_not_impl[DType.float64](result, tensor, numel)
+    elif dtype == DType.int8:
+        _logical_not_impl[DType.int8](result, tensor, numel)
+    elif dtype == DType.int16:
+        _logical_not_impl[DType.int16](result, tensor, numel)
+    elif dtype == DType.int32:
+        _logical_not_impl[DType.int32](result, tensor, numel)
+    elif dtype == DType.int64:
+        _logical_not_impl[DType.int64](result, tensor, numel)
+    else:
+        raise Error("logical_not: unsupported dtype")
+
+
+fn _logical_xor_impl[
+    dtype: DType
+](
+    result: ExTensor,
+    a: ExTensor,
+    b: ExTensor,
+    strides_a: List[Int],
+    strides_b: List[Int],
+    result_shape: List[Int],
+    total_elems: Int,
+):
+    """Dtype-specialized logical XOR."""
+    alias zero = Scalar[dtype](0)
+    alias one = Scalar[dtype](1)
+    var a_ptr = a._data.bitcast[Scalar[dtype]]()
+    var b_ptr = b._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    for result_idx in range(total_elems):
+        var remaining = result_idx
+        var idx_a = 0
+        var idx_b = 0
+        for d in range(len(result_shape) - 1, -1, -1):
+            var coord = remaining % result_shape[d]
+            remaining //= result_shape[d]
+            idx_a += coord * strides_a[d]
+            idx_b += coord * strides_b[d]
+
+        var val_a = a_ptr[idx_a]
+        var val_b = b_ptr[idx_b]
+        var bool_a = val_a != zero
+        var bool_b = val_b != zero
+        # XOR: True if exactly one is True
+        var bool_result = (bool_a and not bool_b) or (not bool_a and bool_b)
+        out_ptr[result_idx] = one if bool_result else zero
+
+
+fn _dispatch_logical_xor(
+    result: ExTensor,
+    a: ExTensor,
+    b: ExTensor,
+    strides_a: List[Int],
+    strides_b: List[Int],
+    result_shape: List[Int],
+    total_elems: Int,
+) raises:
+    """Runtime dispatch for logical XOR."""
+    var dtype = a.dtype()
+    if dtype == DType.float16:
+        _logical_xor_impl[DType.float16](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.float32:
+        _logical_xor_impl[DType.float32](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.float64:
+        _logical_xor_impl[DType.float64](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int8:
+        _logical_xor_impl[DType.int8](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int16:
+        _logical_xor_impl[DType.int16](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int32:
+        _logical_xor_impl[DType.int32](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.int64:
+        _logical_xor_impl[DType.int64](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    else:
+        raise Error("logical_xor: unsupported dtype")
+
+
 fn clip(
     tensor: ExTensor, min_val: Float64, max_val: Float64
 ) raises -> ExTensor:
@@ -328,16 +699,7 @@ fn clip(
         raise Error("clip requires min_val <= max_val")
 
     var result = ExTensor(tensor.shape(), tensor.dtype())
-
-    var numel = tensor.numel()
-    for i in range(numel):
-        var val = tensor._get_float64(i)
-        if val < min_val:
-            val = min_val
-        elif val > max_val:
-            val = max_val
-        result._set_float64(i, val)
-
+    _dispatch_clip_forward(result, tensor, min_val, max_val)
     return result^
 
 
@@ -459,14 +821,7 @@ fn trunc(tensor: ExTensor) raises -> ExTensor:
             var b = trunc(a)  # [1.0, -2.0, 3.0]
     ```
     """
-    var result = ExTensor(tensor.shape(), tensor.dtype())
-
-    var numel = tensor.numel()
-    for i in range(numel):
-        var val = tensor._get_float64(i)
-        result._set_float64(i, math_trunc(val))
-
-    return result^
+    return dispatch_float_unary[_trunc_op](tensor)
 
 
 # ============================================================================
@@ -519,38 +874,9 @@ fn logical_and(a: ExTensor, b: ExTensor) raises -> ExTensor:
     for i in range(len(result_shape)):
         total_elems *= result_shape[i]
 
-    # Precompute row-major strides for result shape
-    var result_strides = List[Int]()
-    var stride = 1
-    for i in range(len(result_shape) - 1, -1, -1):
-        result_strides.append(stride)
-        stride *= result_shape[i]
-
-    # Reverse to get correct order (left-to-right)
-    var result_strides_final = List[Int]()
-    for i in range(len(result_strides) - 1, -1, -1):
-        result_strides_final.append(result_strides[i])
-
-    # Iterate over all result elements
-    for result_idx in range(total_elems):
-        var idx_a = 0
-        var idx_b = 0
-        var temp_idx = result_idx
-
-        # Convert flat index to multi-dimensional coordinates, then compute source indices
-        for dim in range(len(result_shape)):
-            var coord = temp_idx // result_strides_final[dim]
-            temp_idx = temp_idx % result_strides_final[dim]
-
-            idx_a += coord * strides_a[dim]
-            idx_b += coord * strides_b[dim]
-
-        # Perform logical AND: True if both non-zero
-        var val_a = a._get_float64(idx_a)
-        var val_b = b._get_float64(idx_b)
-        var bool_result = (val_a != 0.0) and (val_b != 0.0)
-        result._set_float64(result_idx, 1.0 if bool_result else 0.0)
-
+    _dispatch_logical_and(
+        result, a, b, strides_a, strides_b, result_shape, total_elems
+    )
     return result^
 
 
@@ -599,38 +925,9 @@ fn logical_or(a: ExTensor, b: ExTensor) raises -> ExTensor:
     for i in range(len(result_shape)):
         total_elems *= result_shape[i]
 
-    # Precompute row-major strides for result shape
-    var result_strides = List[Int]()
-    var stride = 1
-    for i in range(len(result_shape) - 1, -1, -1):
-        result_strides.append(stride)
-        stride *= result_shape[i]
-
-    # Reverse to get correct order (left-to-right)
-    var result_strides_final = List[Int]()
-    for i in range(len(result_strides) - 1, -1, -1):
-        result_strides_final.append(result_strides[i])
-
-    # Iterate over all result elements
-    for result_idx in range(total_elems):
-        var idx_a = 0
-        var idx_b = 0
-        var temp_idx = result_idx
-
-        # Convert flat index to multi-dimensional coordinates, then compute source indices
-        for dim in range(len(result_shape)):
-            var coord = temp_idx // result_strides_final[dim]
-            temp_idx = temp_idx % result_strides_final[dim]
-
-            idx_a += coord * strides_a[dim]
-            idx_b += coord * strides_b[dim]
-
-        # Perform logical OR: True if either non-zero
-        var val_a = a._get_float64(idx_a)
-        var val_b = b._get_float64(idx_b)
-        var bool_result = (val_a != 0.0) or (val_b != 0.0)
-        result._set_float64(result_idx, 1.0 if bool_result else 0.0)
-
+    _dispatch_logical_or(
+        result, a, b, strides_a, strides_b, result_shape, total_elems
+    )
     return result^
 
 
@@ -650,14 +947,7 @@ fn logical_not(tensor: ExTensor) raises -> ExTensor:
     ```
     """
     var result = ExTensor(tensor.shape(), tensor.dtype())
-
-    var numel = tensor.numel()
-    for i in range(numel):
-        var val = tensor._get_float64(i)
-        # True if zero
-        var bool_result = val == 0.0
-        result._set_float64(i, 1.0 if bool_result else 0.0)
-
+    _dispatch_logical_not(result, tensor, tensor.numel())
     return result^
 
 
@@ -706,40 +996,9 @@ fn logical_xor(a: ExTensor, b: ExTensor) raises -> ExTensor:
     for i in range(len(result_shape)):
         total_elems *= result_shape[i]
 
-    # Precompute row-major strides for result shape
-    var result_strides = List[Int]()
-    var stride = 1
-    for i in range(len(result_shape) - 1, -1, -1):
-        result_strides.append(stride)
-        stride *= result_shape[i]
-
-    # Reverse to get correct order (left-to-right)
-    var result_strides_final = List[Int]()
-    for i in range(len(result_strides) - 1, -1, -1):
-        result_strides_final.append(result_strides[i])
-
-    # Iterate over all result elements
-    for result_idx in range(total_elems):
-        var idx_a = 0
-        var idx_b = 0
-        var temp_idx = result_idx
-
-        # Convert flat index to multi-dimensional coordinates, then compute source indices
-        for dim in range(len(result_shape)):
-            var coord = temp_idx // result_strides_final[dim]
-            temp_idx = temp_idx % result_strides_final[dim]
-
-            idx_a += coord * strides_a[dim]
-            idx_b += coord * strides_b[dim]
-
-        # Perform logical XOR: True if exactly one is non-zero
-        var val_a = a._get_float64(idx_a)
-        var val_b = b._get_float64(idx_b)
-        var bool_a = val_a != 0.0
-        var bool_b = val_b != 0.0
-        var bool_result = bool_a != bool_b  # XOR
-        result._set_float64(result_idx, 1.0 if bool_result else 0.0)
-
+    _dispatch_logical_xor(
+        result, a, b, strides_a, strides_b, result_shape, total_elems
+    )
     return result^
 
 
@@ -767,15 +1026,7 @@ fn log10(tensor: ExTensor) raises -> ExTensor:
     ```
     """
     var result = ExTensor(tensor.shape(), tensor.dtype())
-
-    var numel = tensor.numel()
-    for i in range(numel):
-        var val = tensor._get_float64(i)
-        if val <= 0.0:
-            raise Error("log10 requires positive values, got " + String(val))
-        # log10(x) = log(x) / log(10)
-        result._set_float64(i, math_log(val) / math_log(10.0))
-
+    _dispatch_log10_forward(result, tensor, tensor.numel())
     return result^
 
 
@@ -798,15 +1049,7 @@ fn log2(tensor: ExTensor) raises -> ExTensor:
     ```
     """
     var result = ExTensor(tensor.shape(), tensor.dtype())
-
-    var numel = tensor.numel()
-    for i in range(numel):
-        var val = tensor._get_float64(i)
-        if val <= 0.0:
-            raise Error("log2 requires positive values, got " + String(val))
-        # log2(x) = log(x) / log(2)
-        result._set_float64(i, math_log(val) / math_log(2.0))
-
+    _dispatch_log2_forward(result, tensor, tensor.numel())
     return result^
 
 
