@@ -78,10 +78,14 @@ check_rate_limit() {
     local plan_file="$1"
 
     if grep -q "Limit reached" "$plan_file" 2>/dev/null; then
-        # Extract reset time and timezone
+        # Extract reset time and timezone using sed
         local limit_line=$(grep "Limit reached" "$plan_file" | head -1)
-        if [[ "$limit_line" =~ resets[[:space:]]+([0-9]{1,2}:?[0-9]{0,2}[ap]?m?)[[:space:]]*\(([^)]+)\) ]]; then
-            echo "${BASH_REMATCH[1]}|${BASH_REMATCH[2]}"
+        # Parse "resets 2pm (America/Los_Angeles)" pattern
+        local reset_time=$(echo "$limit_line" | sed -n 's/.*resets[[:space:]]*\([0-9:apm]*\)[[:space:]]*(.*/\1/p')
+        local timezone=$(echo "$limit_line" | sed -n 's/.*(\([^)]*\)).*/\1/p')
+
+        if [[ -n "$reset_time" && -n "$timezone" ]]; then
+            echo "${reset_time}|${timezone}"
             return 0
         fi
         # Return generic indicator if we can't parse
