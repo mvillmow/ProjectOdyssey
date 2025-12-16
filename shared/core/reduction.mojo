@@ -609,6 +609,335 @@ fn min_reduce(
 
 
 # ============================================================================
+# Backward Pass Dtype-Specialized Helpers
+# ============================================================================
+
+
+fn _sum_backward_all_impl[dtype: DType](
+    result: ExTensor, grad_output: ExTensor, numel: Int
+):
+    """Broadcast scalar gradient to all elements.
+
+    Parameters:
+        dtype: Compile-time dtype parameter.
+
+    Args:
+        result: Pre-allocated result tensor.
+        grad_output: Scalar gradient tensor.
+        numel: Number of result elements.
+    """
+    var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+    var grad_val = grad_ptr[0]
+    for i in range(numel):
+        out_ptr[i] = grad_val
+
+
+fn _dispatch_sum_backward_all(result: ExTensor, grad_output: ExTensor, numel: Int) raises:
+    """Runtime dispatch for sum_backward all elements."""
+    if result._dtype == DType.float16:
+        _sum_backward_all_impl[DType.float16](result, grad_output, numel)
+    elif result._dtype == DType.float32:
+        _sum_backward_all_impl[DType.float32](result, grad_output, numel)
+    elif result._dtype == DType.float64:
+        _sum_backward_all_impl[DType.float64](result, grad_output, numel)
+    elif result._dtype == DType.int8:
+        _sum_backward_all_impl[DType.int8](result, grad_output, numel)
+    elif result._dtype == DType.int16:
+        _sum_backward_all_impl[DType.int16](result, grad_output, numel)
+    elif result._dtype == DType.int32:
+        _sum_backward_all_impl[DType.int32](result, grad_output, numel)
+    elif result._dtype == DType.int64:
+        _sum_backward_all_impl[DType.int64](result, grad_output, numel)
+    else:
+        raise Error("sum_backward: unsupported dtype")
+
+
+fn _sum_backward_axis_element_impl[dtype: DType](
+    result: ExTensor, grad_output: ExTensor, result_idx: Int, grad_idx: Int
+):
+    """Copy single gradient element for sum_backward axis case.
+
+    Parameters:
+        dtype: Compile-time dtype parameter.
+
+    Args:
+        result: Result tensor.
+        grad_output: Gradient tensor.
+        result_idx: Index in result tensor.
+        grad_idx: Index in gradient tensor.
+    """
+    var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+    out_ptr[result_idx] = grad_ptr[grad_idx]
+
+
+fn _dispatch_sum_backward_axis_element(
+    result: ExTensor, grad_output: ExTensor, result_idx: Int, grad_idx: Int
+) raises:
+    """Runtime dispatch for sum_backward axis element copy."""
+    if result._dtype == DType.float16:
+        _sum_backward_axis_element_impl[DType.float16](result, grad_output, result_idx, grad_idx)
+    elif result._dtype == DType.float32:
+        _sum_backward_axis_element_impl[DType.float32](result, grad_output, result_idx, grad_idx)
+    elif result._dtype == DType.float64:
+        _sum_backward_axis_element_impl[DType.float64](result, grad_output, result_idx, grad_idx)
+    elif result._dtype == DType.int8:
+        _sum_backward_axis_element_impl[DType.int8](result, grad_output, result_idx, grad_idx)
+    elif result._dtype == DType.int16:
+        _sum_backward_axis_element_impl[DType.int16](result, grad_output, result_idx, grad_idx)
+    elif result._dtype == DType.int32:
+        _sum_backward_axis_element_impl[DType.int32](result, grad_output, result_idx, grad_idx)
+    elif result._dtype == DType.int64:
+        _sum_backward_axis_element_impl[DType.int64](result, grad_output, result_idx, grad_idx)
+    else:
+        raise Error("sum_backward: unsupported dtype")
+
+
+fn _fill_zero_impl[dtype: DType](result: ExTensor, numel: Int):
+    """Fill tensor with zeros using typed pointer.
+
+    Parameters:
+        dtype: Compile-time dtype parameter.
+
+    Args:
+        result: Result tensor to fill.
+        numel: Number of elements.
+    """
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+    for i in range(numel):
+        out_ptr[i] = Scalar[dtype](0)
+
+
+fn _dispatch_fill_zero(result: ExTensor, numel: Int) raises:
+    """Runtime dispatch for fill zero."""
+    if result._dtype == DType.float16:
+        _fill_zero_impl[DType.float16](result, numel)
+    elif result._dtype == DType.float32:
+        _fill_zero_impl[DType.float32](result, numel)
+    elif result._dtype == DType.float64:
+        _fill_zero_impl[DType.float64](result, numel)
+    elif result._dtype == DType.int8:
+        _fill_zero_impl[DType.int8](result, numel)
+    elif result._dtype == DType.int16:
+        _fill_zero_impl[DType.int16](result, numel)
+    elif result._dtype == DType.int32:
+        _fill_zero_impl[DType.int32](result, numel)
+    elif result._dtype == DType.int64:
+        _fill_zero_impl[DType.int64](result, numel)
+    else:
+        raise Error("fill_zero: unsupported dtype")
+
+
+fn _max_backward_all_impl[dtype: DType](
+    result: ExTensor, x: ExTensor, grad_output: ExTensor, numel: Int
+):
+    """Compute max_reduce_backward for all elements.
+
+    Parameters:
+        dtype: Compile-time dtype parameter.
+
+    Args:
+        result: Pre-allocated result tensor (zeros).
+        x: Input tensor from forward pass.
+        grad_output: Gradient tensor (scalar).
+        numel: Number of elements.
+    """
+    var x_ptr = x._data.bitcast[Scalar[dtype]]()
+    var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    # Find max value
+    var max_val = x_ptr[0]
+    for i in range(1, numel):
+        if x_ptr[i] > max_val:
+            max_val = x_ptr[i]
+
+    # Count max elements
+    var count: Int = 0
+    for i in range(numel):
+        if x_ptr[i] == max_val:
+            count += 1
+
+    # Split gradient among max elements
+    @parameter
+    if dtype == DType.float16 or dtype == DType.float32:
+        var grad_val = Float64(grad_ptr[0])
+        var grad_per_max = grad_val / Float64(count)
+        for i in range(numel):
+            if x_ptr[i] == max_val:
+                out_ptr[i] = Scalar[dtype](grad_per_max)
+    else:
+        var grad_val = grad_ptr[0]
+        var grad_per_max = grad_val / Scalar[dtype](count)
+        for i in range(numel):
+            if x_ptr[i] == max_val:
+                out_ptr[i] = grad_per_max
+
+
+fn _dispatch_max_backward_all(
+    result: ExTensor, x: ExTensor, grad_output: ExTensor, numel: Int
+) raises:
+    """Runtime dispatch for max_reduce_backward all elements."""
+    if result._dtype == DType.float16:
+        _max_backward_all_impl[DType.float16](result, x, grad_output, numel)
+    elif result._dtype == DType.float32:
+        _max_backward_all_impl[DType.float32](result, x, grad_output, numel)
+    elif result._dtype == DType.float64:
+        _max_backward_all_impl[DType.float64](result, x, grad_output, numel)
+    elif result._dtype == DType.int8:
+        _max_backward_all_impl[DType.int8](result, x, grad_output, numel)
+    elif result._dtype == DType.int16:
+        _max_backward_all_impl[DType.int16](result, x, grad_output, numel)
+    elif result._dtype == DType.int32:
+        _max_backward_all_impl[DType.int32](result, x, grad_output, numel)
+    elif result._dtype == DType.int64:
+        _max_backward_all_impl[DType.int64](result, x, grad_output, numel)
+    else:
+        raise Error("max_backward: unsupported dtype")
+
+
+fn _min_backward_all_impl[dtype: DType](
+    result: ExTensor, x: ExTensor, grad_output: ExTensor, numel: Int
+):
+    """Compute min_reduce_backward for all elements.
+
+    Parameters:
+        dtype: Compile-time dtype parameter.
+
+    Args:
+        result: Pre-allocated result tensor (zeros).
+        x: Input tensor from forward pass.
+        grad_output: Gradient tensor (scalar).
+        numel: Number of elements.
+    """
+    var x_ptr = x._data.bitcast[Scalar[dtype]]()
+    var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+
+    # Find min value
+    var min_val = x_ptr[0]
+    for i in range(1, numel):
+        if x_ptr[i] < min_val:
+            min_val = x_ptr[i]
+
+    # Count min elements
+    var count: Int = 0
+    for i in range(numel):
+        if x_ptr[i] == min_val:
+            count += 1
+
+    # Split gradient among min elements
+    @parameter
+    if dtype == DType.float16 or dtype == DType.float32:
+        var grad_val = Float64(grad_ptr[0])
+        var grad_per_min = grad_val / Float64(count)
+        for i in range(numel):
+            if x_ptr[i] == min_val:
+                out_ptr[i] = Scalar[dtype](grad_per_min)
+    else:
+        var grad_val = grad_ptr[0]
+        var grad_per_min = grad_val / Scalar[dtype](count)
+        for i in range(numel):
+            if x_ptr[i] == min_val:
+                out_ptr[i] = grad_per_min
+
+
+fn _dispatch_min_backward_all(
+    result: ExTensor, x: ExTensor, grad_output: ExTensor, numel: Int
+) raises:
+    """Runtime dispatch for min_reduce_backward all elements."""
+    if result._dtype == DType.float16:
+        _min_backward_all_impl[DType.float16](result, x, grad_output, numel)
+    elif result._dtype == DType.float32:
+        _min_backward_all_impl[DType.float32](result, x, grad_output, numel)
+    elif result._dtype == DType.float64:
+        _min_backward_all_impl[DType.float64](result, x, grad_output, numel)
+    elif result._dtype == DType.int8:
+        _min_backward_all_impl[DType.int8](result, x, grad_output, numel)
+    elif result._dtype == DType.int16:
+        _min_backward_all_impl[DType.int16](result, x, grad_output, numel)
+    elif result._dtype == DType.int32:
+        _min_backward_all_impl[DType.int32](result, x, grad_output, numel)
+    elif result._dtype == DType.int64:
+        _min_backward_all_impl[DType.int64](result, x, grad_output, numel)
+    else:
+        raise Error("min_backward: unsupported dtype")
+
+
+fn _get_value_impl[dtype: DType](tensor: ExTensor, idx: Int) -> Float64:
+    """Get tensor value at index as Float64 for comparison.
+
+    Parameters:
+        dtype: Compile-time dtype parameter.
+
+    Args:
+        tensor: Input tensor.
+        idx: Index to read.
+
+    Returns:
+        Value as Float64.
+    """
+    var ptr = tensor._data.bitcast[Scalar[dtype]]()
+    return Float64(ptr[idx])
+
+
+fn _dispatch_get_value(tensor: ExTensor, idx: Int) raises -> Float64:
+    """Runtime dispatch for getting tensor value."""
+    if tensor._dtype == DType.float16:
+        return _get_value_impl[DType.float16](tensor, idx)
+    elif tensor._dtype == DType.float32:
+        return _get_value_impl[DType.float32](tensor, idx)
+    elif tensor._dtype == DType.float64:
+        return _get_value_impl[DType.float64](tensor, idx)
+    elif tensor._dtype == DType.int8:
+        return _get_value_impl[DType.int8](tensor, idx)
+    elif tensor._dtype == DType.int16:
+        return _get_value_impl[DType.int16](tensor, idx)
+    elif tensor._dtype == DType.int32:
+        return _get_value_impl[DType.int32](tensor, idx)
+    elif tensor._dtype == DType.int64:
+        return _get_value_impl[DType.int64](tensor, idx)
+    else:
+        raise Error("get_value: unsupported dtype")
+
+
+fn _set_value_impl[dtype: DType](tensor: ExTensor, idx: Int, val: Float64):
+    """Set tensor value at index from Float64.
+
+    Parameters:
+        dtype: Compile-time dtype parameter.
+
+    Args:
+        tensor: Output tensor.
+        idx: Index to write.
+        val: Value to write.
+    """
+    var ptr = tensor._data.bitcast[Scalar[dtype]]()
+    ptr[idx] = Scalar[dtype](val)
+
+
+fn _dispatch_set_value(tensor: ExTensor, idx: Int, val: Float64) raises:
+    """Runtime dispatch for setting tensor value."""
+    if tensor._dtype == DType.float16:
+        _set_value_impl[DType.float16](tensor, idx, val)
+    elif tensor._dtype == DType.float32:
+        _set_value_impl[DType.float32](tensor, idx, val)
+    elif tensor._dtype == DType.float64:
+        _set_value_impl[DType.float64](tensor, idx, val)
+    elif tensor._dtype == DType.int8:
+        _set_value_impl[DType.int8](tensor, idx, val)
+    elif tensor._dtype == DType.int16:
+        _set_value_impl[DType.int16](tensor, idx, val)
+    elif tensor._dtype == DType.int32:
+        _set_value_impl[DType.int32](tensor, idx, val)
+    elif tensor._dtype == DType.int64:
+        _set_value_impl[DType.int64](tensor, idx, val)
+    else:
+        raise Error("set_value: unsupported dtype")
+
+
+# ============================================================================
 # Backward Pass (Gradient Computation)
 # ============================================================================
 
@@ -652,20 +981,10 @@ fn sum_backward(
     var result = ExTensor(input_shape, grad_output.dtype())
 
     if axis == -1:
-        # Sum over all elements - broadcast scalar gradient to all elements
-        var grad_val = grad_output._get_float64(0)
-        for i in range(result.numel()):
-            result._set_float64(i, grad_val)
+        # Sum over all elements - broadcast scalar gradient using dtype-specialized impl
+        _dispatch_sum_backward_all(result, grad_output, result.numel())
     else:
         # Sum along specific axis - broadcast gradient along that axis
-        # The gradient value is replicated axis_size times.
-
-        # Compute strides for input tensor
-        # FIXME(#2708, Unused): var ndim = len(input_shape)
-        # FIXME(#2708, Unused): var strides = compute_strides(input_shape)
-
-        # FIXME(#2708, Unused): var axis_size = input_shape[axis]
-
         # For each position in grad_output, broadcast it to all positions along axis
         for result_idx in range(result.numel()):
             # Convert result index to coordinates
@@ -686,9 +1005,8 @@ fn sum_backward(
             var grad_strides = compute_strides(grad_output.shape())
             var grad_idx = coords_to_linear(grad_coords, grad_strides)
 
-            # Set result value
-            var grad_val = grad_output._get_float64(grad_idx)
-            result._set_float64(result_idx, grad_val)
+            # Set result value using dtype-specialized impl
+            _dispatch_sum_backward_axis_element(result, grad_output, result_idx, grad_idx)
 
     return result^
 
@@ -738,11 +1056,8 @@ fn mean_backward(
         # Mean along specific axis
         n = input_shape[axis]
 
-    # Scale by 1/N
-    var scale = 1.0 / Float64(n)
-    for i in range(grad_sum.numel()):
-        var val = grad_sum._get_float64(i)
-        grad_sum._set_float64(i, val * scale)
+    # Scale by 1/N using dtype-specialized implementation
+    _dispatch_mean_divide(grad_sum, n)
 
     return grad_sum^
 
@@ -784,33 +1099,12 @@ fn max_reduce_backward(
         ```
     """
     var result = ExTensor(x.shape(), x.dtype())
-    # Initialize to zero
-    for i in range(result.numel()):
-        result._set_float64(i, 0.0)
+    # Initialize to zero using dtype-specialized implementation
+    _dispatch_fill_zero(result, result.numel())
 
     if axis == -1:
-        # Max over all elements - find all elements equal to max
-        var max_val: Float64 = x._get_float64(0)
-        for i in range(1, x.numel()):
-            var val = x._get_float64(i)
-            if val > max_val:
-                max_val = val
-
-        # Count how many elements are maximum
-        var count: Int = 0
-        for i in range(x.numel()):
-            var val = x._get_float64(i)
-            if val == max_val:
-                count += 1
-
-        # Split gradient equally among max elements
-        var grad_val = grad_output._get_float64(0)
-        var grad_per_max = grad_val / Float64(count)
-
-        for i in range(x.numel()):
-            var val = x._get_float64(i)
-            if val == max_val:
-                result._set_float64(i, grad_per_max)
+        # Max over all elements using dtype-specialized implementation
+        _dispatch_max_backward_all(result, x, grad_output, x.numel())
 
     else:
         # Max along specific axis
@@ -845,8 +1139,8 @@ fn max_reduce_backward(
             var grad_strides = compute_strides(grad_output.shape())
             var grad_idx = coords_to_linear(grad_coords, grad_strides)
 
-            # Find max value along this slice
-            var max_val: Float64 = x._get_float64(0)  # Placeholder
+            # Find max value along this slice using typed access
+            var max_val: Float64 = _dispatch_get_value(x, 0)  # Placeholder
             var count = 0
 
             # First pass: find max
@@ -854,7 +1148,7 @@ fn max_reduce_backward(
                 var test_coords: List[Int] = List[Int](coords)
                 test_coords[normalized_axis] = k
                 var test_idx = coords_to_linear(test_coords, strides)
-                var val = x._get_float64(test_idx)
+                var val = _dispatch_get_value(x, test_idx)
                 if k == 0 or val > max_val:
                     max_val = val
 
@@ -863,15 +1157,15 @@ fn max_reduce_backward(
                 var test_coords: List[Int] = List[Int](coords)
                 test_coords[normalized_axis] = k
                 var test_idx = coords_to_linear(test_coords, strides)
-                var val = x._get_float64(test_idx)
+                var val = _dispatch_get_value(x, test_idx)
                 if val == max_val:
                     count += 1
 
             # Third pass: set gradients for max elements
-            var current_val = x._get_float64(result_idx)
+            var current_val = _dispatch_get_value(x, result_idx)
             if current_val == max_val:
-                var grad_val = grad_output._get_float64(grad_idx)
-                result._set_float64(result_idx, grad_val / Float64(count))
+                var grad_val = _dispatch_get_value(grad_output, grad_idx)
+                _dispatch_set_value(result, result_idx, grad_val / Float64(count))
 
     return result^
 
@@ -905,33 +1199,12 @@ fn min_reduce_backward(
         ```
     """
     var result = ExTensor(x.shape(), x.dtype())
-    # Initialize to zero
-    for i in range(result.numel()):
-        result._set_float64(i, 0.0)
+    # Initialize to zero using dtype-specialized implementation
+    _dispatch_fill_zero(result, result.numel())
 
     if axis == -1:
-        # Min over all elements - find all elements equal to min
-        var min_val: Float64 = x._get_float64(0)
-        for i in range(1, x.numel()):
-            var val = x._get_float64(i)
-            if val < min_val:
-                min_val = val
-
-        # Count how many elements are minimum
-        var count: Int = 0
-        for i in range(x.numel()):
-            var val = x._get_float64(i)
-            if val == min_val:
-                count += 1
-
-        # Split gradient equally among min elements
-        var grad_val = grad_output._get_float64(0)
-        var grad_per_min = grad_val / Float64(count)
-
-        for i in range(x.numel()):
-            var val = x._get_float64(i)
-            if val == min_val:
-                result._set_float64(i, grad_per_min)
+        # Min over all elements using dtype-specialized implementation
+        _dispatch_min_backward_all(result, x, grad_output, x.numel())
 
     else:
         # Min along specific axis (similar logic to max_reduce_backward)
@@ -966,8 +1239,8 @@ fn min_reduce_backward(
             var grad_strides = compute_strides(grad_output.shape())
             var grad_idx = coords_to_linear(grad_coords, grad_strides)
 
-            # Find min value along this slice
-            var min_val: Float64 = x._get_float64(0)  # Placeholder
+            # Find min value along this slice using typed access
+            var min_val: Float64 = _dispatch_get_value(x, 0)  # Placeholder
             var count = 0
 
             # First pass: find min
@@ -975,7 +1248,7 @@ fn min_reduce_backward(
                 var test_coords = List[Int](coords)
                 test_coords[normalized_axis] = k
                 var test_idx = coords_to_linear(test_coords, strides)
-                var val = x._get_float64(test_idx)
+                var val = _dispatch_get_value(x, test_idx)
                 if k == 0 or val < min_val:
                     min_val = val
 
@@ -984,14 +1257,14 @@ fn min_reduce_backward(
                 var test_coords = List[Int](coords)
                 test_coords[normalized_axis] = k
                 var test_idx = coords_to_linear(test_coords, strides)
-                var val = x._get_float64(test_idx)
+                var val = _dispatch_get_value(x, test_idx)
                 if val == min_val:
                     count += 1
 
             # Third pass: set gradients for min elements
-            var current_val = x._get_float64(result_idx)
+            var current_val = _dispatch_get_value(x, result_idx)
             if current_val == min_val:
-                var grad_val = grad_output._get_float64(grad_idx)
-                result._set_float64(result_idx, grad_val / Float64(count))
+                var grad_val = _dispatch_get_value(grad_output, grad_idx)
+                _dispatch_set_value(result, result_idx, grad_val / Float64(count))
 
     return result^
