@@ -21,7 +21,14 @@ from .gradient_types import GradientPair
 
 fn _matmul_2d_2d_impl[
     dtype: DType
-](result: ExTensor, a: ExTensor, b: ExTensor, a_rows: Int, a_cols: Int, b_cols: Int):
+](
+    result: ExTensor,
+    a: ExTensor,
+    b: ExTensor,
+    a_rows: Int,
+    a_cols: Int,
+    b_cols: Int,
+):
     """Compile-time specialized 2D@2D matrix multiplication.
 
     Uses Float64 accumulation for float16/float32 to maintain precision,
@@ -49,7 +56,9 @@ fn _matmul_2d_2d_impl[
             for j in range(b_cols):
                 var sum_val: Float64 = 0.0
                 for k in range(a_cols):
-                    sum_val += Float64(a_ptr[i * a_cols + k]) * Float64(b_ptr[k * b_cols + j])
+                    sum_val += Float64(a_ptr[i * a_cols + k]) * Float64(
+                        b_ptr[k * b_cols + j]
+                    )
                 result_ptr[i * b_cols + j] = Scalar[dtype](sum_val)
     else:
         for i in range(a_rows):
@@ -206,7 +215,12 @@ fn _matmul_batched_impl[
 
 
 fn _dispatch_matmul_2d_2d(
-    result: ExTensor, a: ExTensor, b: ExTensor, a_rows: Int, a_cols: Int, b_cols: Int
+    result: ExTensor,
+    a: ExTensor,
+    b: ExTensor,
+    a_rows: Int,
+    a_cols: Int,
+    b_cols: Int,
 ) raises:
     """Runtime dispatch for 2D@2D matmul."""
     if a._dtype == DType.float16:
@@ -271,7 +285,9 @@ fn _dispatch_matmul_1d_2d(
         raise Error("matmul: unsupported dtype")
 
 
-fn _dot_1d_impl[dtype: DType](result: ExTensor, a: ExTensor, b: ExTensor, length: Int):
+fn _dot_1d_impl[
+    dtype: DType
+](result: ExTensor, a: ExTensor, b: ExTensor, length: Int):
     """Compile-time specialized 1D dot product.
 
     Uses Float64 accumulation for float16/float32 to maintain precision.
@@ -294,7 +310,9 @@ fn _dot_1d_impl[dtype: DType](result: ExTensor, a: ExTensor, b: ExTensor, length
         result_ptr[0] = sum_val
 
 
-fn _dispatch_dot_1d(result: ExTensor, a: ExTensor, b: ExTensor, length: Int) raises:
+fn _dispatch_dot_1d(
+    result: ExTensor, a: ExTensor, b: ExTensor, length: Int
+) raises:
     """Runtime dispatch for 1D dot product."""
     if a._dtype == DType.float16:
         _dot_1d_impl[DType.float16](result, a, b, length)
@@ -314,7 +332,9 @@ fn _dispatch_dot_1d(result: ExTensor, a: ExTensor, b: ExTensor, length: Int) rai
         raise Error("dot: unsupported dtype")
 
 
-fn _outer_impl[dtype: DType](result: ExTensor, a: ExTensor, b: ExTensor, len_a: Int, len_b: Int):
+fn _outer_impl[
+    dtype: DType
+](result: ExTensor, a: ExTensor, b: ExTensor, len_a: Int, len_b: Int):
     """Compile-time specialized outer product."""
     var a_ptr = a._data.bitcast[Scalar[dtype]]()
     var b_ptr = b._data.bitcast[Scalar[dtype]]()
@@ -325,7 +345,9 @@ fn _outer_impl[dtype: DType](result: ExTensor, a: ExTensor, b: ExTensor, len_a: 
             result_ptr[i * len_b + j] = a_ptr[i] * b_ptr[j]
 
 
-fn _dispatch_outer(result: ExTensor, a: ExTensor, b: ExTensor, len_a: Int, len_b: Int) raises:
+fn _dispatch_outer(
+    result: ExTensor, a: ExTensor, b: ExTensor, len_a: Int, len_b: Int
+) raises:
     """Runtime dispatch for outer product."""
     if a._dtype == DType.float16:
         _outer_impl[DType.float16](result, a, b, len_a, len_b)
@@ -345,9 +367,9 @@ fn _dispatch_outer(result: ExTensor, a: ExTensor, b: ExTensor, len_a: Int, len_b
         raise Error("outer: unsupported dtype")
 
 
-fn _transpose_indexed_copy_impl[dtype: DType](
-    result: ExTensor, tensor: ExTensor, result_idx: Int, input_idx: Int
-):
+fn _transpose_indexed_copy_impl[
+    dtype: DType
+](result: ExTensor, tensor: ExTensor, result_idx: Int, input_idx: Int):
     """Compile-time specialized indexed copy for transpose."""
     var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
     var out_ptr = result._data.bitcast[Scalar[dtype]]()
@@ -359,19 +381,33 @@ fn _dispatch_transpose_indexed_copy(
 ) raises:
     """Runtime dispatch for transpose indexed copy."""
     if tensor._dtype == DType.float16:
-        _transpose_indexed_copy_impl[DType.float16](result, tensor, result_idx, input_idx)
+        _transpose_indexed_copy_impl[DType.float16](
+            result, tensor, result_idx, input_idx
+        )
     elif tensor._dtype == DType.float32:
-        _transpose_indexed_copy_impl[DType.float32](result, tensor, result_idx, input_idx)
+        _transpose_indexed_copy_impl[DType.float32](
+            result, tensor, result_idx, input_idx
+        )
     elif tensor._dtype == DType.float64:
-        _transpose_indexed_copy_impl[DType.float64](result, tensor, result_idx, input_idx)
+        _transpose_indexed_copy_impl[DType.float64](
+            result, tensor, result_idx, input_idx
+        )
     elif tensor._dtype == DType.int8:
-        _transpose_indexed_copy_impl[DType.int8](result, tensor, result_idx, input_idx)
+        _transpose_indexed_copy_impl[DType.int8](
+            result, tensor, result_idx, input_idx
+        )
     elif tensor._dtype == DType.int16:
-        _transpose_indexed_copy_impl[DType.int16](result, tensor, result_idx, input_idx)
+        _transpose_indexed_copy_impl[DType.int16](
+            result, tensor, result_idx, input_idx
+        )
     elif tensor._dtype == DType.int32:
-        _transpose_indexed_copy_impl[DType.int32](result, tensor, result_idx, input_idx)
+        _transpose_indexed_copy_impl[DType.int32](
+            result, tensor, result_idx, input_idx
+        )
     elif tensor._dtype == DType.int64:
-        _transpose_indexed_copy_impl[DType.int64](result, tensor, result_idx, input_idx)
+        _transpose_indexed_copy_impl[DType.int64](
+            result, tensor, result_idx, input_idx
+        )
     else:
         raise Error("transpose: unsupported dtype")
 
@@ -391,38 +427,94 @@ fn _dispatch_matmul_batched(
     """Runtime dispatch for batched matmul."""
     if a._dtype == DType.float16:
         _matmul_batched_impl[DType.float16](
-            result, a, b, batch_size, a_rows, a_cols, b_cols,
-            matrix_size_a, matrix_size_b, matrix_size_result
+            result,
+            a,
+            b,
+            batch_size,
+            a_rows,
+            a_cols,
+            b_cols,
+            matrix_size_a,
+            matrix_size_b,
+            matrix_size_result,
         )
     elif a._dtype == DType.float32:
         _matmul_batched_impl[DType.float32](
-            result, a, b, batch_size, a_rows, a_cols, b_cols,
-            matrix_size_a, matrix_size_b, matrix_size_result
+            result,
+            a,
+            b,
+            batch_size,
+            a_rows,
+            a_cols,
+            b_cols,
+            matrix_size_a,
+            matrix_size_b,
+            matrix_size_result,
         )
     elif a._dtype == DType.float64:
         _matmul_batched_impl[DType.float64](
-            result, a, b, batch_size, a_rows, a_cols, b_cols,
-            matrix_size_a, matrix_size_b, matrix_size_result
+            result,
+            a,
+            b,
+            batch_size,
+            a_rows,
+            a_cols,
+            b_cols,
+            matrix_size_a,
+            matrix_size_b,
+            matrix_size_result,
         )
     elif a._dtype == DType.int8:
         _matmul_batched_impl[DType.int8](
-            result, a, b, batch_size, a_rows, a_cols, b_cols,
-            matrix_size_a, matrix_size_b, matrix_size_result
+            result,
+            a,
+            b,
+            batch_size,
+            a_rows,
+            a_cols,
+            b_cols,
+            matrix_size_a,
+            matrix_size_b,
+            matrix_size_result,
         )
     elif a._dtype == DType.int16:
         _matmul_batched_impl[DType.int16](
-            result, a, b, batch_size, a_rows, a_cols, b_cols,
-            matrix_size_a, matrix_size_b, matrix_size_result
+            result,
+            a,
+            b,
+            batch_size,
+            a_rows,
+            a_cols,
+            b_cols,
+            matrix_size_a,
+            matrix_size_b,
+            matrix_size_result,
         )
     elif a._dtype == DType.int32:
         _matmul_batched_impl[DType.int32](
-            result, a, b, batch_size, a_rows, a_cols, b_cols,
-            matrix_size_a, matrix_size_b, matrix_size_result
+            result,
+            a,
+            b,
+            batch_size,
+            a_rows,
+            a_cols,
+            b_cols,
+            matrix_size_a,
+            matrix_size_b,
+            matrix_size_result,
         )
     elif a._dtype == DType.int64:
         _matmul_batched_impl[DType.int64](
-            result, a, b, batch_size, a_rows, a_cols, b_cols,
-            matrix_size_a, matrix_size_b, matrix_size_result
+            result,
+            a,
+            b,
+            batch_size,
+            a_rows,
+            a_cols,
+            b_cols,
+            matrix_size_a,
+            matrix_size_b,
+            matrix_size_result,
         )
     else:
         raise Error("matmul: unsupported dtype")
@@ -584,8 +676,16 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
         # Use dtype-specialized batched implementation
         _dispatch_matmul_batched(
-            result, a, b, batch_size, a_rows, a_cols, b_cols,
-            matrix_size_a, matrix_size_b, matrix_size_result
+            result,
+            a,
+            b,
+            batch_size,
+            a_rows,
+            a_cols,
+            b_cols,
+            matrix_size_a,
+            matrix_size_b,
+            matrix_size_result,
         )
 
     return result^
