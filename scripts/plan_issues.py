@@ -70,6 +70,9 @@ RATE_LIMIT_RE = re.compile(
 PLAN_HEADER = "## Detailed Implementation Plan"
 PLAN_HEADER_REVISED = "## Detailed Implementation Plan (Revised)"
 
+# Status display refresh interval
+STATUS_REFRESH_INTERVAL = 0.5
+
 
 # ---------------------------------------------------------------------
 # Secure file helpers
@@ -80,6 +83,94 @@ def write_secure(path: pathlib.Path, content: str) -> None:
     """Write content to file with secure permissions (owner-only read/write)."""
     path.write_text(content)
     path.chmod(0o600)
+
+
+# ---------------------------------------------------------------------
+# Parallel status tracking
+# ---------------------------------------------------------------------
+
+
+class StatusTracker:
+    """Thread-safe status tracker for parallel processing with live display."""
+
+    def __init__(self, max_workers: int):
+        self._lock = threading.Lock()
+        self._max_workers = max_workers
+        self._slots: dict[int, tuple[int, str, str]] = {}  # slot -> (issue, stage, info)
+        self._stop_event = threading.Event()
+        self._display_thread: Optional[threading.Thread] = None
+        self._lines_printed = 0
+
+    def acquire_slot(self, issue: int) -> int:
+        """Acquire a display slot for an issue. Returns slot number."""
+        with self._lock:
+            for slot in range(self._max_workers):
+                if slot not in self._slots:
+                    self._slots[slot] = (issue, "Starting", "")
+                    return slot
+            # Fallback: use issue number mod max_workers
+            slot = issue % self._max_workers
+            self._slots[slot] = (issue, "Starting", "")
+            return slot
+
+    def update(self, slot: int, issue: int, stage: str, info: str = "") -> None:
+        """Update the status for a slot."""
+        with self._lock:
+            self._slots[slot] = (issue, stage, info)
+
+    def release_slot(self, slot: int) -> None:
+        """Release a slot when done."""
+        with self._lock:
+            if slot in self._slots:
+                del self._slots[slot]
+
+    def _render_status(self) -> list[str]:
+        """Render current status as list of lines."""
+        with self._lock:
+            lines = []
+            for slot in range(self._max_workers):
+                if slot in self._slots:
+                    issue, stage, info = self._slots[slot]
+                    info_str = f" - {info}" if info else ""
+                    lines.append(f"  Thread {slot}: [{stage:12}] #{issue}{info_str}")
+                else:
+                    lines.append(f"  Thread {slot}: [Idle        ]")
+            return lines
+
+    def _display_loop(self) -> None:
+        """Background thread that refreshes the status display."""
+        while not self._stop_event.is_set():
+            lines = self._render_status()
+
+            # Move cursor up and clear lines if we've printed before
+            if self._lines_printed > 0:
+                sys.stdout.write(f"\033[{self._lines_printed}A")  # Move up
+                sys.stdout.write("\033[J")  # Clear to end of screen
+
+            # Print status lines
+            for line in lines:
+                print(line)
+            sys.stdout.flush()
+
+            self._lines_printed = len(lines)
+            self._stop_event.wait(STATUS_REFRESH_INTERVAL)
+
+    def start_display(self) -> None:
+        """Start the background display thread."""
+        self._display_thread = threading.Thread(target=self._display_loop, daemon=True)
+        self._display_thread.start()
+
+    def stop_display(self) -> None:
+        """Stop the background display thread."""
+        self._stop_event.set()
+        if self._display_thread:
+            self._display_thread.join(timeout=1.0)
+        # Clear the status display
+        if self._lines_printed > 0:
+            sys.stdout.write(f"\033[{self._lines_printed}A")
+            sys.stdout.write("\033[J")
+            sys.stdout.flush()
+            self._lines_printed = 0
 
 
 # ---------------------------------------------------------------------
@@ -268,10 +359,17 @@ class Result:
 
 
 class Planner:
-    def __init__(self, repo_root: pathlib.Path, tempdir: pathlib.Path, opts: Options):
+    def __init__(
+        self,
+        repo_root: pathlib.Path,
+        tempdir: pathlib.Path,
+        opts: Options,
+        status_tracker: Optional[StatusTracker] = None,
+    ):
         self.repo_root = repo_root
         self.tempdir = tempdir
         self.opts = opts
+        self.status_tracker = status_tracker
 
         prompt_path = repo_root / ".claude/agents/chief-architect.md"
         if not prompt_path.exists():
@@ -340,19 +438,26 @@ class Planner:
 
     # --------------------------------------------------------------
 
-    def process_issue(self, issue: int, idx: int, total: int) -> Result:
+    def process_issue(self, issue: int, idx: int, total: int, slot: int = -1) -> Result:
         """Process a single GitHub issue: fetch, generate plan, and post.
 
         Args:
             issue: GitHub issue number
             idx: Current index in processing sequence
             total: Total number of issues being processed
+            slot: Status tracker slot (-1 if not using status tracking)
 
         Returns:
             Result dataclass with issue number, status, and optional error
         """
+
+        def update_status(stage: str, info: str = "") -> None:
+            if self.status_tracker and slot >= 0:
+                self.status_tracker.update(slot, issue, stage, info)
+
         try:
             log("INFO", f"[{idx}/{total}] Issue #{issue}")
+            update_status("Fetching")
 
             # Create diagnostic files for this issue
             diag_files = self.create_issue_files(issue)
@@ -360,6 +465,7 @@ class Planner:
             log("INFO", f"  Log file:  {diag_files['log']}")
 
             data = gh_issue_json(issue)
+            update_status("Checking")
 
             # Title validation with truncation warning
             title = data.get("title") or "Untitled"
@@ -381,6 +487,7 @@ class Planner:
                         if "Limit reached" in comment_body:
                             log("INFO", "Existing plan was rate-limited, will replan...")
                             break  # Continue to generate new plan
+                        update_status("Skipped", "has plan")
                         return Result(issue, "skipped")
 
             # Dry-run: show what would be done without calling Claude
@@ -391,22 +498,29 @@ class Planner:
                 write_secure(diag_files["prompt"], prompt)
                 for line in prompt.split("\n")[:20]:
                     print(f"    {line}")
+                update_status("Done", "dry-run")
                 return Result(issue, "dry-run")
 
+            update_status("Generating")
             plan = self.generate_plan(issue, title, body, diag_files)
 
             if not plan.strip():
                 raise RuntimeError("Empty plan")
 
             if not self.opts.auto:
+                update_status("Reviewing")
                 plan = self.review_plan(plan)
                 if not plan.strip():
+                    update_status("Skipped", "empty review")
                     return Result(issue, "skipped")
 
+            update_status("Posting")
             self.post_plan(issue, plan)
+            update_status("Done", "posted")
             return Result(issue, "posted")
 
         except Exception as e:
+            update_status("Error", str(e)[:30])
             return Result(issue, "error", str(e))
 
     # --------------------------------------------------------------
@@ -757,7 +871,12 @@ Examples:
     else:
         log("INFO", "Replan: DISABLED (will skip issues with existing plans)")
 
-    planner = Planner(repo_root, tempdir, opts)
+    # Create status tracker for parallel mode
+    status_tracker: Optional[StatusTracker] = None
+    if opts.parallel:
+        status_tracker = StatusTracker(opts.max_parallel)
+
+    planner = Planner(repo_root, tempdir, opts, status_tracker)
     issue_list = planner.fetch_issues(issues, args.limit)
 
     print()
@@ -771,30 +890,45 @@ Examples:
 
     results: list[Result] = []
 
-    if opts.parallel:
-        # Capture output per-issue to print in order at the end
-        def process_with_capture(issue: int, idx: int, total: int) -> tuple[Result, str]:
+    if opts.parallel and status_tracker:
+        # Start the live status display
+        status_tracker.start_display()
+
+        # Process with status tracking
+        def process_with_status(issue: int, idx: int, total: int) -> tuple[Result, str, int]:
+            slot = status_tracker.acquire_slot(issue)
             buffer = io.StringIO()
-            with redirect_stdout(buffer), redirect_stderr(buffer):
-                result = planner.process_issue(issue, idx, total)
-            return (result, buffer.getvalue())
+            try:
+                with redirect_stdout(buffer), redirect_stderr(buffer):
+                    result = planner.process_issue(issue, idx, total, slot)
+                return (result, buffer.getvalue(), slot)
+            finally:
+                status_tracker.release_slot(slot)
 
-        with ThreadPoolExecutor(max_workers=opts.max_parallel) as ex:
-            futures = {
-                ex.submit(process_with_capture, issue, i + 1, len(issue_list)): i for i, issue in enumerate(issue_list)
-            }
-            # Collect all results indexed by position
-            indexed_results: dict[int, tuple[Result, str]] = {}
-            for f in as_completed(futures):
-                idx = futures[f]
-                result, output = f.result()
-                indexed_results[idx] = (result, output)
+        try:
+            with ThreadPoolExecutor(max_workers=opts.max_parallel) as ex:
+                futures = {
+                    ex.submit(process_with_status, issue, i + 1, len(issue_list)): i
+                    for i, issue in enumerate(issue_list)
+                }
+                # Collect all results indexed by position
+                indexed_results: dict[int, tuple[Result, str]] = {}
+                for f in as_completed(futures):
+                    idx = futures[f]
+                    result, output, _slot = f.result()
+                    indexed_results[idx] = (result, output)
 
-            # Print output in issue order
-            for i in range(len(issue_list)):
-                result, output = indexed_results[i]
-                print(output, end="")
-                results.append(result)
+                # Stop the display before printing results
+                status_tracker.stop_display()
+
+                # Print output in issue order
+                for i in range(len(issue_list)):
+                    result, output = indexed_results[i]
+                    print(output, end="")
+                    results.append(result)
+        except Exception:
+            status_tracker.stop_display()
+            raise
     else:
         for i, issue in enumerate(issue_list):
             results.append(planner.process_issue(issue, i + 1, len(issue_list)))
