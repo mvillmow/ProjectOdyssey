@@ -14,6 +14,7 @@ Design goals:
 from __future__ import annotations
 
 import argparse
+import atexit
 import dataclasses
 import datetime as dt
 import io
@@ -22,6 +23,7 @@ import os
 import pathlib
 import re
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -64,6 +66,22 @@ RATE_LIMIT_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Plan header constants
+PLAN_HEADER = "## Detailed Implementation Plan"
+PLAN_HEADER_REVISED = "## Detailed Implementation Plan (Revised)"
+
+
+# ---------------------------------------------------------------------
+# Secure file helpers
+# ---------------------------------------------------------------------
+
+
+def write_secure(path: pathlib.Path, content: str) -> None:
+    """Write content to file with secure permissions (owner-only read/write)."""
+    path.write_text(content)
+    path.chmod(0o600)
+
+
 # ---------------------------------------------------------------------
 # Structured logging
 # ---------------------------------------------------------------------
@@ -100,6 +118,15 @@ def run(cmd: list[str], *, timeout: Optional[int] = None) -> subprocess.Complete
 
 
 def parse_reset_epoch(time_str: str, tz: str) -> int:
+    """Parse a rate limit reset time string and return epoch seconds.
+
+    Args:
+        time_str: Time string like "2pm", "2:30pm", or "14:00"
+        tz: Timezone string like "America/Los_Angeles"
+
+    Returns:
+        Unix timestamp (epoch seconds) when the rate limit resets
+    """
     if tz not in ALLOWED_TIMEZONES:
         tz = "America/Los_Angeles"
 
@@ -134,6 +161,14 @@ def parse_reset_epoch(time_str: str, tz: str) -> int:
 
 
 def detect_rate_limit(text: str) -> Optional[int]:
+    """Detect rate limit message in text and return reset epoch if found.
+
+    Args:
+        text: Text to search for rate limit patterns
+
+    Returns:
+        Unix timestamp when rate limit resets, or None if not rate limited
+    """
     m = RATE_LIMIT_RE.search(text)
     if not m:
         return None
@@ -141,8 +176,7 @@ def detect_rate_limit(text: str) -> Optional[int]:
 
 
 def wait_until(epoch: int) -> None:
-    import signal
-
+    """Wait until the given epoch time, showing a countdown. Raises KeyboardInterrupt if interrupted."""
     interrupted = False
 
     def handler(sig, frame):
@@ -173,6 +207,17 @@ def wait_until(epoch: int) -> None:
 
 
 def gh_issue_json(issue: int) -> dict:
+    """Fetch issue data from GitHub as JSON.
+
+    Args:
+        issue: GitHub issue number
+
+    Returns:
+        Dictionary with title, body, and comments
+
+    Raises:
+        RuntimeError: If the gh command fails
+    """
     cp = run(["gh", "issue", "view", str(issue), "--json", "title,body,comments"])
     if cp.returncode != 0:
         raise RuntimeError(cp.stderr.strip())
@@ -226,7 +271,37 @@ class Planner:
 
     # --------------------------------------------------------------
 
+    def create_issue_files(self, issue: int) -> dict[str, pathlib.Path]:
+        """Create secure diagnostic files for an issue (matches bash behavior).
+
+        Args:
+            issue: The GitHub issue number
+
+        Returns:
+            Dictionary with paths to plan, log, cmd, and prompt files
+        """
+        files = {
+            "plan": self.tempdir / f"issue-{issue}-plan.md",
+            "log": self.tempdir / f"issue-{issue}-claude.log",
+            "cmd": self.tempdir / f"issue-{issue}-command.sh",
+            "prompt": self.tempdir / f"issue-{issue}-prompt.txt",
+        }
+        for path in files.values():
+            path.touch(mode=0o600)
+        return files
+
+    # --------------------------------------------------------------
+
     def fetch_issues(self, explicit: Optional[list[int]], limit: Optional[int]) -> list[int]:
+        """Fetch list of issue numbers to process.
+
+        Args:
+            explicit: If provided, use these specific issue numbers
+            limit: Maximum number of issues to return (applied after sorting)
+
+        Returns:
+            List of GitHub issue numbers sorted in ascending order
+        """
         if explicit:
             return explicit
 
@@ -240,8 +315,24 @@ class Planner:
     # --------------------------------------------------------------
 
     def process_issue(self, issue: int, idx: int, total: int) -> Result:
+        """Process a single GitHub issue: fetch, generate plan, and post.
+
+        Args:
+            issue: GitHub issue number
+            idx: Current index in processing sequence
+            total: Total number of issues being processed
+
+        Returns:
+            Result dataclass with issue number, status, and optional error
+        """
         try:
             log("INFO", f"[{idx}/{total}] Issue #{issue}")
+
+            # Create diagnostic files for this issue
+            diag_files = self.create_issue_files(issue)
+            log("INFO", f"  Plan file: {diag_files['plan']}")
+            log("INFO", f"  Log file:  {diag_files['log']}")
+
             data = gh_issue_json(issue)
 
             # Title validation with truncation warning
@@ -271,11 +362,12 @@ class Planner:
                 log("INFO", f"[DRY RUN] Would generate plan for #{issue}: {title}")
                 log("INFO", "Plan preview (first 20 lines):")
                 prompt = self.build_prompt(issue, title, body)
+                write_secure(diag_files["prompt"], prompt)
                 for line in prompt.split("\n")[:20]:
                     print(f"    {line}")
                 return Result(issue, "dry-run")
 
-            plan = self.generate_plan(issue, title, body)
+            plan = self.generate_plan(issue, title, body, diag_files)
 
             if not plan.strip():
                 raise RuntimeError("Empty plan")
@@ -294,6 +386,11 @@ class Planner:
     # --------------------------------------------------------------
 
     def throttle(self) -> None:
+        """Apply rate limiting between API calls to avoid overwhelming Claude.
+
+        Sleeps if necessary to ensure at least throttle_seconds between calls.
+        Thread-safe for use in parallel mode.
+        """
         if self.opts.throttle_seconds <= 0:
             return
         with self._throttle_lock:
@@ -305,14 +402,40 @@ class Planner:
 
     # --------------------------------------------------------------
 
-    def generate_plan(self, issue: int, title: str, body: str) -> str:
+    def generate_plan(self, issue: int, title: str, body: str, diag_files: dict[str, pathlib.Path]) -> str:
+        """Generate an implementation plan using Claude.
+
+        Args:
+            issue: GitHub issue number
+            title: Issue title
+            body: Issue body text
+            diag_files: Dictionary of diagnostic file paths
+
+        Returns:
+            Generated plan as a string
+        """
         prompt = self.build_prompt(issue, title, body)
+
+        # Save prompt to diagnostic file
+        write_secure(diag_files["prompt"], prompt)
 
         # Different allowed tools for auto vs interactive mode (match bash behavior)
         if self.opts.auto:
             allowed_tools = "Read,Glob,Grep,WebFetch,WebSearch,Bash"
         else:
             allowed_tools = "Read,Glob,Grep,WebFetch,WebSearch"
+
+        # Save command to diagnostic file for debugging
+        cmd_content = f"""# Security: Using subprocess to prevent shell injection
+# Prompt file: {diag_files["prompt"]}
+claude --model opus \\
+       --permission-mode default \\
+       --allowedTools "{allowed_tools}" \\
+       --add-dir "{self.repo_root}" \\
+       --system-prompt "$(cat .claude/agents/chief-architect.md)" \\
+       -p "$(cat {diag_files["prompt"]})"
+"""
+        write_secure(diag_files["cmd"], cmd_content)
 
         for attempt in range(1, MAX_RETRIES + 1):
             self.throttle()
@@ -349,13 +472,18 @@ class Planner:
             try:
                 assert proc.stdout is not None
                 deadline = time.time() + self.opts.timeout
-                for line in proc.stdout:
-                    if time.time() > deadline:
-                        proc.kill()
-                        timed_out = True
-                        break
-                    print(line, end="", flush=True)
-                    output_lines.append(line)
+                log_handle = diag_files["log"].open("a")
+                try:
+                    for line in proc.stdout:
+                        if time.time() > deadline:
+                            proc.kill()
+                            timed_out = True
+                            break
+                        print(line, end="", flush=True)
+                        log_handle.write(line)
+                        output_lines.append(line)
+                finally:
+                    log_handle.close()
             finally:
                 proc.wait()
                 print("  --------------------------------", flush=True)
@@ -383,6 +511,8 @@ class Planner:
             if proc.returncode == 0:
                 log("INFO", f"Generation completed in {elapsed:.0f}s")
                 log("INFO", f"Plan size: {len(combined)} bytes")
+                # Save plan to diagnostic file
+                write_secure(diag_files["plan"], combined)
                 return combined
 
             log("WARN", f"Claude returned exit code {proc.returncode}, retrying...")
@@ -393,6 +523,16 @@ class Planner:
     # --------------------------------------------------------------
 
     def build_prompt(self, issue: int, title: str, body: str) -> str:
+        """Build the prompt to send to Claude for plan generation.
+
+        Args:
+            issue: GitHub issue number
+            title: Issue title
+            body: Issue body text
+
+        Returns:
+            Formatted prompt string for Claude
+        """
         parts = [
             "Create a detailed implementation plan for the following GitHub issue:\n\n",
             f"Issue #{issue}: {title}\n\n",
@@ -425,6 +565,14 @@ End with:
     # --------------------------------------------------------------
 
     def review_plan(self, plan: str) -> str:
+        """Open generated plan in editor for user review.
+
+        Args:
+            plan: The generated plan content
+
+        Returns:
+            The (possibly modified) plan after editing, or empty string if user deleted content
+        """
         editor = os.environ.get("EDITOR", "vim")
         cmd = pathlib.Path(editor).name
         if cmd not in ALLOWED_EDITORS:
@@ -440,8 +588,7 @@ End with:
                 raise RuntimeError("Neither specified editor nor vim found in PATH")
 
         path = self.tempdir / "review.md"
-        path.write_text(plan)
-        path.chmod(0o600)  # Restrict permissions
+        write_secure(path, plan)
 
         subprocess.run([editor_path, str(path)])
         return path.read_text()
@@ -449,9 +596,16 @@ End with:
     # --------------------------------------------------------------
 
     def post_plan(self, issue: int, plan: str) -> None:
-        header = "## Detailed Implementation Plan"
-        if self.opts.replan:
-            header += " (Revised)"
+        """Post the generated plan as a comment on the GitHub issue.
+
+        Args:
+            issue: GitHub issue number
+            plan: Plan content to post
+
+        Raises:
+            RuntimeError: If posting the comment fails
+        """
+        header = PLAN_HEADER_REVISED if self.opts.replan else PLAN_HEADER
         header += "\n\n"
 
         if self.opts.replan_reason:
@@ -541,6 +695,23 @@ Examples:
     tempdir = pathlib.Path(tempfile.mkdtemp(prefix="plan-issues-"))
     tempdir.chmod(0o700)  # Restrict to owner only
 
+    # Register cleanup handler for normal exit and signals (matches bash trap)
+    def cleanup_handler() -> None:
+        if tempdir.exists():
+            if opts.cleanup:
+                shutil.rmtree(tempdir, ignore_errors=True)
+            else:
+                log("INFO", f"Temp directory preserved: {tempdir}")
+
+    atexit.register(cleanup_handler)
+
+    def signal_handler(signum: int, frame: object) -> None:
+        cleanup_handler()
+        sys.exit(128 + signum)
+
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
     # Startup status messages (match bash output)
     log("INFO", f"Temp directory: {tempdir}")
     log(
@@ -622,9 +793,7 @@ Examples:
             print(f"  Temp directory: {tempdir}")
         print("==========================================")
 
-    if opts.cleanup:
-        shutil.rmtree(tempdir, ignore_errors=True)
-
+    # Cleanup is handled by atexit handler registered earlier
     # Return non-zero exit code if any errors occurred
     error_count = sum(1 for r in results if r.status == "error")
     return 1 if error_count > 0 else 0
