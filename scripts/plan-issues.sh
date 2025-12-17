@@ -5,14 +5,29 @@
 #   --limit N        Only process first N issues (default: all)
 #   --auto           Non-interactive mode: skip vim, auto-post plans, allow gh CLI
 #   --replan         Re-plan issues that already have a plan comment
+#   --replan-reason  Re-plan with additional context (implies --replan)
 #   --issues N,M,... Only process specific issue numbers (comma-separated)
+#   --dry-run        Preview what will be done without posting to GitHub
 #
 set -euo pipefail
+
+# Constants
+readonly MAX_ISSUES_FETCH=500
+readonly MAX_RETRIES=3
+readonly CLAUDE_MAX_TOOLS=50
+readonly CLAUDE_MAX_STEPS=50
+readonly ALLOWED_TIMEZONES="America/Los_Angeles|America/New_York|America/Chicago|America/Denver|America/Phoenix|UTC|Europe/London|Europe/Paris|Asia/Tokyo"
 
 # Function to parse reset time and wait until it expires
 wait_for_rate_limit_reset() {
     local reset_time_str="$1"
     local timezone="$2"
+
+    # Validate timezone against whitelist (security fix)
+    if ! echo "$timezone" | grep -qE "^($ALLOWED_TIMEZONES)$"; then
+        echo "  WARNING: Invalid timezone '$timezone', defaulting to America/Los_Angeles"
+        timezone="America/Los_Angeles"
+    fi
 
     echo ""
     echo "=========================================="
@@ -112,6 +127,7 @@ AUTO_MODE=false
 REPLAN_MODE=false
 REPLAN_REASON=""
 SPECIFIC_ISSUES=""
+DRY_RUN=false
 while [[ $# -gt 0 ]]; do
     case $1 in
         --limit)
@@ -135,6 +151,10 @@ while [[ $# -gt 0 ]]; do
             SPECIFIC_ISSUES="$2"
             shift 2
             ;;
+        --dry-run)
+            DRY_RUN=true
+            shift
+            ;;
         -h|--help)
             echo "Usage: plan-issues.sh [OPTIONS]"
             echo ""
@@ -144,12 +164,14 @@ while [[ $# -gt 0 ]]; do
             echo "  --replan             Re-plan issues that already have a plan comment"
             echo "  --replan-reason TXT  Re-plan with additional context (implies --replan)"
             echo "  --issues N,M,...     Only process specific issue numbers (comma-separated)"
+            echo "  --dry-run            Preview what will be done without posting to GitHub"
             echo ""
             echo "Examples:"
             echo "  plan-issues.sh --limit 5                    # First 5 open issues"
             echo "  plan-issues.sh --issues 123,456,789         # Specific issues only"
             echo "  plan-issues.sh --auto --replan              # Auto mode, allow replanning"
             echo "  plan-issues.sh --issues 123 --replan-reason 'Need to add error handling'"
+            echo "  plan-issues.sh --issues 123 --dry-run       # Preview without posting"
             exit 0
             ;;
         *)
@@ -161,17 +183,37 @@ done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-CHIEF_ARCHITECT_PROMPT=$(cat "$REPO_ROOT/.claude/agents/chief-architect.md")
+
+# Validate chief architect file exists
+CHIEF_ARCHITECT_FILE="$REPO_ROOT/.claude/agents/chief-architect.md"
+if [[ ! -f "$CHIEF_ARCHITECT_FILE" ]]; then
+    echo "ERROR: Chief Architect prompt not found: $CHIEF_ARCHITECT_FILE"
+    exit 1
+fi
+CHIEF_ARCHITECT_PROMPT=$(cat "$CHIEF_ARCHITECT_FILE")
 
 # Create temp directory for this run
 RUN_ID=$(date +%Y%m%d_%H%M%S)
 TEMP_DIR="/tmp/plan-issues-${RUN_ID}"
 mkdir -p "$TEMP_DIR"
+
+# Cleanup trap - show temp directory location on exit
+cleanup() {
+    if [[ -n "${TEMP_DIR:-}" ]] && [[ -d "$TEMP_DIR" ]]; then
+        echo ""
+        echo "Temp directory preserved: $TEMP_DIR"
+    fi
+}
+trap cleanup EXIT INT TERM
+
 echo "Temp directory: $TEMP_DIR"
 if $AUTO_MODE; then
     echo "Mode: AUTO (non-interactive, plans auto-posted)"
 else
     echo "Mode: INTERACTIVE (vim review before posting)"
+fi
+if $DRY_RUN; then
+    echo "Dry-run: ENABLED (no changes will be made to GitHub)"
 fi
 if $REPLAN_MODE; then
     echo "Replan: ENABLED (will re-plan issues with existing plans)"
@@ -186,6 +228,13 @@ fi
 if [[ -n "$SPECIFIC_ISSUES" ]]; then
     # Use specific issues provided by user
     IFS=',' read -ra issues <<< "$SPECIFIC_ISSUES"
+    # Validate issue numbers are numeric
+    for issue in "${issues[@]}"; do
+        if ! [[ "$issue" =~ ^[0-9]+$ ]]; then
+            echo "ERROR: Invalid issue number '$issue' - must be numeric"
+            exit 1
+        fi
+    done
     echo "Issues: Using specific issues: ${issues[*]}"
 else
     # Get all open issue numbers into array
@@ -212,23 +261,35 @@ echo ""
 for issue_number in "${issues[@]}"; do
     current=$((current + 1))
 
-    # Get issue details
-    issue_title=$(gh issue view "$issue_number" --json title --jq '.title')
-    issue_body=$(gh issue view "$issue_number" --json body --jq '.body')
+    # Fetch all issue data in one API call (consolidated)
+    if ! issue_data=$(gh issue view "$issue_number" --json title,body,comments 2>&1); then
+        echo "[$current/$total] Issue #${issue_number}: ERROR"
+        echo "----------------------------------------"
+        echo "  ERROR: Failed to fetch issue: $issue_data"
+        skipped=$((skipped + 1))
+        echo ""
+        continue
+    fi
+
+    issue_title=$(echo "$issue_data" | jq -r '.title // "Untitled"')
+    issue_body=$(echo "$issue_data" | jq -r '.body // ""')
 
     echo "[$current/$total] Issue #${issue_number}: ${issue_title}"
     echo "----------------------------------------"
 
     # Check if issue already has a plan (unless in replan mode)
     if ! $REPLAN_MODE; then
-        # Check if existing plan was rate-limited (auto-replan these)
-        if check_existing_plan_has_limit "$issue_number"; then
-            echo "  Existing plan was rate-limited, will replan..."
-        elif gh issue view "$issue_number" --comments --json comments --jq '.comments[].body' 2>/dev/null | grep -q "## Detailed Implementation Plan"; then
-            echo "  SKIPPED (already has plan - use --replan to override)"
-            skipped=$((skipped + 1))
-            echo ""
-            continue
+        # Check for existing plan or rate-limited plan in comments
+        existing_comments=$(echo "$issue_data" | jq -r '.comments[].body // empty')
+        if echo "$existing_comments" | grep -q "## Detailed Implementation Plan"; then
+            if echo "$existing_comments" | grep -q "Limit reached"; then
+                echo "  Existing plan was rate-limited, will replan..."
+            else
+                echo "  SKIPPED (already has plan - use --replan to override)"
+                skipped=$((skipped + 1))
+                echo ""
+                continue
+            fi
         fi
     fi
 
@@ -301,8 +362,23 @@ claude --model opus \\
 CMDEOF
 
     # Generate plan using Claude with opus and chief architect prompt
-    # Retry loop for rate limiting
+    # Retry loop for rate limiting with max retries
+    retry_count=0
+    generation_success=false
+
     while true; do
+        retry_count=$((retry_count + 1))
+        if [[ $retry_count -gt $MAX_RETRIES ]]; then
+            echo "  ERROR: Max retries ($MAX_RETRIES) exceeded for issue #$issue_number"
+            skipped=$((skipped + 1))
+            echo ""
+            continue 2  # Continue to next issue
+        fi
+
+        if [[ $retry_count -gt 1 ]]; then
+            echo "  Retry attempt $retry_count of $MAX_RETRIES..."
+        fi
+
         echo "  Generating plan with Claude Opus..."
         echo "  (This may take 1-3 minutes. Check $log_file for progress)"
         start_time=$(date +%s)
@@ -322,12 +398,25 @@ CMDEOF
                --system-prompt "$CHIEF_ARCHITECT_PROMPT" \
                -p \
                "$PROMPT" 2>&1 | tee "$plan_file"
+        claude_exit_code=${PIPESTATUS[0]}
         echo "  --------------------------------"
         echo ""
 
         end_time=$(date +%s)
         echo "  Generation completed in $((end_time - start_time))s"
         echo "  Plan size: $(wc -c < "$plan_file") bytes"
+
+        # Check for Claude CLI errors (JSON error response)
+        if grep -q '"type":"result","subtype":"error' "$plan_file" 2>/dev/null; then
+            echo "  ERROR: Claude CLI returned an error response"
+            # Extract and display error messages
+            error_msgs=$(grep -o '"errors":\[[^]]*\]' "$plan_file" | head -1)
+            if [[ -n "$error_msgs" ]]; then
+                echo "  Error details: $error_msgs"
+            fi
+            echo "  Retrying..."
+            continue
+        fi
 
         # Check for rate limit in output
         if limit_info=$(check_rate_limit "$plan_file"); then
@@ -347,14 +436,26 @@ CMDEOF
             continue
         fi
 
-        # No rate limit, break out of retry loop
+        # No errors or rate limit, mark success and break
+        generation_success=true
         break
     done
 
-    # Interactive mode: open vim for review
+    # Skip to next issue if generation failed
+    if ! $generation_success; then
+        continue
+    fi
+
+    # Interactive mode: open editor for review
     if ! $AUTO_MODE; then
-        echo "  Opening vim for review... (delete all content to skip)"
-        vim "$plan_file"
+        # Respect $EDITOR environment variable
+        EDIT_CMD="${EDITOR:-vim}"
+        if ! command -v "$EDIT_CMD" >/dev/null 2>&1; then
+            echo "  WARNING: Editor '$EDIT_CMD' not found, falling back to vim"
+            EDIT_CMD="vim"
+        fi
+        echo "  Opening $EDIT_CMD for review... (delete all content to skip)"
+        "$EDIT_CMD" "$plan_file"
 
         # Check if file is empty (user wants to skip)
         if [[ ! -s "$plan_file" ]]; then
@@ -373,8 +474,7 @@ CMDEOF
         continue
     fi
 
-    # Post plan to GitHub issue
-    echo "  Posting plan to GitHub..."
+    # Build plan header
     if $REPLAN_MODE && [[ -n "$REPLAN_REASON" ]]; then
         PLAN_HEADER="## Detailed Implementation Plan (Revised)
 
@@ -388,11 +488,22 @@ CMDEOF
 "
     fi
 
-    gh issue comment "$issue_number" --body "${PLAN_HEADER}
-$(cat "$plan_file")"
-
-    posted=$((posted + 1))
-    echo "  Plan posted successfully!"
+    # Post plan to GitHub issue (or dry-run)
+    if $DRY_RUN; then
+        echo "  [DRY RUN] Would post plan to issue #$issue_number"
+        echo "  Plan preview (first 20 lines):"
+        head -20 "$plan_file" | sed 's/^/    /'
+        posted=$((posted + 1))
+    else
+        echo "  Posting plan to GitHub..."
+        # Use --body-file to avoid command injection (security fix)
+        {
+            echo "$PLAN_HEADER"
+            cat "$plan_file"
+        } | gh issue comment "$issue_number" --body-file -
+        posted=$((posted + 1))
+        echo "  Plan posted successfully!"
+    fi
     echo ""
 done
 
