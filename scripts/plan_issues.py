@@ -37,6 +37,11 @@ MAX_ISSUES_FETCH = 500
 MAX_RETRIES = 3
 CLAUDE_MAX_TOOLS = 50
 CLAUDE_MAX_STEPS = 50
+MAX_BODY_SIZE = 1_048_576  # 1MB limit for issue body
+MAX_TITLE_LENGTH = 500
+
+# Shell metacharacters that are dangerous in replan reasons
+DANGEROUS_SHELL_CHARS = set(";|&$`<>")
 
 ALLOWED_EDITORS = {"vim", "vi", "emacs", "nano", "code", "subl", "nvim", "helix", "micro", "edit"}
 
@@ -63,6 +68,9 @@ RATE_LIMIT_RE = re.compile(
 
 
 def log(level: str, msg: str) -> None:
+    # DEBUG level only prints if DEBUG env var is set
+    if level == "DEBUG" and not os.environ.get("DEBUG"):
+        return
     ts = time.strftime("%H:%M:%S")
     out = sys.stderr if level in {"WARN", "ERROR"} else sys.stdout
     print(f"[{level}] {ts} {msg}", file=out, flush=True)
@@ -131,15 +139,30 @@ def detect_rate_limit(text: str) -> Optional[int]:
 
 
 def wait_until(epoch: int) -> None:
-    while True:
-        remaining = epoch - int(time.time())
-        if remaining <= 0:
-            print()
-            return
-        h, r = divmod(remaining, 3600)
-        m, s = divmod(r, 60)
-        print(f"\r[INFO] Rate limit resets in {h:02d}:{m:02d}:{s:02d}", end="", flush=True)
-        time.sleep(1)
+    import signal
+
+    interrupted = False
+
+    def handler(sig, frame):
+        nonlocal interrupted
+        interrupted = True
+
+    old_handler = signal.signal(signal.SIGINT, handler)
+    try:
+        while True:
+            if interrupted:
+                print("\n[INFO] Wait interrupted by user")
+                raise KeyboardInterrupt
+            remaining = epoch - int(time.time())
+            if remaining <= 0:
+                print()
+                return
+            h, r = divmod(remaining, 3600)
+            m, s = divmod(r, 60)
+            print(f"\r[INFO] Rate limit resets in {h:02d}:{m:02d}:{s:02d}", end="", flush=True)
+            time.sleep(1)
+    finally:
+        signal.signal(signal.SIGINT, old_handler)
 
 
 # ---------------------------------------------------------------------
@@ -214,6 +237,11 @@ class Planner:
 
     # --------------------------------------------------------------
 
+    def _write_state(self, state_file: pathlib.Path, status: str) -> None:
+        """Write state file with restrictive permissions."""
+        state_file.write_text(status)
+        state_file.chmod(0o600)
+
     def process_issue(self, issue: int, idx: int, total: int) -> Result:
         state_file = self.tempdir / f"issue-{issue}.state"
         if state_file.exists() and not self.opts.replan:
@@ -223,13 +251,27 @@ class Planner:
             log("INFO", f"[{idx}/{total}] Issue #{issue}")
             data = gh_issue_json(issue)
 
-            title = (data.get("title") or "Untitled")[:500]
-            body = data.get("body") or ""
+            # Title validation with truncation warning
+            title = data.get("title") or "Untitled"
+            if len(title) > MAX_TITLE_LENGTH:
+                log("WARN", f"Title unusually long ({len(title)} chars), truncating to {MAX_TITLE_LENGTH}")
+                title = title[:MAX_TITLE_LENGTH] + "..."
 
+            # Body size validation
+            body = data.get("body") or ""
+            if len(body) > MAX_BODY_SIZE:
+                raise RuntimeError(f"Issue body too large ({len(body)} bytes, max {MAX_BODY_SIZE})")
+
+            # Check for existing plan (with rate-limit detection)
             if not self.opts.replan:
                 for c in data.get("comments", []):
-                    if "## Detailed Implementation Plan" in (c.get("body") or ""):
-                        state_file.write_text("skipped")
+                    comment_body = c.get("body") or ""
+                    if "## Detailed Implementation Plan" in comment_body:
+                        # Check if existing plan was rate-limited (should retry)
+                        if "Limit reached" in comment_body:
+                            log("INFO", "Existing plan was rate-limited, will replan...")
+                            break  # Continue to generate new plan
+                        self._write_state(state_file, "skipped")
                         return Result(issue, "skipped")
 
             plan = self.generate_plan(issue, title, body)
@@ -240,20 +282,20 @@ class Planner:
             if not self.opts.auto:
                 plan = self.review_plan(plan)
                 if not plan.strip():
-                    state_file.write_text("skipped")
+                    self._write_state(state_file, "skipped")
                     return Result(issue, "skipped")
 
             if self.opts.dry_run:
                 self.show_diff(issue, plan)
-                state_file.write_text("dry-run")
+                self._write_state(state_file, "dry-run")
                 return Result(issue, "dry-run")
 
             self.post_plan(issue, plan)
-            state_file.write_text("posted")
+            self._write_state(state_file, "posted")
             return Result(issue, "posted")
 
         except Exception as e:
-            state_file.write_text("error")
+            self._write_state(state_file, "error")
             return Result(issue, "error", str(e))
 
     # --------------------------------------------------------------
@@ -273,33 +315,61 @@ class Planner:
     def generate_plan(self, issue: int, title: str, body: str) -> str:
         prompt = self.build_prompt(issue, title, body)
 
+        # Different allowed tools for auto vs interactive mode (match bash behavior)
+        if self.opts.auto:
+            allowed_tools = "Read,Glob,Grep,WebFetch,WebSearch,Bash"
+        else:
+            allowed_tools = "Read,Glob,Grep,WebFetch,WebSearch"
+
         for attempt in range(1, MAX_RETRIES + 1):
             self.throttle()
 
-            cp = run(
-                [
-                    "claude",
-                    "--model",
-                    "opus",
-                    "--add-dir",
-                    str(self.repo_root),
-                    "--system-prompt",
-                    self.system_prompt,
-                    "-p",
-                    prompt,
-                ],
-                timeout=self.opts.timeout,
-            )
+            start_time = time.time()
+            try:
+                cp = run(
+                    [
+                        "claude",
+                        "--model",
+                        "opus",
+                        "--permission-mode",
+                        "default",
+                        "--allowedTools",
+                        allowed_tools,
+                        "--add-dir",
+                        str(self.repo_root),
+                        "--system-prompt",
+                        self.system_prompt,
+                        "-p",
+                        prompt,
+                    ],
+                    timeout=self.opts.timeout,
+                )
+            except subprocess.TimeoutExpired:
+                log("WARN", f"Claude timed out after {self.opts.timeout}s, retrying...")
+                continue
 
+            elapsed = time.time() - start_time
             combined = cp.stdout + cp.stderr
+
+            # Check for Claude CLI JSON error response
+            if '"type":"result","subtype":"error"' in combined:
+                error_match = re.search(r'"errors":\[([^\]]*)\]', combined)
+                error_detail = error_match.group(1) if error_match else "unknown"
+                log("WARN", f"Claude CLI error: {error_detail}")
+                time.sleep(2**attempt)
+                continue
+
             reset = detect_rate_limit(combined)
             if reset:
                 wait_until(reset)
                 continue
 
             if cp.returncode == 0:
+                log("INFO", f"Generation completed in {elapsed:.0f}s")
+                log("INFO", f"Plan size: {len(cp.stdout)} bytes")
                 return cp.stdout
 
+            log("WARN", f"Claude returned exit code {cp.returncode}, retrying...")
             time.sleep(2**attempt)
 
         raise RuntimeError("Claude retries exceeded")
@@ -345,10 +415,19 @@ End with:
             log("WARN", f"Editor '{cmd}' not approved, using vim")
             editor = "vim"
 
+        # Validate editor exists and is executable
+        editor_path = shutil.which(editor)
+        if not editor_path:
+            log("WARN", f"Editor '{editor}' not found, trying vim...")
+            editor_path = shutil.which("vim")
+            if not editor_path:
+                raise RuntimeError("Neither specified editor nor vim found in PATH")
+
         path = self.tempdir / "review.md"
         path.write_text(plan)
+        path.chmod(0o600)  # Restrict permissions
 
-        subprocess.run([editor, str(path)])
+        subprocess.run([editor_path, str(path)])
         return path.read_text()
 
     # --------------------------------------------------------------
@@ -408,7 +487,19 @@ def main() -> int:
     if args.parallel and not args.auto:
         p.error("--parallel requires --auto")
 
-    issues = [int(i) for i in args.issues.split(",")] if args.issues else None
+    # Validate issue numbers are numeric
+    issues: Optional[list[int]] = None
+    if args.issues:
+        for i in args.issues.split(","):
+            i = i.strip()
+            if not i.isdigit():
+                p.error(f"Invalid issue number '{i}' - must be numeric")
+        issues = [int(i.strip()) for i in args.issues.split(",")]
+
+    # Validate replan reason doesn't contain dangerous shell characters
+    if args.replan_reason:
+        if any(c in args.replan_reason for c in DANGEROUS_SHELL_CHARS):
+            p.error("--replan-reason contains unsafe shell characters")
 
     opts = Options(
         auto=args.auto,
@@ -425,6 +516,7 @@ def main() -> int:
 
     repo_root = pathlib.Path(__file__).resolve().parents[1]
     tempdir = pathlib.Path(tempfile.mkdtemp(prefix="plan-issues-"))
+    tempdir.chmod(0o700)  # Restrict to owner only
     log("INFO", f"Temp directory: {tempdir}")
 
     planner = Planner(repo_root, tempdir, opts)
