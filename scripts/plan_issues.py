@@ -216,12 +216,24 @@ def gh_issue_json(issue: int) -> dict:
         Dictionary with title, body, and comments
 
     Raises:
-        RuntimeError: If the gh command fails
+        RuntimeError: If all retry attempts fail
     """
-    cp = run(["gh", "issue", "view", str(issue), "--json", "title,body,comments"])
-    if cp.returncode != 0:
-        raise RuntimeError(cp.stderr.strip())
-    return json.loads(cp.stdout)
+    for attempt in range(1, MAX_RETRIES + 1):
+        cp = run(["gh", "issue", "view", str(issue), "--json", "title,body,comments"])
+        if cp.returncode == 0:
+            return json.loads(cp.stdout)
+
+        # Retry on transient network errors
+        if attempt < MAX_RETRIES:
+            delay = 2**attempt
+            log("WARN", f"GitHub API error fetching #{issue} (attempt {attempt}/{MAX_RETRIES}): {cp.stderr.strip()}")
+            log("INFO", f"Retrying in {delay}s...")
+            time.sleep(delay)
+        else:
+            raise RuntimeError(f"GitHub API failed after {MAX_RETRIES} attempts: {cp.stderr.strip()}")
+
+    # Should not reach here, but satisfy type checker
+    raise RuntimeError("Unexpected error in gh_issue_json")
 
 
 # ---------------------------------------------------------------------
@@ -301,16 +313,30 @@ class Planner:
 
         Returns:
             List of GitHub issue numbers sorted in ascending order
+
+        Raises:
+            RuntimeError: If all retry attempts fail
         """
         if explicit:
             return explicit
 
-        cp = run(["gh", "issue", "list", "--state", "open", "--limit", str(MAX_ISSUES_FETCH), "--json", "number"])
-        if cp.returncode != 0:
-            raise RuntimeError(cp.stderr)
+        for attempt in range(1, MAX_RETRIES + 1):
+            cp = run(["gh", "issue", "list", "--state", "open", "--limit", str(MAX_ISSUES_FETCH), "--json", "number"])
+            if cp.returncode == 0:
+                issues = sorted([i["number"] for i in json.loads(cp.stdout)])
+                return issues[:limit] if limit else issues
 
-        issues = sorted([i["number"] for i in json.loads(cp.stdout)])
-        return issues[:limit] if limit else issues
+            # Retry on transient network errors
+            if attempt < MAX_RETRIES:
+                delay = 2**attempt
+                log("WARN", f"GitHub API error (attempt {attempt}/{MAX_RETRIES}): {cp.stderr.strip()}")
+                log("INFO", f"Retrying in {delay}s...")
+                time.sleep(delay)
+            else:
+                raise RuntimeError(f"GitHub API failed after {MAX_RETRIES} attempts: {cp.stderr.strip()}")
+
+        # Should not reach here, but satisfy type checker
+        raise RuntimeError("Unexpected error in fetch_issues")
 
     # --------------------------------------------------------------
 
