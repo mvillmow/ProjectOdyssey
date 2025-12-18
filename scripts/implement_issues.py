@@ -469,7 +469,7 @@ class Options:
     epic: int
     priority: str | None  # P0, P1, P2, or None for all
     issues: list[int] | None  # Specific issues to process
-    max_parallel: int
+    parallel: int  # 1 = sequential, N = parallel workers
     dry_run: bool
     analyze: bool  # Just show dependency graph
     resume: bool
@@ -1324,7 +1324,8 @@ Examples:
   %(prog)s --epic 2784 --analyze              Show dependency graph
   %(prog)s --epic 2784 --dry-run              Preview what would be done
   %(prog)s --epic 2784 --priority P0          Run P0 issues only
-  %(prog)s --epic 2784 --max-parallel 4       Run with 4 parallel workers
+  %(prog)s --epic 2784 --parallel             Run with 4 parallel workers
+  %(prog)s --epic 2784 --parallel 2           Run with 2 parallel workers
   %(prog)s --epic 2784 --resume               Resume from previous run
   %(prog)s --epic 2784 --issues 2719,2720     Run specific issues only
   %(prog)s --epic 2784 --cleanup              Cleanup stale worktrees
@@ -1334,11 +1335,13 @@ Examples:
     p.add_argument("--priority", choices=["P0", "P1", "P2"], help="Only process issues with this priority")
     p.add_argument("--issues", metavar="N,M,...", help="Only process specific issue numbers")
     p.add_argument(
-        "--max-parallel",
+        "--parallel",
         type=int,
-        default=MAX_PARALLEL_DEFAULT,
+        nargs="?",
+        const=MAX_PARALLEL_DEFAULT,
+        default=None,
         metavar="N",
-        help=f"Max concurrent jobs (default: {MAX_PARALLEL_DEFAULT})",
+        help=f"Run in parallel (default: {MAX_PARALLEL_DEFAULT} workers if N not specified)",
     )
     p.add_argument("--dry-run", action="store_true", help="Preview actions without making changes")
     p.add_argument("--analyze", action="store_true", help="Just show dependency graph")
@@ -1360,11 +1363,16 @@ Examples:
     if args.issues:
         issues = [int(n.strip()) for n in args.issues.split(",")]
 
+    # If --parallel not specified, run sequentially (1 worker)
+    # If --parallel specified without value, use default (4)
+    # If --parallel N specified, use N
+    parallel_workers = args.parallel if args.parallel is not None else 1
+
     opts = Options(
         epic=args.epic,
         priority=args.priority,
         issues=issues,
-        max_parallel=args.max_parallel,
+        parallel=parallel_workers,
         dry_run=args.dry_run,
         analyze=args.analyze,
         resume=args.resume,
@@ -1416,7 +1424,7 @@ Examples:
         state.started_at = dt.datetime.now().isoformat()
 
     # Parse epic and build issues dict
-    status_tracker = StatusTracker(opts.max_parallel)
+    status_tracker = StatusTracker(opts.parallel)
 
     if not state.issues:
         # Create a temporary implementer just for parsing
@@ -1459,9 +1467,10 @@ Examples:
     print("  ML Odyssey Issue Implementer")
     print(f"  Epic: #{opts.epic}")
     print(f"  Total issues: {len(state.issues)}")
-    print(f"  Workers: {opts.max_parallel}")
+    mode = "Sequential" if opts.parallel == 1 else f"Parallel ({opts.parallel} workers)"
     if opts.dry_run:
-        print("  Mode: DRY RUN")
+        mode += " (DRY RUN)"
+    print(f"  Mode: {mode}")
     print("==========================================")
     print()
 
@@ -1481,7 +1490,7 @@ Examples:
     status_tracker.start_display()
 
     try:
-        with ThreadPoolExecutor(max_workers=opts.max_parallel) as executor:
+        with ThreadPoolExecutor(max_workers=opts.parallel) as executor:
             futures: dict = {}
             active_count = 0
 
@@ -1495,7 +1504,7 @@ Examples:
                 ready = [n for n in ready if n not in futures.values()]
 
                 # Spawn new tasks up to max_parallel
-                available = opts.max_parallel - active_count
+                available = opts.parallel - active_count
                 for issue_num in ready[:available]:
                     slot = status_tracker.acquire_slot(issue_num)
                     resolver.mark_in_progress(issue_num)
@@ -1535,7 +1544,7 @@ Examples:
                         resolver.mark_paused(issue_num)
 
                     # Release slot
-                    for slot in range(opts.max_parallel):
+                    for slot in range(opts.parallel):
                         with status_tracker._lock:
                             if slot in status_tracker._slots:
                                 item, _, _, _ = status_tracker._slots[slot]
