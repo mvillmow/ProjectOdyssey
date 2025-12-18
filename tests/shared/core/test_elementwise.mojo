@@ -46,6 +46,8 @@ from shared.core.elementwise import (
     clip_backward,
     log10_backward,
     log2_backward,
+    sin_backward,
+    cos_backward,
 )
 from shared.testing import check_gradient
 from math import sqrt as math_sqrt, pi
@@ -610,6 +612,110 @@ fn test_cos_values() raises:
     assert_almost_equal(
         result._data.bitcast[Float32]()[2], Float32(-1.0), tolerance=1e-5
     )
+
+
+fn test_sin_backward() raises:
+    """Test sin backward pass."""
+    var shape = List[Int]()
+    shape.append(3)
+    var x = zeros(shape, DType.float32)
+    var grad_output = ones(shape, DType.float32)
+
+    x._data.bitcast[Float32]()[0] = 0.0
+    x._data.bitcast[Float32]()[1] = Float32(pi / 2.0)
+    x._data.bitcast[Float32]()[2] = Float32(pi)
+
+    var grad_input = sin_backward(grad_output, x)
+
+    # d/dx[sin(x)] = cos(x)
+    # cos(0) = 1, cos(π/2) = 0, cos(π) = -1
+    assert_almost_equal(
+        grad_input._data.bitcast[Float32]()[0], Float32(1.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        grad_input._data.bitcast[Float32]()[1], Float32(0.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        grad_input._data.bitcast[Float32]()[2], Float32(-1.0), tolerance=1e-5
+    )
+
+
+fn test_sin_backward_gradient() raises:
+    """Test sin backward with numerical gradient checking."""
+    var shape = List[Int]()
+    shape.append(3)
+    var x = zeros(shape, DType.float32)
+
+    # Set non-uniform values
+    x._data.bitcast[Float32]()[0] = -0.5
+    x._data.bitcast[Float32]()[1] = 0.0
+    x._data.bitcast[Float32]()[2] = 0.5
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises escaping -> ExTensor:
+        return sin(inp)
+
+    var y = sin(x)
+    var grad_out = ones_like(y)
+
+    # Backward function wrapper
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises escaping -> ExTensor:
+        return sin_backward(grad, inp)
+
+    # Use numerical gradient checking (gold standard)
+    check_gradient(forward, backward_fn, x, grad_out, rtol=1e-3, atol=1e-6)
+
+
+fn test_cos_backward() raises:
+    """Test cos backward pass."""
+    var shape = List[Int]()
+    shape.append(3)
+    var x = zeros(shape, DType.float32)
+    var grad_output = ones(shape, DType.float32)
+
+    x._data.bitcast[Float32]()[0] = 0.0
+    x._data.bitcast[Float32]()[1] = Float32(pi / 2.0)
+    x._data.bitcast[Float32]()[2] = Float32(pi)
+
+    var grad_input = cos_backward(grad_output, x)
+
+    # d/dx[cos(x)] = -sin(x)
+    # -sin(0) = 0, -sin(π/2) = -1, -sin(π) = 0
+    assert_almost_equal(
+        grad_input._data.bitcast[Float32]()[0], Float32(0.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        grad_input._data.bitcast[Float32]()[1], Float32(-1.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        grad_input._data.bitcast[Float32]()[2], Float32(0.0), tolerance=1e-5
+    )
+
+
+fn test_cos_backward_gradient() raises:
+    """Test cos backward with numerical gradient checking."""
+    var shape = List[Int]()
+    shape.append(3)
+    var x = zeros(shape, DType.float32)
+
+    # Set non-uniform values
+    x._data.bitcast[Float32]()[0] = -0.5
+    x._data.bitcast[Float32]()[1] = 0.0
+    x._data.bitcast[Float32]()[2] = 0.5
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises escaping -> ExTensor:
+        return cos(inp)
+
+    var y = cos(x)
+    var grad_out = ones_like(y)
+
+    # Backward function wrapper
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises escaping -> ExTensor:
+        return cos_backward(grad, inp)
+
+    # Use numerical gradient checking (gold standard)
+    check_gradient(forward, backward_fn, x, grad_out, rtol=1e-3, atol=1e-6)
 
 
 # ============================================================================
