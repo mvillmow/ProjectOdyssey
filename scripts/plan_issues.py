@@ -1,10 +1,7 @@
 #!/usr/bin/env python3
-"""
-plan_issues.py
+"""Generate and post implementation plans for GitHub issues using Claude.
 
-Python replacement for plan-issues.sh.
-
-Design goals:
+This is a Python replacement for plan-issues.sh with design goals:
 - Exact behavioral parity with Bash version
 - No shell injection surface
 - Deterministic, debuggable execution
@@ -29,9 +26,12 @@ import sys
 import tempfile
 import threading
 import time
-from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import redirect_stderr, redirect_stdout
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 # ---------------------------------------------------------------------
 # Constants (match bash defaults)
@@ -73,6 +73,21 @@ PLAN_HEADER_REVISED = "## Detailed Implementation Plan (Revised)"
 # Status display refresh interval (faster for responsive updates)
 STATUS_REFRESH_INTERVAL = 0.1
 
+# Time constants for AM/PM parsing
+NOON_HOUR = 12
+MIDNIGHT_HOUR = 0
+
+# Error messages
+ERR_GITHUB_API_FAILED = "GitHub API failed after {retries} attempts: {error}"
+ERR_UNEXPECTED_GH_ISSUE = "Unexpected error in gh_issue_json"
+ERR_UNEXPECTED_FETCH = "Unexpected error in fetch_issues"
+ERR_MISSING_PROMPT = "Missing system prompt: {path}"
+ERR_BODY_TOO_LARGE = "Issue body too large ({size} bytes, max {max_size})"
+ERR_EMPTY_PLAN = "Empty plan"
+ERR_CLAUDE_RETRIES = "Claude retries exceeded"
+ERR_NO_EDITOR = "Neither specified editor nor vim found in PATH"
+ERR_POST_FAILED = "Failed to post comment"
+
 
 # ---------------------------------------------------------------------
 # Secure file helpers
@@ -96,7 +111,13 @@ class StatusTracker:
     # Slot ID for main thread
     MAIN_THREAD = -1
 
-    def __init__(self, max_workers: int):
+    def __init__(self, max_workers: int) -> None:
+        """Initialize the status tracker.
+
+        Args:
+            max_workers: Maximum number of concurrent worker threads.
+
+        """
         self._lock = threading.Lock()
         self._max_workers = max_workers
         # slot -> (issue_or_count, stage, info, stage_start_time)
@@ -258,7 +279,13 @@ class StatusTracker:
 
 
 def log(level: str, msg: str) -> None:
-    # DEBUG level only prints if DEBUG env var is set
+    """Log a message with timestamp and level prefix.
+
+    Args:
+        level: Log level (DEBUG, INFO, WARN, ERROR).
+        msg: Message to log.
+
+    """
     if level == "DEBUG" and not os.environ.get("DEBUG"):
         return
     ts = time.strftime("%H:%M:%S")
@@ -271,12 +298,21 @@ def log(level: str, msg: str) -> None:
 # ---------------------------------------------------------------------
 
 
-def run(cmd: list[str], *, timeout: int | None = None) -> subprocess.CompletedProcess:
+def run(cmd: list[str], *, timeout: int | None = None) -> subprocess.CompletedProcess[str]:
+    """Run a command and capture output.
+
+    Args:
+        cmd: Command and arguments to run.
+        timeout: Optional timeout in seconds.
+
+    Returns:
+        CompletedProcess with stdout and stderr captured.
+
+    """
     return subprocess.run(
         cmd,
         text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         timeout=timeout,
         check=False,
     )
@@ -296,14 +332,15 @@ def parse_reset_epoch(time_str: str, tz: str) -> int:
 
     Returns:
         Unix timestamp (epoch seconds) when the rate limit resets
+
     """
     if tz not in ALLOWED_TIMEZONES:
         tz = "America/Los_Angeles"
 
-    now_utc = dt.datetime.now(dt.timezone.utc)
+    now_utc = dt.datetime.now(dt.UTC)
     today = now_utc.astimezone(dt.ZoneInfo(tz)).date()
 
-    m = re.match(r"^(\d{1,2})(?::(\d{2}))?(am|pm)?$", time_str, re.I)
+    m = re.match(r"^(\d{1,2})(?::(\d{2}))?(am|pm)?$", time_str, re.IGNORECASE)
     if not m:
         return int(time.time()) + 3600
 
@@ -313,10 +350,10 @@ def parse_reset_epoch(time_str: str, tz: str) -> int:
 
     if ampm:
         ampm = ampm.lower()
-        if ampm == "pm" and hour < 12:
-            hour += 12
-        if ampm == "am" and hour == 12:
-            hour = 0
+        if ampm == "pm" and hour < NOON_HOUR:
+            hour += NOON_HOUR
+        if ampm == "am" and hour == NOON_HOUR:
+            hour = MIDNIGHT_HOUR
 
     local = dt.datetime.combine(
         today,
@@ -338,6 +375,7 @@ def detect_rate_limit(text: str) -> int | None:
 
     Returns:
         Unix timestamp when rate limit resets, or None if not rate limited
+
     """
     m = RATE_LIMIT_RE.search(text)
     if not m:
@@ -349,7 +387,7 @@ def wait_until(epoch: int) -> None:
     """Wait until the given epoch time, showing a countdown. Raises KeyboardInterrupt if interrupted."""
     interrupted = False
 
-    def handler(sig, frame):
+    def handler(_sig: int, _frame: object) -> None:
         nonlocal interrupted
         interrupted = True
 
@@ -387,6 +425,7 @@ def gh_issue_json(issue: int) -> dict:
 
     Raises:
         RuntimeError: If all retry attempts fail
+
     """
     for attempt in range(1, MAX_RETRIES + 1):
         cp = run(["gh", "issue", "view", str(issue), "--json", "title,body,comments"])
@@ -400,10 +439,11 @@ def gh_issue_json(issue: int) -> dict:
             log("INFO", f"Retrying in {delay}s...")
             time.sleep(delay)
         else:
-            raise RuntimeError(f"GitHub API failed after {MAX_RETRIES} attempts: {cp.stderr.strip()}")
+            msg = ERR_GITHUB_API_FAILED.format(retries=MAX_RETRIES, error=cp.stderr.strip())
+            raise RuntimeError(msg)
 
     # Should not reach here, but satisfy type checker
-    raise RuntimeError("Unexpected error in gh_issue_json")
+    raise RuntimeError(ERR_UNEXPECTED_GH_ISSUE)
 
 
 # ---------------------------------------------------------------------
@@ -413,6 +453,8 @@ def gh_issue_json(issue: int) -> dict:
 
 @dataclasses.dataclass(frozen=True)
 class Options:
+    """Configuration options for the plan generator."""
+
     auto: bool
     replan: bool
     replan_reason: str | None
@@ -427,6 +469,8 @@ class Options:
 
 @dataclasses.dataclass
 class Result:
+    """Result of processing a single GitHub issue."""
+
     issue: int
     status: str
     error: str | None = None
@@ -438,13 +482,27 @@ class Result:
 
 
 class Planner:
+    """Generates and posts implementation plans for GitHub issues using Claude."""
+
     def __init__(
         self,
         repo_root: pathlib.Path,
         tempdir: pathlib.Path,
         opts: Options,
         status_tracker: StatusTracker | None = None,
-    ):
+    ) -> None:
+        """Initialize the planner.
+
+        Args:
+            repo_root: Root directory of the repository.
+            tempdir: Temporary directory for diagnostic files.
+            opts: Configuration options.
+            status_tracker: Optional status tracker for parallel mode.
+
+        Raises:
+            RuntimeError: If the system prompt file is missing.
+
+        """
         self.repo_root = repo_root
         self.tempdir = tempdir
         self.opts = opts
@@ -452,7 +510,8 @@ class Planner:
 
         prompt_path = repo_root / ".claude/agents/chief-architect.md"
         if not prompt_path.exists():
-            raise RuntimeError(f"Missing system prompt: {prompt_path}")
+            msg = ERR_MISSING_PROMPT.format(path=prompt_path)
+            raise RuntimeError(msg)
         self.system_prompt = prompt_path.read_text()
 
         self._throttle_lock = threading.Lock()
@@ -468,6 +527,7 @@ class Planner:
 
         Returns:
             Dictionary with paths to plan, log, cmd, and prompt files
+
         """
         files = {
             "plan": self.tempdir / f"issue-{issue}-plan.md",
@@ -493,6 +553,7 @@ class Planner:
 
         Raises:
             RuntimeError: If all retry attempts fail
+
         """
         if explicit:
             return explicit
@@ -510,10 +571,11 @@ class Planner:
                 log("INFO", f"Retrying in {delay}s...")
                 time.sleep(delay)
             else:
-                raise RuntimeError(f"GitHub API failed after {MAX_RETRIES} attempts: {cp.stderr.strip()}")
+                msg = ERR_GITHUB_API_FAILED.format(retries=MAX_RETRIES, error=cp.stderr.strip())
+                raise RuntimeError(msg)
 
         # Should not reach here, but satisfy type checker
-        raise RuntimeError("Unexpected error in fetch_issues")
+        raise RuntimeError(ERR_UNEXPECTED_FETCH)
 
     # --------------------------------------------------------------
 
@@ -528,6 +590,7 @@ class Planner:
 
         Returns:
             Result dataclass with issue number, status, and optional error
+
         """
 
         def update_status(stage: str, info: str = "") -> None:
@@ -556,7 +619,8 @@ class Planner:
             # Body size validation
             body = data.get("body") or ""
             if len(body) > MAX_BODY_SIZE:
-                raise RuntimeError(f"Issue body too large ({len(body)} bytes, max {MAX_BODY_SIZE})")
+                msg = ERR_BODY_TOO_LARGE.format(size=len(body), max_size=MAX_BODY_SIZE)
+                raise RuntimeError(msg)
 
             # Check for existing plan (with rate-limit detection)
             update_status("Checking", "existing plan")
@@ -587,7 +651,7 @@ class Planner:
             plan = self.generate_plan(issue, title, body, diag_files, update_status)
 
             if not plan.strip():
-                raise RuntimeError("Empty plan")
+                raise RuntimeError(ERR_EMPTY_PLAN)
 
             if not self.opts.auto:
                 update_status("Reviewing")
@@ -643,6 +707,7 @@ class Planner:
 
         Returns:
             Generated plan as a string
+
         """
 
         def status(stage: str, info: str = "") -> None:
@@ -765,7 +830,7 @@ claude --model opus \\
             log("WARN", f"Claude returned exit code {proc.returncode}, retrying...")
             time.sleep(2**attempt)
 
-        raise RuntimeError("Claude retries exceeded")
+        raise RuntimeError(ERR_CLAUDE_RETRIES)
 
     # --------------------------------------------------------------
 
@@ -779,6 +844,7 @@ claude --model opus \\
 
         Returns:
             Formatted prompt string for Claude
+
         """
         parts = [
             "Create a detailed implementation plan for the following GitHub issue:\n\n",
@@ -805,7 +871,7 @@ Output markdown with:
 
 End with:
 ## Resource Usage
-"""
+""",
         )
         return "".join(parts)
 
@@ -819,6 +885,7 @@ End with:
 
         Returns:
             The (possibly modified) plan after editing, or empty string if user deleted content
+
         """
         editor = os.environ.get("EDITOR", "vim")
         cmd = pathlib.Path(editor).name
@@ -832,7 +899,7 @@ End with:
             log("WARN", f"Editor '{editor}' not found, trying vim...")
             editor_path = shutil.which("vim")
             if not editor_path:
-                raise RuntimeError("Neither specified editor nor vim found in PATH")
+                raise RuntimeError(ERR_NO_EDITOR)
 
         path = self.tempdir / "review.md"
         write_secure(path, plan)
@@ -851,6 +918,7 @@ End with:
 
         Raises:
             RuntimeError: If posting the comment fails
+
         """
         header = PLAN_HEADER_REVISED if self.opts.replan else PLAN_HEADER
         header += "\n\n"
@@ -870,7 +938,7 @@ End with:
         proc.wait()
 
         if proc.returncode != 0:
-            raise RuntimeError("Failed to post comment")
+            raise RuntimeError(ERR_POST_FAILED)
 
 
 # ---------------------------------------------------------------------
@@ -879,6 +947,7 @@ End with:
 
 
 def main() -> int:
+    """CLI entry point for the plan generator."""
     p = argparse.ArgumentParser(
         description="Generate and post implementation plans for GitHub issues using Claude",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -921,9 +990,8 @@ Examples:
         issues = [int(part.strip()) for part in args.issues.split(",")]
 
     # Validate replan reason doesn't contain dangerous shell characters
-    if args.replan_reason:
-        if any(c in args.replan_reason for c in DANGEROUS_SHELL_CHARS):
-            p.error("--replan-reason contains unsafe shell characters")
+    if args.replan_reason and any(c in args.replan_reason for c in DANGEROUS_SHELL_CHARS):
+        p.error("--replan-reason contains unsafe shell characters")
 
     opts = Options(
         auto=args.auto,
@@ -952,7 +1020,7 @@ Examples:
 
     atexit.register(cleanup_handler)
 
-    def signal_handler(signum: int, frame: object) -> None:
+    def signal_handler(signum: int, _frame: object) -> None:
         cleanup_handler()
         sys.exit(128 + signum)
 
