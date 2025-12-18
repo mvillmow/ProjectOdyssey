@@ -1145,6 +1145,58 @@ fn _dispatch_sqrt_backward(
         raise Error("sqrt_backward: unsupported dtype")
 
 
+fn _sin_backward_impl[
+    dtype: DType
+](result: ExTensor, grad_output: ExTensor, x: ExTensor, numel: Int):
+    """Dtype-specialized sin backward: grad * cos(x)."""
+    var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
+    var x_ptr = x._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+    for i in range(numel):
+        out_ptr[i] = grad_ptr[i] * math_cos(x_ptr[i])
+
+
+fn _dispatch_sin_backward(
+    result: ExTensor, grad_output: ExTensor, x: ExTensor, numel: Int
+) raises:
+    """Runtime dispatch for sin backward pass."""
+    var dtype = grad_output.dtype()
+    if dtype == DType.float16:
+        _sin_backward_impl[DType.float16](result, grad_output, x, numel)
+    elif dtype == DType.float32:
+        _sin_backward_impl[DType.float32](result, grad_output, x, numel)
+    elif dtype == DType.float64:
+        _sin_backward_impl[DType.float64](result, grad_output, x, numel)
+    else:
+        raise Error("sin_backward: unsupported dtype")
+
+
+fn _cos_backward_impl[
+    dtype: DType
+](result: ExTensor, grad_output: ExTensor, x: ExTensor, numel: Int):
+    """Dtype-specialized cos backward: grad * (-sin(x))."""
+    var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
+    var x_ptr = x._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+    for i in range(numel):
+        out_ptr[i] = grad_ptr[i] * (-math_sin(x_ptr[i]))
+
+
+fn _dispatch_cos_backward(
+    result: ExTensor, grad_output: ExTensor, x: ExTensor, numel: Int
+) raises:
+    """Runtime dispatch for cos backward pass."""
+    var dtype = grad_output.dtype()
+    if dtype == DType.float16:
+        _cos_backward_impl[DType.float16](result, grad_output, x, numel)
+    elif dtype == DType.float32:
+        _cos_backward_impl[DType.float32](result, grad_output, x, numel)
+    elif dtype == DType.float64:
+        _cos_backward_impl[DType.float64](result, grad_output, x, numel)
+    else:
+        raise Error("cos_backward: unsupported dtype")
+
+
 fn _abs_backward_impl[
     dtype: DType
 ](result: ExTensor, grad_output: ExTensor, x: ExTensor, numel: Int):
@@ -1372,6 +1424,52 @@ fn sqrt_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     """
     var result = ExTensor(grad_output.shape(), grad_output.dtype())
     _dispatch_sqrt_backward(result, grad_output, x, grad_output.numel())
+    return result
+
+
+fn sin_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
+    """Compute gradient for sine function.
+
+        For Y = sin(X), given ∂L/∂Y, computes:
+            ∂L/∂X = ∂L/∂Y * cos(X)
+
+    Args:
+            grad_output: Gradient from upstream (∂L/∂Y).
+            x: Input from forward pass.
+
+    Returns:
+            Gradient w.r.t. input (∂L/∂X).
+
+    Examples:
+            var x = full([3, 4], pi/2)
+            var grad_y = ones([3, 4])
+            var grad_x = sin_backward(grad_y, x)  # grad_x = grad_y * cos(pi/2) ≈ 0
+    """
+    var result = ExTensor(grad_output.shape(), grad_output.dtype())
+    _dispatch_sin_backward(result, grad_output, x, grad_output.numel())
+    return result
+
+
+fn cos_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
+    """Compute gradient for cosine function.
+
+        For Y = cos(X), given ∂L/∂Y, computes:
+            ∂L/∂X = ∂L/∂Y * (-sin(X))
+
+    Args:
+            grad_output: Gradient from upstream (∂L/∂Y).
+            x: Input from forward pass.
+
+    Returns:
+            Gradient w.r.t. input (∂L/∂X).
+
+    Examples:
+            var x = full([3, 4], 0.0)
+            var grad_y = ones([3, 4])
+            var grad_x = cos_backward(grad_y, x)  # grad_x = grad_y * (-sin(0)) = 0
+    """
+    var result = ExTensor(grad_output.shape(), grad_output.dtype())
+    _dispatch_cos_backward(result, grad_output, x, grad_output.numel())
     return result
 
 

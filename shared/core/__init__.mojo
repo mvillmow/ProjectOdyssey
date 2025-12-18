@@ -358,6 +358,8 @@ from .elementwise import (
     exp_backward,
     log_backward,
     sqrt_backward,
+    sin_backward,
+    cos_backward,
     abs_backward,
     clip_backward,
     log10_backward,
