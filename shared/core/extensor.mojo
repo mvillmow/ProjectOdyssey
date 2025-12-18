@@ -680,6 +680,176 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
         # Return value based on dtype
         return self._get_float32(index)
 
+    fn __getitem__(self, slice: Slice) raises -> Self:
+        """Get slice of 1D tensor [start:end] or [start:end:step].
+
+        Args:
+            slice: Slice object specifying start, end, and optional step.
+
+        Returns:
+            New tensor view with sliced data.
+
+        Raises:
+            Error: If tensor is not 1D or indices are invalid.
+
+        Example:
+            ```mojo
+            var t = arange(0.0, 10.0, 1.0, DType.float32)
+            var sliced = t[2:7]  # [2, 3, 4, 5, 6]
+            var strided = t[0:10:2]  # [0, 2, 4, 6, 8]
+            var reversed = t[::-1]  # [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+        ```
+        """
+        if len(self._shape) != 1:
+            raise Error("Single slice only supported for 1D tensors")
+
+        # Handle slice parameters
+        var size = self._shape[0]
+        var start = slice.start.or_else(0)
+        var end = slice.end.or_else(size)
+        var step = slice.step.or_else(1)
+
+        # Normalize negative indices
+        if start < 0:
+            start = size + start
+        if end < 0:
+            end = size + end
+
+        # Clamp to valid range
+        start = max(0, min(start, size))
+        end = max(0, min(end, size))
+
+        # Handle negative step (reverse)
+        var result_size: Int
+        if step < 0:
+            # For reverse slicing
+            var neg_step = -step
+            # Swap start and end, adjust for reverse indexing
+            var temp = start
+            start = end if end < size - 1 else size - 1
+            end = temp
+
+            # Calculate size
+            result_size = max(0, ceildiv(start - end + 1, neg_step))
+
+            # Create result tensor with shape
+            var shape = List[Int]()
+            shape.append(result_size)
+            var result = Self(shape, self._dtype)
+            result._is_view = False
+
+            # Copy in reverse
+            var dtype_size = self._get_dtype_size()
+            var src_ptr = self._data
+            var dst_ptr = result._data
+
+            for i in range(result_size):
+                var src_idx = start - i * neg_step
+                if src_idx >= 0 and src_idx < size:
+                    var src_offset = src_idx * dtype_size
+                    var dst_offset = i * dtype_size
+                    for b in range(dtype_size):
+                        dst_ptr[dst_offset + b] = src_ptr[src_offset + b]
+
+            return result^
+        else:
+            # Normal forward slice
+            result_size = max(0, ceildiv(end - start, step))
+
+        # Create result tensor with shape
+        var shape = List[Int]()
+        shape.append(result_size)
+        var result = Self(shape, self._dtype)
+        result._is_view = False  # Strided slice creates copy, not view
+
+        # Copy strided data
+        var dtype_size = self._get_dtype_size()
+        var src_ptr = self._data
+        var dst_ptr = result._data
+
+        for i in range(result_size):
+            var src_idx = start + i * step
+            var src_offset = src_idx * dtype_size
+            var dst_offset = i * dtype_size
+
+            # Copy element (byte-wise)
+            for b in range(dtype_size):
+                dst_ptr[dst_offset + b] = src_ptr[src_offset + b]
+
+        return result^
+
+    fn __getitem__(self, *slices: Slice) raises -> Self:
+        """Get multi-dimensional slice (e.g., tensor[a:b, c:d, :]).
+
+        Args:
+            slices: Variable number of Slice objects, one per dimension.
+
+        Returns:
+            New tensor view with sliced data.
+
+        Raises:
+            Error: If number of slices doesn't match tensor dimensions.
+
+        Example:
+            ```mojo
+            var t = zeros([10, 8, 6], DType.float32)
+            var sliced = t[2:7, :, 1:4]  # [5, 8, 3] tensor
+        ```
+        """
+        var num_slices = len(slices)
+        var num_dims = len(self._shape)
+
+        if num_slices != num_dims:
+            raise Error(
+                "Number of slices ("
+                + String(num_slices)
+                + ") must match number of dimensions ("
+                + String(num_dims)
+                + ")"
+            )
+
+        # Start with current tensor
+        var result = self.copy()
+        result._is_view = True
+
+        # Apply each slice to corresponding dimension
+        var offset_bytes = 0
+        var dtype_size = self._get_dtype_size()
+
+        for dim in range(num_dims):
+            var s = slices[dim]
+            var size = result._shape[dim]
+
+            # Handle slice parameters
+            var start = s.start.or_else(0)
+            var end = s.end.or_else(size)
+
+            # Normalize negative indices
+            if start < 0:
+                start = size + start
+            if end < 0:
+                end = size + end
+
+            # Clamp to valid range
+            start = max(0, min(start, size))
+            end = max(0, min(end, size))
+
+            # Update shape for this dimension
+            result._shape[dim] = end - start
+
+            # Calculate offset for this dimension
+            offset_bytes += start * result._strides[dim] * dtype_size
+
+        # Update data pointer
+        result._data = self._data.offset(offset_bytes)
+
+        # Recalculate numel
+        result._numel = 1
+        for i in range(len(result._shape)):
+            result._numel *= result._shape[i]
+
+        return result^
+
     fn _get_float64(self, index: Int) -> Float64:
         """Internal: Get value at index as Float64 (assumes float-compatible dtype).
 
