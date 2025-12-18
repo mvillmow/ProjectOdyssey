@@ -29,9 +29,9 @@ import sys
 import tempfile
 import threading
 import time
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from contextlib import redirect_stdout, redirect_stderr
-from typing import Callable, Optional
+from contextlib import redirect_stderr, redirect_stdout
 
 # ---------------------------------------------------------------------
 # Constants (match bash defaults)
@@ -103,7 +103,7 @@ class StatusTracker:
         # For main thread (slot -1), issue_or_count is a count or 0
         self._slots: dict[int, tuple[int, str, str, float]] = {}
         self._stop_event = threading.Event()
-        self._display_thread: Optional[threading.Thread] = None
+        self._display_thread: threading.Thread | None = None
         self._lines_printed = 0
         self._update_event = threading.Event()  # Signal immediate refresh
         self._completed_count = 0
@@ -271,7 +271,7 @@ def log(level: str, msg: str) -> None:
 # ---------------------------------------------------------------------
 
 
-def run(cmd: list[str], *, timeout: Optional[int] = None) -> subprocess.CompletedProcess:
+def run(cmd: list[str], *, timeout: int | None = None) -> subprocess.CompletedProcess:
     return subprocess.run(
         cmd,
         text=True,
@@ -330,7 +330,7 @@ def parse_reset_epoch(time_str: str, tz: str) -> int:
     return int(local.timestamp())
 
 
-def detect_rate_limit(text: str) -> Optional[int]:
+def detect_rate_limit(text: str) -> int | None:
     """Detect rate limit message in text and return reset epoch if found.
 
     Args:
@@ -415,7 +415,7 @@ def gh_issue_json(issue: int) -> dict:
 class Options:
     auto: bool
     replan: bool
-    replan_reason: Optional[str]
+    replan_reason: str | None
     dry_run: bool
     cleanup: bool
     parallel: bool
@@ -429,7 +429,7 @@ class Options:
 class Result:
     issue: int
     status: str
-    error: Optional[str] = None
+    error: str | None = None
 
 
 # ---------------------------------------------------------------------
@@ -443,7 +443,7 @@ class Planner:
         repo_root: pathlib.Path,
         tempdir: pathlib.Path,
         opts: Options,
-        status_tracker: Optional[StatusTracker] = None,
+        status_tracker: StatusTracker | None = None,
     ):
         self.repo_root = repo_root
         self.tempdir = tempdir
@@ -481,7 +481,7 @@ class Planner:
 
     # --------------------------------------------------------------
 
-    def fetch_issues(self, explicit: Optional[list[int]], limit: Optional[int]) -> list[int]:
+    def fetch_issues(self, explicit: list[int] | None, limit: int | None) -> list[int]:
         """Fetch list of issue numbers to process.
 
         Args:
@@ -630,7 +630,7 @@ class Planner:
         title: str,
         body: str,
         diag_files: dict[str, pathlib.Path],
-        update_status: Optional[Callable[[str, str], None]] = None,
+        update_status: Callable[[str, str], None] | None = None,
     ) -> str:
         """Generate an implementation plan using Claude.
 
@@ -837,7 +837,7 @@ End with:
         path = self.tempdir / "review.md"
         write_secure(path, plan)
 
-        subprocess.run([editor_path, str(path)])
+        subprocess.run([editor_path, str(path)], check=False)
         return path.read_text()
 
     # --------------------------------------------------------------
@@ -912,13 +912,13 @@ Examples:
         p.error("--parallel requires --auto")
 
     # Validate issue numbers are numeric
-    issues: Optional[list[int]] = None
+    issues: list[int] | None = None
     if args.issues:
-        for i in args.issues.split(","):
-            i = i.strip()
-            if not i.isdigit():
-                p.error(f"Invalid issue number '{i}' - must be numeric")
-        issues = [int(i.strip()) for i in args.issues.split(",")]
+        for part in args.issues.split(","):
+            stripped = part.strip()
+            if not stripped.isdigit():
+                p.error(f"Invalid issue number '{stripped}' - must be numeric")
+        issues = [int(part.strip()) for part in args.issues.split(",")]
 
     # Validate replan reason doesn't contain dangerous shell characters
     if args.replan_reason:
@@ -961,10 +961,10 @@ Examples:
 
     # Startup status messages (match bash output)
     log("INFO", f"Temp directory: {tempdir}")
-    log(
-        "INFO",
-        f"Mode: {'AUTO (non-interactive, plans auto-posted)' if opts.auto else 'INTERACTIVE (editor review before posting)'}",
+    mode_str = (
+        "AUTO (non-interactive, plans auto-posted)" if opts.auto else "INTERACTIVE (editor review before posting)"
     )
+    log("INFO", f"Mode: {mode_str}")
     if opts.parallel:
         log("INFO", f"Parallel: ENABLED ({opts.max_parallel} jobs)")
     if opts.dry_run:
@@ -979,7 +979,7 @@ Examples:
         log("INFO", "Replan: DISABLED (will skip issues with existing plans)")
 
     # Create status tracker for parallel mode
-    status_tracker: Optional[StatusTracker] = None
+    status_tracker: StatusTracker | None = None
     if opts.parallel:
         status_tracker = StatusTracker(opts.max_parallel)
 
