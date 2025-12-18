@@ -446,58 +446,77 @@ def gh_issue_json(issue: int) -> dict:
     raise RuntimeError(ERR_UNEXPECTED_GH_ISSUE)
 
 
-def score_plan(body: str) -> int:
-    """Score a plan based on quality heuristics.
+def select_best_plan_with_claude(plans: list[tuple[int, str]], timeout: int = 120) -> int:
+    """Use Claude to evaluate multiple plans and select the best one.
 
     Args:
-        body: The plan comment body text.
+        plans: List of (index, plan_body) tuples.
+        timeout: Timeout in seconds for Claude call.
 
     Returns:
-        Quality score (higher is better).
+        Index of the best plan (0-based).
 
     """
-    score = 0
-
-    # Base score from length (up to 5000 chars, diminishing returns after)
-    score += min(len(body), 5000) // 100  # Max 50 points
-
-    # Required sections (10 points each)
-    sections = [
-        "summary",
-        "implementation",
-        "step",
-        "file",
-        "test",
-        "success criteria",
-        "resource usage",
+    # Build prompt with all plans
+    prompt_parts = [
+        "You are evaluating multiple implementation plans for the same GitHub issue.",
+        "Analyze each plan and select the BEST one based on:",
+        "- Completeness (covers all aspects of the issue)",
+        "- Clarity (well-structured, easy to follow)",
+        "- Actionability (specific steps, file paths, concrete tasks)",
+        "- Feasibility (realistic approach, considers edge cases)",
+        "",
+        "Here are the plans to evaluate:",
+        "",
     ]
-    body_lower = body.lower()
-    for section in sections:
-        if section in body_lower:
-            score += 10
 
-    # Code blocks indicate concrete implementation details (5 points each, max 25)
-    code_blocks = body.count("```")
-    score += min(code_blocks * 5, 25)
+    for idx, body in plans:
+        # Truncate very long plans to avoid context limits
+        truncated = body[:8000] + "..." if len(body) > 8000 else body
+        prompt_parts.append(f"=== PLAN {idx + 1} ===")
+        prompt_parts.append(truncated)
+        prompt_parts.append("")
 
-    # File paths indicate specific changes (3 points each, max 30)
-    file_refs = len(re.findall(r"[a-zA-Z_/]+\.(mojo|py|md|yaml|yml|json)", body))
-    score += min(file_refs * 3, 30)
+    prompt_parts.append("Respond with ONLY the plan number (1, 2, 3, etc.) of the best plan.")
+    prompt_parts.append("Do not include any other text, just the number.")
 
-    # Penalties
-    # Truncated plans (ends abruptly without proper closing)
-    if not body.rstrip().endswith((".", "```", "criteria", "---")):
-        score -= 20
+    prompt = "\n".join(prompt_parts)
 
-    # Very short plans are likely incomplete
-    if len(body) < 500:
-        score -= 30
+    log("INFO", "Asking Claude to evaluate plans...")
 
-    # Rate-limited indicator (should have been filtered, but just in case)
-    if "Limit reached" in body:
-        score -= 100
+    # Call Claude to evaluate
+    cp = subprocess.run(
+        [
+            "claude",
+            "--model",
+            "haiku",  # Use haiku for fast, cheap evaluation
+            "-p",
+            prompt,
+        ],
+        text=True,
+        capture_output=True,
+        timeout=timeout,
+        check=False,
+    )
 
-    return score
+    if cp.returncode != 0:
+        log("WARN", f"Claude evaluation failed: {cp.stderr.strip()}")
+        # Fallback to first plan (longest by convention)
+        return 0
+
+    # Parse response - expect just a number
+    response = cp.stdout.strip()
+    # Extract first number found in response
+    match = re.search(r"\b(\d+)\b", response)
+    if match:
+        selected = int(match.group(1)) - 1  # Convert to 0-based index
+        if 0 <= selected < len(plans):
+            log("INFO", f"Claude selected plan {selected + 1}")
+            return selected
+
+    log("WARN", f"Could not parse Claude response: {response}")
+    # Fallback to first plan
+    return 0
 
 
 def delete_plan_comments(issue: int, comments: list[dict], *, pre_filtered: bool = False) -> int:
@@ -745,27 +764,22 @@ class Planner:
 
                 if valid_plan_comments:
                     if len(valid_plan_comments) > 1:
-                        # Multiple valid plans - score them and keep the best
-                        update_status("Analyzing", f"{len(valid_plan_comments)} plans")
-                        log("INFO", f"Found {len(valid_plan_comments)} valid plans, analyzing quality...")
+                        # Multiple valid plans - use Claude to pick the best
+                        update_status("Evaluating", f"{len(valid_plan_comments)} plans")
+                        log("INFO", f"Found {len(valid_plan_comments)} valid plans, asking Claude to evaluate...")
 
-                        scored_plans = []
-                        for c in valid_plan_comments:
+                        # Prepare plans for evaluation
+                        plans_for_eval = []
+                        for idx, c in enumerate(valid_plan_comments):
                             plan_body = c.get("body") or ""
-                            plan_score = score_plan(plan_body)
-                            plan_len = len(plan_body)
-                            scored_plans.append((plan_score, plan_len, c))
-                            log("DEBUG", f"  Plan score: {plan_score} (len={plan_len})")
+                            plans_for_eval.append((idx, plan_body))
+                            log("DEBUG", f"  Plan {idx + 1}: {len(plan_body)} chars")
 
-                        # Sort by score descending, then by length descending (tiebreaker)
-                        scored_plans.sort(key=lambda x: (x[0], x[1]), reverse=True)
-                        best_plan = scored_plans[0]
-                        inferior_plans = [c for _, _, c in scored_plans[1:]]
+                        # Use Claude to select the best plan
+                        best_idx = select_best_plan_with_claude(plans_for_eval, timeout=self.opts.timeout)
+                        inferior_plans = [c for idx, c in enumerate(valid_plan_comments) if idx != best_idx]
 
-                        log(
-                            "INFO",
-                            f"Best plan score: {best_plan[0]} (len={best_plan[1]}), deleting {len(inferior_plans)} inferior plan(s)",
-                        )
+                        log("INFO", f"Keeping plan {best_idx + 1}, deleting {len(inferior_plans)} other plan(s)")
 
                         # Delete inferior plans
                         if not self.opts.dry_run:
