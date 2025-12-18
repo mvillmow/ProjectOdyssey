@@ -157,7 +157,7 @@ class StatusTracker:
 
     def _format_elapsed(self, start_time: float) -> str:
         """Format elapsed time as MM:SS."""
-        elapsed = int(time.time() - start_time)
+        elapsed = max(0, int(time.time() - start_time))  # Prevent negative times
         minutes, seconds = divmod(elapsed, 60)
         return f"{minutes:02d}:{seconds:02d}"
 
@@ -190,16 +190,23 @@ class StatusTracker:
     def _display_loop(self) -> None:
         """Background thread that refreshes the status display."""
         last_main_stage = ""
+        first_render = True
+
         while not self._stop_event.is_set():
             lines = self._render_status()
+            num_lines = len(lines)
 
             if self._is_tty:
-                # Restore cursor to saved position and redraw all lines
-                sys.stdout.write("\033[u")  # Restore cursor position
+                # After first render, move cursor up to overwrite
+                if not first_render:
+                    sys.stdout.write(f"\033[{num_lines}A")  # Move up N lines
+
+                # Print each line: go to column 0, print, clear rest of line
                 for line in lines:
-                    # Print line, clear to end of line, then newline
-                    sys.stdout.write(f"{line}\033[K\n")
+                    sys.stdout.write(f"\r{line}\033[K\n")
                 sys.stdout.flush()
+                first_render = False
+                self._lines_printed = num_lines
             else:
                 # In non-TTY mode, print a simple progress line when stage changes
                 with self._lock:
@@ -219,22 +226,16 @@ class StatusTracker:
 
     def start_display(self) -> None:
         """Start the background display thread."""
-        # In TTY mode, save cursor position before initial render
+        # In TTY mode, hide cursor for cleaner updates
         if self._is_tty:
-            sys.stdout.write("\033[s")  # Save cursor position
-
-        # Force an initial render immediately so display is visible right away
-        lines = self._render_status()
-        for line in lines:
-            if self._is_tty:
-                sys.stdout.write(f"{line}\033[K\n")  # Line + clear to EOL + newline
-            else:
-                print(line)
-        sys.stdout.flush()
-        self._lines_printed = len(lines)
+            sys.stdout.write("\033[?25l")  # Hide cursor
+            sys.stdout.flush()
 
         self._display_thread = threading.Thread(target=self._display_loop, daemon=True)
         self._display_thread.start()
+
+        # Give the display thread a moment to render first frame
+        time.sleep(0.05)
 
     def stop_display(self) -> None:
         """Stop the background display thread."""
@@ -242,11 +243,10 @@ class StatusTracker:
         self._update_event.set()  # Wake up the display thread
         if self._display_thread:
             self._display_thread.join(timeout=1.0)
-        # In TTY mode, move past the status lines so subsequent output is below
+
+        # In TTY mode, show cursor again and add spacing
         if self._is_tty:
-            # Restore to saved position, then move down past all lines
-            sys.stdout.write("\033[u")  # Restore cursor
-            sys.stdout.write(f"\033[{self._lines_printed}B")  # Move down N lines
+            sys.stdout.write("\033[?25h")  # Show cursor
             sys.stdout.write("\n")  # Extra newline for spacing
             sys.stdout.flush()
         self._lines_printed = 0
