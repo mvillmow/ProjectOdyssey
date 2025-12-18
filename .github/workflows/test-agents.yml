@@ -27,6 +27,9 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install dependencies
+        run: pip install pyyaml
+
       - name: Validate agent configurations
         run: python3 tests/agents/validate_configs.py .claude/agents/
 
