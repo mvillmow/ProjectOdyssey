@@ -46,6 +46,14 @@ repos:
         files: ^scripts/.*\.py$
         types: [python]
         pass_filenames: false
+      - id: ruff-check-scripts
+        name: Ruff Check Scripts
+        description: Lint Python files in scripts/ using pixi run ruff check
+        entry: pixi run ruff check scripts/
+        language: system
+        files: ^scripts/.*\.py$
+        types: [python]
+        pass_filenames: false
 
   # Test coverage validation
   - repo: local
