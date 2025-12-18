@@ -835,3 +835,363 @@ fn linear_output_shape(batch_size: Int, out_features: Int) -> Tuple[Int, Int]:
     ```
     """
     return Tuple[Int, Int](batch_size, out_features)
+
+
+fn tile(tensor: ExTensor, reps: List[Int]) raises -> ExTensor:
+    """Tile tensor by repeating along each dimension.
+
+    Args:
+            tensor: Input tensor.
+            reps: Number of repetitions along each dimension.
+
+    Returns:
+            Tiled tensor with shape[i] = input_shape[i] * reps[i].
+
+    Raises:
+            Error: If reps is empty.
+
+    Examples:
+    ```
+            var a = arange(0.0, 3.0, 1.0, DType.float32)  # [0, 1, 2]
+            var reps = List[Int]()
+            reps.append(3)
+            var b = tile(a, reps)  # [0, 1, 2, 0, 1, 2, 0, 1, 2]
+    ```
+    """
+    if len(reps) == 0:
+        raise Error("tile: reps must have at least one element")
+
+    var shape = tensor.shape()
+    var ndim = len(shape)
+    var nreps = len(reps)
+
+    # Determine output dimensions
+    var out_ndim = max(ndim, nreps)
+
+    # Pad shapes with 1s if needed
+    var padded_shape = List[Int]()
+    var padded_reps = List[Int]()
+
+    # Pad input shape on the left
+    for i in range(out_ndim - ndim):
+        padded_shape.append(1)
+    for i in range(ndim):
+        padded_shape.append(shape[i])
+
+    # Pad reps on the left
+    for i in range(out_ndim - nreps):
+        padded_reps.append(1)
+    for i in range(nreps):
+        padded_reps.append(reps[i])
+
+    # Compute result shape
+    var result_shape = List[Int]()
+    for i in range(out_ndim):
+        result_shape.append(padded_shape[i] * padded_reps[i])
+
+    # Create result tensor
+    var result = ExTensor(result_shape, tensor.dtype())
+    var result_numel = result.numel()
+
+    # Fill result by repeating input
+    for i in range(result_numel):
+        # Compute coordinates in result tensor
+        var coords = List[Int]()
+        var temp_i = i
+        for j in range(out_ndim):
+            var stride = 1
+            for k in range(j + 1, out_ndim):
+                stride *= result_shape[k]
+            var coord = temp_i // stride
+            coords.append(coord)
+            temp_i = temp_i % stride
+
+        # Map to source coordinates using modulo
+        var src_idx = 0
+        for j in range(out_ndim):
+            var src_coord = coords[j] % padded_shape[j]
+            var src_stride = 1
+            for k in range(j + 1, out_ndim):
+                src_stride *= padded_shape[k]
+            src_idx += src_coord * src_stride
+
+        # Adjust for original tensor dimensions
+        var adjusted_idx = 0
+        if out_ndim > ndim:
+            # Remove padding from source index calculation
+            var temp_idx = src_idx
+            for j in range(out_ndim - ndim):
+                var stride = 1
+                for k in range(j + 1, out_ndim):
+                    stride *= padded_shape[k]
+                temp_idx = temp_idx % stride
+            adjusted_idx = temp_idx
+        else:
+            adjusted_idx = src_idx
+
+        # Copy value
+        var val = tensor._get_float64(adjusted_idx)
+        result._set_float64(i, val)
+
+    return result^
+
+
+fn repeat(tensor: ExTensor, n: Int, axis: Int = -1) raises -> ExTensor:
+    """Repeat each element n times along axis.
+
+    Args:
+            tensor: Input tensor.
+            n: Number of times to repeat each element.
+            axis: Axis along which to repeat (default -1 flattens first).
+
+    Returns:
+            Tensor with elements repeated.
+
+    Raises:
+            Error: If axis is out of range or n < 1.
+
+    Examples:
+    ```
+            var a = arange(0.0, 3.0, 1.0, DType.float32)  # [0, 1, 2]
+            var b = repeat(a, 2)  # [0, 0, 1, 1, 2, 2] (flatten then repeat)
+    ```
+    """
+    if n < 1:
+        raise Error("repeat: n must be >= 1")
+
+    if axis == -1:
+        # Flatten then repeat each element
+        var flat = flatten(tensor)
+        var numel = flat.numel()
+        var result_shape = List[Int]()
+        result_shape.append(numel * n)
+        var result = ExTensor(result_shape, tensor.dtype())
+
+        for i in range(numel):
+            var val = flat._get_float64(i)
+            for j in range(n):
+                result._set_float64(i * n + j, val)
+
+        return result^
+    else:
+        # Repeat along specific axis
+        var shape = tensor.shape()
+        var ndim = len(shape)
+
+        # Handle negative axis
+        var actual_axis = axis if axis >= 0 else ndim + axis
+        if actual_axis < 0 or actual_axis >= ndim:
+            raise Error("repeat: axis out of range")
+
+        # Compute result shape
+        var result_shape = List[Int]()
+        for i in range(ndim):
+            if i == actual_axis:
+                result_shape.append(shape[i] * n)
+            else:
+                result_shape.append(shape[i])
+
+        # Create result tensor
+        var result = ExTensor(result_shape, tensor.dtype())
+        var result_numel = result.numel()
+
+        # Fill result by repeating elements
+        for i in range(result_numel):
+            # Compute coordinates in result tensor
+            var coords = List[Int]()
+            var temp_i = i
+            for j in range(ndim):
+                var stride = 1
+                for k in range(j + 1, ndim):
+                    stride *= result_shape[k]
+                var coord = temp_i // stride
+                coords.append(coord)
+                temp_i = temp_i % stride
+
+            # Map to source coordinates
+            var src_coords = List[Int]()
+            for j in range(ndim):
+                if j == actual_axis:
+                    src_coords.append(coords[j] // n)
+                else:
+                    src_coords.append(coords[j])
+
+            # Compute source index
+            var src_idx = 0
+            for j in range(ndim):
+                var src_stride = 1
+                for k in range(j + 1, ndim):
+                    src_stride *= shape[k]
+                src_idx += src_coords[j] * src_stride
+
+            # Copy value
+            var val = tensor._get_float64(src_idx)
+            result._set_float64(i, val)
+
+        return result^
+
+
+fn broadcast_to(tensor: ExTensor, target_shape: List[Int]) raises -> ExTensor:
+    """Broadcast tensor to target shape.
+
+    Args:
+            tensor: Input tensor.
+            target_shape: Target shape to broadcast to.
+
+    Returns:
+            Broadcasted tensor.
+
+    Raises:
+            Error: If shapes are not broadcast-compatible.
+
+    Examples:
+    ```
+            var a = arange(0.0, 3.0, 1.0, DType.float32)  # Shape (3,)
+            var target = List[Int]()
+            target.append(4)
+            target.append(3)
+            var b = broadcast_to(a, target)  # Shape (4, 3)
+    ```
+    """
+    from .broadcasting import (
+        are_shapes_broadcastable,
+        compute_broadcast_strides,
+    )
+
+    var shape = tensor.shape()
+
+    # Check if broadcast is valid
+    if not are_shapes_broadcastable(shape, target_shape):
+        raise Error("broadcast_to: shapes are not broadcast-compatible")
+
+    # Compute broadcast strides
+    var broadcast_strides = compute_broadcast_strides(shape, target_shape)
+
+    # Create result tensor
+    var result = ExTensor(target_shape, tensor.dtype())
+    var result_numel = result.numel()
+
+    # Fill result using broadcast strides
+    for i in range(result_numel):
+        # Compute coordinates in result tensor
+        var coords = List[Int]()
+        var temp_i = i
+        for j in range(len(target_shape)):
+            var stride = 1
+            for k in range(j + 1, len(target_shape)):
+                stride *= target_shape[k]
+            var coord = temp_i // stride
+            coords.append(coord)
+            temp_i = temp_i % stride
+
+        # Compute source index using broadcast strides
+        var src_idx = 0
+        for j in range(len(target_shape)):
+            src_idx += coords[j] * broadcast_strides[j]
+
+        # Copy value
+        var val = tensor._get_float64(src_idx)
+        result._set_float64(i, val)
+
+    return result^
+
+
+fn permute(tensor: ExTensor, dims: List[Int]) raises -> ExTensor:
+    """Permute tensor dimensions (generalized transpose).
+
+    Args:
+            tensor: Input tensor.
+            dims: Permutation of dimensions (must be valid permutation of [0..ndim-1]).
+
+    Returns:
+            Tensor with permuted dimensions.
+
+    Raises:
+            Error: If dims is not a valid permutation.
+
+    Examples:
+    ```
+            var a = ones([2, 3, 4], DType.float32)  # Shape (2, 3, 4)
+            var perm = List[Int]()
+            perm.append(2)
+            perm.append(0)
+            perm.append(1)
+            var b = permute(a, perm)  # Shape (4, 2, 3)
+    ```
+    """
+    var shape = tensor.shape()
+    var ndim = len(shape)
+
+    # Validate dims is correct length
+    if len(dims) != ndim:
+        raise Error(
+            "permute: dims length "
+            + String(len(dims))
+            + " must equal tensor ndim "
+            + String(ndim)
+        )
+
+    # Validate dims is a permutation of [0..ndim-1]
+    var seen = List[Bool]()
+    for i in range(ndim):
+        seen.append(False)
+
+    for i in range(ndim):
+        var d = dims[i]
+        if d < 0 or d >= ndim:
+            raise Error(
+                "permute: dimension "
+                + String(d)
+                + " out of range [0, "
+                + String(ndim)
+                + ")"
+            )
+        if seen[d]:
+            raise Error(
+                "permute: dimension " + String(d) + " appears multiple times"
+            )
+        seen[d] = True
+
+    # Compute new shape
+    var new_shape = List[Int]()
+    for i in range(ndim):
+        new_shape.append(shape[dims[i]])
+
+    # Create result tensor
+    var result = ExTensor(new_shape, tensor.dtype())
+    var result_numel = result.numel()
+
+    # Fill result by permuting coordinates
+    for i in range(result_numel):
+        # Compute coordinates in result tensor
+        var result_coords = List[Int]()
+        var temp_i = i
+        for j in range(ndim):
+            var stride = 1
+            for k in range(j + 1, ndim):
+                stride *= new_shape[k]
+            var coord = temp_i // stride
+            result_coords.append(coord)
+            temp_i = temp_i % stride
+
+        # Compute source coordinates by inverse permutation
+        var src_coords = List[Int]()
+        for j in range(ndim):
+            src_coords.append(0)  # Initialize
+
+        for j in range(ndim):
+            src_coords[dims[j]] = result_coords[j]
+
+        # Compute source index
+        var src_idx = 0
+        for j in range(ndim):
+            var src_stride = 1
+            for k in range(j + 1, ndim):
+                src_stride *= shape[k]
+            src_idx += src_coords[j] * src_stride
+
+        # Copy value
+        var val = tensor._get_float64(src_idx)
+        result._set_float64(i, val)
+
+    return result^
