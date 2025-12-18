@@ -103,11 +103,14 @@ from .variable import (
     variable_neg,
 )
 
-from .tape import (
-    GradientTape,
+from .tape_types import (
     TapeNode,
     SavedTensors,
     VariableRegistry,
+)
+
+from .tape import (
+    GradientTape,
     NoGradContext,
     # Operation type aliases
     OP_ADD,
