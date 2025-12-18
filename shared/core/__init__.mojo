@@ -487,6 +487,19 @@ from .reduction import (
     min_reduce_backward,
 )
 
+from .reduction_ops import (
+    ReduceOp,
+    ReduceBackwardOp,
+    SumOp,
+    MeanOp,
+    MaxOp,
+    MinOp,
+    SumBackwardOp,
+    MeanBackwardOp,
+    MaxBackwardOp,
+    MinBackwardOp,
+)
+
 from .reduction_utils import (
     compute_strides,
     linear_to_coords,

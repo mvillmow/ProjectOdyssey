@@ -14,6 +14,120 @@ from .reduction_utils import (
     compute_axis_strides,
     build_reduced_shape,
 )
+from .reduction_ops import (
+    ReduceOp,
+    ReduceBackwardOp,
+    SumOp,
+    MeanOp,
+    MaxOp,
+    MinOp,
+    SumBackwardOp,
+    MeanBackwardOp,
+    MaxBackwardOp,
+    MinBackwardOp,
+)
+
+
+# ============================================================================
+# Generic Reduction Templates
+# ============================================================================
+
+
+fn _reduce_all_impl[dtype: DType, Op: ReduceOp](
+    result: ExTensor, tensor: ExTensor, numel: Int
+):
+    """Generic dtype-specialized reduction over all elements."""
+    var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+    var op = Op()
+    var acc: Scalar[dtype] = Scalar[dtype](op.init_value())
+    for i in range(numel):
+        var val = Float64(in_ptr[i])
+        var acc_float = Float64(acc)
+        var result_float = op.apply(acc_float, val)
+        acc = Scalar[dtype](result_float)
+    var final_val = op.finalize(Float64(acc), numel)
+    out_ptr[0] = Scalar[dtype](final_val)
+
+
+fn _dispatch_reduce_all[Op: ReduceOp](
+    result: ExTensor, tensor: ExTensor, numel: Int
+) raises:
+    """Generic runtime dispatch for reduction over all elements."""
+    var dt = tensor.dtype()
+    if dt == DType.float16:
+        _reduce_all_impl[DType.float16, Op](result, tensor, numel)
+    elif dt == DType.float32:
+        _reduce_all_impl[DType.float32, Op](result, tensor, numel)
+    elif dt == DType.float64:
+        _reduce_all_impl[DType.float64, Op](result, tensor, numel)
+    elif dt == DType.int32:
+        _reduce_all_impl[DType.int32, Op](result, tensor, numel)
+    elif dt == DType.int64:
+        _reduce_all_impl[DType.int64, Op](result, tensor, numel)
+    else:
+        raise Error("reduce_all: unsupported dtype")
+
+
+fn _reduce_axis_impl[dtype: DType, Op: ReduceOp](
+    result: ExTensor,
+    tensor: ExTensor,
+    outer_size: Int,
+    axis_size: Int,
+    inner_size: Int,
+):
+    """Generic dtype-specialized reduction along axis."""
+    var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
+    var out_ptr = result._data.bitcast[Scalar[dtype]]()
+    var op = Op()
+
+    for outer in range(outer_size):
+        for inner in range(inner_size):
+            var acc: Scalar[dtype] = Scalar[dtype](op.init_value())
+            for k in range(axis_size):
+                var input_idx = (
+                    outer * axis_size * inner_size + k * inner_size + inner
+                )
+                var val = Float64(in_ptr[input_idx])
+                var acc_float = Float64(acc)
+                var result_float = op.apply(acc_float, val)
+                acc = Scalar[dtype](result_float)
+            var result_idx = outer * inner_size + inner
+            var final_val = op.finalize(Float64(acc), axis_size)
+            out_ptr[result_idx] = Scalar[dtype](final_val)
+
+
+fn _dispatch_reduce_axis[Op: ReduceOp](
+    result: ExTensor,
+    tensor: ExTensor,
+    outer_size: Int,
+    axis_size: Int,
+    inner_size: Int,
+) raises:
+    """Generic runtime dispatch for reduction along axis."""
+    var dt = tensor.dtype()
+    if dt == DType.float16:
+        _reduce_axis_impl[DType.float16, Op](
+            result, tensor, outer_size, axis_size, inner_size
+        )
+    elif dt == DType.float32:
+        _reduce_axis_impl[DType.float32, Op](
+            result, tensor, outer_size, axis_size, inner_size
+        )
+    elif dt == DType.float64:
+        _reduce_axis_impl[DType.float64, Op](
+            result, tensor, outer_size, axis_size, inner_size
+        )
+    elif dt == DType.int32:
+        _reduce_axis_impl[DType.int32, Op](
+            result, tensor, outer_size, axis_size, inner_size
+        )
+    elif dt == DType.int64:
+        _reduce_axis_impl[DType.int64, Op](
+            result, tensor, outer_size, axis_size, inner_size
+        )
+    else:
+        raise Error("reduce_axis: unsupported dtype")
 
 
 # ============================================================================
@@ -339,7 +453,7 @@ fn sum(
                 result_shape.append(1)
         var result = ExTensor(result_shape, tensor.dtype())
 
-        _dispatch_sum_all(result, tensor, tensor.numel())
+        _dispatch_reduce_all[SumOp](result, tensor, tensor.numel())
         return result^
     else:
         # Sum along specific axis
@@ -362,7 +476,7 @@ fn sum(
         var axis_size = sizes[1]
         var inner_size = sizes[2]
 
-        _dispatch_sum_axis(result, tensor, outer_size, axis_size, inner_size)
+        _dispatch_reduce_axis[SumOp](result, tensor, outer_size, axis_size, inner_size)
         return result^
 
 
@@ -439,7 +553,7 @@ fn max_reduce(
                 result_shape.append(1)
         var result = ExTensor(result_shape, tensor.dtype())
 
-        _dispatch_max_all(result, tensor, tensor.numel())
+        _dispatch_reduce_all[MaxOp](result, tensor, tensor.numel())
         return result^
     else:
         # Max along specific axis
@@ -460,7 +574,7 @@ fn max_reduce(
         var axis_size = sizes[1]
         var inner_size = sizes[2]
 
-        _dispatch_max_axis(result, tensor, outer_size, axis_size, inner_size)
+        _dispatch_reduce_axis[MaxOp](result, tensor, outer_size, axis_size, inner_size)
         return result^
 
 
@@ -491,7 +605,7 @@ fn min_reduce(
                 result_shape.append(1)
         var result = ExTensor(result_shape, tensor.dtype())
 
-        _dispatch_min_all(result, tensor, tensor.numel())
+        _dispatch_reduce_all[MinOp](result, tensor, tensor.numel())
         return result^
     else:
         # Min along specific axis
@@ -512,8 +626,100 @@ fn min_reduce(
         var axis_size = sizes[1]
         var inner_size = sizes[2]
 
-        _dispatch_min_axis(result, tensor, outer_size, axis_size, inner_size)
+        _dispatch_reduce_axis[MinOp](result, tensor, outer_size, axis_size, inner_size)
         return result^
+
+
+# ============================================================================
+# Generic Backward Pass (Gradient Computation)
+# ============================================================================
+
+
+fn reduce_backward[Op: ReduceBackwardOp](
+    grad_output: ExTensor, x: ExTensor, axis: Int = -1
+) raises -> ExTensor:
+    """Generic backward pass for reduction operations.
+
+    Consolidates the coordinate transformation logic used by all backward passes.
+    The operation is determined by the Op template parameter.
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor.
+        x: Original input tensor before reduction.
+        axis: Axis along which reduction was computed (-1 for all axes).
+
+    Returns:
+        Gradient w.r.t. input (∂L/∂X) - broadcast back to input_shape.
+    """
+    var input_shape = x.shape()
+    var result = ExTensor(input_shape, grad_output.dtype())
+    var op = Op()
+
+    if axis == -1:
+        # Reduction over all elements - collect all values for extremum ops
+        var grad_val = grad_output._get_float64(0)
+        var all_values = List[Float64]()
+        for i in range(x.numel()):
+            all_values.append(x._get_float64(i))
+
+        for i in range(result.numel()):
+            var input_val = x._get_float64(i)
+            var grad = op.compute_gradient(
+                grad_val, input_val, all_values, x.numel()
+            )
+            result._set_float64(i, grad)
+    else:
+        # Reduction along specific axis - shared coordinate transformation
+        var ndim = len(input_shape)
+        var normalized_axis = axis if axis >= 0 else ndim + axis
+
+        # Validate axis
+        if normalized_axis < 0 or normalized_axis >= ndim:
+            raise Error(
+                "Axis "
+                + String(axis)
+                + " is out of bounds for tensor with "
+                + String(ndim)
+                + " dimensions"
+            )
+
+        var strides = compute_strides(input_shape)
+        var axis_size = input_shape[normalized_axis]
+
+        for result_idx in range(x.numel()):
+            # Convert linear index to coordinates
+            var coords = linear_to_coords(result_idx, input_shape)
+
+            # Map to grad_output coordinates (remove axis dimension)
+            var grad_dim = grad_output.dim()
+            var grad_coords = List[Int](capacity=grad_dim)
+            for _ in range(grad_dim):
+                grad_coords.append(0)
+            var coord_idx = 0
+            for i in range(ndim):
+                if i != normalized_axis:
+                    grad_coords[coord_idx] = coords[i]
+                    coord_idx += 1
+
+            # Convert to linear index in grad_output
+            var grad_strides = compute_strides(grad_output.shape())
+            var grad_idx = coords_to_linear(grad_coords, grad_strides)
+            var grad_val = grad_output._get_float64(grad_idx)
+
+            # Collect values along the reduction axis
+            var axis_values = List[Float64]()
+            for k in range(axis_size):
+                var test_coords = List[Int](coords)
+                test_coords[normalized_axis] = k
+                var test_idx = coords_to_linear(test_coords, strides)
+                axis_values.append(x._get_float64(test_idx))
+
+            # Use Op-specific gradient computation
+            var input_val = x._get_float64(result_idx)
+            var grad = op.compute_gradient(grad_val, input_val, axis_values, axis_size)
+            result._set_float64(result_idx, grad)
+
+    return result^
 
 
 # ============================================================================
@@ -555,50 +761,7 @@ fn sum_backward(
             var grad_x2 = sum_backward(grad_y2, x2, axis=1)  # Shape (3, 4)
         ```
     """
-    # Create result tensor with input shape
-    var input_shape = x.shape()
-    var result = ExTensor(input_shape, grad_output.dtype())
-
-    if axis == -1:
-        # Sum over all elements - broadcast scalar gradient to all elements
-        var grad_val = grad_output._get_float64(0)
-        for i in range(result.numel()):
-            result._set_float64(i, grad_val)
-    else:
-        # Sum along specific axis - broadcast gradient along that axis
-        # The gradient value is replicated axis_size times.
-
-        # Compute strides for input tensor
-        # FIXME(#2708, Unused): var ndim = len(input_shape)
-        # FIXME(#2708, Unused): var strides = compute_strides(input_shape)
-
-        # FIXME(#2708, Unused): var axis_size = input_shape[axis]
-
-        # For each position in grad_output, broadcast it to all positions along axis
-        for result_idx in range(result.numel()):
-            # Convert result index to coordinates
-            var coords = linear_to_coords(result_idx, input_shape)
-
-            # Map to grad_output coordinates (remove axis dimension)
-            var grad_dim = grad_output.dim()
-            var grad_coords = List[Int](capacity=grad_dim)
-            for _ in range(grad_dim):
-                grad_coords.append(0)
-            var coord_idx = 0
-            for i in range(len(input_shape)):
-                if i != axis:
-                    grad_coords[coord_idx] = coords[i]
-                    coord_idx += 1
-
-            # Convert grad_coords to linear index in grad_output
-            var grad_strides = compute_strides(grad_output.shape())
-            var grad_idx = coords_to_linear(grad_coords, grad_strides)
-
-            # Set result value
-            var grad_val = grad_output._get_float64(grad_idx)
-            result._set_float64(result_idx, grad_val)
-
-    return result^
+    return reduce_backward[SumBackwardOp](grad_output, x, axis)
 
 
 fn mean_backward(
@@ -631,28 +794,7 @@ fn mean_backward(
             # Each element gets gradient / 12
         ```
     """
-    # First get the sum backward (broadcasts gradient)
-    var grad_sum = sum_backward(grad_output, x, axis)
-
-    # Compute number of elements that were averaged
-    var input_shape = x.shape()
-    var n: Int
-    if axis == -1:
-        # Mean over all elements
-        n = 1
-        for i in range(len(input_shape)):
-            n *= input_shape[i]
-    else:
-        # Mean along specific axis
-        n = input_shape[axis]
-
-    # Scale by 1/N
-    var scale = 1.0 / Float64(n)
-    for i in range(grad_sum.numel()):
-        var val = grad_sum._get_float64(i)
-        grad_sum._set_float64(i, val * scale)
-
-    return grad_sum^
+    return reduce_backward[MeanBackwardOp](grad_output, x, axis)
 
 
 fn max_reduce_backward(
@@ -691,97 +833,7 @@ fn max_reduce_backward(
             # grad_x2 = [[0.0, 1.0], [1.0, 0.0]]
         ```
     """
-    var result = ExTensor(x.shape(), x.dtype())
-    # Initialize to zero
-    for i in range(result.numel()):
-        result._set_float64(i, 0.0)
-
-    if axis == -1:
-        # Max over all elements - find all elements equal to max
-        var max_val: Float64 = x._get_float64(0)
-        for i in range(1, x.numel()):
-            var val = x._get_float64(i)
-            if val > max_val:
-                max_val = val
-
-        # Count how many elements are maximum
-        var count: Int = 0
-        for i in range(x.numel()):
-            var val = x._get_float64(i)
-            if val == max_val:
-                count += 1
-
-        # Split gradient equally among max elements
-        var grad_val = grad_output._get_float64(0)
-        var grad_per_max = grad_val / Float64(count)
-
-        for i in range(x.numel()):
-            var val = x._get_float64(i)
-            if val == max_val:
-                result._set_float64(i, grad_per_max)
-
-    else:
-        # Max along specific axis
-        var input_shape = x.shape()
-        var ndim = len(input_shape)
-
-        # Normalize axis
-        var normalized_axis = axis if axis >= 0 else ndim + axis
-
-        # Compute strides
-        var strides = compute_strides(input_shape)
-
-        var axis_size = input_shape[normalized_axis]
-
-        # For each position in grad_output
-        for result_idx in range(x.numel()):
-            # Convert to coordinates
-            var coords = linear_to_coords(result_idx, input_shape)
-
-            # Map to grad_output coordinates (remove axis dimension)
-            var grad_dim = grad_output.dim()
-            var grad_coords = List[Int](capacity=grad_dim)
-            for _ in range(grad_dim):
-                grad_coords.append(0)
-            var coord_idx = 0
-            for i in range(ndim):
-                if i != normalized_axis:
-                    grad_coords[coord_idx] = coords[i]
-                    coord_idx += 1
-
-            # Convert to linear index in grad_output
-            var grad_strides = compute_strides(grad_output.shape())
-            var grad_idx = coords_to_linear(grad_coords, grad_strides)
-
-            # Find max value along this slice
-            var max_val: Float64 = x._get_float64(0)  # Placeholder
-            var count = 0
-
-            # First pass: find max
-            for k in range(axis_size):
-                var test_coords: List[Int] = List[Int](coords)
-                test_coords[normalized_axis] = k
-                var test_idx = coords_to_linear(test_coords, strides)
-                var val = x._get_float64(test_idx)
-                if k == 0 or val > max_val:
-                    max_val = val
-
-            # Second pass: count max elements
-            for k in range(axis_size):
-                var test_coords: List[Int] = List[Int](coords)
-                test_coords[normalized_axis] = k
-                var test_idx = coords_to_linear(test_coords, strides)
-                var val = x._get_float64(test_idx)
-                if val == max_val:
-                    count += 1
-
-            # Third pass: set gradients for max elements
-            var current_val = x._get_float64(result_idx)
-            if current_val == max_val:
-                var grad_val = grad_output._get_float64(grad_idx)
-                result._set_float64(result_idx, grad_val / Float64(count))
-
-    return result^
+    return reduce_backward[MaxBackwardOp](grad_output, x, axis)
 
 
 fn min_reduce_backward(
@@ -812,94 +864,4 @@ fn min_reduce_backward(
             # grad_x = [0.0, 0.5, 0.0, 0.5]  # Split equally between the two 1.0s
         ```
     """
-    var result = ExTensor(x.shape(), x.dtype())
-    # Initialize to zero
-    for i in range(result.numel()):
-        result._set_float64(i, 0.0)
-
-    if axis == -1:
-        # Min over all elements - find all elements equal to min
-        var min_val: Float64 = x._get_float64(0)
-        for i in range(1, x.numel()):
-            var val = x._get_float64(i)
-            if val < min_val:
-                min_val = val
-
-        # Count how many elements are minimum
-        var count: Int = 0
-        for i in range(x.numel()):
-            var val = x._get_float64(i)
-            if val == min_val:
-                count += 1
-
-        # Split gradient equally among min elements
-        var grad_val = grad_output._get_float64(0)
-        var grad_per_min = grad_val / Float64(count)
-
-        for i in range(x.numel()):
-            var val = x._get_float64(i)
-            if val == min_val:
-                result._set_float64(i, grad_per_min)
-
-    else:
-        # Min along specific axis (similar logic to max_reduce_backward)
-        var input_shape = x.shape()
-        var ndim = len(input_shape)
-
-        # Normalize axis
-        var normalized_axis = axis if axis >= 0 else ndim + axis
-
-        # Compute strides
-        var strides = compute_strides(input_shape)
-
-        var axis_size = input_shape[normalized_axis]
-
-        # For each position in result
-        for result_idx in range(x.numel()):
-            # Convert to coordinates
-            var coords = linear_to_coords(result_idx, input_shape)
-
-            # Map to grad_output coordinates
-            var grad_dim = grad_output.dim()
-            var grad_coords = List[Int](capacity=grad_dim)
-            for _ in range(grad_dim):
-                grad_coords.append(0)
-            var coord_idx = 0
-            for i in range(ndim):
-                if i != normalized_axis:
-                    grad_coords[coord_idx] = coords[i]
-                    coord_idx += 1
-
-            # Convert to linear index in grad_output
-            var grad_strides = compute_strides(grad_output.shape())
-            var grad_idx = coords_to_linear(grad_coords, grad_strides)
-
-            # Find min value along this slice
-            var min_val: Float64 = x._get_float64(0)  # Placeholder
-            var count = 0
-
-            # First pass: find min
-            for k in range(axis_size):
-                var test_coords = List[Int](coords)
-                test_coords[normalized_axis] = k
-                var test_idx = coords_to_linear(test_coords, strides)
-                var val = x._get_float64(test_idx)
-                if k == 0 or val < min_val:
-                    min_val = val
-
-            # Second pass: count min elements
-            for k in range(axis_size):
-                var test_coords = List[Int](coords)
-                test_coords[normalized_axis] = k
-                var test_idx = coords_to_linear(test_coords, strides)
-                var val = x._get_float64(test_idx)
-                if val == min_val:
-                    count += 1
-
-            # Third pass: set gradients for min elements
-            var current_val = x._get_float64(result_idx)
-            if current_val == min_val:
-                var grad_val = grad_output._get_float64(grad_idx)
-                result._set_float64(result_idx, grad_val / Float64(count))
-
-    return result^
+    return reduce_backward[MinBackwardOp](grad_output, x, axis)
