@@ -819,7 +819,13 @@ class IssueImplementer:
         # Fetch titles for each issue (with retry for network errors)
         log("INFO", f"Found {len(issues)} issues, fetching titles...")
         failed_titles = 0
-        for issue_num, info in issues.items():
+        total_issues = len(issues)
+        for idx, (issue_num, info) in enumerate(issues.items(), 1):
+            # Show progress every 10 issues or for the last one
+            if idx % 10 == 0 or idx == total_issues:
+                print(f"\r  Fetching titles: {idx}/{total_issues}", end="", flush=True)
+            elif idx == 1:
+                print(f"\r  Fetching titles: {idx}/{total_issues}", end="", flush=True)
             for attempt in range(1, MAX_RETRIES + 1):
                 cp = run(["gh", "issue", "view", str(issue_num), "--json", "title"])
                 if cp.returncode == 0:
@@ -837,6 +843,7 @@ class IssueImplementer:
                 failed_titles += 1
                 info.title = f"Issue #{issue_num}"
                 break
+        print()  # Newline after progress
         if failed_titles > 0:
             log("WARN", f"Could not fetch titles for {failed_titles} issues (network issues)")
 
