@@ -17,23 +17,32 @@ import re
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Set
-from dataclasses import dataclass
 
+# Add scripts/agents to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts" / "agents"))
+
+from agent_utils import AgentInfo as BaseAgentInfo, extract_frontmatter_raw
+import yaml
 
 # Security limits
 MAX_FILE_SIZE = 102400  # 100KB max file size to prevent DoS
 
 
-@dataclass
-class AgentInfo:
-    """Information about a discovered agent."""
-    file_path: Path
-    name: str
-    description: str
-    tools: List[str]
-    model: str
-    level: Optional[int] = None
-    role: Optional[str] = None
+class AgentInfo(BaseAgentInfo):
+    """Extended AgentInfo with test-specific attributes."""
+
+    def __init__(self, file_path: Path, frontmatter: Dict, role: Optional[str] = None):
+        """Initialize with base AgentInfo plus role.
+
+        Args:
+            file_path: Path to agent markdown file
+            frontmatter: Parsed frontmatter dictionary
+            role: Optional role description from content
+        """
+        super().__init__(file_path, frontmatter)
+        self.role = role
+        # Convert tools string to list for backwards compatibility
+        self.tools = self.get_tools_list()
 
 
 class AgentLoadingTester:
@@ -101,26 +110,22 @@ class AgentLoadingTester:
             logging.error(f"Failed to read {file_path.name}: {e}")
             return None
 
-        # Extract frontmatter
-        frontmatter_match = re.match(r'^---\n(.*?)\n---', content, re.DOTALL)
-        if not frontmatter_match:
+        # Extract frontmatter using shared utility
+        frontmatter_text = extract_frontmatter_raw(content)
+        if not frontmatter_text:
             self.errors.append(f"No frontmatter in {file_path.name}")
             return None
 
-        frontmatter_text = frontmatter_match.group(1)
-        frontmatter = {}
+        # Parse YAML frontmatter
+        try:
+            frontmatter = yaml.safe_load(frontmatter_text)
+        except yaml.YAMLError as e:
+            self.errors.append(f"Invalid YAML in {file_path.name}: {e}")
+            return None
 
-        # Parse frontmatter
-        for line in frontmatter_text.split('\n'):
-            line = line.strip()
-            if not line or line.startswith('#'):
-                continue
-
-            if ':' not in line:
-                continue
-
-            key, value = line.split(':', 1)
-            frontmatter[key.strip()] = value.strip()
+        if not isinstance(frontmatter, dict):
+            self.errors.append(f"Frontmatter is not a dictionary in {file_path.name}")
+            return None
 
         # Extract required fields
         name = frontmatter.get('name', '')
@@ -132,52 +137,14 @@ class AgentLoadingTester:
             self.errors.append(f"Missing required fields in {file_path.name}")
             return None
 
-        tools = [t.strip() for t in tools_str.split(',')]
-
         # Extract additional info from content
-        level = self._detect_level(name, content)
         role = self._extract_role(content)
 
         return AgentInfo(
             file_path=file_path,
-            name=name,
-            description=description,
-            tools=tools,
-            model=model,
-            level=level,
+            frontmatter=frontmatter,
             role=role
         )
-
-    def _detect_level(self, name: str, content: str) -> Optional[int]:
-        """Detect agent level from name and content.
-
-        Args:
-            name: Agent name
-            content: Agent content
-
-        Returns:
-            Level number (0-5) or None
-        """
-        # Check content for level indicator
-        level_match = re.search(r'Level (\d)', content)
-        if level_match:
-            return int(level_match.group(1))
-
-        # Infer from name patterns
-        if 'chief-architect' in name:
-            return 0
-        elif 'orchestrator' in name:
-            return 1
-        elif 'design' in name:
-            return 2
-        elif 'specialist' in name:
-            return 3
-        elif 'junior' in name and 'engineer' in name:
-            return 5
-        elif 'engineer' in name:
-            return 4
-
-        return None
 
     def _extract_role(self, content: str) -> Optional[str]:
         """Extract role description from content.

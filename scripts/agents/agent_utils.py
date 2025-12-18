@@ -8,6 +8,7 @@ Functions:
     extract_frontmatter_raw: Extract YAML frontmatter text only
     extract_frontmatter_with_lines: Extract with line number tracking
     extract_frontmatter_parsed: Extract and parse to dictionary
+    extract_frontmatter_full: Extract with parsed dict and line numbers
     find_agent_files: Discover agent markdown files
     load_agent: Load a single agent configuration
     load_all_agents: Load all agent configurations from a directory
@@ -78,6 +79,30 @@ def extract_frontmatter_parsed(content: str) -> Optional[Tuple[str, Dict]]:
             parsed = yaml.safe_load(frontmatter)
             if isinstance(parsed, dict):
                 return (frontmatter, parsed)
+        except yaml.YAMLError:
+            pass
+    return None
+
+
+def extract_frontmatter_full(content: str) -> Optional[Tuple[str, Dict, int, int]]:
+    """Extract frontmatter with both parsed dict and line numbers.
+
+    Args:
+        content: Markdown file content.
+
+    Returns:
+        Tuple of (frontmatter_text, parsed_dict, start_line, end_line),
+        or None if not found or invalid.
+    """
+    match = FRONTMATTER_PATTERN.match(content)
+    if match:
+        frontmatter = match.group(1)
+        try:
+            parsed = yaml.safe_load(frontmatter)
+            if isinstance(parsed, dict):
+                start_line = 1
+                end_line = content[: match.end()].count("\n")
+                return (frontmatter, parsed, start_line, end_line)
         except yaml.YAMLError:
             pass
     return None
