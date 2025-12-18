@@ -108,6 +108,8 @@ class StatusTracker:
         self._update_event = threading.Event()  # Signal immediate refresh
         self._completed_count = 0
         self._total_count = 0
+        # Only use ANSI escape codes if stdout is a real terminal
+        self._is_tty = sys.stdout.isatty()
 
     def set_total(self, total: int) -> None:
         """Set the total number of issues to process."""
@@ -187,20 +189,34 @@ class StatusTracker:
 
     def _display_loop(self) -> None:
         """Background thread that refreshes the status display."""
+        last_main_stage = ""
         while not self._stop_event.is_set():
             lines = self._render_status()
 
-            # Move cursor up and clear lines if we've printed before
-            if self._lines_printed > 0:
-                sys.stdout.write(f"\033[{self._lines_printed}A")  # Move up
-                sys.stdout.write("\033[J")  # Clear to end of screen
+            if self._is_tty:
+                # Move cursor up and clear lines if we've printed before
+                if self._lines_printed > 0:
+                    sys.stdout.write(f"\033[{self._lines_printed}A")  # Move up
+                    sys.stdout.write("\033[J")  # Clear to end of screen
 
-            # Print status lines
-            for line in lines:
-                print(line)
-            sys.stdout.flush()
+                # Print status lines
+                for line in lines:
+                    print(line)
+                sys.stdout.flush()
 
-            self._lines_printed = len(lines)
+                self._lines_printed = len(lines)
+            else:
+                # In non-TTY mode, print a simple progress line when stage changes
+                with self._lock:
+                    if self.MAIN_THREAD in self._slots:
+                        _, stage, info, _ = self._slots[self.MAIN_THREAD]
+                        current = f"{stage}:{info}"
+                        if current != last_main_stage:
+                            progress = f"[{self._completed_count}/{self._total_count}]" if self._total_count > 0 else ""
+                            info_str = f" - {info}" if info else ""
+                            print(f"  Progress: {stage}{progress}{info_str}")
+                            sys.stdout.flush()
+                            last_main_stage = current
 
             # Wait for either timeout or explicit update signal
             self._update_event.wait(STATUS_REFRESH_INTERVAL)
@@ -224,8 +240,8 @@ class StatusTracker:
         self._update_event.set()  # Wake up the display thread
         if self._display_thread:
             self._display_thread.join(timeout=1.0)
-        # Clear the status display
-        if self._lines_printed > 0:
+        # Clear the status display (only in TTY mode)
+        if self._is_tty and self._lines_printed > 0:
             sys.stdout.write(f"\033[{self._lines_printed}A")
             sys.stdout.write("\033[J")
             sys.stdout.flush()
