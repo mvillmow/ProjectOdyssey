@@ -197,7 +197,7 @@ jobs:
             pattern: "test_*.mojo"
           - name: "Shared Infra"
             path: "tests/shared"
-            pattern: "test_imports.mojo test_data_generators.mojo test_model_utils.mojo test_serialization.mojo utils/test_*.mojo fixtures/test_*.mojo"
+            pattern: "test_imports.mojo test_data_generators.mojo test_model_utils.mojo test_serialization.mojo utils/test_*.mojo fixtures/test_*.mojo training/test_*.mojo"
           - name: "Tooling"
             path: "tests/tooling/benchmarks"
             pattern: "test_*.mojo"
