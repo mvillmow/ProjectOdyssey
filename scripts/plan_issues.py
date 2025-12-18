@@ -31,7 +31,7 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import redirect_stdout, redirect_stderr
-from typing import Optional
+from typing import Callable, Optional
 
 # ---------------------------------------------------------------------
 # Constants (match bash defaults)
@@ -93,15 +93,38 @@ def write_secure(path: pathlib.Path, content: str) -> None:
 class StatusTracker:
     """Thread-safe status tracker for parallel processing with live display."""
 
+    # Slot ID for main thread
+    MAIN_THREAD = -1
+
     def __init__(self, max_workers: int):
         self._lock = threading.Lock()
         self._max_workers = max_workers
-        # slot -> (issue, stage, info, stage_start_time)
+        # slot -> (issue_or_count, stage, info, stage_start_time)
+        # For main thread (slot -1), issue_or_count is a count or 0
         self._slots: dict[int, tuple[int, str, str, float]] = {}
         self._stop_event = threading.Event()
         self._display_thread: Optional[threading.Thread] = None
         self._lines_printed = 0
         self._update_event = threading.Event()  # Signal immediate refresh
+        self._completed_count = 0
+        self._total_count = 0
+
+    def set_total(self, total: int) -> None:
+        """Set the total number of issues to process."""
+        with self._lock:
+            self._total_count = total
+
+    def increment_completed(self) -> None:
+        """Increment the completed count."""
+        with self._lock:
+            self._completed_count += 1
+            self._update_event.set()
+
+    def update_main(self, stage: str, info: str = "") -> None:
+        """Update the main thread status."""
+        with self._lock:
+            self._slots[self.MAIN_THREAD] = (0, stage, info, time.time())
+            self._update_event.set()
 
     def acquire_slot(self, issue: int) -> int:
         """Acquire a display slot for an issue. Returns slot number."""
@@ -140,6 +163,18 @@ class StatusTracker:
         """Render current status as list of lines."""
         with self._lock:
             lines = []
+
+            # Main thread status (always first)
+            if self.MAIN_THREAD in self._slots:
+                _, stage, info, start_time = self._slots[self.MAIN_THREAD]
+                elapsed = self._format_elapsed(start_time)
+                progress = f" [{self._completed_count}/{self._total_count}]" if self._total_count > 0 else ""
+                info_str = f" - {info}" if info else ""
+                lines.append(f"  Main:     [{stage:12}]{progress} ({elapsed}){info_str}")
+            else:
+                lines.append(f"  Main:     [Idle        ]")
+
+            # Worker thread statuses
             for slot in range(self._max_workers):
                 if slot in self._slots:
                     issue, stage, info, start_time = self._slots[slot]
@@ -474,16 +509,17 @@ class Planner:
 
         try:
             log("INFO", f"[{idx}/{total}] Issue #{issue}")
-            update_status("Fetching")
+            update_status("Init", "diag files")
 
             # Create diagnostic files for this issue
             diag_files = self.create_issue_files(issue)
             log("INFO", f"  Plan file: {diag_files['plan']}")
             log("INFO", f"  Log file:  {diag_files['log']}")
 
+            update_status("Fetching", "GitHub API")
             data = gh_issue_json(issue)
-            update_status("Checking")
 
+            update_status("Validating", "title/body")
             # Title validation with truncation warning
             title = data.get("title") or "Untitled"
             if len(title) > MAX_TITLE_LENGTH:
@@ -496,6 +532,7 @@ class Planner:
                 raise RuntimeError(f"Issue body too large ({len(body)} bytes, max {MAX_BODY_SIZE})")
 
             # Check for existing plan (with rate-limit detection)
+            update_status("Checking", "existing plan")
             if not self.opts.replan:
                 for c in data.get("comments", []):
                     comment_body = c.get("body") or ""
@@ -509,6 +546,7 @@ class Planner:
 
             # Dry-run: show what would be done without calling Claude
             if self.opts.dry_run:
+                update_status("DryRun", "preview")
                 log("INFO", f"[DRY RUN] Would generate plan for #{issue}: {title}")
                 log("INFO", "Plan preview (first 20 lines):")
                 prompt = self.build_prompt(issue, title, body)
@@ -518,8 +556,8 @@ class Planner:
                 update_status("Done", "dry-run")
                 return Result(issue, "dry-run")
 
-            update_status("Generating")
-            plan = self.generate_plan(issue, title, body, diag_files)
+            update_status("Building", "prompt")
+            plan = self.generate_plan(issue, title, body, diag_files, update_status)
 
             if not plan.strip():
                 raise RuntimeError("Empty plan")
@@ -559,7 +597,14 @@ class Planner:
 
     # --------------------------------------------------------------
 
-    def generate_plan(self, issue: int, title: str, body: str, diag_files: dict[str, pathlib.Path]) -> str:
+    def generate_plan(
+        self,
+        issue: int,
+        title: str,
+        body: str,
+        diag_files: dict[str, pathlib.Path],
+        update_status: Optional[Callable[[str, str], None]] = None,
+    ) -> str:
         """Generate an implementation plan using Claude.
 
         Args:
@@ -567,10 +612,17 @@ class Planner:
             title: Issue title
             body: Issue body text
             diag_files: Dictionary of diagnostic file paths
+            update_status: Optional callback to update status display
 
         Returns:
             Generated plan as a string
         """
+
+        def status(stage: str, info: str = "") -> None:
+            if update_status:
+                update_status(stage, info)
+
+        status("Generating", "building prompt")
         prompt = self.build_prompt(issue, title, body)
 
         # Save prompt to diagnostic file
@@ -595,9 +647,13 @@ claude --model opus \\
         write_secure(diag_files["cmd"], cmd_content)
 
         for attempt in range(1, MAX_RETRIES + 1):
+            if self.opts.throttle_seconds > 0:
+                status("Throttling", f"{self.opts.throttle_seconds}s")
             self.throttle()
 
             start_time = time.time()
+            attempt_info = f"attempt {attempt}/{MAX_RETRIES}" if attempt > 1 else ""
+            status("Calling", f"Claude API {attempt_info}".strip())
             log("INFO", f"Generating plan with Claude Opus (timeout: {self.opts.timeout}s)...")
 
             # Use streaming subprocess with live output (like bash's tee)
@@ -625,6 +681,7 @@ claude --model opus \\
             output_lines: list[str] = []
             timed_out = False
 
+            status("Streaming", "Claude output")
             print("  -------- Claude Output --------", flush=True)
             try:
                 assert proc.stdout is not None
@@ -646,6 +703,7 @@ claude --model opus \\
                 print("  --------------------------------", flush=True)
 
             if timed_out:
+                status("Timeout", "retrying...")
                 log("WARN", f"Claude timed out after {self.opts.timeout}s, retrying...")
                 continue
 
@@ -656,22 +714,27 @@ claude --model opus \\
             if '"type":"result","subtype":"error"' in combined:
                 error_match = re.search(r'"errors":\[([^\]]*)\]', combined)
                 error_detail = error_match.group(1) if error_match else "unknown"
+                status("CLIError", "retrying...")
                 log("WARN", f"Claude CLI error: {error_detail}")
                 time.sleep(2**attempt)
                 continue
 
             reset = detect_rate_limit(combined)
             if reset:
+                remaining = reset - int(time.time())
+                status("RateLimit", f"~{remaining}s wait")
                 wait_until(reset)
                 continue
 
             if proc.returncode == 0:
+                status("Completed", f"{elapsed:.0f}s")
                 log("INFO", f"Generation completed in {elapsed:.0f}s")
                 log("INFO", f"Plan size: {len(combined)} bytes")
                 # Save plan to diagnostic file
                 write_secure(diag_files["plan"], combined)
                 return combined
 
+            status("Retrying", f"exit {proc.returncode}")
             log("WARN", f"Claude returned exit code {proc.returncode}, retrying...")
             time.sleep(2**attempt)
 
@@ -908,6 +971,10 @@ Examples:
     results: list[Result] = []
 
     if opts.parallel and status_tracker:
+        # Set up tracking for main thread progress
+        status_tracker.set_total(len(issue_list))
+        status_tracker.update_main("Initializing")
+
         # Start the live status display
         status_tracker.start_display()
 
@@ -921,19 +988,27 @@ Examples:
                 return (result, buffer.getvalue(), slot)
             finally:
                 status_tracker.release_slot(slot)
+                status_tracker.increment_completed()
 
         try:
             with ThreadPoolExecutor(max_workers=opts.max_parallel) as ex:
-                futures = {
-                    ex.submit(process_with_status, issue, i + 1, len(issue_list)): i
-                    for i, issue in enumerate(issue_list)
-                }
-                # Collect all results indexed by position
+                # Spawn all tasks
+                status_tracker.update_main("Spawning", f"{len(issue_list)} tasks")
+                futures = {}
+                for i, issue in enumerate(issue_list):
+                    futures[ex.submit(process_with_status, issue, i + 1, len(issue_list))] = i
+                    status_tracker.update_main("Spawning", f"#{issue}")
+
+                # Wait for completion
+                status_tracker.update_main("Processing")
                 indexed_results: dict[int, tuple[Result, str]] = {}
                 for f in as_completed(futures):
                     idx = futures[f]
                     result, output, _slot = f.result()
                     indexed_results[idx] = (result, output)
+
+                # Collecting results
+                status_tracker.update_main("Collecting", "results")
 
                 # Stop the display before printing results
                 status_tracker.stop_display()
