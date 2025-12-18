@@ -446,6 +446,60 @@ def gh_issue_json(issue: int) -> dict:
     raise RuntimeError(ERR_UNEXPECTED_GH_ISSUE)
 
 
+def score_plan(body: str) -> int:
+    """Score a plan based on quality heuristics.
+
+    Args:
+        body: The plan comment body text.
+
+    Returns:
+        Quality score (higher is better).
+
+    """
+    score = 0
+
+    # Base score from length (up to 5000 chars, diminishing returns after)
+    score += min(len(body), 5000) // 100  # Max 50 points
+
+    # Required sections (10 points each)
+    sections = [
+        "summary",
+        "implementation",
+        "step",
+        "file",
+        "test",
+        "success criteria",
+        "resource usage",
+    ]
+    body_lower = body.lower()
+    for section in sections:
+        if section in body_lower:
+            score += 10
+
+    # Code blocks indicate concrete implementation details (5 points each, max 25)
+    code_blocks = body.count("```")
+    score += min(code_blocks * 5, 25)
+
+    # File paths indicate specific changes (3 points each, max 30)
+    file_refs = len(re.findall(r"[a-zA-Z_/]+\.(mojo|py|md|yaml|yml|json)", body))
+    score += min(file_refs * 3, 30)
+
+    # Penalties
+    # Truncated plans (ends abruptly without proper closing)
+    if not body.rstrip().endswith((".", "```", "criteria", "---")):
+        score -= 20
+
+    # Very short plans are likely incomplete
+    if len(body) < 500:
+        score -= 30
+
+    # Rate-limited indicator (should have been filtered, but just in case)
+    if "Limit reached" in body:
+        score -= 100
+
+    return score
+
+
 def delete_plan_comments(issue: int, comments: list[dict], *, pre_filtered: bool = False) -> int:
     """Delete existing plan comments from an issue.
 
@@ -671,8 +725,8 @@ class Planner:
                     if deleted > 0:
                         log("INFO", f"Deleted {deleted} existing plan comment(s)")
             else:
-                # Check if a valid (non-rate-limited) plan already exists
-                has_valid_plan = False
+                # Categorize existing plan comments
+                valid_plan_comments = []
                 rate_limited_comments = []
                 for c in comments:
                     comment_body = c.get("body") or ""
@@ -680,7 +734,7 @@ class Planner:
                         if "Limit reached" in comment_body:
                             rate_limited_comments.append(c)
                         else:
-                            has_valid_plan = True
+                            valid_plan_comments.append(c)
 
                 # Always clean up rate-limited plan comments
                 if rate_limited_comments and not self.opts.dry_run:
@@ -689,7 +743,37 @@ class Planner:
                     if deleted > 0:
                         log("INFO", f"Deleted {deleted} rate-limited plan comment(s)")
 
-                if has_valid_plan:
+                if valid_plan_comments:
+                    if len(valid_plan_comments) > 1:
+                        # Multiple valid plans - score them and keep the best
+                        update_status("Analyzing", f"{len(valid_plan_comments)} plans")
+                        log("INFO", f"Found {len(valid_plan_comments)} valid plans, analyzing quality...")
+
+                        scored_plans = []
+                        for c in valid_plan_comments:
+                            plan_body = c.get("body") or ""
+                            plan_score = score_plan(plan_body)
+                            plan_len = len(plan_body)
+                            scored_plans.append((plan_score, plan_len, c))
+                            log("DEBUG", f"  Plan score: {plan_score} (len={plan_len})")
+
+                        # Sort by score descending, then by length descending (tiebreaker)
+                        scored_plans.sort(key=lambda x: (x[0], x[1]), reverse=True)
+                        best_plan = scored_plans[0]
+                        inferior_plans = [c for _, _, c in scored_plans[1:]]
+
+                        log(
+                            "INFO",
+                            f"Best plan score: {best_plan[0]} (len={best_plan[1]}), deleting {len(inferior_plans)} inferior plan(s)",
+                        )
+
+                        # Delete inferior plans
+                        if not self.opts.dry_run:
+                            update_status("Deleting", "inferior plans")
+                            deleted = delete_plan_comments(issue, inferior_plans, pre_filtered=True)
+                            if deleted > 0:
+                                log("INFO", f"Deleted {deleted} inferior plan comment(s)")
+
                     update_status("Skipped", "has plan")
                     return Result(issue, "skipped")
 
