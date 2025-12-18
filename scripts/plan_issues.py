@@ -70,8 +70,8 @@ RATE_LIMIT_RE = re.compile(
 PLAN_HEADER = "## Detailed Implementation Plan"
 PLAN_HEADER_REVISED = "## Detailed Implementation Plan (Revised)"
 
-# Status display refresh interval
-STATUS_REFRESH_INTERVAL = 0.5
+# Status display refresh interval (faster for responsive updates)
+STATUS_REFRESH_INTERVAL = 0.1
 
 
 # ---------------------------------------------------------------------
@@ -208,6 +208,13 @@ class StatusTracker:
 
     def start_display(self) -> None:
         """Start the background display thread."""
+        # Force an initial render immediately so display is visible right away
+        lines = self._render_status()
+        for line in lines:
+            print(line)
+        sys.stdout.flush()
+        self._lines_printed = len(lines)
+
         self._display_thread = threading.Thread(target=self._display_loop, daemon=True)
         self._display_thread.start()
 
