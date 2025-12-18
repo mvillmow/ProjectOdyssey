@@ -1266,8 +1266,9 @@ fn test_dot_shapes() raises:
 
     var result = dot(a, b)
 
-    # Dot product returns scalar
-    assert_equal(result.shape()[0], 1)
+    # Dot product returns scalar (0D tensor with empty shape)
+    assert_dim(result, 0, "Dot product should be 0D scalar")
+    assert_numel(result, 1, "Dot product should have 1 element")
 
 
 fn test_dot_values() raises:
@@ -1715,9 +1716,22 @@ fn main() raises:
 
     # Dot product tests
     print("\n=== Dot Product ===")
-    # TODO(#2717): Fix dot product tests - crash/segfault during execution
-    # Need to investigate SIMD memory access issue
-    print("⚠ All Dot Product tests - SKIPPED (pending crash investigation)")
+    test_dot_shapes()
+    print("✓ test_dot_shapes")
+    test_dot_values()
+    print("✓ test_dot_values")
+    test_dot_orthogonal()
+    print("✓ test_dot_orthogonal")
+    test_dot_1d()
+    print("✓ test_dot_1d")
+    test_dot_2d()
+    print("✓ test_dot_2d")
+    test_dot_incompatible_shapes()
+    print("✓ test_dot_incompatible_shapes")
+    test_dot_dtype_mismatch()
+    print("✓ test_dot_dtype_mismatch")
+    test_dot_preserves_dtype()
+    print("✓ test_dot_preserves_dtype")
 
     # Outer product tests
     print("\n=== Outer Product ===")
@@ -1742,5 +1756,5 @@ fn main() raises:
     print("✓ test_dunder_matmul")
 
     print("\n" + "=" * 60)
-    print("All 67 matrix operation tests passed!")
+    print("All 75 matrix operation tests passed!")
     print("=" * 60)
