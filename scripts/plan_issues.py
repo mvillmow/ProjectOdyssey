@@ -194,17 +194,12 @@ class StatusTracker:
             lines = self._render_status()
 
             if self._is_tty:
-                # Move cursor up and clear lines if we've printed before
-                if self._lines_printed > 0:
-                    sys.stdout.write(f"\033[{self._lines_printed}A")  # Move up
-                    sys.stdout.write("\033[J")  # Clear to end of screen
-
-                # Print status lines
+                # Restore cursor to saved position and redraw all lines
+                sys.stdout.write("\033[u")  # Restore cursor position
                 for line in lines:
-                    print(line)
+                    # Print line, clear to end of line, then newline
+                    sys.stdout.write(f"{line}\033[K\n")
                 sys.stdout.flush()
-
-                self._lines_printed = len(lines)
             else:
                 # In non-TTY mode, print a simple progress line when stage changes
                 with self._lock:
@@ -224,10 +219,17 @@ class StatusTracker:
 
     def start_display(self) -> None:
         """Start the background display thread."""
+        # In TTY mode, save cursor position before initial render
+        if self._is_tty:
+            sys.stdout.write("\033[s")  # Save cursor position
+
         # Force an initial render immediately so display is visible right away
         lines = self._render_status()
         for line in lines:
-            print(line)
+            if self._is_tty:
+                sys.stdout.write(f"{line}\033[K\n")  # Line + clear to EOL + newline
+            else:
+                print(line)
         sys.stdout.flush()
         self._lines_printed = len(lines)
 
@@ -240,12 +242,14 @@ class StatusTracker:
         self._update_event.set()  # Wake up the display thread
         if self._display_thread:
             self._display_thread.join(timeout=1.0)
-        # Clear the status display (only in TTY mode)
-        if self._is_tty and self._lines_printed > 0:
-            sys.stdout.write(f"\033[{self._lines_printed}A")
-            sys.stdout.write("\033[J")
+        # In TTY mode, move past the status lines so subsequent output is below
+        if self._is_tty:
+            # Restore to saved position, then move down past all lines
+            sys.stdout.write("\033[u")  # Restore cursor
+            sys.stdout.write(f"\033[{self._lines_printed}B")  # Move down N lines
+            sys.stdout.write("\n")  # Extra newline for spacing
             sys.stdout.flush()
-            self._lines_printed = 0
+        self._lines_printed = 0
 
 
 # ---------------------------------------------------------------------
