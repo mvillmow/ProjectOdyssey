@@ -174,7 +174,7 @@ class StatusTracker:
                 info_str = f" - {info}" if info else ""
                 lines.append(f"  Main:     [{stage:12}]{progress} ({elapsed}){info_str}")
             else:
-                lines.append(f"  Main:     [Idle        ]")
+                lines.append("  Main:     [Idle        ]")
 
             # Worker thread statuses
             for slot in range(self._max_workers):
