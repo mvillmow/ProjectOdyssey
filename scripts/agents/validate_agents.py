@@ -23,18 +23,12 @@ import argparse
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Set
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from common import get_agents_dir
 
 from agent_utils import extract_frontmatter_parsed
-
-try:
-    import yaml
-except ImportError:
-    print("Error: PyYAML is required. Install with: pip install pyyaml", file=sys.stderr)
-    sys.exit(1)
 
 
 # Required fields and their types
