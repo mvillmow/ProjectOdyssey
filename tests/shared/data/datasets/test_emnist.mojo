@@ -25,6 +25,7 @@ fn create_mock_idx_files(temp_dir: String) raises:
     """
     # For this test, we'll use real file paths if they exist,
     # or skip tests if files don't exist (offline testing)
+    _ = temp_dir  # Consume unused parameter
     pass
 
 
@@ -95,6 +96,7 @@ fn test_emnist_init_invalid_split() raises:
     var error_raised = False
     try:
         var dataset = EMNISTDataset("/tmp/emnist", split="invalid", train=True)
+        _ = dataset  # Consume unused variable (expected to raise before here)
     except e:
         error_raised = True
         assert_true(
@@ -131,6 +133,7 @@ fn test_emnist_getitem_index() raises:
     try:
         var dataset = EMNISTDataset("/tmp/emnist", split="balanced", train=True)
         var sample_data, sample_label = dataset.__getitem__(0)
+        _ = sample_label  # Consume unused variable
 
         # Verify sample is a valid ExTensor
         var data_shape = sample_data.shape()
@@ -152,7 +155,9 @@ fn test_emnist_getitem_negative_index() raises:
     try:
         var dataset = EMNISTDataset("/tmp/emnist", split="balanced", train=True)
         var length = dataset.__len__()
+        _ = length  # Consume unused variable
         var last_sample_data, last_sample_label = dataset.__getitem__(-1)
+        _ = last_sample_label  # Consume unused variable
 
         # Verify we got a valid sample
         var data_shape = last_sample_data.shape()
@@ -173,6 +178,8 @@ fn test_emnist_getitem_out_of_bounds() raises:
         var error_raised = False
         try:
             var sample_data, sample_label = dataset.__getitem__(length + 100)
+            _ = sample_data  # Consume unused variable
+            _ = sample_label  # Consume unused variable
         except e:
             error_raised = True
             assert_true(
@@ -388,12 +395,14 @@ fn test_emnist_all_valid_splits() raises:
             # Just test that initialization is accepted (may fail on file I/O)
             # The key test is that the split validation passes
             var dataset = EMNISTDataset("/tmp/emnist", split=split, train=True)
+            _ = dataset  # Consume unused variable
         except e:
             # Check that error is file I/O, not validation
             if String(e).__contains__("Invalid split"):
                 error_raised = True
                 assert_false(True, "Split '" + split + "' should be valid")
 
+        _ = error_raised  # Consume unused variable
         # Note: File I/O errors are expected if data doesn't exist
 
 
@@ -416,6 +425,9 @@ fn test_emnist_performance_random_access() raises:
             var first_data, first_label = dataset.__getitem__(0)
             var middle_data, middle_label = dataset.__getitem__(length // 2)
             var last_data, last_label = dataset.__getitem__(length - 1)
+            _ = first_label  # Consume unused variable
+            _ = middle_label  # Consume unused variable
+            _ = last_label  # Consume unused variable
 
             # Verify all have correct shape
             for data in [first_data, middle_data, last_data]:
