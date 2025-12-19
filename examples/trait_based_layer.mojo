@@ -359,14 +359,67 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
 
     # Serializable trait
     fn save(self, path: String) raises:
-        """Save layer state to file."""
-        # TODO(#2727): Implement tensor serialization
-        print("Saving BatchNorm to:", path)
+        """Save layer state to file.
+
+        Persists all learnable and non-learnable parameters:
+        - gamma: Scale parameter
+        - beta: Shift parameter
+        - running_mean: Running mean statistic
+        - running_var: Running variance statistic
+
+        Args:
+            path: Output directory path (created if doesn't exist).
+
+        Raises:
+            Error: If directory creation or file write fails.
+
+        Example:
+            ```mojo
+            var bn = BatchNormLayer(64)
+            bn.save("checkpoint/batch_norm/")
+            ```
+        """
+        from shared.utils.serialization import save_named_tensors, NamedTensor
+
+        var tensors: List[NamedTensor] = []
+        tensors.append(NamedTensor("gamma", self.gamma))
+        tensors.append(NamedTensor("beta", self.beta))
+        tensors.append(NamedTensor("running_mean", self.running_mean))
+        tensors.append(NamedTensor("running_var", self.running_var))
+        save_named_tensors(tensors, path)
 
     fn load(mut self, path: String) raises:
-        """Load layer state from file."""
-        # TODO(#2727): Implement tensor deserialization
-        print("Loading BatchNorm from:", path)
+        """Load layer state from file.
+
+        Restores all learnable and non-learnable parameters from disk.
+        Parameters must be present in the checkpoint directory.
+
+        Args:
+            path: Input directory path containing .weights files.
+
+        Raises:
+            Error: If directory doesn't exist or file format is invalid.
+
+        Example:
+            ```mojo
+            var bn = BatchNormLayer(64)
+            bn.load("checkpoint/batch_norm/")
+            ```
+        """
+        from shared.utils.serialization import load_named_tensors
+
+        var tensors = load_named_tensors(path)
+
+        # Restore parameters from loaded tensors
+        for i in range(len(tensors)):
+            if tensors[i].name == "gamma":
+                self.gamma = tensors[i].tensor
+            elif tensors[i].name == "beta":
+                self.beta = tensors[i].tensor
+            elif tensors[i].name == "running_mean":
+                self.running_mean = tensors[i].tensor
+            elif tensors[i].name == "running_var":
+                self.running_var = tensors[i].tensor
 
     # Trainable trait
     fn train(mut self):

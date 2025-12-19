@@ -213,7 +213,7 @@ jobs:
             pattern: "test_elementwise.mojo test_elementwise_dispatch.mojo test_elementwise_forward.mojo test_elementwise_edge_cases.mojo test_comparison_ops.mojo test_edge_cases.mojo"
           - name: "Core ExTensor"
             path: "tests/shared/core"
-            pattern: "test_extensor_new_methods.mojo test_extensor_operators.mojo test_extensor_slicing.mojo test_memory_leaks.mojo"
+            pattern: "test_extensor_new_methods.mojo test_extensor_operators.mojo test_extensor_slicing.mojo test_memory_leaks.mojo test_extensor_serialization.mojo"
           - name: "Core Utilities"
             path: "tests/shared/core"
             pattern: "test_utilities.mojo test_utility.mojo test_utils.mojo test_validation.mojo test_integration.mojo"
@@ -232,6 +232,9 @@ jobs:
           - name: "Tooling"
             path: "tests/tooling/benchmarks"
             pattern: "test_*.mojo"
+          - name: "Examples"
+            path: "tests/examples"
+            pattern: "test_trait_based_serialization.mojo"
           - name: "Top-Level Tests"
             path: "tests"
             pattern: "test_*.mojo training/test_*.mojo unit/test_*.mojo integration/test_*.mojo"
@@ -267,7 +270,7 @@ jobs:
             pattern: "test_*.mojo"
           - name: "Models"
             path: "tests/models"
-            pattern: "test_*_layers.mojo"  # Unit tests only; E2E tests run weekly
+            pattern: "test_*_layers.mojo"
           - name: "Data Loaders"
             path: "tests/shared/data/loaders"
             pattern: "test_*.mojo"
@@ -280,8 +283,6 @@ jobs:
           - name: "Benchmark Framework"
             path: "benchmarks"
             pattern: "test_*.mojo"
-          # NOTE: Model-specific CIFAR10 E2E tests (GoogleNet, MobileNetV1, ResNet18)
-          # moved to weekly workflow to avoid dataset downloads on every PR
 
     name: "${{ matrix.test-group.name }}"
 
