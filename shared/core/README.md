@@ -1,4 +1,4 @@
-# Core Library(WIP)
+# Core Library (WIP)
 
 The `core` library contains fundamental building blocks and core functionality used across all paper implementations
 in ML Odyssey. All components are implemented in Mojo for maximum performance.

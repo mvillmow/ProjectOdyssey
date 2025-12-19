@@ -1,4 +1,4 @@
-# Data Processing Library(WIP)
+# Data Processing Library (WIP)
 
 The `data` library provides data loading, preprocessing, and augmentation utilities for training neural networks
 in ML Odyssey. All components are implemented in Mojo for maximum performance.

@@ -1,4 +1,4 @@
-# Shared Library(WIP)
+# Shared Library (WIP)
 
 This directory contains reusable ML/AI components used across all paper implementations in the ml-odyssey repository.
 

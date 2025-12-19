@@ -1,4 +1,4 @@
-# Usage Examples - ML Odyssey Shared Library(WIP)
+# Usage Examples - ML Odyssey Shared Library (WIP)
 
 <!-- markdownlint-disable MD051 -->
 

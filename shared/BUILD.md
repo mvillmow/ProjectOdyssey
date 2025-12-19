@@ -1,4 +1,4 @@
-# Build System Guide - ML Odyssey Shared Library(WIP)
+# Build System Guide - ML Odyssey Shared Library (WIP)
 
 This document describes how to build and package the ML Odyssey shared library.
 

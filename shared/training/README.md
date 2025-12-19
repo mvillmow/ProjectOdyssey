@@ -1,4 +1,4 @@
-# Training Library(WIP)
+# Training Library (WIP)
 
 The `training` library contains training infrastructure and utilities used across all paper implementations in ML
 Odyssey. All components are implemented in Mojo for maximum performance.
