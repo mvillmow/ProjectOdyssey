@@ -5,11 +5,14 @@ convolution operations using direct convolution (not im2col).
 The caller manages all state (kernels, biases).
 """
 
+from algorithm import parallelize
+
 from .extensor import ExTensor, zeros
 from .arithmetic import add
 from .reduction import sum as reduce_sum
 from .shape import conv2d_output_shape
 from .gradient_types import GradientPair, GradientTriple, GradientQuad
+from .parallel_utils import should_parallelize
 from collections import List
 
 # max is now a builtin in Mojo - no import needed
@@ -118,69 +121,137 @@ fn conv2d(
     var output = zeros(out_shape, x.dtype())
 
     # Direct convolution algorithm
-    # For each batch element
-    for b in range(batch):
-        # For each output channel
-        for oc in range(out_channels):
-            # For each output position
-            for oh in range(out_height):
-                for ow in range(out_width):
-                    var sum_val = Float32(0.0)
+    if should_parallelize(batch):
+        # Parallel convolution over batch dimension
+        @parameter
+        fn conv_batch(b: Int) capturing:
+            # For each output channel
+            for oc in range(out_channels):
+                # For each output position
+                for oh in range(out_height):
+                    for ow in range(out_width):
+                        var sum_val = Float32(0.0)
 
-                    # Compute input position
-                    var in_h_start = oh * stride - padding
-                    var in_w_start = ow * stride - padding
+                        # Compute input position
+                        var in_h_start = oh * stride - padding
+                        var in_w_start = ow * stride - padding
 
-                    # Convolve over input channels and kernel
-                    for ic in range(in_channels):
-                        for kh in range(kH):
-                            for kw in range(kW):
-                                # Input position with padding
-                                var in_h = in_h_start + kh
-                                var in_w = in_w_start + kw
+                        # Convolve over input channels and kernel
+                        for ic in range(in_channels):
+                            for kh in range(kH):
+                                for kw in range(kW):
+                                    # Input position with padding
+                                    var in_h = in_h_start + kh
+                                    var in_w = in_w_start + kw
 
-                                # Check bounds (zero padding)
-                                if (
-                                    in_h >= 0
-                                    and in_h < in_height
-                                    and in_w >= 0
-                                    and in_w < in_width
-                                ):
-                                    # Get input and kernel values
-                                    var in_idx = (
-                                        b * (in_channels * in_height * in_width)
-                                        + ic * (in_height * in_width)
-                                        + in_h * in_width
-                                        + in_w
-                                    )
-                                    var k_idx = (
-                                        oc * (in_channels * kH * kW)
-                                        + ic * (kH * kW)
-                                        + kh * kW
-                                        + kw
-                                    )
+                                    # Check bounds (zero padding)
+                                    if (
+                                        in_h >= 0
+                                        and in_h < in_height
+                                        and in_w >= 0
+                                        and in_w < in_width
+                                    ):
+                                        # Get input and kernel values
+                                        var in_idx = (
+                                            b * (in_channels * in_height * in_width)
+                                            + ic * (in_height * in_width)
+                                            + in_h * in_width
+                                            + in_w
+                                        )
+                                        var k_idx = (
+                                            oc * (in_channels * kH * kW)
+                                            + ic * (kH * kW)
+                                            + kh * kW
+                                            + kw
+                                        )
 
-                                    var in_val = x._data.bitcast[Float32]()[
-                                        in_idx
-                                    ]
-                                    var k_val = kernel._data.bitcast[Float32]()[
-                                        k_idx
-                                    ]
+                                        var in_val = x._data.bitcast[Float32]()[
+                                            in_idx
+                                        ]
+                                        var k_val = kernel._data.bitcast[Float32]()[
+                                            k_idx
+                                        ]
 
-                                    sum_val += in_val * k_val
+                                        sum_val += in_val * k_val
 
-                    # Add bias
-                    var b_val = bias._data.bitcast[Float32]()[oc]
-                    sum_val += b_val
+                        # Add bias
+                        var b_val = bias._data.bitcast[Float32]()[oc]
+                        sum_val += b_val
 
-                    # Write to output
-                    var out_idx = (
-                        b * (out_channels * out_height * out_width)
-                        + oc * (out_height * out_width)
-                        + oh * out_width
-                        + ow
-                    )
-                    output._data.bitcast[Float32]()[out_idx] = sum_val
+                        # Write to output
+                        var out_idx = (
+                            b * (out_channels * out_height * out_width)
+                            + oc * (out_height * out_width)
+                            + oh * out_width
+                            + ow
+                        )
+                        output._data.bitcast[Float32]()[out_idx] = sum_val
+
+        parallelize[conv_batch](batch)
+    else:
+        # Sequential convolution for small batches
+        for b in range(batch):
+            # For each output channel
+            for oc in range(out_channels):
+                # For each output position
+                for oh in range(out_height):
+                    for ow in range(out_width):
+                        var sum_val = Float32(0.0)
+
+                        # Compute input position
+                        var in_h_start = oh * stride - padding
+                        var in_w_start = ow * stride - padding
+
+                        # Convolve over input channels and kernel
+                        for ic in range(in_channels):
+                            for kh in range(kH):
+                                for kw in range(kW):
+                                    # Input position with padding
+                                    var in_h = in_h_start + kh
+                                    var in_w = in_w_start + kw
+
+                                    # Check bounds (zero padding)
+                                    if (
+                                        in_h >= 0
+                                        and in_h < in_height
+                                        and in_w >= 0
+                                        and in_w < in_width
+                                    ):
+                                        # Get input and kernel values
+                                        var in_idx = (
+                                            b * (in_channels * in_height * in_width)
+                                            + ic * (in_height * in_width)
+                                            + in_h * in_width
+                                            + in_w
+                                        )
+                                        var k_idx = (
+                                            oc * (in_channels * kH * kW)
+                                            + ic * (kH * kW)
+                                            + kh * kW
+                                            + kw
+                                        )
+
+                                        var in_val = x._data.bitcast[Float32]()[
+                                            in_idx
+                                        ]
+                                        var k_val = kernel._data.bitcast[Float32]()[
+                                            k_idx
+                                        ]
+
+                                        sum_val += in_val * k_val
+
+                        # Add bias
+                        var b_val = bias._data.bitcast[Float32]()[oc]
+                        sum_val += b_val
+
+                        # Write to output
+                        var out_idx = (
+                            b * (out_channels * out_height * out_width)
+                            + oc * (out_height * out_width)
+                            + oh * out_width
+                            + ow
+                        )
+                        output._data.bitcast[Float32]()[out_idx] = sum_val
 
     return output^
 

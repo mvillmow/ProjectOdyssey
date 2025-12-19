@@ -4,11 +4,14 @@ This module provides pure functional implementations of normalization operations
 All operations are stateless - caller manages running statistics and parameters.
 """
 
+from algorithm import parallelize
+
 from .extensor import ExTensor, zeros, zeros_like, ones_like, full_like
 from .arithmetic import subtract, add, multiply, divide, power
 from .elementwise import sqrt
 from .reduction import mean as reduce_mean, sum as reduce_sum
 from .normalize_ops import normalize_rgb
+from .parallel_utils import should_parallelize, parallel_for_batch
 from .scalar_ops import (
     sqrt_scalar_f32,
     sqrt_scalar_f64,
@@ -194,50 +197,106 @@ fn batch_norm2d(
         var beta_ptr = beta._data
 
         if x.dtype() == DType.float32:
-            for b in range(batch):
-                for c in range(channels):
-                    var mean_val = batch_mean_ptr.bitcast[Float32]()[c]
-                    var var_val = batch_var_ptr.bitcast[Float32]()[c]
-                    var std = sqrt_scalar_f32(var_val + Float32(epsilon))
-                    var gamma_val = gamma_ptr.bitcast[Float32]()[c]
-                    var beta_val = beta_ptr.bitcast[Float32]()[c]
+            if should_parallelize(batch):
+                # Parallel normalization over batch dimension
+                @parameter
+                fn normalize_batch_f32(b: Int) capturing:
+                    for c in range(channels):
+                        var mean_val = batch_mean_ptr.bitcast[Float32]()[c]
+                        var var_val = batch_var_ptr.bitcast[Float32]()[c]
+                        var std = sqrt_scalar_f32(var_val + Float32(epsilon))
+                        var gamma_val = gamma_ptr.bitcast[Float32]()[c]
+                        var beta_val = beta_ptr.bitcast[Float32]()[c]
 
-                    for h in range(height):
-                        for w in range(width):
-                            var idx = (
-                                b * (channels * height * width)
-                                + c * (height * width)
-                                + h * width
-                                + w
-                            )
-                            var x_val = x_ptr.bitcast[Float32]()[idx]
-                            var x_norm = (x_val - mean_val) / std
-                            output_ptr.bitcast[Float32]()[idx] = (
-                                gamma_val * x_norm + beta_val
-                            )
+                        for h in range(height):
+                            for w in range(width):
+                                var idx = (
+                                    b * (channels * height * width)
+                                    + c * (height * width)
+                                    + h * width
+                                    + w
+                                )
+                                var x_val = x_ptr.bitcast[Float32]()[idx]
+                                var x_norm = (x_val - mean_val) / std
+                                output_ptr.bitcast[Float32]()[idx] = (
+                                    gamma_val * x_norm + beta_val
+                                )
+
+                parallelize[normalize_batch_f32](batch)
+            else:
+                # Sequential normalization for small batches
+                for b in range(batch):
+                    for c in range(channels):
+                        var mean_val = batch_mean_ptr.bitcast[Float32]()[c]
+                        var var_val = batch_var_ptr.bitcast[Float32]()[c]
+                        var std = sqrt_scalar_f32(var_val + Float32(epsilon))
+                        var gamma_val = gamma_ptr.bitcast[Float32]()[c]
+                        var beta_val = beta_ptr.bitcast[Float32]()[c]
+
+                        for h in range(height):
+                            for w in range(width):
+                                var idx = (
+                                    b * (channels * height * width)
+                                    + c * (height * width)
+                                    + h * width
+                                    + w
+                                )
+                                var x_val = x_ptr.bitcast[Float32]()[idx]
+                                var x_norm = (x_val - mean_val) / std
+                                output_ptr.bitcast[Float32]()[idx] = (
+                                    gamma_val * x_norm + beta_val
+                                )
 
         elif x.dtype() == DType.float64:
-            for b in range(batch):
-                for c in range(channels):
-                    var mean_val = batch_mean_ptr.bitcast[Float64]()[c]
-                    var var_val = batch_var_ptr.bitcast[Float64]()[c]
-                    var std = sqrt_scalar_f64(var_val + epsilon)
-                    var gamma_val = gamma_ptr.bitcast[Float64]()[c]
-                    var beta_val = beta_ptr.bitcast[Float64]()[c]
+            if should_parallelize(batch):
+                # Parallel normalization over batch dimension
+                @parameter
+                fn normalize_batch_f64(b: Int) capturing:
+                    for c in range(channels):
+                        var mean_val = batch_mean_ptr.bitcast[Float64]()[c]
+                        var var_val = batch_var_ptr.bitcast[Float64]()[c]
+                        var std = sqrt_scalar_f64(var_val + epsilon)
+                        var gamma_val = gamma_ptr.bitcast[Float64]()[c]
+                        var beta_val = beta_ptr.bitcast[Float64]()[c]
 
-                    for h in range(height):
-                        for w in range(width):
-                            var idx = (
-                                b * (channels * height * width)
-                                + c * (height * width)
-                                + h * width
-                                + w
-                            )
-                            var x_val = x_ptr.bitcast[Float64]()[idx]
-                            var x_norm = (x_val - mean_val) / std
-                            output_ptr.bitcast[Float64]()[idx] = (
-                                gamma_val * x_norm + beta_val
-                            )
+                        for h in range(height):
+                            for w in range(width):
+                                var idx = (
+                                    b * (channels * height * width)
+                                    + c * (height * width)
+                                    + h * width
+                                    + w
+                                )
+                                var x_val = x_ptr.bitcast[Float64]()[idx]
+                                var x_norm = (x_val - mean_val) / std
+                                output_ptr.bitcast[Float64]()[idx] = (
+                                    gamma_val * x_norm + beta_val
+                                )
+
+                parallelize[normalize_batch_f64](batch)
+            else:
+                # Sequential normalization for small batches
+                for b in range(batch):
+                    for c in range(channels):
+                        var mean_val = batch_mean_ptr.bitcast[Float64]()[c]
+                        var var_val = batch_var_ptr.bitcast[Float64]()[c]
+                        var std = sqrt_scalar_f64(var_val + epsilon)
+                        var gamma_val = gamma_ptr.bitcast[Float64]()[c]
+                        var beta_val = beta_ptr.bitcast[Float64]()[c]
+
+                        for h in range(height):
+                            for w in range(width):
+                                var idx = (
+                                    b * (channels * height * width)
+                                    + c * (height * width)
+                                    + h * width
+                                    + w
+                                )
+                                var x_val = x_ptr.bitcast[Float64]()[idx]
+                                var x_norm = (x_val - mean_val) / std
+                                output_ptr.bitcast[Float64]()[idx] = (
+                                    gamma_val * x_norm + beta_val
+                                )
 
         # Update running statistics
         var new_running_mean = zeros_like(running_mean)
@@ -290,50 +349,106 @@ fn batch_norm2d(
         var rv_ptr = running_var._data
 
         if x.dtype() == DType.float32:
-            for b in range(batch):
-                for c in range(channels):
-                    var mean_val = rm_ptr.bitcast[Float32]()[c]
-                    var var_val = rv_ptr.bitcast[Float32]()[c]
-                    var std = sqrt_scalar_f32(var_val + Float32(epsilon))
-                    var gamma_val = gamma_ptr.bitcast[Float32]()[c]
-                    var beta_val = beta_ptr.bitcast[Float32]()[c]
+            if should_parallelize(batch):
+                # Parallel normalization over batch dimension
+                @parameter
+                fn normalize_batch_infer_f32(b: Int) capturing:
+                    for c in range(channels):
+                        var mean_val = rm_ptr.bitcast[Float32]()[c]
+                        var var_val = rv_ptr.bitcast[Float32]()[c]
+                        var std = sqrt_scalar_f32(var_val + Float32(epsilon))
+                        var gamma_val = gamma_ptr.bitcast[Float32]()[c]
+                        var beta_val = beta_ptr.bitcast[Float32]()[c]
 
-                    for h in range(height):
-                        for w in range(width):
-                            var idx = (
-                                b * (channels * height * width)
-                                + c * (height * width)
-                                + h * width
-                                + w
-                            )
-                            var x_val = x_ptr.bitcast[Float32]()[idx]
-                            var x_norm = (x_val - mean_val) / std
-                            output_ptr.bitcast[Float32]()[idx] = (
-                                gamma_val * x_norm + beta_val
-                            )
+                        for h in range(height):
+                            for w in range(width):
+                                var idx = (
+                                    b * (channels * height * width)
+                                    + c * (height * width)
+                                    + h * width
+                                    + w
+                                )
+                                var x_val = x_ptr.bitcast[Float32]()[idx]
+                                var x_norm = (x_val - mean_val) / std
+                                output_ptr.bitcast[Float32]()[idx] = (
+                                    gamma_val * x_norm + beta_val
+                                )
+
+                parallelize[normalize_batch_infer_f32](batch)
+            else:
+                # Sequential normalization for small batches
+                for b in range(batch):
+                    for c in range(channels):
+                        var mean_val = rm_ptr.bitcast[Float32]()[c]
+                        var var_val = rv_ptr.bitcast[Float32]()[c]
+                        var std = sqrt_scalar_f32(var_val + Float32(epsilon))
+                        var gamma_val = gamma_ptr.bitcast[Float32]()[c]
+                        var beta_val = beta_ptr.bitcast[Float32]()[c]
+
+                        for h in range(height):
+                            for w in range(width):
+                                var idx = (
+                                    b * (channels * height * width)
+                                    + c * (height * width)
+                                    + h * width
+                                    + w
+                                )
+                                var x_val = x_ptr.bitcast[Float32]()[idx]
+                                var x_norm = (x_val - mean_val) / std
+                                output_ptr.bitcast[Float32]()[idx] = (
+                                    gamma_val * x_norm + beta_val
+                                )
 
         elif x.dtype() == DType.float64:
-            for b in range(batch):
-                for c in range(channels):
-                    var mean_val = rm_ptr.bitcast[Float64]()[c]
-                    var var_val = rv_ptr.bitcast[Float64]()[c]
-                    var std = sqrt_scalar_f64(var_val + epsilon)
-                    var gamma_val = gamma_ptr.bitcast[Float64]()[c]
-                    var beta_val = beta_ptr.bitcast[Float64]()[c]
+            if should_parallelize(batch):
+                # Parallel normalization over batch dimension
+                @parameter
+                fn normalize_batch_infer_f64(b: Int) capturing:
+                    for c in range(channels):
+                        var mean_val = rm_ptr.bitcast[Float64]()[c]
+                        var var_val = rv_ptr.bitcast[Float64]()[c]
+                        var std = sqrt_scalar_f64(var_val + epsilon)
+                        var gamma_val = gamma_ptr.bitcast[Float64]()[c]
+                        var beta_val = beta_ptr.bitcast[Float64]()[c]
 
-                    for h in range(height):
-                        for w in range(width):
-                            var idx = (
-                                b * (channels * height * width)
-                                + c * (height * width)
-                                + h * width
-                                + w
-                            )
-                            var x_val = x_ptr.bitcast[Float64]()[idx]
-                            var x_norm = (x_val - mean_val) / std
-                            output_ptr.bitcast[Float64]()[idx] = (
-                                gamma_val * x_norm + beta_val
-                            )
+                        for h in range(height):
+                            for w in range(width):
+                                var idx = (
+                                    b * (channels * height * width)
+                                    + c * (height * width)
+                                    + h * width
+                                    + w
+                                )
+                                var x_val = x_ptr.bitcast[Float64]()[idx]
+                                var x_norm = (x_val - mean_val) / std
+                                output_ptr.bitcast[Float64]()[idx] = (
+                                    gamma_val * x_norm + beta_val
+                                )
+
+                parallelize[normalize_batch_infer_f64](batch)
+            else:
+                # Sequential normalization for small batches
+                for b in range(batch):
+                    for c in range(channels):
+                        var mean_val = rm_ptr.bitcast[Float64]()[c]
+                        var var_val = rv_ptr.bitcast[Float64]()[c]
+                        var std = sqrt_scalar_f64(var_val + epsilon)
+                        var gamma_val = gamma_ptr.bitcast[Float64]()[c]
+                        var beta_val = beta_ptr.bitcast[Float64]()[c]
+
+                        for h in range(height):
+                            for w in range(width):
+                                var idx = (
+                                    b * (channels * height * width)
+                                    + c * (height * width)
+                                    + h * width
+                                    + w
+                                )
+                                var x_val = x_ptr.bitcast[Float64]()[idx]
+                                var x_norm = (x_val - mean_val) / std
+                                output_ptr.bitcast[Float64]()[idx] = (
+                                    gamma_val * x_norm + beta_val
+                                )
 
         # Running stats unchanged in inference mode
         return (output, running_mean, running_var)

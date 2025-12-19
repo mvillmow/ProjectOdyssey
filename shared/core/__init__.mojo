@@ -548,6 +548,17 @@ from .validation import (
 )
 
 # ============================================================================
+# Parallel Processing Utilities
+# ============================================================================
+
+from .parallel_utils import (
+    PARALLEL_BATCH_THRESHOLD,
+    DEFAULT_NUM_WORKERS,
+    should_parallelize,
+    parallel_for_batch,
+)
+
+# ============================================================================
 # Module Interface for Layer Composition
 # ============================================================================
 

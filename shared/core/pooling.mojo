@@ -4,8 +4,11 @@ This module provides pure functional implementations of pooling operations.
 All operations are stateless - caller provides all inputs.
 """
 
+from algorithm import parallelize
+
 from .extensor import ExTensor, zeros
 from .shape import pool_output_shape
+from .parallel_utils import should_parallelize
 from collections import List
 
 # max and min are now builtins in Mojo - no import needed
@@ -102,49 +105,99 @@ fn maxpool2d(
         return output^
 
     # Direct max pooling algorithm
-    for b in range(batch):
-        for c in range(channels):
-            for oh in range(out_height):
-                for ow in range(out_width):
-                    # Compute input window bounds
-                    var in_h_start = oh * actual_stride - padding
-                    var in_w_start = ow * actual_stride - padding
-                    var in_h_end = in_h_start + kernel_size
-                    var in_w_end = in_w_start + kernel_size
+    if should_parallelize(batch):
+        # Parallel maxpool over batch dimension
+        @parameter
+        fn maxpool_batch(b: Int) capturing:
+            for c in range(channels):
+                for oh in range(out_height):
+                    for ow in range(out_width):
+                        # Compute input window bounds
+                        var in_h_start = oh * actual_stride - padding
+                        var in_w_start = ow * actual_stride - padding
+                        var in_h_end = in_h_start + kernel_size
+                        var in_w_end = in_w_start + kernel_size
 
-                    # Find maximum in window
-                    var max_val = Float32(-1e9)  # Very small initial value
+                        # Find maximum in window
+                        var max_val = Float32(-1e9)  # Very small initial value
 
-                    for kh in range(kernel_size):
-                        for kw in range(kernel_size):
-                            var in_h = in_h_start + kh
-                            var in_w = in_w_start + kw
+                        for kh in range(kernel_size):
+                            for kw in range(kernel_size):
+                                var in_h = in_h_start + kh
+                                var in_w = in_w_start + kw
 
-                            # Check bounds (zero padding treated as -inf for max)
-                            if (
-                                in_h >= 0
-                                and in_h < in_height
-                                and in_w >= 0
-                                and in_w < in_width
-                            ):
-                                var in_idx = (
-                                    b * (channels * in_height * in_width)
-                                    + c * (in_height * in_width)
-                                    + in_h * in_width
-                                    + in_w
-                                )
-                                var val = x._data.bitcast[Float32]()[in_idx]
-                                if val > max_val:
-                                    max_val = val
+                                # Check bounds (zero padding treated as -inf for max)
+                                if (
+                                    in_h >= 0
+                                    and in_h < in_height
+                                    and in_w >= 0
+                                    and in_w < in_width
+                                ):
+                                    var in_idx = (
+                                        b * (channels * in_height * in_width)
+                                        + c * (in_height * in_width)
+                                        + in_h * in_width
+                                        + in_w
+                                    )
+                                    var val = x._data.bitcast[Float32]()[in_idx]
+                                    if val > max_val:
+                                        max_val = val
 
-                    # Write maximum to output
-                    var out_idx = (
-                        b * (channels * out_height * out_width)
-                        + c * (out_height * out_width)
-                        + oh * out_width
-                        + ow
-                    )
-                    output._data.bitcast[Float32]()[out_idx] = max_val
+                        # Write maximum to output
+                        var out_idx = (
+                            b * (channels * out_height * out_width)
+                            + c * (out_height * out_width)
+                            + oh * out_width
+                            + ow
+                        )
+                        output._data.bitcast[Float32]()[out_idx] = max_val
+
+        parallelize[maxpool_batch](batch)
+    else:
+        # Sequential maxpool for small batches
+        for b in range(batch):
+            for c in range(channels):
+                for oh in range(out_height):
+                    for ow in range(out_width):
+                        # Compute input window bounds
+                        var in_h_start = oh * actual_stride - padding
+                        var in_w_start = ow * actual_stride - padding
+                        var in_h_end = in_h_start + kernel_size
+                        var in_w_end = in_w_start + kernel_size
+
+                        # Find maximum in window
+                        var max_val = Float32(-1e9)  # Very small initial value
+
+                        for kh in range(kernel_size):
+                            for kw in range(kernel_size):
+                                var in_h = in_h_start + kh
+                                var in_w = in_w_start + kw
+
+                                # Check bounds (zero padding treated as -inf for max)
+                                if (
+                                    in_h >= 0
+                                    and in_h < in_height
+                                    and in_w >= 0
+                                    and in_w < in_width
+                                ):
+                                    var in_idx = (
+                                        b * (channels * in_height * in_width)
+                                        + c * (in_height * in_width)
+                                        + in_h * in_width
+                                        + in_w
+                                    )
+                                    var val = x._data.bitcast[Float32]()[in_idx]
+                                    if val > max_val:
+                                        max_val = val
+
+                        # Write maximum to output
+                        var out_idx = (
+                            b * (channels * out_height * out_width)
+                            + c * (out_height * out_width)
+                            + oh * out_width
+                            + ow
+                        )
+                        output._data.bitcast[Float32]()[out_idx] = max_val
 
     return output^
 
