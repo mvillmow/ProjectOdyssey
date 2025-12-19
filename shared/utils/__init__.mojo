@@ -44,6 +44,7 @@ from .logging import (
     Logger,  # Main logger class
     LogLevel,  # Log level enum
     get_logger,  # Get or create logger
+    set_global_log_level,  # Set global log level
     StreamHandler,  # Console output handler
     FileHandler,  # File output handler
     LogRecord,  # Log record structure
