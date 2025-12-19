@@ -16,6 +16,8 @@ from __future__ import annotations
 
 import argparse
 import atexit
+import collections
+import curses
 import dataclasses
 import datetime as dt
 import json
@@ -29,7 +31,7 @@ import tempfile
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
     pass
@@ -82,6 +84,56 @@ def write_secure(path: pathlib.Path, content: str) -> None:
 
 
 # ---------------------------------------------------------------------
+# Log Buffer for Curses UI
+# ---------------------------------------------------------------------
+
+
+class LogBuffer:
+    """Thread-safe circular buffer for log messages with optional file output."""
+
+    def __init__(self, max_lines: int = 1000, log_file: pathlib.Path | None = None) -> None:
+        self._lock = threading.Lock()
+        self._messages: collections.deque[tuple[str, str, str]] = collections.deque(maxlen=max_lines)
+        self._log_file = log_file
+        self._file_handle: object = None
+        if log_file:
+            log_file.parent.mkdir(parents=True, exist_ok=True)
+            self._file_handle = open(log_file, "a", encoding="utf-8")
+
+    def append(self, level: str, msg: str) -> None:
+        """Append a log message with timestamp."""
+        ts = time.strftime("%H:%M:%S")
+        with self._lock:
+            self._messages.append((ts, level, msg))
+            # Also write to log file if configured
+            if self._file_handle:
+                self._file_handle.write(f"[{level:5}] {ts} {msg}\n")
+                self._file_handle.flush()
+
+    def get_messages(self, n: int) -> list[tuple[str, str, str]]:
+        """Get the last n messages."""
+        with self._lock:
+            return list(self._messages)[-n:]
+
+    def close(self) -> None:
+        """Close the log file handle."""
+        with self._lock:
+            if self._file_handle:
+                self._file_handle.close()
+                self._file_handle = None
+
+
+# Global log buffer for curses mode
+_log_buffer: LogBuffer | None = None
+
+
+def set_log_buffer(buffer: LogBuffer | None) -> None:
+    """Set the global log buffer for curses mode."""
+    global _log_buffer
+    _log_buffer = buffer
+
+
+# ---------------------------------------------------------------------
 # Structured logging
 # ---------------------------------------------------------------------
 
@@ -105,6 +157,11 @@ def log(level: str, msg: str) -> None:
     """Log a message with timestamp and level prefix."""
     if level == "DEBUG" and not _debug_mode:
         return
+    # Route to log buffer if in curses mode
+    if _log_buffer is not None:
+        _log_buffer.append(level, msg)
+        return
+    # Fallback for non-curses mode
     ts = time.strftime("%H:%M:%S")
     out = sys.stderr if level in {"WARN", "ERROR"} else sys.stdout
     with _output_lock:
@@ -345,7 +402,10 @@ def wait_until(epoch: int) -> None:
 
 
 class StatusTracker:
-    """Thread-safe status tracker for parallel processing with live display."""
+    """Thread-safe status tracker for parallel processing.
+
+    This class is a pure state container. Display is handled by CursesUI.
+    """
 
     MAIN_THREAD = -1
 
@@ -354,13 +414,9 @@ class StatusTracker:
         self._lock = threading.Lock()
         self._max_workers = max_workers
         self._slots: dict[int, tuple[int, str, str, float]] = {}
-        self._stop_event = threading.Event()
-        self._display_thread: threading.Thread | None = None
-        self._lines_printed = 0
         self._update_event = threading.Event()
         self._completed_count = 0
         self._total_count = 0
-        self._is_tty = sys.stdout.isatty()
 
     def set_total(self, total: int) -> None:
         """Set the total number of items to process."""
@@ -405,119 +461,201 @@ class StatusTracker:
                 del self._slots[slot]
             self._update_event.set()
 
+    def get_status_data(self) -> dict:
+        """Return current state snapshot for external rendering."""
+        with self._lock:
+            return {
+                "completed": self._completed_count,
+                "total": self._total_count,
+                "slots": dict(self._slots),
+                "max_workers": self._max_workers,
+            }
+
+
+# ---------------------------------------------------------------------
+# Curses UI
+# ---------------------------------------------------------------------
+
+
+class CursesUI:
+    """Curses-based UI with scrolling logs and fixed status panel."""
+
+    # Color pairs
+    COLOR_HEADER = 1
+    COLOR_WORKER_BASE = 2  # Workers use 2-9
+    COLOR_ERROR = 10
+    COLOR_WARN = 11
+    COLOR_INFO = 12
+
+    # Worker colors cycle: green, yellow, blue, magenta, cyan, white, red
+    WORKER_COLORS = [
+        curses.COLOR_GREEN,
+        curses.COLOR_YELLOW,
+        curses.COLOR_BLUE,
+        curses.COLOR_MAGENTA,
+        curses.COLOR_CYAN,
+        curses.COLOR_WHITE,
+        curses.COLOR_RED,
+        curses.COLOR_GREEN,
+    ]
+
+    def __init__(self, status_tracker: StatusTracker, log_buffer: LogBuffer, max_workers: int) -> None:
+        """Initialize the curses UI."""
+        self._status_tracker = status_tracker
+        self._log_buffer = log_buffer
+        self._max_workers = max_workers
+        self._stop_event = threading.Event()
+        self._screen: curses.window | None = None
+
+    def run(self, main_func: Callable[[], int]) -> int:
+        """Run UI with curses.wrapper, executing main_func in background thread."""
+        return curses.wrapper(self._curses_main, main_func)
+
+    def _curses_main(self, stdscr: curses.window, main_func: Callable[[], int]) -> int:
+        """Main curses loop."""
+        self._screen = stdscr
+        self._setup_colors()
+        curses.curs_set(0)  # Hide cursor
+        stdscr.nodelay(True)
+
+        # Run business logic in background thread
+        result_holder = [0]
+
+        def run_main() -> None:
+            result_holder[0] = main_func()
+            self._stop_event.set()
+
+        main_thread = threading.Thread(target=run_main)
+        main_thread.start()
+
+        # Render loop on main thread (curses requirement)
+        self._render_loop()
+
+        main_thread.join()
+        return result_holder[0]
+
+    def _setup_colors(self) -> None:
+        """Initialize color pairs for the UI."""
+        curses.start_color()
+        curses.use_default_colors()
+        curses.init_pair(self.COLOR_HEADER, curses.COLOR_CYAN, -1)
+        for i, color in enumerate(self.WORKER_COLORS):
+            curses.init_pair(self.COLOR_WORKER_BASE + i, color, -1)
+        curses.init_pair(self.COLOR_ERROR, curses.COLOR_RED, -1)
+        curses.init_pair(self.COLOR_WARN, curses.COLOR_YELLOW, -1)
+        curses.init_pair(self.COLOR_INFO, curses.COLOR_WHITE, -1)
+
+    def _render_loop(self) -> None:
+        """Main render loop running on the main thread."""
+        while not self._stop_event.is_set():
+            try:
+                # Check for resize
+                if self._screen is not None:
+                    new_size = self._screen.getmaxyx()
+                    if curses.is_term_resized(*new_size):
+                        curses.resizeterm(*new_size)
+                self._render()
+            except curses.error:
+                pass
+            self._status_tracker._update_event.wait(0.1)
+            self._status_tracker._update_event.clear()
+
+    def _render(self) -> None:
+        """Render the full UI."""
+        if self._screen is None:
+            return
+
+        height, width = self._screen.getmaxyx()
+        status_height = self._max_workers + 3  # Header + Main + workers
+        log_height = max(1, height - status_height - 1)  # -1 for separator
+
+        self._screen.erase()
+
+        # Render logs (top section)
+        messages = self._log_buffer.get_messages(log_height)
+        for i, (ts, level, msg) in enumerate(messages):
+            color = self._get_log_color(level)
+            line = f"[{level:5}] {ts} {msg}"[: width - 1]
+            try:
+                self._screen.addstr(i, 0, line, color)
+            except curses.error:
+                pass
+
+        # Separator line
+        try:
+            self._screen.hline(log_height, 0, curses.ACS_HLINE, width)
+        except curses.error:
+            pass
+
+        # Status panel (bottom section)
+        data = self._status_tracker.get_status_data()
+        header = f" Progress: [{data['completed']}/{data['total']}]"
+        try:
+            self._screen.addstr(
+                log_height + 1,
+                0,
+                header,
+                curses.color_pair(self.COLOR_HEADER) | curses.A_BOLD,
+            )
+        except curses.error:
+            pass
+
+        # Main thread status
+        if StatusTracker.MAIN_THREAD in data["slots"]:
+            _, stage, info, start = data["slots"][StatusTracker.MAIN_THREAD]
+            elapsed = self._format_elapsed(start)
+            info_str = f" - {info}" if info else ""
+            line = f"  Main:     [{stage:12}] ({elapsed}){info_str}"[: width - 1]
+            try:
+                self._screen.addstr(log_height + 2, 0, line, curses.color_pair(self.COLOR_HEADER))
+            except curses.error:
+                pass
+        else:
+            try:
+                self._screen.addstr(
+                    log_height + 2,
+                    0,
+                    "  Main:     [Idle        ]",
+                    curses.color_pair(self.COLOR_HEADER),
+                )
+            except curses.error:
+                pass
+
+        # Worker status lines
+        for slot in range(data["max_workers"]):
+            row = log_height + 3 + slot
+            color = curses.color_pair(self.COLOR_WORKER_BASE + (slot % 8))
+            if slot in data["slots"]:
+                item_id, stage, info, start = data["slots"][slot]
+                elapsed = self._format_elapsed(start)
+                info_str = f" - {info}" if info else ""
+                line = f"  Worker {slot}: [{stage:12}] #{item_id} ({elapsed}){info_str}"[: width - 1]
+            else:
+                line = f"  Worker {slot}: [Idle        ]"
+            try:
+                self._screen.addstr(row, 0, line, color)
+            except curses.error:
+                pass
+
+        self._screen.refresh()
+
+    def _get_log_color(self, level: str) -> int:
+        """Get the color attribute for a log level."""
+        if level == "ERROR":
+            return curses.color_pair(self.COLOR_ERROR) | curses.A_BOLD
+        elif level == "WARN":
+            return curses.color_pair(self.COLOR_WARN)
+        return curses.color_pair(self.COLOR_INFO)
+
     def _format_elapsed(self, start_time: float) -> str:
         """Format elapsed time as MM:SS."""
         elapsed = max(0, int(time.time() - start_time))
-        minutes, seconds = divmod(elapsed, 60)
-        return f"{minutes:02d}:{seconds:02d}"
+        m, s = divmod(elapsed, 60)
+        return f"{m:02d}:{s:02d}"
 
-    def _render_status(self) -> list[str]:
-        """Render current status as list of lines."""
-        with self._lock:
-            lines = []
-
-            if self.MAIN_THREAD in self._slots:
-                _, stage, info, start_time = self._slots[self.MAIN_THREAD]
-                elapsed = self._format_elapsed(start_time)
-                progress = f" [{self._completed_count}/{self._total_count}]" if self._total_count > 0 else ""
-                info_str = f" - {info}" if info else ""
-                lines.append(f"  Main:     [{stage:12}]{progress} ({elapsed}){info_str}")
-            else:
-                lines.append("  Main:     [Idle        ]")
-
-            for slot in range(self._max_workers):
-                if slot in self._slots:
-                    item_id, stage, info, start_time = self._slots[slot]
-                    elapsed = self._format_elapsed(start_time)
-                    info_str = f" - {info}" if info else ""
-                    lines.append(f"  Thread {slot}: [{stage:12}] #{item_id} ({elapsed}){info_str}")
-                else:
-                    lines.append(f"  Thread {slot}: [Idle        ]")
-            return lines
-
-    def _get_state_key(self) -> str:
-        """Get a key representing the meaningful state (excluding elapsed time)."""
-        with self._lock:
-            parts = [str(self._completed_count), str(self._total_count)]
-            for slot in range(self._max_workers):
-                if slot in self._slots:
-                    item_id, stage, info, _ = self._slots[slot]
-                    parts.append(f"{item_id}:{stage}:{info}")
-                else:
-                    parts.append("idle")
-            return "|".join(parts)
-
-    def _render_compact(self) -> str:
-        """Render a single-line compact status."""
-        with self._lock:
-            parts = []
-
-            # Progress
-            if self._total_count > 0:
-                parts.append(f"[{self._completed_count}/{self._total_count}]")
-
-            # Active threads
-            active = []
-            for slot in range(self._max_workers):
-                if slot in self._slots:
-                    item_id, stage, info, start_time = self._slots[slot]
-                    elapsed = self._format_elapsed(start_time)
-                    short_info = f" {info[:20]}" if info else ""
-                    active.append(f"#{item_id}:{stage[:8]}({elapsed}){short_info}")
-
-            if active:
-                parts.append(" | ".join(active))
-            else:
-                parts.append("Waiting...")
-
-            return " ".join(parts)
-
-    def _display_loop(self) -> None:
-        """Background thread that refreshes the status display."""
-        last_state_key = ""
-
-        while not self._stop_event.is_set():
-            state_key = self._get_state_key()
-
-            # Only print when meaningful state changes (not just elapsed time)
-            if state_key != last_state_key:
-                status = self._render_compact()
-                with _output_lock:
-                    if self._is_tty:
-                        # Single-line update using carriage return
-                        sys.stdout.write(f"\r  Status: {status}\033[K")
-                        sys.stdout.flush()
-                    else:
-                        print(f"  Status: {status}")
-                        sys.stdout.flush()
-                last_state_key = state_key
-                self._lines_printed = 1
-
-            self._update_event.wait(STATUS_REFRESH_INTERVAL)
-            self._update_event.clear()
-
-    def start_display(self) -> None:
-        """Start the background display thread."""
-        if self._is_tty:
-            sys.stdout.write("\033[?25l")
-            sys.stdout.flush()
-
-        self._display_thread = threading.Thread(target=self._display_loop, daemon=True)
-        self._display_thread.start()
-        time.sleep(0.05)
-
-    def stop_display(self) -> None:
-        """Stop the background display thread."""
+    def stop(self) -> None:
+        """Signal the UI to stop."""
         self._stop_event.set()
-        self._update_event.set()
-        if self._display_thread:
-            self._display_thread.join(timeout=1.0)
-
-        if self._is_tty:
-            sys.stdout.write("\033[?25h")
-            sys.stdout.write("\n")
-            sys.stdout.flush()
-        self._lines_printed = 0
 
 
 # ---------------------------------------------------------------------
@@ -2132,123 +2270,143 @@ Examples:
                 print(f"  ... ({len(ready) - 10} more)")
         return 0
 
+    # Create log file for persistent logging
+    log_dir = repo_root / "logs"
+    log_file = log_dir / f"implement-epic-{opts.epic}-{time.strftime('%Y%m%d-%H%M%S')}.log"
+
+    # Create log buffer for curses UI with file output
+    log_buffer = LogBuffer(log_file=log_file)
+    set_log_buffer(log_buffer)
+
+    # Results container (shared with run_implementation)
     results: list[WorkerResult] = []
     status_tracker.set_total(len(state.issues))
-    status_tracker.start_display()
 
-    try:
-        with ThreadPoolExecutor(max_workers=actual_workers) as executor:
-            futures: dict = {}
-            active_count = 0
-            stall_count = 0  # Track iterations without progress
+    def run_implementation() -> int:
+        """Run the main implementation loop. Called by CursesUI in background thread."""
+        nonlocal results
 
-            while True:
-                status_tracker.update_main("Processing", f"{len(results)} done")
+        try:
+            with ThreadPoolExecutor(max_workers=actual_workers) as executor:
+                futures: dict = {}
+                active_count = 0
+                stall_count = 0  # Track iterations without progress
 
-                # Get ready issues (dependencies satisfied)
-                ready = resolver.get_ready_issues()
+                while True:
+                    status_tracker.update_main("Processing", f"{len(results)} done")
 
-                # Also include blocked issues that have existing PRs needing CI fixes
-                # This allows us to fix CI failures even when dependencies aren't met
-                if not ready:
-                    pending = resolver.get_all_pending_issues()
-                    for issue_num in pending:
-                        if issue_num in futures.values():
-                            continue
-                        # Check if this issue has an existing PR with CI failures
-                        existing_pr = implementer._check_existing_pr(issue_num)
-                        if existing_pr and existing_pr.get("state") == "OPEN":
-                            checks = existing_pr.get("statusCheckRollup", []) or []
-                            failing = [c for c in checks if c.get("conclusion") == "FAILURE"]
-                            if failing:
-                                log("DEBUG", f"Found blocked issue #{issue_num} with failing PR - adding to ready")
-                                ready.append(issue_num)
-                                break  # Only add one at a time to avoid overwhelming
+                    # Get ready issues (dependencies satisfied)
+                    ready = resolver.get_ready_issues()
 
-                # Filter out issues already in progress (in futures)
-                ready = [n for n in ready if n not in futures.values()]
+                    # Also include blocked issues that have existing PRs needing CI fixes
+                    # This allows us to fix CI failures even when dependencies aren't met
+                    if not ready:
+                        pending = resolver.get_all_pending_issues()
+                        for issue_num in pending:
+                            if issue_num in futures.values():
+                                continue
+                            # Check if this issue has an existing PR with CI failures
+                            existing_pr = implementer._check_existing_pr(issue_num)
+                            if existing_pr and existing_pr.get("state") == "OPEN":
+                                checks = existing_pr.get("statusCheckRollup", []) or []
+                                failing = [c for c in checks if c.get("conclusion") == "FAILURE"]
+                                if failing:
+                                    log("DEBUG", f"Found blocked issue #{issue_num} with failing PR - adding to ready")
+                                    ready.append(issue_num)
+                                    break  # Only add one at a time to avoid overwhelming
 
-                # Spawn new tasks up to max_parallel
-                spawned_this_iteration = 0
-                available = actual_workers - active_count
+                    # Filter out issues already in progress (in futures)
+                    ready = [n for n in ready if n not in futures.values()]
 
-                log(
-                    "DEBUG",
-                    f"Loop: ready={len(ready)} futures={len(futures)} active={active_count} avail={available} done={len(results)}",
-                )
-                for issue_num in ready[:available]:
-                    slot = status_tracker.acquire_slot(issue_num)
-                    resolver.mark_in_progress(issue_num)
-                    future = executor.submit(implementer.implement_issue, issue_num, slot)
-                    futures[future] = issue_num
-                    active_count += 1
-                    spawned_this_iteration += 1
-                    status_tracker.update_main("Spawning", f"#{issue_num}")
+                    # Spawn new tasks up to max_parallel
+                    spawned_this_iteration = 0
+                    available = actual_workers - active_count
 
-                # Check termination conditions
-                if not futures and not ready:
-                    # Nothing running and nothing ready - we're done or blocked
-                    log("INFO", "All processable issues completed or blocked")
-                    break
+                    log(
+                        "DEBUG",
+                        f"Loop: ready={len(ready)} futures={len(futures)} active={active_count} avail={available} done={len(results)}",
+                    )
+                    for issue_num in ready[:available]:
+                        slot = status_tracker.acquire_slot(issue_num)
+                        resolver.mark_in_progress(issue_num)
+                        future = executor.submit(implementer.implement_issue, issue_num, slot)
+                        futures[future] = issue_num
+                        active_count += 1
+                        spawned_this_iteration += 1
+                        status_tracker.update_main("Spawning", f"#{issue_num}")
 
-                if not futures and ready and spawned_this_iteration == 0:
-                    # Ready issues exist but we couldn't spawn any - something's wrong
-                    stall_count += 1
-                    if stall_count > 5:
-                        log("WARN", f"Stalled with {len(ready)} ready issues but cannot spawn. Exiting.")
+                    # Check termination conditions
+                    if not futures and not ready:
+                        # Nothing running and nothing ready - we're done or blocked
+                        log("INFO", "All processable issues completed or blocked")
                         break
-                    time.sleep(1)
-                    continue
-                else:
-                    stall_count = 0
 
-                # Wait for at least one completion
-                done_futures = []
-                for future in list(futures.keys()):
-                    if future.done():
-                        done_futures.append(future)
-
-                if not done_futures:
-                    time.sleep(1.0)  # Poll interval
-                    continue
-
-                for future in done_futures:
-                    issue_num = futures.pop(future)
-                    active_count -= 1
-
-                    try:
-                        result = future.result()
-                    except Exception as e:
-                        log("ERROR", f"Future for #{issue_num} raised exception: {e}")
-                        result = WorkerResult(issue_num, "paused", None, str(e), 0)
-
-                    results.append(result)
-                    status_tracker.increment_completed()
-
-                    if result.status == "completed":
-                        resolver.mark_completed(issue_num)
-                        log("DEBUG", f"Main loop: marked #{issue_num} as completed")
+                    if not futures and ready and spawned_this_iteration == 0:
+                        # Ready issues exist but we couldn't spawn any - something's wrong
+                        stall_count += 1
+                        if stall_count > 5:
+                            log("WARN", f"Stalled with {len(ready)} ready issues but cannot spawn. Exiting.")
+                            break
+                        time.sleep(1)
+                        continue
                     else:
-                        resolver.mark_paused(issue_num)
-                        log("DEBUG", f"Main loop: marked #{issue_num} as paused ({result.status})")
+                        stall_count = 0
 
-                    # Release slot (find slot first, then release without holding lock)
-                    slot_to_release = None
-                    with status_tracker._lock:
-                        for slot in range(actual_workers):
-                            if slot in status_tracker._slots:
-                                item, _, _, _ = status_tracker._slots[slot]
-                                if item == issue_num:
-                                    slot_to_release = slot
-                                    break
-                    if slot_to_release is not None:
-                        status_tracker.release_slot(slot_to_release)
+                    # Wait for at least one completion
+                    done_futures = []
+                    for future in list(futures.keys()):
+                        if future.done():
+                            done_futures.append(future)
 
-    finally:
-        status_tracker.stop_display()
+                    if not done_futures:
+                        time.sleep(1.0)  # Poll interval
+                        continue
 
-    # Save final state
-    state.save(state_file)
+                    for future in done_futures:
+                        issue_num = futures.pop(future)
+                        active_count -= 1
+
+                        try:
+                            result = future.result()
+                        except Exception as e:
+                            log("ERROR", f"Future for #{issue_num} raised exception: {e}")
+                            result = WorkerResult(issue_num, "paused", None, str(e), 0)
+
+                        results.append(result)
+                        status_tracker.increment_completed()
+
+                        if result.status == "completed":
+                            resolver.mark_completed(issue_num)
+                            log("DEBUG", f"Main loop: marked #{issue_num} as completed")
+                        else:
+                            resolver.mark_paused(issue_num)
+                            log("DEBUG", f"Main loop: marked #{issue_num} as paused ({result.status})")
+
+                        # Release slot (find slot first, then release without holding lock)
+                        slot_to_release = None
+                        with status_tracker._lock:
+                            for slot in range(actual_workers):
+                                if slot in status_tracker._slots:
+                                    item, _, _, _ = status_tracker._slots[slot]
+                                    if item == issue_num:
+                                        slot_to_release = slot
+                                        break
+                        if slot_to_release is not None:
+                            status_tracker.release_slot(slot_to_release)
+
+        finally:
+            # Save state even if interrupted
+            state.save(state_file)
+
+        return 1 if any(r.status == "error" for r in results) else 0
+
+    # Run with curses UI
+    curses_ui = CursesUI(status_tracker, log_buffer, actual_workers)
+    exit_code = curses_ui.run(run_implementation)
+
+    # Close and clear log buffer after curses exits
+    log_buffer.close()
+    set_log_buffer(None)
 
     # Print summary
     completed = sum(1 for r in results if r.status == "completed")
@@ -2264,15 +2422,16 @@ Examples:
     print(f"  Skipped:   {skipped}")
     print(f"  Errors:    {errors}")
     print(f"  Total:     {len(results)}")
+    print()
+    print(f"  Log file: {log_file}")
     if opts.state_dir:
-        print()
         print(f"  State file: {state_file}")
     print("==========================================")
 
     # Print paused issues summary
     print_paused_summary(state)
 
-    return 1 if errors > 0 else 0
+    return exit_code
 
 
 if __name__ == "__main__":
