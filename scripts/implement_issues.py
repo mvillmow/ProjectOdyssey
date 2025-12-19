@@ -1684,27 +1684,42 @@ PR #{pr_number} has failing CI checks:
         log("DEBUG", "  Committing and pushing changes")
         self._update_status(slot, issue, "Git", "committing fix")
 
-        # Call Claude to analyze changes and create a proper commit
+        # Call Claude to analyze issue, PR, and changes to create a proper commit
         commit_prompt = f"""You need to commit the CI fix changes for GitHub issue #{issue}.
 
 ## Working Directory
 {worktree}
 
 ## PR Information
-This is a fix for PR #{pr_number} which had failing CI checks.
+This is a fix for PR #{pr_number} which had failing CI checks:
+{chr(10).join(failure_info)}
 
-## Instructions
-1. Run `git diff` to see what changed
-2. Run `git status` to see all modified/added files
-3. Create a meaningful commit message based on the actual fixes
-4. Commit using: git add -A && git commit -m "your message"
+## Your Task
+1. Read the GitHub issue for context: `gh issue view {issue}`
+2. Read the PR for context: `gh pr view {pr_number}`
+3. Run `git diff` to see what files were changed and how
+4. Run `git status` to see all modified/added/deleted files
+5. Based on the issue, PR, failures, and actual fixes, create a meaningful commit message
+6. Commit using: git add -A && git commit -m "your message"
 
-The commit message should:
-- Start with fix: since this is a CI fix
-- Briefly describe what was fixed
-- Be concise but informative
+## Commit Message Requirements
+- Start with fix: since this addresses CI failures
+- First line: brief summary of what was fixed (50 chars or less)
+- Body: explain what was broken and how it was fixed
+- Be specific about the actual changes made
 
-DO NOT describe what you're doing - just run the git commands to commit.
+Example format:
+```
+fix(core): correct parameter order in variance function
+
+The variance function was passing axis parameter incorrectly,
+causing dimension mismatch errors in CI tests.
+
+- Fixed parameter order in _compute_variance call
+- Updated test assertions to match expected output shape
+```
+
+DO NOT describe what you're doing - just run the commands to commit.
 """
         self._spawn_claude_agent(worktree, commit_prompt, slot, issue)
 
@@ -1946,7 +1961,7 @@ You are on branch: {worktree.name}
             # 8. Commit (if Claude didn't already)
             if has_uncommitted:
                 self._update_status(slot, issue, "Git", "committing")
-                # Call Claude to analyze changes and create a proper commit
+                # Call Claude to analyze issue, plan, and changes to create a proper commit
                 commit_prompt = f"""You need to commit the changes for GitHub issue #{issue}.
 
 ## Issue Title
@@ -1955,18 +1970,37 @@ You are on branch: {worktree.name}
 ## Working Directory
 {worktree}
 
-## Instructions
-1. Run `git diff` to see what changed
-2. Run `git status` to see all modified/added files
-3. Create a meaningful commit message based on the actual changes
-4. Commit using: git add -A && git commit -m "your message"
+## Implementation Plan
+{plan}
 
-The commit message should:
-- Start with feat:, fix:, docs:, refactor:, or test: as appropriate
-- Reference the issue: "Closes #{issue}" in the body
-- Summarize what was actually implemented
+## Your Task
+1. Read the GitHub issue to understand the full context: `gh issue view {issue}`
+2. Run `git diff` to see what files were changed and how
+3. Run `git status` to see all modified/added/deleted files
+4. Based on the issue, plan, and actual changes, create a meaningful commit message
+5. Commit using: git add -A && git commit -m "your message"
 
-DO NOT describe what you're doing - just run the git commands to commit.
+## Commit Message Requirements
+- Start with feat:, fix:, docs:, refactor:, or test: as appropriate for what was done
+- First line: brief summary (50 chars or less)
+- Body: explain what was implemented and why, referencing the plan
+- Footer: include "Closes #{issue}"
+
+Example format:
+```
+feat(core): implement variance and std operations
+
+Add variance and standard deviation functions with forward and
+backward passes following the pure functional pattern.
+
+- variance(): compute variance along specified axis
+- std(): compute standard deviation
+- Backward passes for gradient computation
+
+Closes #{issue}
+```
+
+DO NOT describe what you're doing - just run the commands to commit.
 """
                 self._spawn_claude_agent(worktree, commit_prompt, slot, issue)
 
