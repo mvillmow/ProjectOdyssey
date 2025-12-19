@@ -558,6 +558,19 @@ class DependencyResolver:
                 blocked[num] = external_deps
         return blocked
 
+    def get_all_pending_issues(self) -> list[int]:
+        """Return all pending issues regardless of dependencies.
+
+        Used for checking existing PRs that might need CI fixes.
+        """
+        priority_order = {"P0": 0, "P1": 1, "P2": 2}
+        with self._lock:
+            pending = []
+            for num in self.issues:
+                if num not in self._completed and num not in self._paused and num not in self._in_progress:
+                    pending.append(num)
+            return sorted(pending, key=lambda n: (priority_order.get(self.issues[n].priority, 2), n))
+
     def mark_in_progress(self, issue: int) -> None:
         """Mark an issue as in progress."""
         with self._lock:
@@ -1868,8 +1881,25 @@ Examples:
             while True:
                 status_tracker.update_main("Processing", f"{len(results)} done")
 
-                # Get ready issues
+                # Get ready issues (dependencies satisfied)
                 ready = resolver.get_ready_issues()
+
+                # Also include blocked issues that have existing PRs needing CI fixes
+                # This allows us to fix CI failures even when dependencies aren't met
+                if not ready:
+                    pending = resolver.get_all_pending_issues()
+                    for issue_num in pending:
+                        if issue_num in futures.values():
+                            continue
+                        # Check if this issue has an existing PR with CI failures
+                        existing_pr = implementer._check_existing_pr(issue_num)
+                        if existing_pr and existing_pr.get("state") == "OPEN":
+                            checks = existing_pr.get("statusCheckRollup", []) or []
+                            failing = [c for c in checks if c.get("conclusion") == "FAILURE"]
+                            if failing:
+                                log("DEBUG", f"Found blocked issue #{issue_num} with failing PR - adding to ready")
+                                ready.append(issue_num)
+                                break  # Only add one at a time to avoid overwhelming
 
                 # Filter out issues already in progress (in futures)
                 ready = [n for n in ready if n not in futures.values()]
