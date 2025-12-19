@@ -1836,18 +1836,7 @@ DO NOT describe what you're doing - just run the commands to commit.
             title = issue_info.title or f"Issue #{issue}"
             log("INFO", f"Implementing #{issue}: {title}")
 
-            # 0. Check for existing PR first
-            self._update_status(slot, issue, "PR", "checking existing")
-            existing_pr = self._check_existing_pr(issue)
-            if existing_pr:
-                state = existing_pr.get("state", "")
-                if state == "MERGED":
-                    log("INFO", f"  Issue #{issue} already has merged PR #{existing_pr['number']}")
-                    self._post_issue_update(issue, f"✅ Already completed via PR #{existing_pr['number']}")
-                    return WorkerResult(issue, "completed", existing_pr["number"], None, time.time() - start_time)
-                elif state == "OPEN":
-                    # Existing open PR - analyze and fix if needed
-                    return self._analyze_and_fix_pr(existing_pr, issue, slot)
+            # NOTE: PR creation removed - no longer checking for existing PRs
 
             # 1. Check/create plan
             plan = self._check_or_create_plan(issue, slot)
@@ -1931,25 +1920,14 @@ You are on branch: {worktree.name}
             cp = run(["git", "log", "--oneline", "origin/main..HEAD"], cwd=worktree)
             has_new_commits = bool(cp.stdout.strip())
 
-            # Check if Claude already created a PR
-            existing_pr = self._check_existing_pr(issue)
-            has_pr = existing_pr is not None and existing_pr.get("state") == "OPEN"
+            # NOTE: PR creation removed - no longer checking for existing PRs
 
-            if not has_uncommitted and not has_new_commits and not has_pr:
+            if not has_uncommitted and not has_new_commits:
                 log("WARN", f"  No changes made for #{issue}")
                 self.worktree_manager.remove(issue)
                 del self.state.in_progress[issue]
                 self.state.save(self.state_file)
                 return WorkerResult(issue, "skipped", None, "No changes made", time.time() - start_time)
-
-            # If Claude already created a PR, just mark as completed
-            if has_pr and not has_uncommitted:
-                log("INFO", f"  Claude already created PR #{existing_pr['number']} for #{issue}")
-                self.worktree_manager.remove(issue)
-                del self.state.in_progress[issue]
-                self.state.save(self.state_file)
-                duration = time.time() - start_time
-                return WorkerResult(issue, "completed", existing_pr["number"], None, duration)
 
             # 6. Get summary
             summary = self._get_summary(worktree, slot, issue)
@@ -2028,44 +2006,17 @@ DO NOT describe what you're doing - just run the commands to commit.
             if cp.returncode != 0:
                 raise RuntimeError(f"git push failed: {cp.stderr}")
 
-            # 10. Create PR
-            self._update_status(slot, issue, "PR", "creating")
-            pr_body = f"Closes #{issue}\n\n## Summary\n\n{summary}\n\n## Plan\n\n{plan[:500]}..."
-            cp = run(
-                [
-                    "gh",
-                    "pr",
-                    "create",
-                    "--title",
-                    f"Implement #{issue}: {title[:50]}",
-                    "--body",
-                    pr_body,
-                    "--head",
-                    branch,
-                ]
-            )
-
-            if cp.returncode != 0:
-                raise RuntimeError(f"PR creation failed: {cp.stderr}")
-
-            pr_url = cp.stdout.strip()
-            pr_number = int(pr_url.split("/")[-1])
-            self.state.pr_numbers[issue] = pr_number
-            self.state.save(self.state_file)
-
-            # 11. Enable auto-merge
-            run(["gh", "pr", "merge", str(pr_number), "--auto", "--rebase"])
-
-            # 12. Cleanup worktree and move to next issue (don't wait for CI)
+            # 10. Cleanup worktree and move to next issue
+            # NOTE: PR creation removed - commits are pushed to branches only
             self._update_status(slot, issue, "Cleanup", "removing worktree")
             self.worktree_manager.remove(issue)
             del self.state.in_progress[issue]
             self.state.save(self.state_file)
 
             duration = time.time() - start_time
-            log("INFO", f"  Created PR #{pr_number} for #{issue} in {duration:.0f}s - moving to next issue")
-            self._post_issue_update(issue, f"✅ Created PR #{pr_number}. Auto-merge enabled.")
-            return WorkerResult(issue, "completed", pr_number, None, duration)
+            log("INFO", f"  Committed #{issue} to branch {branch} in {duration:.0f}s")
+            self._post_issue_update(issue, f"✅ Committed changes to branch: {branch}")
+            return WorkerResult(issue, "completed", None, None, duration)
 
         except Exception as e:
             log("ERROR", f"  Issue #{issue} failed: {e}")
@@ -2079,7 +2030,7 @@ DO NOT describe what you're doing - just run the commands to commit.
                 # Keep worktree for debugging, just update state
                 self.state.paused_issues[issue] = PausedIssue(
                     worktree=self.state.in_progress[issue],
-                    pr=self.state.pr_numbers.get(issue),
+                    pr=None,  # PR creation removed
                     reason=str(e)[:100],
                 )
                 del self.state.in_progress[issue]
@@ -2409,22 +2360,7 @@ Examples:
                     # Get ready issues (dependencies satisfied)
                     ready = resolver.get_ready_issues()
 
-                    # Also include blocked issues that have existing PRs needing CI fixes
-                    # This allows us to fix CI failures even when dependencies aren't met
-                    if not ready:
-                        pending = resolver.get_all_pending_issues()
-                        for issue_num in pending:
-                            if issue_num in futures.values():
-                                continue
-                            # Check if this issue has an existing PR with CI failures
-                            existing_pr = implementer._check_existing_pr(issue_num)
-                            if existing_pr and existing_pr.get("state") == "OPEN":
-                                checks = existing_pr.get("statusCheckRollup", []) or []
-                                failing = [c for c in checks if c.get("conclusion") == "FAILURE"]
-                                if failing:
-                                    log("DEBUG", f"Found blocked issue #{issue_num} with failing PR - adding to ready")
-                                    ready.append(issue_num)
-                                    break  # Only add one at a time to avoid overwhelming
+                    # NOTE: PR creation removed - no longer checking for existing PRs with CI failures
 
                     # Filter out issues already in progress (in futures)
                     ready = [n for n in ready if n not in futures.values()]
