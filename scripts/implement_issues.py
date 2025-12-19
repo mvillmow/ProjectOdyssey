@@ -127,6 +127,33 @@ def run(
     )
 
 
+# Cache for external issue states (avoid repeated API calls)
+_external_issue_cache: dict[int, bool] = {}  # issue_num -> is_closed
+
+
+def is_issue_closed(issue_num: int) -> bool:
+    """Check if an external issue is closed via GitHub API.
+
+    Results are cached to avoid repeated API calls.
+    """
+    if issue_num in _external_issue_cache:
+        return _external_issue_cache[issue_num]
+
+    cp = run(["gh", "issue", "view", str(issue_num), "--json", "state"])
+    if cp.returncode == 0:
+        try:
+            data = json.loads(cp.stdout)
+            is_closed = data.get("state", "OPEN").upper() == "CLOSED"
+            _external_issue_cache[issue_num] = is_closed
+            return is_closed
+        except json.JSONDecodeError:
+            pass
+
+    # If we can't fetch, assume not closed (conservative)
+    _external_issue_cache[issue_num] = False
+    return False
+
+
 # ---------------------------------------------------------------------
 # Rate-limit handling (from plan_issues.py)
 # ---------------------------------------------------------------------
@@ -704,8 +731,22 @@ class WorktreeManager:
         with self._lock:
             worktree_path = self.worktree_base / f"{issue}-{remote_branch}"
 
+            # Check if any existing worktree already has this branch checked out
+            cp = run(["git", "worktree", "list", "--porcelain"], cwd=self.repo_root)
+            for line in cp.stdout.split("\n"):
+                if line.startswith("worktree "):
+                    existing_path = pathlib.Path(line.split(" ", 1)[1])
+                    # Check what branch this worktree is on
+                    branch_cp = run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=existing_path)
+                    if branch_cp.returncode == 0 and branch_cp.stdout.strip() == remote_branch:
+                        log("DEBUG", f"Found existing worktree for branch {remote_branch}: {existing_path}")
+                        # Update it to latest
+                        run(["git", "fetch", "origin", remote_branch], cwd=existing_path)
+                        run(["git", "reset", "--hard", f"origin/{remote_branch}"], cwd=existing_path)
+                        return existing_path
+
             if worktree_path.exists():
-                log("DEBUG", f"Worktree already exists: {worktree_path}")
+                log("DEBUG", f"Worktree path exists: {worktree_path}")
                 # Make sure it's on the right branch and up to date
                 run(["git", "fetch", "origin", remote_branch], cwd=worktree_path)
                 run(["git", "reset", "--hard", f"origin/{remote_branch}"], cwd=worktree_path)
