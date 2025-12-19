@@ -2,196 +2,188 @@
 
 Provides common tensor creation utilities for tests, including
 random tensors, sequential tensors, and special value tensors.
+
+These fixtures wrap the comprehensive infrastructure in shared.testing
+with convenient test-specific APIs.
 """
 
-from collections import List
-from shared.core.extensor import (
-    ExTensor,
-    zeros,
-    ones,
-    full,
-    nan_tensor,
-    inf_tensor,
-)
-from random import random_float64, seed as set_seed
+from shared.core.extensor import ExTensor, zeros, ones
+from shared.testing.data_generators import random_tensor as shared_random_tensor
+from shared.testing.data_generators import random_uniform
 
 
-fn random_tensor(
-    shape: List[Int], dtype: DType, seed_value: Int = 42
-) raises -> ExTensor:
-    """Create tensor with seeded random values for reproducibility.
+fn random_tensor(shape: List[Int], dtype: DType = DType.float32) raises -> ExTensor:
+    """Create a tensor with random values from uniform distribution [0, 1).
 
     Args:
-        shape: Shape of the tensor to create
-        dtype: Data type of the tensor
-        seed_value: Random seed for reproducibility (default: 42)
+        shape: Shape of the output tensor as a list of dimensions.
+        dtype: Data type of tensor elements (default: float32).
 
     Returns:
-        ExTensor filled with random values in [0.0, 1.0)
+        ExTensor with random values uniformly distributed in [0, 1).
 
-    Examples:
+    Example:
+        ```mojo
+        var weights = random_tensor([10, 5], DType.float32)
+        # Creates 10x5 tensor with random values in [0, 1)
         ```
-        var shape = List[Int]()
-        shape.append(3)
-        shape.append(4)
-        var t = random_tensor(shape, DType.float32, seed=42)
-        ```
+
+    Raises:
+        Error: If operation fails.
     """
-    set_seed(seed_value)
-    var tensor = ExTensor(shape, dtype)
-    var numel = tensor.numel()
-
-    if dtype == DType.float32:
-        var ptr = tensor._data.bitcast[Scalar[DType.float32]]()
-        for i in range(numel):
-            ptr[i] = Scalar[DType.float32](random_float64())
-    elif dtype == DType.float64:
-        var ptr = tensor._data.bitcast[Scalar[DType.float64]]()
-        for i in range(numel):
-            ptr[i] = Scalar[DType.float64](random_float64())
-    elif dtype == DType.float16:
-        var ptr = tensor._data.bitcast[Scalar[DType.float16]]()
-        for i in range(numel):
-            ptr[i] = Scalar[DType.float16](random_float64())
-    elif dtype == DType.int32:
-        var ptr = tensor._data.bitcast[Scalar[DType.int32]]()
-        for i in range(numel):
-            ptr[i] = Scalar[DType.int32](Int(random_float64() * 100))
-    elif dtype == DType.int64:
-        var ptr = tensor._data.bitcast[Scalar[DType.int64]]()
-        for i in range(numel):
-            ptr[i] = Scalar[DType.int64](Int(random_float64() * 100))
-    else:
-        raise Error("random_tensor: unsupported dtype")
-
-    return tensor^
+    return shared_random_tensor(shape, dtype)
 
 
-fn sequential_tensor(shape: List[Int], dtype: DType) raises -> ExTensor:
-    """Create tensor with sequential values [0, 1, 2, ...].
+fn sequential_tensor(shape: List[Int], dtype: DType = DType.float32) raises -> ExTensor:
+    """Create tensor with sequential values 0, 1, 2, 3, ...
+
+    Tensor is filled with sequential values in row-major order, then reshaped
+    to the requested shape.
 
     Args:
-        shape: Shape of the tensor to create
-        dtype: Data type of the tensor
+        shape: Shape of the output tensor as a list of dimensions.
+        dtype: Data type of tensor elements (default: float32).
 
     Returns:
-        ExTensor filled with values 0, 1, 2, ... up to numel-1
+        ExTensor with values 0, 1, 2, ... in flattened order.
 
-    Examples:
+    Example:
+        ```mojo
+        var tensor = sequential_tensor([2, 3], DType.float32)
+        # Returns tensor [[0, 1, 2], [3, 4, 5]]
         ```
-        var shape = List[Int]()
-        shape.append(3)
-        shape.append(4)
-        var t = sequential_tensor(shape, DType.float32)
-        # Result: [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11]]
-        ```
+
+    Raises:
+        Error: If operation fails.
     """
-    var tensor = ExTensor(shape, dtype)
-    var numel = tensor.numel()
+    var tensor = zeros(shape, dtype)
 
-    if dtype == DType.float32:
-        var ptr = tensor._data.bitcast[Scalar[DType.float32]]()
-        for i in range(numel):
-            ptr[i] = Scalar[DType.float32](Float32(i))
-    elif dtype == DType.float64:
-        var ptr = tensor._data.bitcast[Scalar[DType.float64]]()
-        for i in range(numel):
-            ptr[i] = Scalar[DType.float64](Float64(i))
-    elif dtype == DType.float16:
-        var ptr = tensor._data.bitcast[Scalar[DType.float16]]()
-        for i in range(numel):
-            ptr[i] = Scalar[DType.float16](Float32(i))
-    elif dtype == DType.int32:
-        var ptr = tensor._data.bitcast[Scalar[DType.int32]]()
-        for i in range(numel):
-            ptr[i] = Scalar[DType.int32](i)
-    elif dtype == DType.int64:
-        var ptr = tensor._data.bitcast[Scalar[DType.int64]]()
-        for i in range(numel):
-            ptr[i] = Scalar[DType.int64](i)
-    else:
-        raise Error("sequential_tensor: unsupported dtype")
+    # Calculate total number of elements
+    var numel = 1
+    for dim in shape:
+        numel *= dim
 
-    return tensor^
+    # Fill with sequential values
+    for i in range(numel):
+        tensor._set_float64(i, Float64(i))
+
+    return tensor
 
 
-fn nan_tensor_fixture(shape: List[Int]) raises -> ExTensor:
-    """Create tensor filled with NaN values (float32).
+fn nan_tensor(shape: List[Int]) raises -> ExTensor:
+    """Create tensor filled with NaN values.
 
     Args:
-        shape: Shape of the tensor to create
+        shape: Shape of the output tensor as a list of dimensions.
 
     Returns:
-        ExTensor filled with NaN values
+        ExTensor with all elements set to NaN.
 
-    Examples:
+    Example:
+        ```mojo
+        var tensor = nan_tensor([3, 3])
+        # Returns 3x3 tensor with all NaN values
         ```
-        var shape = List[Int]()
-        shape.append(3)
-        shape.append(4)
-        var t = nan_tensor_fixture(shape)
-        ```
+
+    Note:
+        Creates float32 tensors with NaN values. NaN is represented as
+        0x7fc00000 in float32 bit representation.
+
+    Raises:
+        Error: If operation fails.
     """
-    return nan_tensor(shape, DType.float32)
+    var tensor = zeros(shape, DType.float32)
+
+    # Calculate total number of elements
+    var numel = 1
+    for dim in shape:
+        numel *= dim
+
+    # Fill with NaN values
+    # NaN in float32 is typically 0x7fc00000 in bits
+    var nan_val = 0.0 / 0.0  # IEEE 754 NaN
+    for i in range(numel):
+        tensor._set_float64(i, nan_val)
+
+    return tensor
 
 
-fn inf_tensor_fixture(shape: List[Int]) raises -> ExTensor:
-    """Create tensor filled with positive infinity values (float32).
+fn inf_tensor(shape: List[Int]) raises -> ExTensor:
+    """Create tensor filled with infinity values.
 
     Args:
-        shape: Shape of the tensor to create
+        shape: Shape of the output tensor as a list of dimensions.
 
     Returns:
-        ExTensor filled with infinity values
+        ExTensor with all elements set to positive infinity.
 
-    Examples:
+    Example:
+        ```mojo
+        var tensor = inf_tensor([3, 3])
+        # Returns 3x3 tensor with all infinity values
         ```
-        var shape = List[Int]()
-        shape.append(3)
-        shape.append(4)
-        var t = inf_tensor_fixture(shape)
-        ```
+
+    Note:
+        Creates float32 tensors with positive infinity values.
+        Positive infinity is represented as 0x7f800000 in float32 bit representation.
+
+    Raises:
+        Error: If operation fails.
     """
-    return inf_tensor(shape, DType.float32)
+    var tensor = zeros(shape, DType.float32)
+
+    # Calculate total number of elements
+    var numel = 1
+    for dim in shape:
+        numel *= dim
+
+    # Fill with positive infinity
+    var inf_val = 1.0 / 0.0  # IEEE 754 positive infinity
+    for i in range(numel):
+        tensor._set_float64(i, inf_val)
+
+    return tensor
 
 
-fn ones_like_fixture(tensor: ExTensor) raises -> ExTensor:
-    """Create ones tensor with same shape and dtype as input.
+fn ones_like(tensor: ExTensor) raises -> ExTensor:
+    """Create tensor of ones matching input shape and dtype.
 
     Args:
-        tensor: Template tensor for shape and dtype
+        tensor: Template tensor to match shape and dtype from.
 
     Returns:
-        ExTensor filled with ones, matching input shape and dtype
+        ExTensor of ones with same shape and dtype as input.
 
-    Examples:
+    Example:
+        ```mojo
+        var t1 = random_tensor([3, 4], DType.float32)
+        var t2 = ones_like(t1)
+        # t2 has shape [3, 4] and dtype float32, all values are 1.0
         ```
-        var shape = List[Int]()
-        shape.append(3)
-        shape.append(4)
-        var t1 = zeros(shape, DType.float32)
-        var t2 = ones_like_fixture(t1)  # Shape (3, 4), all ones
-        ```
+
+    Raises:
+        Error: If operation fails.
     """
     return ones(tensor.shape(), tensor.dtype())
 
 
-fn zeros_like_fixture(tensor: ExTensor) raises -> ExTensor:
-    """Create zeros tensor with same shape and dtype as input.
+fn zeros_like(tensor: ExTensor) raises -> ExTensor:
+    """Create tensor of zeros matching input shape and dtype.
 
     Args:
-        tensor: Template tensor for shape and dtype
+        tensor: Template tensor to match shape and dtype from.
 
     Returns:
-        ExTensor filled with zeros, matching input shape and dtype
+        ExTensor of zeros with same shape and dtype as input.
 
-    Examples:
+    Example:
+        ```mojo
+        var t1 = random_tensor([3, 4], DType.float32)
+        var t2 = zeros_like(t1)
+        # t2 has shape [3, 4] and dtype float32, all values are 0.0
         ```
-        var shape = List[Int]()
-        shape.append(3)
-        shape.append(4)
-        var t1 = ones(shape, DType.float32)
-        var t2 = zeros_like_fixture(t1)  # Shape (3, 4), all zeros
-        ```
+
+    Raises:
+        Error: If operation fails.
     """
     return zeros(tensor.shape(), tensor.dtype())
