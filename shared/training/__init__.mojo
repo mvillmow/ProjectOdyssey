@@ -51,7 +51,16 @@ from .base import (
 )
 
 # Export scheduler implementations
-from .schedulers import StepLR, CosineAnnealingLR, WarmupLR, ReduceLROnPlateau
+from .schedulers import (
+    StepLR,
+    CosineAnnealingLR,
+    WarmupLR,
+    ExponentialLR,
+    MultiStepLR,
+    ReduceLROnPlateau,
+    WarmupCosineAnnealingLR,
+    WarmupStepLR,
+)
 
 # Export callback implementations
 # NOTE: Callbacks must be imported directly from submodules due to Mojo limitations:

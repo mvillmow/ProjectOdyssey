@@ -66,6 +66,12 @@ struct TrainerConfig(Copyable, Movable):
     var checkpoint_interval: Int
     """Save checkpoint every N epochs."""
 
+    # Learning rate scheduling
+    var use_scheduler: Bool
+    """Whether to use learning rate scheduler."""
+    var scheduler_type: String
+    """Type of scheduler (step, cosine, exponential, warmup, etc.)."""
+
     # Mixed precision training settings
     var use_mixed_precision: Bool
     """Enable FP16/BF16 training."""
@@ -85,6 +91,8 @@ struct TrainerConfig(Copyable, Movable):
         validate_interval: Int = 1,
         save_checkpoints: Bool = False,
         checkpoint_interval: Int = 5,
+        use_scheduler: Bool = False,
+        scheduler_type: String = "none",
         use_mixed_precision: Bool = False,
         precision_dtype: DType = DType.float32,
         loss_scale: Float32 = 65536.0,
@@ -100,6 +108,8 @@ struct TrainerConfig(Copyable, Movable):
             validate_interval: Validate every N epochs (0 = every epoch).
             save_checkpoints: Whether to save checkpoints.
             checkpoint_interval: Save checkpoint every N epochs.
+            use_scheduler: Whether to use learning rate scheduler.
+            scheduler_type: Type of scheduler to use (none, step, cosine, warmup, etc).
             use_mixed_precision: Enable FP16/BF16 training.
             precision_dtype: DType for mixed precision training.
             loss_scale: Initial loss scale for gradient scaling.
@@ -112,6 +122,8 @@ struct TrainerConfig(Copyable, Movable):
         self.validate_interval = validate_interval
         self.save_checkpoints = save_checkpoints
         self.checkpoint_interval = checkpoint_interval
+        self.use_scheduler = use_scheduler
+        self.scheduler_type = scheduler_type
         self.use_mixed_precision = use_mixed_precision
         self.precision_dtype = precision_dtype
         self.loss_scale = loss_scale
