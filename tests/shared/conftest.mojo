@@ -7,6 +7,7 @@ This module provides:
 """
 
 from random import seed
+from time import perf_counter_ns
 from shared.core.extensor import ExTensor
 from shared.testing import SimpleMLP
 
@@ -173,12 +174,13 @@ fn measure_time[func: fn () raises -> None]() raises -> Float64:
     Returns:
         Execution time in milliseconds.
 
-    FIXME(#2715): Placeholder implementation in tests/shared/conftest.mojo (line 250)
-    Currently returns 0.0 - needs proper time measurement using Mojo's time module.
+    Uses perf_counter_ns() for high-resolution timing.
     """
-    # TODO(#1538): Implement using Mojo's time module when available
-    # For now, placeholder for TDD
-    return 0.0
+    var start = perf_counter_ns()
+    func()
+    var end = perf_counter_ns()
+    # Convert nanoseconds to milliseconds
+    return Float64(end - start) / 1_000_000.0
 
 
 fn measure_throughput[
@@ -195,12 +197,18 @@ fn measure_throughput[
     Returns:
         Operations per second.
 
-    FIXME(#2715): Placeholder implementation in tests/shared/conftest.mojo (line 264)
-    Currently relies on placeholder measure_time - needs proper time measurement.
+    Runs the function multiple times and calculates throughput as
+    iterations per second using high-resolution timing.
     """
-    # TODO(#1538): Implement using Mojo's time module when available
-    var duration_ms = measure_time[func]()
-    return Float64(n_iterations) / (duration_ms / 1000.0)
+    var start = perf_counter_ns()
+    for _ in range(n_iterations):
+        func()
+    var end = perf_counter_ns()
+    # Convert nanoseconds to seconds and compute throughput
+    var duration_s = Float64(end - start) / 1_000_000_000.0
+    if duration_s > 0:
+        return Float64(n_iterations) / duration_s
+    return 0.0
 
 
 # ============================================================================
