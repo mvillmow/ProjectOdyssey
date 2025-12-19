@@ -986,8 +986,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             var ptr = (self._data + offset).bitcast[UInt64]()
             return ptr[].cast[DType.int64]()
         elif self._dtype == DType.bool:
-            var ptr = (self._data + offset).bitcast[Bool]()
-            return 1 if ptr[] else 0
+            var ptr = (self._data + offset).bitcast[Scalar[DType.bool]]()
+            return 1 if ptr[].__bool__() else 0
         else:
             return 0  # Default fallback
 
@@ -1026,8 +1026,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
             var ptr = (self._data + offset).bitcast[UInt64]()
             ptr[] = value.cast[DType.uint64]()
         elif self._dtype == DType.bool:
-            var ptr = (self._data + offset).bitcast[Bool]()
-            ptr[] = value != 0
+            var ptr = (self._data + offset).bitcast[Scalar[DType.bool]]()
+            ptr[] = Scalar[DType.bool](value != 0)
 
     fn _set_int32(self, index: Int, value: Int32):
         """Internal: Set value at index as Int32 (assumes integer-compatible dtype).
