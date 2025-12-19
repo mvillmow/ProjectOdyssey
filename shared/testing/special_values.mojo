@@ -21,10 +21,16 @@ Special Values (Negative):
 All 6 values have exact binary representations in IEEE 754 formats.
 For Int8 quantization, positive values map to: 0, 0, 1, 2 respectively.
 
+Numerical Edge Cases:
+- NaN: Created via 0.0/0.0, for testing gradient overflow/underflow
+- Inf: Created via 1.0/0.0 or -1.0/0.0, for testing numerical stability
+
 Usage:
     from shared.testing.special_values import (
         create_special_value_tensor,
         create_seeded_random_tensor,
+        create_nan_tensor,
+        create_inf_tensor,
         SPECIAL_VALUE_ZERO,
         SPECIAL_VALUE_ONE,
         SPECIAL_VALUE_NEG_ONE
@@ -38,6 +44,13 @@ Usage:
 
     # Create seeded random tensor for reproducible gradient checking
     var random = create_seeded_random_tensor([3, 3], DType.float32, 42, -1.0, 1.0)
+
+    # Create NaN tensor for testing gradient overflow detection
+    var nan_tensor = create_nan_tensor([3, 3], DType.float32)
+
+    # Create Inf tensors for testing numerical stability
+    var pos_inf = create_inf_tensor([3, 3], DType.float32, positive=True)
+    var neg_inf = create_inf_tensor([3, 3], DType.float32, positive=False)
 """
 
 from shared.core.extensor import ExTensor
@@ -407,3 +420,83 @@ fn create_one_and_half_tensor(
         Error: If operation fails.
     """
     return create_special_value_tensor(shape, dtype, SPECIAL_VALUE_ONE_HALF)
+
+
+# ============================================================================
+# NaN and Inf Tensor Creation (For Numerical Testing)
+# ============================================================================
+
+
+fn create_nan_tensor(shape: List[Int], dtype: DType) raises -> ExTensor:
+    """Create tensor filled with NaN (Not a Number) values.
+
+    Creates NaN values by dividing zero by zero (0.0 / 0.0).
+    This works across all float dtypes.
+
+    Args:
+        shape: Tensor dimensions.
+        dtype: Data type.
+
+    Returns:
+        ExTensor filled with NaN values.
+
+    Raises:
+        Error: If operation fails.
+
+    Example:
+        ```mojo
+        # Create 3x3 tensor filled with NaN (for testing gradient overflow)
+        var nan_tensor = create_nan_tensor([3, 3], DType.float32)
+        # verify has_nan(nan_tensor) == True
+        ```
+    """
+    var result = zeros(shape, dtype)
+
+    # Create NaN by dividing zero by zero
+    # This works across all dtypes
+    for i in range(result._numel):
+        result._set_float64(i, Float64(0.0) / Float64(0.0))
+
+    return result
+
+
+fn create_inf_tensor(
+    shape: List[Int], dtype: DType, positive: Bool = True
+) raises -> ExTensor:
+    """Create tensor filled with Infinity values.
+
+    Creates Infinity by dividing by zero (1.0/0.0 or -1.0/0.0).
+    This works across all float dtypes.
+
+    Args:
+        shape: Tensor dimensions.
+        dtype: Data type.
+        positive: If True, create +Infinity; if False, create -Infinity.
+
+    Returns:
+        ExTensor filled with Infinity values.
+
+    Raises:
+        Error: If operation fails.
+
+    Example:
+        ```mojo
+        # Create 3x3 tensor filled with +Inf
+        var pos_inf = create_inf_tensor([3, 3], DType.float32, positive=True)
+
+        # Create 2x2 tensor filled with -Inf
+        var neg_inf = create_inf_tensor([2, 2], DType.float32, positive=False)
+        ```
+    """
+    var result = zeros(shape, dtype)
+
+    # Create Inf by dividing by zero
+    # This works across all dtypes
+    if positive:
+        for i in range(result._numel):
+            result._set_float64(i, Float64(1.0) / Float64(0.0))
+    else:
+        for i in range(result._numel):
+            result._set_float64(i, Float64(-1.0) / Float64(0.0))
+
+    return result

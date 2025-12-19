@@ -25,7 +25,10 @@ from shared.testing.special_values import (
     create_ones_tensor,
     create_halves_tensor,
     create_one_and_half_tensor,
+    create_nan_tensor,
+    create_inf_tensor,
 )
+from shared.core.numerical_safety import has_nan, has_inf
 from shared.testing.assertions import (
     assert_equal_float,
     assert_shape,
@@ -347,6 +350,66 @@ fn test_create_seeded_random_tensor_shape() raises:
     assert_dtype(tensor, DType.float16, "Dtype should be float16")
 
 
+fn test_create_nan_tensor() raises:
+    """Test creation of NaN-filled tensors."""
+    # Test Float32 NaN tensor
+    var nan_f32 = create_nan_tensor([3, 3], DType.float32)
+    assert_shape(nan_f32, [3, 3], "Shape should be [3, 3]")
+    assert_dtype(nan_f32, DType.float32, "Dtype should be float32")
+
+    # Verify NaN values using has_nan
+    if not has_nan(nan_f32):
+        raise Error("Float32 NaN tensor should contain NaN values")
+
+    # Test Float64 NaN tensor
+    var nan_f64 = create_nan_tensor([2, 2], DType.float64)
+    assert_shape(nan_f64, [2, 2], "Shape should be [2, 2]")
+    assert_dtype(nan_f64, DType.float64, "Dtype should be float64")
+
+    # Verify NaN values using has_nan
+    if not has_nan(nan_f64):
+        raise Error("Float64 NaN tensor should contain NaN values")
+
+
+fn test_create_inf_tensor() raises:
+    """Test creation of Infinity-filled tensors."""
+    # Test positive infinity (Float32)
+    var pos_inf_f32 = create_inf_tensor([3, 3], DType.float32, positive=True)
+    assert_shape(pos_inf_f32, [3, 3], "Shape should be [3, 3]")
+    assert_dtype(pos_inf_f32, DType.float32, "Dtype should be float32")
+
+    # Verify Inf values using has_inf
+    if not has_inf(pos_inf_f32):
+        raise Error("Float32 +Inf tensor should contain Inf values")
+
+    # Test negative infinity (Float32)
+    var neg_inf_f32 = create_inf_tensor([3, 3], DType.float32, positive=False)
+    assert_shape(neg_inf_f32, [3, 3], "Shape should be [3, 3]")
+    assert_dtype(neg_inf_f32, DType.float32, "Dtype should be float32")
+
+    # Verify Inf values using has_inf
+    if not has_inf(neg_inf_f32):
+        raise Error("Float32 -Inf tensor should contain Inf values")
+
+    # Test positive infinity (Float64)
+    var pos_inf_f64 = create_inf_tensor([2, 2], DType.float64, positive=True)
+    assert_shape(pos_inf_f64, [2, 2], "Shape should be [2, 2]")
+    assert_dtype(pos_inf_f64, DType.float64, "Dtype should be float64")
+
+    # Verify Inf values using has_inf
+    if not has_inf(pos_inf_f64):
+        raise Error("Float64 +Inf tensor should contain Inf values")
+
+    # Test negative infinity (Float64)
+    var neg_inf_f64 = create_inf_tensor([2, 2], DType.float64, positive=False)
+    assert_shape(neg_inf_f64, [2, 2], "Shape should be [2, 2]")
+    assert_dtype(neg_inf_f64, DType.float64, "Dtype should be float64")
+
+    # Verify Inf values using has_inf
+    if not has_inf(neg_inf_f64):
+        raise Error("Float64 -Inf tensor should contain Inf values")
+
+
 fn main() raises:
     print("Testing special_values module...")
 
@@ -418,5 +481,12 @@ fn main() raises:
 
     test_create_seeded_random_tensor_shape()
     print("✓ test_create_seeded_random_tensor_shape")
+
+    # Test NaN and Inf tensor creation
+    test_create_nan_tensor()
+    print("✓ test_create_nan_tensor")
+
+    test_create_inf_tensor()
+    print("✓ test_create_inf_tensor")
 
     print("\n✅ All special_values tests passed!")

@@ -14,6 +14,7 @@ from shared.training.mixed_precision import (
     clip_gradients_by_value,
 )
 from shared.core.numerical_safety import has_nan, has_inf
+from shared.testing.special_values import create_nan_tensor, create_inf_tensor
 from testing import assert_equal, assert_true, assert_false
 
 
@@ -208,8 +209,26 @@ fn test_check_gradients_finite() raises:
         "Finite gradients should return True",
     )
 
-    # TODO(#2731): Test with NaN/Inf gradients when we can create them
-    # (Requires ability to set individual elements or create from values)
+    # Test with NaN gradients
+    var nan_grads = create_nan_tensor([10], DType.float32)
+    assert_false(
+        check_gradients_finite(nan_grads),
+        "NaN gradients should return False",
+    )
+
+    # Test with +Inf gradients
+    var pos_inf_grads = create_inf_tensor([10], DType.float32, positive=True)
+    assert_false(
+        check_gradients_finite(pos_inf_grads),
+        "+Inf gradients should return False",
+    )
+
+    # Test with -Inf gradients
+    var neg_inf_grads = create_inf_tensor([10], DType.float32, positive=False)
+    assert_false(
+        check_gradients_finite(neg_inf_grads),
+        "-Inf gradients should return False",
+    )
 
     print("✓ Gradient finite check test passed")
 
