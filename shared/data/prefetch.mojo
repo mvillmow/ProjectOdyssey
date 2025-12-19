@@ -52,8 +52,7 @@ struct PrefetchBuffer(Copyable, Movable):
         """
         if capacity <= 0:
             raise Error(
-                "Prefetch capacity must be positive, got: "
-                + String(capacity)
+                "Prefetch capacity must be positive, got: " + String(capacity)
             )
 
         self.batches = List[Batch]()

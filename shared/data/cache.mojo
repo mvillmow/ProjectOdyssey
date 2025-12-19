@@ -136,8 +136,8 @@ struct CachedDataset[D: Dataset & Copyable & Movable](
             return
 
         var n = self.dataset.__len__()
-        var limit = (
-            n if self.max_cache_size < 0 else min(n, self.max_cache_size)
+        var limit = n if self.max_cache_size < 0 else min(
+            n, self.max_cache_size
         )
 
         for i in range(limit):
