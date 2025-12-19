@@ -79,6 +79,11 @@ from .datasets import (
     CIFAR10Dataset,  # CIFAR-10 dataset with train/test splits
 )
 
+# Dataset wrappers and utilities
+from .dataset_with_transform import (
+    TransformedDataset,  # Wrapper that applies transforms to data
+)
+
 # EMNIST dataset is defined in _datasets_core.mojo
 from ._datasets_core import (
     EMNISTDataset,  # EMNIST dataset with multiple splits
@@ -108,6 +113,35 @@ from ._datasets_core import (
 from .random_transform_base import (
     RandomTransformBase,  # Base for probabilistic transforms
     random_float,  # Random float generation utility
+)
+
+# ============================================================================
+# Data Loaders and Samplers
+# ============================================================================
+
+# Core data loading infrastructure
+from .loaders import (
+    Batch,  # Batch container with data, labels, and indices
+    BatchLoader,  # Main data loader with shuffling and batching
+)
+
+# Sampling strategies for data iteration
+from .samplers import (
+    Sampler,  # Base sampler interface
+    SequentialSampler,  # Sequential ordering without shuffling
+    RandomSampler,  # Random permutation with shuffling
+    WeightedSampler,  # Weighted sampling (with replacement)
+)
+
+# Prefetching utilities
+from .prefetch import (
+    PrefetchBuffer,  # Ring buffer for batches
+    PrefetchDataLoader,  # Loader with prefetching
+)
+
+# Caching utilities
+from .cache import (
+    CachedDataset,  # Dataset wrapper with caching
 )
 
 # ============================================================================

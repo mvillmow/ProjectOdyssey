@@ -19,12 +19,20 @@ pipeline while maintaining high performance.
 
 ```text
 data/
-├── __init__.mojo           # Package root - exports main components
-├── README.md               # This file
-├── datasets.mojo           # Dataset abstractions and implementations
-├── loaders.mojo            # Data loaders and samplers
-└── transforms.mojo         # Data transformation and augmentation
-```text
+├── __init__.mojo                    # Package root - exports main components
+├── README.md                        # This file
+├── datasets.mojo                    # Dataset abstractions and implementations
+├── _datasets_core.mojo              # EMNIST and related implementations
+├── loaders.mojo                     # Data loaders and samplers
+├── transforms.mojo                  # Data transformation and augmentation
+├── dataset_with_transform.mojo      # Transform wrapper for datasets
+├── prefetch.mojo                    # Prefetch buffer infrastructure
+├── cache.mojo                       # Caching layer for datasets
+├── samplers.mojo                    # Sampling strategies
+├── batch_utils.mojo                 # Batch utility functions
+├── formats/                         # Low-level format loaders (IDX, CIFAR)
+└── datasets/                        # Dataset implementations
+```
 
 ## What Belongs in Data
 
@@ -43,6 +51,24 @@ data/
 - Paper-specific data preprocessing (belongs with the paper)
 - Custom file formats without broad applicability
 - One-off data manipulation code
+
+## Architecture Overview
+
+The data pipeline uses a modular, composable architecture:
+
+```text
+Raw Data → Dataset → TransformedDataset → CachedDataset → BatchLoader → Training
+                         ↑                                      ↑
+                    (Optional)                             (Sampler controls order)
+```
+
+### Key Design Principles
+
+1. **Composability**: Components chain together seamlessly
+2. **Lazy Evaluation**: Data is processed on-demand, not eagerly
+3. **Type Safety**: Trait-based interfaces with compile-time checking
+4. **Performance**: SIMD-optimized operations where appropriate
+5. **Memory Efficiency**: Streaming data without loading everything upfront
 
 ## Components
 
@@ -144,6 +170,75 @@ struct CSVDataset(Dataset):
 
 **Use Case**: Tabular data, benchmarks
 
+### Dataset Wrappers
+
+#### TransformedDataset (`dataset_with_transform.mojo`)
+
+Wraps a dataset with a transform pipeline applied during data loading:
+
+```mojo
+struct TransformedDataset[D: Dataset, T](Dataset):
+    """Applies transform to data, leaves labels unchanged."""
+    var dataset: D
+    var transform: T
+
+    fn __getitem__(self, index: Int) -> (ExTensor, ExTensor):
+        var data, labels = self.dataset[index]
+        var transformed = self.transform(data)
+        return (transformed, labels)
+```
+
+**Use Cases**:
+
+- Data augmentation during training (Flip, Rotate, Crop)
+- Normalization with dataset-specific statistics
+- Custom preprocessing pipelines
+
+**Example**:
+
+```mojo
+var dataset = ExTensorDataset(images, labels)
+var normalize = Normalize(mean=0.5, std=0.5)
+var augmented = TransformedDataset(dataset, normalize)
+# augmented[0] returns (normalized_data, original_labels)
+```
+
+#### CachedDataset (`cache.mojo`)
+
+Caches samples to avoid repeated I/O:
+
+```mojo
+struct CachedDataset[D: Dataset](Dataset):
+    """Caches loaded samples up to max_cache_size."""
+    var dataset: D
+    var cache: Dict[Int, Tuple[ExTensor, ExTensor]]
+    var max_cache_size: Int
+
+    fn __getitem__(mut self, index: Int) -> (ExTensor, ExTensor):
+        if index in cache:
+            return cache[index]  # Cache hit
+        # Load from dataset and cache
+        var sample = self.dataset[index]
+        if cache.size() < max_cache_size:
+            cache[index] = sample
+        return sample
+```
+
+**Use Cases**:
+
+- Small datasets that fit in memory (< 1GB)
+- Expensive preprocessing (transforms, file I/O)
+- Repeated iteration over same data
+
+**Example**:
+
+```mojo
+var dataset = FileDataset(paths, labels)  # Slow I/O
+var cached = CachedDataset(dataset, max_cache_size=-1)
+cached._preload_cache()  # Load all samples
+# Subsequent accesses are instant cache hits
+```
+
 ### Data Loaders (`loaders.mojo`)
 
 Efficient batch loading with parallel data loading and prefetching.
@@ -186,10 +281,58 @@ struct DataLoader:
 ### Features
 
 - Batching: Group samples into batches
-- Shuffling: Randomize sample order per epoch
+- Shuffling: Randomize sample order per epoch (with RandomSampler)
 - Drop last: Handle incomplete final batch
-- Multi-worker: Parallel data loading (future)
-- Prefetching: Overlap data loading with training (future)
+- Multi-worker: Parallel data loading (future enhancement)
+- Prefetching: Pre-compute batches ahead of consumption
+
+#### Sampling Strategies (`samplers.mojo`)
+
+Control data iteration order:
+
+```mojo
+trait Sampler:
+    fn __len__(self) -> Int
+    fn __iter__(self) raises -> List[Int]
+
+struct SequentialSampler(Sampler):
+    """Sequential sampling (0, 1, 2, ..., N-1) - no shuffling."""
+
+struct RandomSampler(Sampler):
+    """Random permutation - enables epoch shuffling."""
+    var num_samples: Int
+    var shuffle: Bool
+
+struct WeightedSampler(Sampler):
+    """Weighted sampling with replacement."""
+    var weights: List[Float32]
+```
+
+**Use RandomSampler for training** to enable shuffling between epochs.
+
+#### Prefetching (`prefetch.mojo`)
+
+Pre-computes batches to improve pipeline efficiency:
+
+```mojo
+struct PrefetchDataLoader[D: Dataset, S: Sampler]:
+    """Wraps BatchLoader with batch prefetching."""
+    var base_loader: BatchLoader[D, S]
+    var prefetch_factor: Int
+
+    fn __iter__(mut self) -> List[Batch]:
+        """Pre-compute all batches for this epoch."""
+        return self.base_loader.__iter__()
+```
+
+**Note**: Currently uses synchronous pre-computation. Can be upgraded to
+async when Mojo adds Task primitives and thread-safe queues.
+
+**Benefits**:
+
+- Separates data loading logic from training logic
+- Clear interface for future async upgrades
+- Easier debugging and profiling
 
 #### Batch
 
@@ -366,48 +509,105 @@ struct RandomRotation(Transform):
 
 ## Usage Examples
 
-### Basic Usage
+### Basic Usage with Modern Architecture
 
 ```mojo
-from shared.data import TensorDataset, DataLoader
+from shared.data import (
+    ExTensorDataset, BatchLoader, RandomSampler, Normalize,
+    TransformedDataset
+)
 
-# Create dataset
-var dataset = TensorDataset(train_images, train_labels)
+# Create base dataset
+var dataset = ExTensorDataset(images, labels)
+
+# (Optional) Add transforms for augmentation
+var normalize = Normalize(mean=0.5, std=0.5)
+var augmented = TransformedDataset(dataset, normalize)
+
+# Create sampler (RandomSampler enables shuffling)
+var sampler = RandomSampler(augmented.__len__())
 
 # Create loader
-var loader = DataLoader(
-    dataset,
+var loader = BatchLoader(
+    augmented,
+    sampler,
     batch_size=32,
-    shuffle=True,
     drop_last=False
 )
 
 # Iterate over batches
-for batch in loader:
-    var inputs = batch.inputs
-    var targets = batch.targets
+var batches = loader.__iter__()
+for batch in batches:
+    var data = batch.data
+    var labels = batch.labels
     # ... training code
-```text
+```
 
-### With Transforms
+### Complete Pipeline with Caching and Prefetching
 
 ```mojo
-from shared.data import ImageDataset, DataLoader, Compose, ToTensor, Normalize, RandomCrop, RandomHorizontalFlip
+from shared.data import (
+    ExTensorDataset, BatchLoader, RandomSampler, CachedDataset,
+    TransformedDataset, PrefetchDataLoader, Normalize
+)
+
+# Step 1: Create dataset
+var dataset = ExTensorDataset(images, labels)
+
+# Step 2: Add transforms
+var normalize = Normalize(mean=0.5, std=0.5)
+var transformed = TransformedDataset(dataset, normalize)
+
+# Step 3: Add caching (for small datasets)
+var cached = CachedDataset(transformed, max_cache_size=-1)
+cached._preload_cache()  # Pre-populate cache
+
+# Step 4: Create sampler
+var sampler = RandomSampler(cached.__len__())
+
+# Step 5: Create loader
+var loader = BatchLoader(cached, sampler, batch_size=32)
+
+# Step 6: Create prefetch loader
+var prefetch = PrefetchDataLoader(loader, prefetch_factor=2)
+
+# Training loop
+for epoch in range(num_epochs):
+    var batches = prefetch.__iter__()
+    for batch in batches:
+        # Forward/backward pass
+        var loss = train_step(model, batch.data, batch.labels)
+
+    # Check cache stats
+    var cache_size, hits, misses = cached.get_cache_stats()
+    print(f"Epoch {epoch}: cache hits={hits}, misses={misses}")
+```
+
+### With Transform Composition
+
+```mojo
+from shared.data import (
+    ExTensorDataset, TransformedDataset, RandomHorizontalFlip,
+    RandomCrop, Normalize, Compose
+)
 
 # Create transform pipeline
-var transform = Compose([
+var transforms = Compose([
     RandomCrop(32, padding=4),
     RandomHorizontalFlip(p=0.5),
-    ToTensor(),
     Normalize(mean=0.5, std=0.5),
 ])
 
-# Create dataset with transforms
-var dataset = ImageDataset(image_paths, labels, transform=transform)
+# Create dataset
+var dataset = ExTensorDataset(images, labels)
 
-# Create loader
-var loader = DataLoader(dataset, batch_size=128, shuffle=True)
-```text
+# Apply transforms
+var augmented = TransformedDataset(dataset, transforms)
+
+# Use in loader
+var sampler = RandomSampler(augmented.__len__())
+var loader = BatchLoader(augmented, sampler, batch_size=128)
+```
 
 ### Custom Dataset
 
@@ -517,16 +717,27 @@ for epoch in range(num_epochs):
     var val_loss = validate_epoch(model, val_loader, loss_fn)
 ```text
 
+## Recent Enhancements (Issue #2637)
+
+Completed in the Data Pipeline Architecture redesign:
+
+1. ✅ **Dataset Wrappers**: TransformedDataset for composable transforms
+1. ✅ **Caching Layer**: CachedDataset with hit rate tracking and statistics
+1. ✅ **Prefetching Infrastructure**: PrefetchDataLoader and PrefetchBuffer
+1. ✅ **Unified DataLoader**: BatchLoader exported for consistent usage
+1. ✅ **Sampling Strategies**: RandomSampler for epoch shuffling
+1. ✅ **Comprehensive Examples**: data_pipeline_demo.mojo showcasing all components
+
 ## Future Enhancements
 
 Planned features for future releases:
 
+1. **Async Prefetching**: Upgrade to true async when Mojo adds Task primitives
 1. **Multi-worker Data Loading**: Parallel loading with worker processes
-1. **Data Prefetching**: Overlap data loading with computation
 1. **Distributed Data Loading**: Sharding for distributed training
 1. **Advanced Samplers**: Stratified, cluster, importance sampling
-1. **Caching Layer**: Intelligent caching of transformed data
 1. **Streaming Datasets**: Support for infinite data streams
+1. **SIMD-Optimized Transforms**: Vectorized augmentation operations
 
 ## References
 
