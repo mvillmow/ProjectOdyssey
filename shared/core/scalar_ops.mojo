@@ -10,16 +10,16 @@ Functions:
     pow_scalar_f64: Compute power (x^y) for float64 scalars
 
 Example:
-    ```mojo
-    from shared.core.scalar_ops import sqrt_scalar_f32, pow_scalar_f32
+   ```mojo
+   from shared.core.scalar_ops import sqrt_scalar_f32, pow_scalar_f32
 
-    var x = Float32(4.0)
-    var sqrt_x = sqrt_scalar_f32(x)  # 2.0
+   var x = Float32(4.0)
+   var sqrt_x = sqrt_scalar_f32(x)  # 2.0
 
-    var base = Float32(2.0)
-    var exp = Float32(3.0)
-    var result = pow_scalar_f32(base, exp)  # 8.0
-    ```
+   var base = Float32(2.0)
+   var exp = Float32(3.0)
+   var result = pow_scalar_f32(base, exp)  # 8.0
+   ```
 """
 
 
@@ -38,11 +38,11 @@ fn sqrt_scalar_f32(x: Float32) -> Float32:
         Square root of x.
 
     Example:
-        ```mojo
-        from shared.core.scalar_ops import sqrt_scalar_f32
+       ```mojo
+       from shared.core.scalar_ops import sqrt_scalar_f32
 
-        var result = sqrt_scalar_f32(Float32(4.0))  # 2.0
-        ```
+       var result = sqrt_scalar_f32(Float32(4.0))  # 2.0
+       ```
     """
     return x**0.5
 
@@ -57,11 +57,11 @@ fn sqrt_scalar_f64(x: Float64) -> Float64:
         Square root of x.
 
     Example:
-        ```mojo
-        from shared.core.scalar_ops import sqrt_scalar_f64
+       ```mojo
+       from shared.core.scalar_ops import sqrt_scalar_f64
 
-        var result = sqrt_scalar_f64(4.0)  # 2.0
-        ```
+       var result = sqrt_scalar_f64(4.0)  # 2.0
+       ```
     """
     return x**0.5
 
@@ -77,11 +77,11 @@ fn pow_scalar_f32(x: Float32, y: Float32) -> Float32:
         Result of x^y
 
     Example:
-        ```mojo
-        from shared.core.scalar_ops import pow_scalar_f32
+       ```mojo
+       from shared.core.scalar_ops import pow_scalar_f32
 
-        var result = pow_scalar_f32(Float32(2.0), Float32(3.0))  # 8.0
-        ```
+       var result = pow_scalar_f32(Float32(2.0), Float32(3.0))  # 8.0
+       ```
     """
     return x**y
 
@@ -97,10 +97,10 @@ fn pow_scalar_f64(x: Float64, y: Float64) -> Float64:
         Result of x^y
 
     Example:
-        ```mojo
-        from shared.core.scalar_ops import pow_scalar_f64
+       ```mojo
+       from shared.core.scalar_ops import pow_scalar_f64
 
-        var result = pow_scalar_f64(2.0, 3.0)  # 8.0
-        ```
+       var result = pow_scalar_f64(2.0, 3.0)  # 8.0
+       ```
     """
     return x**y
