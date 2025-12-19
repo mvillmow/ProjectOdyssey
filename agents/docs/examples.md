@@ -34,6 +34,18 @@ shows:
 
 You want to add a new activation function (GELU) to the shared library.
 
+> **📝 Issue Number Placeholders**: Throughout this example, issue numbers appear as
+> `#<plan-issue-number>`, `#<test-issue-number>`, etc. These are placeholders representing
+> real GitHub issues you create. For example:
+
+| Placeholder | Meaning | Example |
+| --- | --- | --- |
+| `#<plan-issue-number>` | Parent planning issue | #2550 |
+| `#<test-issue-number>` | Test phase issue | #2551 |
+| `#<impl-issue-number>` | Implementation issue | #2552 |
+| `#<pkg-issue-number>` | Package/docs issue | #2553 |
+| `#<cleanup-issue-number>` | Cleanup issue | #2554 |
+
 ### Initial Prompt
 
 ```text
@@ -64,7 +76,7 @@ I'll help you plan the GELU activation addition. Let me break this down into com
 - Dependencies: Core tensor operations (already implemented)
 
 **Plan:**
-1. Create GitHub issue #XXX: [Plan] GELU Activation
+1. Create GitHub issue #<plan-issue-number>: [Plan] GELU Activation
 2. Design component structure (Level 2: Architecture Design Agent)
 3. Create parallel issues for Test/Implementation/Package phases
 4. Follow 5-phase workflow
@@ -99,10 +111,10 @@ Before creating the issue, can you show me the proposed API and file structure?
 
 ### Expected Outputs
 
-1. **GitHub Issue Created**: Issue #XXX with full specification
-1. **Plan Document**: Posted as comments on GitHub issue #XXX with objectives, deliverables, success criteria
+1. **GitHub Issue Created**: Issue #<plan-issue-number> with full specification
+1. **Plan Document**: Posted as comments on GitHub issue #<plan-issue-number> with objectives, deliverables, success criteria
 1. **Design Spec**: Component architecture from Architecture Design Agent (posted to issue)
-1. **Child Issues**: Test (#XXX+1), Implementation (#XXX+2), Package (#XXX+3), Cleanup (#XXX+4)
+1. **Child Issues**: Test (#<test-issue-number>), Implementation (#<impl-issue-number>), Package (#<pkg-issue-number>), Cleanup (#<cleanup-issue-number>)
 
 ### Common Pitfalls
 
@@ -946,12 +958,33 @@ Use the [section] orchestrator to plan [new feature/component].
 ❌ Skip cleanup phase
 ```text
 
+### Understanding Issue Number Placeholders
+
+In examples throughout this documentation:
+
+- `#<plan-issue-number>` = The parent planning issue
+- `#<test-issue-number>` = Test phase child issue
+- `#<impl-issue-number>` = Implementation phase child issue
+- `#<pkg-issue-number>` = Package/documentation phase child issue
+- `#<cleanup-issue-number>` = Cleanup phase child issue
+- `#<issue-number>` = Generic issue reference
+
+**Example with Real Numbers:**
+
+```text
+Parent: #2700 [Plan] Add GELU Activation
+├── #2701 [Test] GELU Activation
+├── #2702 [Implementation] GELU Activation
+├── #2703 [Package] GELU Activation
+└── #2704 [Cleanup] GELU Activation
+```
+
 ### Pattern 4: Creating GitHub Issues
 
 **Always create issues for trackability:**
 
 ```text
-✅ Create issue #XXX for [component/feature]
+✅ Create issue #<issue-number> for [component/feature]
 ✅ Link PRs to issues
 ✅ Update issue status
 ```text
