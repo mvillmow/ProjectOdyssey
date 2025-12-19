@@ -279,20 +279,20 @@ fn get_model_parameter_names(model_type: String) raises -> List[String]:
 fn validate_shapes(loaded: List[ExTensor], expected: List[ExTensor]) raises:
     """Validate that loaded tensors match expected shapes.
 
-        Useful for checking that checkpoint weights are compatible with
-        the current model architecture before assignment.
+    Useful for checking that checkpoint weights are compatible with
+    the current model architecture before assignment.
 
     Args:
-            loaded: List of loaded tensors.
-            expected: List of expected tensors (with correct shapes).
+        loaded: List of loaded tensors.
+        expected: List of expected tensors (with correct shapes).
 
     Raises:
-            Error: If any tensor shapes don't match.
+        Error: If any tensor shapes don't match.
 
-        Example:
-            ```mojo
-            alidate_shapes(loaded_params, model.get_parameters())
-            ```
+    Example:
+        ```mojo
+        validate_shapes(loaded_params, model.get_parameters())
+        ```
     """
     if len(loaded) != len(expected):
         raise Error(

@@ -239,12 +239,13 @@ fn convert_to_fp32_master(params: ExTensor) raises -> ExTensor:
         Error: If params is empty.
 
     Example:
-        Model params in FP16
-            var fp16_params = ExTensor.zeros((1000, 1000), DType.float16)
+        ```mojo
+        # Model params in FP16
+        var fp16_params = ExTensor.zeros((1000, 1000), DType.float16)
 
-            # Create FP32 master weights for optimizer
-            var master_params = convert_to_fp32_master(fp16_params)
-            ```
+        # Create FP32 master weights for optimizer
+        var master_params = convert_to_fp32_master(fp16_params)
+        ```
     """
     # Validate input
     if params._numel == 0:
@@ -285,24 +286,24 @@ fn update_model_from_master(
 ) raises:
     """Update model parameters from FP32 master weights with SIMD optimization.
 
-        Copies FP32 master weights back to model parameters with dtype conversion
-        Call after optimizer updates master weights.
+    Copies FP32 master weights back to model parameters with dtype conversion.
+    Call after optimizer updates master weights.
 
     Args:
-            model_params: Model parameters to update (FP16/BF16).
-            master_params: Updated master weights (FP32).
+        model_params: Model parameters to update (FP16/BF16).
+        master_params: Updated master weights (FP32).
 
     Raises:
-            Error: If tensors are empty or shapes don't match.
+        Error: If tensors are empty or shapes don't match.
 
-        Example:
-            ```mojo
-             Optimizer updates master weights in FP32
-            optimizer_step(master_params, gradients)
+    Example:
+        ```mojo
+        # Optimizer updates master weights in FP32
+        optimizer_step(master_params, gradients)
 
-            # Copy back to FP16 model params
-            update_model_from_master(fp16_params, master_params)
-            ```
+        # Copy back to FP16 model params
+        update_model_from_master(fp16_params, master_params)
+        ```
     """
     # Validate input
     if model_params._numel == 0 or master_params._numel == 0:
@@ -342,26 +343,26 @@ fn update_model_from_master(
 fn check_gradients_finite(gradients: ExTensor) raises -> Bool:
     """Check if gradients contain only finite values.
 
-        Returns True if gradients are all finite (no NaN or Inf)
-        Use to validate gradients before optimizer step.
+    Returns True if gradients are all finite (no NaN or Inf).
+    Use to validate gradients before optimizer step.
 
     Args:
-            gradients: Gradient tensor to check.
+        gradients: Gradient tensor to check.
 
     Returns:
-            True if all gradients are finite, False otherwise.
+        True if all gradients are finite, False otherwise.
 
-        Example:
-            ```mojo
-            f check_gradients_finite(grads):
-                optimizer_step(grads)
-            else:
-                scaler.backoff()
-                continue  # Skip this step
-            ```
+    Example:
+        ```mojo
+        if check_gradients_finite(grads):
+            optimizer_step(grads)
+        else:
+            scaler.backoff()
+            continue  # Skip this step
+        ```
 
     Raises:
-            Error: If operation fails.
+        Error: If operation fails.
     """
     return not (has_nan(gradients) or has_inf(gradients))
 
@@ -371,24 +372,24 @@ fn clip_gradients_by_norm(
 ) raises -> ExTensor:
     """Clip gradients by global norm.
 
-        Scales gradients if their L2 norm exceeds max_norm
-        Useful for preventing gradient explosion in mixed precision
+    Scales gradients if their L2 norm exceeds max_norm.
+    Useful for preventing gradient explosion in mixed precision.
 
     Args:
-            gradients: Gradient tensor.
-            max_norm: Maximum allowed gradient norm.
+        gradients: Gradient tensor.
+        max_norm: Maximum allowed gradient norm.
 
     Returns:
-            Clipped gradients.
+        Clipped gradients.
 
     Raises:
-            Error: If max_norm is non-positive or gradients are empty.
+        Error: If max_norm is non-positive or gradients are empty.
 
-        Example:
-            ```mojo
-             Clip to prevent explosion in FP16
-            var clipped_grads = clip_gradients_by_norm(grads, 1.0)
-            ```
+    Example:
+        ```mojo
+        # Clip to prevent explosion in FP16
+        var clipped_grads = clip_gradients_by_norm(grads, 1.0)
+        ```
     """
     # Validate input
     if max_norm <= 0.0:
@@ -423,25 +424,25 @@ fn clip_gradients_by_value(
 ) raises -> ExTensor:
     """Clip gradients by value range with SIMD optimization.
 
-        Clamps each gradient value to [min_value, max_value]
-        Simpler than norm clipping but less theoretically motivated.
+    Clamps each gradient value to [min_value, max_value].
+    Simpler than norm clipping but less theoretically motivated.
 
     Args:
-            gradients: Gradient tensor.
-            min_value: Minimum allowed gradient value.
-            max_value: Maximum allowed gradient value.
+        gradients: Gradient tensor.
+        min_value: Minimum allowed gradient value.
+        max_value: Maximum allowed gradient value.
 
     Returns:
-            Clipped gradients.
+        Clipped gradients.
 
     Raises:
-            Error: If min_value >= max_value or gradients are empty.
+        Error: If min_value >= max_value or gradients are empty.
 
-        Example:
-            ```mojo
-             Clip each gradient to [-1, 1]
-            var clipped = clip_gradients_by_value(grads, -1.0, 1.0)
-            ```
+    Example:
+        ```mojo
+        # Clip each gradient to [-1, 1]
+        var clipped = clip_gradients_by_value(grads, -1.0, 1.0)
+        ```
     """
     # Validate input
     if min_value >= max_value:

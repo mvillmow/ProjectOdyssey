@@ -74,9 +74,6 @@ struct EvaluationResult(Copyable, Movable):
             num_total: Total samples evaluated.
             correct_per_class: Per-class correct counts (optional).
             total_per_class: Per-class total counts (optional).
-
-        Returns:
-            None.
         """
         self.accuracy = accuracy
         self.num_correct = num_correct

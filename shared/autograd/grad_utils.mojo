@@ -130,43 +130,42 @@ fn clip_grad_global_norm_(
 ) raises -> Float64:
     """Clip gradients based on their global L2 norm across all parameters.
 
-        This is the recommended approach for recurrent neural networks (RNNs) and other
-        architectures prone to exploding gradients. It computes a single norm across all
-        gradient tensors and clips all gradients uniformly if needed
+    This is the recommended approach for recurrent neural networks (RNNs) and other
+    architectures prone to exploding gradients. It computes a single norm across all
+    gradient tensors and clips all gradients uniformly if needed.
 
-        Global norm: sqrt(sum over all parameters of sum(grad_i^2))
+    Global norm: sqrt(sum over all parameters of sum(grad_i^2))
 
     Args:
-            grads: List of gradient tensors (modified in-place if global norm exceeds max_norm).
-            max_norm: Maximum allowed global L2 norm. If exceeded, all gradients
-                      are scaled down proportionally.
+        grads: List of gradient tensors (modified in-place if global norm exceeds max_norm).
+        max_norm: Maximum allowed global L2 norm. If exceeded, all gradients
+            are scaled down proportionally.
 
     Returns:
-            The original global L2 norm (before clipping)
+        The original global L2 norm (before clipping).
 
     Raises:
-            Error: If max_norm is negative or grads list is empty.
+        Error: If max_norm is negative or grads list is empty.
 
-    Examples:
-    ```
-            var grad1 = full([10,], 1.0, DType.float32)
-            var grad2 = full([20,], 1.0, DType.float32)
-            var grads : List[ExTensor] = [grad1, grad2]
+    Example:
+        ```mojo
+        var grad1 = full([10,], 1.0, DType.float32)
+        var grad2 = full([20,], 1.0, DType.float32)
+        var grads: List[ExTensor] = [grad1, grad2]
 
-            var global_norm = clip_grad_global_norm_(grads, max_norm=1.0)
-            # global_norm is sqrt(10 + 20) = sqrt(30) ≈ 5.48
-            # Both gradients scaled by 1.0/5.48 ≈ 0.182
-    ```
+        var global_norm = clip_grad_global_norm_(grads, max_norm=1.0)
+        # global_norm is sqrt(10 + 20) = sqrt(30) ≈ 5.48
+        # Both gradients scaled by 1.0/5.48 ≈ 0.182
+        ```
 
     Note:
-            This function modifies all tensors in the grads list in-place
-            If you need to preserve the original gradients, create copies first
+        This function modifies all tensors in the grads list in-place.
+        If you need to preserve the original gradients, create copies first.
 
         Reference:
             On the difficulty of training Recurrent Neural Networks
             (Pascanu et al., 2013)
-            https://arxiv.org/abs/1211.1541.
-
+            https://arxiv.org/abs/1211.1541
     """
     if max_norm < 0.0:
         raise Error("max_norm must be non-negative, got: " + String(max_norm))

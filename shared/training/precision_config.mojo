@@ -310,7 +310,7 @@ struct PrecisionConfig(Copyable, Movable):
             Tensor cast to compute_dtype.
 
         Raises:
-            Error: If operation fails.
+            Error: If dtype conversion is not supported.
         """
         if tensor.dtype() == self.compute_dtype:
             return tensor
@@ -326,7 +326,7 @@ struct PrecisionConfig(Copyable, Movable):
             Tensor cast to storage_dtype.
 
         Raises:
-            Error: If operation fails.
+            Error: If dtype conversion is not supported.
         """
         if tensor.dtype() == self.storage_dtype:
             return tensor
@@ -342,7 +342,7 @@ struct PrecisionConfig(Copyable, Movable):
             Tensor cast to float32.
 
         Raises:
-            Error: If operation fails.
+            Error: If dtype conversion is not supported.
         """
         return convert_to_fp32_master(tensor)
 
@@ -359,7 +359,7 @@ struct PrecisionConfig(Copyable, Movable):
             Scaled loss tensor.
 
         Raises:
-            Error: If operation fails.
+            Error: If loss scaling operation fails or produces invalid values.
         """
         if not self.use_gradient_scaler:
             return loss
@@ -378,7 +378,7 @@ struct PrecisionConfig(Copyable, Movable):
             Unscaled gradients ready for optimizer.
 
         Raises:
-            Error: If operation fails.
+            Error: If gradient unscaling fails or scale is zero.
         """
         if not self.use_gradient_scaler:
             return gradients
@@ -394,7 +394,7 @@ struct PrecisionConfig(Copyable, Movable):
             True if gradients are finite, False if NaN/Inf detected.
 
         Raises:
-            Error: If operation fails.
+            Error: If gradient validation encounters non-finite values.
         """
         return check_gradients_finite(gradients)
 
@@ -468,12 +468,30 @@ struct PrecisionConfig(Copyable, Movable):
             Clipped gradients.
 
         Raises:
-            Error: If operation fails.
+            Error: If gradient clipping fails or max_norm is non-positive.
         """
         return clip_gradients_by_norm(gradients, max_norm)
 
     fn print_config(self):
-        """Print precision configuration summary."""
+        """Print precision configuration summary to stdout.
+
+        Displays the current precision settings including mode, compute/storage/master
+        dtypes, and gradient scaler status.
+
+        Example:
+            ```mojo
+            var config = PrecisionConfig.for_mode("fp16")
+            config.print_config()
+            # Output:
+            # PrecisionConfig:
+            #   Mode: fp16
+            #   Compute dtype: float16
+            #   Storage dtype: float16
+            #   Master dtype: float32
+            #   Gradient scaler: enabled
+            #   Current scale: 65504.0
+            ```
+        """
         print("PrecisionConfig:")
         print("  Mode: " + String(self.mode))
         print("  Compute dtype: " + dtype_to_string(self.compute_dtype))
@@ -487,7 +505,24 @@ struct PrecisionConfig(Copyable, Movable):
             print("  Current scale: " + String(self.get_scale()))
 
     fn print_stats(self):
-        """Print training statistics."""
+        """Print training statistics to stdout.
+
+        Displays step count, overflow count, overflow rate, and current gradient scale
+        if gradient scaler is enabled.
+
+        Example:
+            ```mojo
+            var config = PrecisionConfig.for_mode("fp16")
+            # ... after training ...
+            config.print_stats()
+            # Output:
+            # Training Stats:
+            #   Total steps: 1000
+            #   Overflow count: 5
+            #   Overflow rate: 0.5%
+            #   Current scale: 65504.0
+            ```
+        """
         print("Training Stats:")
         print("  Total steps: " + String(self._step_count))
         print("  Overflow count: " + String(self._overflow_count))
