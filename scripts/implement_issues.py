@@ -1456,15 +1456,34 @@ You are on branch: {worktree.name}
             if not success:
                 raise RuntimeError(f"Implementation failed after {MAX_RETRIES} attempts: {output[-200:]}")
 
-            # 5. Check for changes
+            # 5. Check for changes (uncommitted OR already committed by Claude)
             self._update_status(slot, issue, "Git", "checking changes")
             cp = run(["git", "status", "--porcelain"], cwd=worktree)
-            if not cp.stdout.strip():
+            has_uncommitted = bool(cp.stdout.strip())
+
+            # Also check if Claude already committed (compare to origin/main)
+            cp = run(["git", "log", "--oneline", "origin/main..HEAD"], cwd=worktree)
+            has_new_commits = bool(cp.stdout.strip())
+
+            # Check if Claude already created a PR
+            existing_pr = self._check_existing_pr(issue)
+            has_pr = existing_pr is not None and existing_pr.get("state") == "OPEN"
+
+            if not has_uncommitted and not has_new_commits and not has_pr:
                 log("WARN", f"  No changes made for #{issue}")
                 self.worktree_manager.remove(issue)
                 del self.state.in_progress[issue]
                 self.state.save(self.state_file)
                 return WorkerResult(issue, "skipped", None, "No changes made", time.time() - start_time)
+
+            # If Claude already created a PR, just mark as completed
+            if has_pr and not has_uncommitted:
+                log("INFO", f"  Claude already created PR #{existing_pr['number']} for #{issue}")
+                self.worktree_manager.remove(issue)
+                del self.state.in_progress[issue]
+                self.state.save(self.state_file)
+                duration = time.time() - start_time
+                return WorkerResult(issue, "completed", existing_pr["number"], None, duration)
 
             # 6. Get summary
             summary = self._get_summary(worktree, slot, issue)
