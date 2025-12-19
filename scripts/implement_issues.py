@@ -1648,10 +1648,12 @@ PR #{pr_number} has failing CI checks:
 2. Use the Read tool to examine the failing code
 3. Use the Edit tool to fix the issues in the code
 4. Run tests with `pixi run mojo test` to verify fixes
-5. DO NOT just output text - you MUST make actual file changes
+5. COMMIT your changes before finishing using: git add -A && git commit -m "fix: Address CI failures for #{issue}"
+6. DO NOT just output text - you MUST make actual file changes AND commit them
 
 ## Critical Rules
 - You MUST edit files to fix the issues - do not just describe what to do
+- You MUST commit your changes before finishing - branches with uncommitted changes are not acceptable
 - Use absolute paths starting with {worktree}
 - Follow Mojo v0.25.7+ syntax (out self for constructors, mut self for mutating methods)
 - If logs are empty, run `pixi run mojo test` to see the actual errors
@@ -1680,9 +1682,44 @@ PR #{pr_number} has failing CI checks:
 
         # Commit and push
         log("DEBUG", "  Committing and pushing changes")
+        self._update_status(slot, issue, "Git", "committing fix")
+
+        # Call Claude to analyze changes and create a proper commit
+        commit_prompt = f"""You need to commit the CI fix changes for GitHub issue #{issue}.
+
+## Working Directory
+{worktree}
+
+## PR Information
+This is a fix for PR #{pr_number} which had failing CI checks.
+
+## Instructions
+1. Run `git diff` to see what changed
+2. Run `git status` to see all modified/added files
+3. Create a meaningful commit message based on the actual fixes
+4. Commit using: git add -A && git commit -m "your message"
+
+The commit message should:
+- Start with fix: since this is a CI fix
+- Briefly describe what was fixed
+- Be concise but informative
+
+DO NOT describe what you're doing - just run the git commands to commit.
+"""
+        self._spawn_claude_agent(worktree, commit_prompt, slot, issue)
+
+        # Verify commit happened
+        cp = run(["git", "status", "--porcelain"], cwd=worktree)
+        if cp.stdout.strip():
+            # Claude still didn't commit - force commit ourselves
+            log("WARN", f"  Claude failed to commit fix, forcing commit for #{issue}")
+            run(["git", "add", "-A"], cwd=worktree)
+            run(
+                ["git", "commit", "-m", "fix: Address CI failures\n\nAutomated fix by implement_issues.py"],
+                cwd=worktree,
+            )
+
         self._update_status(slot, issue, "Git", "pushing fix")
-        run(["git", "add", "-A"], cwd=worktree)
-        run(["git", "commit", "-m", "fix: Address CI failures\n\nAutomated fix by implement_issues.py"], cwd=worktree)
         cp = run(["git", "push", "origin", branch], cwd=worktree)
 
         if cp.returncode != 0:
@@ -1837,10 +1874,12 @@ You are on branch: {worktree.name}
 3. Use the Write tool to create new files and Edit tool to modify existing files
 4. Write clean, well-documented Mojo code following the existing patterns in shared/core/
 5. Run tests with `pixi run mojo test` if applicable
-6. DO NOT just output text - you MUST make actual file changes
+6. COMMIT your changes before finishing using: git add -A && git commit -m "feat: Implement #{issue}"
+7. DO NOT just output text - you MUST make actual file changes AND commit them
 
 ## Critical Rules
 - You MUST create or modify files - do not just describe what to do
+- You MUST commit your changes before finishing - branches with uncommitted changes are not acceptable
 - Use absolute paths starting with {worktree}
 - Follow Mojo v0.25.7+ syntax (out self for constructors, mut self for mutating methods)
 - Check existing code patterns before implementing
@@ -1904,11 +1943,41 @@ You are on branch: {worktree.name}
             )
             proc.communicate(input=summary_comment)
 
-            # 8. Commit
-            self._update_status(slot, issue, "Git", "committing")
-            run(["git", "add", "-A"], cwd=worktree)
-            commit_msg = f"feat: Implement #{issue}\n\nCloses #{issue}\n\n{summary}"
-            run(["git", "commit", "-m", commit_msg], cwd=worktree)
+            # 8. Commit (if Claude didn't already)
+            if has_uncommitted:
+                self._update_status(slot, issue, "Git", "committing")
+                # Call Claude to analyze changes and create a proper commit
+                commit_prompt = f"""You need to commit the changes for GitHub issue #{issue}.
+
+## Issue Title
+{title}
+
+## Working Directory
+{worktree}
+
+## Instructions
+1. Run `git diff` to see what changed
+2. Run `git status` to see all modified/added files
+3. Create a meaningful commit message based on the actual changes
+4. Commit using: git add -A && git commit -m "your message"
+
+The commit message should:
+- Start with feat:, fix:, docs:, refactor:, or test: as appropriate
+- Reference the issue: "Closes #{issue}" in the body
+- Summarize what was actually implemented
+
+DO NOT describe what you're doing - just run the git commands to commit.
+"""
+                self._spawn_claude_agent(worktree, commit_prompt, slot, issue)
+
+                # Verify commit happened
+                cp = run(["git", "status", "--porcelain"], cwd=worktree)
+                if cp.stdout.strip():
+                    # Claude still didn't commit - force commit ourselves
+                    log("WARN", f"  Claude failed to commit, forcing commit for #{issue}")
+                    run(["git", "add", "-A"], cwd=worktree)
+                    commit_msg = f"feat: Implement #{issue}\n\nCloses #{issue}\n\n{summary}"
+                    run(["git", "commit", "-m", commit_msg], cwd=worktree)
 
             # 9. Push
             self._update_status(slot, issue, "Git", "pushing")
