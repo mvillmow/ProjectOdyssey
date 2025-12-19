@@ -83,7 +83,7 @@ trait Dataset:
     """Base interface for all datasets."""
     fn __len__(self) -> Int
     fn __getitem__(self, index: Int) -> (Tensor, Tensor)
-```text
+```
 
 #### TensorDataset
 
@@ -115,7 +115,7 @@ struct TensorDataset(Dataset):
             sample = self.transform.value()(sample)
 
         return (sample, target)
-```text
+```
 
 **Use Case**: Training on MNIST, CIFAR-10, or any in-memory dataset
 
@@ -148,7 +148,7 @@ struct ImageDataset(Dataset):
             image = self.transform.value()(image)
 
         return (image, label)
-```text
+```
 
 **Use Case**: ImageNet, custom image datasets
 
@@ -166,7 +166,7 @@ struct CSVDataset(Dataset):
         """Load CSV file and split features from targets."""
         # Load CSV and convert to tensors
         pass
-```text
+```
 
 **Use Case**: Tabular data, benchmarks
 
@@ -276,7 +276,7 @@ struct DataLoader:
         var sampler = RandomSampler(len(self.dataset)) if self.shuffle else SequentialSampler(len(self.dataset))
         var batch_sampler = BatchSampler(sampler, self.batch_size, self.drop_last)
         return DataLoaderIterator(self.dataset, batch_sampler)
-```text
+```
 
 ### Features
 
@@ -350,7 +350,7 @@ struct Batch:
         self.inputs = inputs
         self.targets = targets
         self.indices = indices
-```text
+```
 
 #### Samplers
 
@@ -375,7 +375,7 @@ struct WeightedRandomSampler(Sampler):
     """Sample elements with given probabilities."""
     var weights: Tensor
     var num_samples: Int
-```text
+```
 
 ### Transforms (`transforms.mojo`)
 
@@ -387,7 +387,7 @@ Data transformation and augmentation pipeline.
 trait Transform:
     """Base interface for transforms."""
     fn __call__(self, x: Tensor) -> Tensor
-```text
+```
 
 #### Core Transforms
 
@@ -399,7 +399,7 @@ struct ToTensor(Transform):
     fn __call__(self, x: Any) -> Tensor:
         """Convert to tensor."""
         return to_tensor(x)
-```text
+```
 
 **Normalize**: Normalize tensor values
 
@@ -416,7 +416,7 @@ struct Normalize(Transform):
     fn __call__(self, x: Tensor) -> Tensor:
         """Apply normalization: (x - mean) / std."""
         return (x - self.mean) / self.std
-```text
+```
 
 **Compose**: Chain multiple transforms
 
@@ -434,7 +434,7 @@ struct Compose(Transform):
         for transform in self.transforms:
             output = transform(output)
         return output
-```text
+```
 
 #### Image Transforms
 
@@ -450,7 +450,7 @@ struct Resize(Transform):
     fn __call__(self, x: Tensor) -> Tensor:
         """Resize image."""
         return resize_image(x, self.height, self.width, self.interpolation)
-```text
+```
 
 **CenterCrop**: Crop center region
 
@@ -462,7 +462,7 @@ struct CenterCrop(Transform):
     fn __call__(self, x: Tensor) -> Tensor:
         """Crop center."""
         return center_crop(x, self.size)
-```text
+```
 
 #### Data Augmentation
 
@@ -478,7 +478,7 @@ struct RandomCrop(Transform):
         """Apply random crop."""
         var padded = pad_image(x, self.padding) if self.padding > 0 else x
         return random_crop(padded, self.size)
-```text
+```
 
 **RandomHorizontalFlip**: Random horizontal flip
 
@@ -492,7 +492,7 @@ struct RandomHorizontalFlip(Transform):
         if random() < self.p:
             return horizontal_flip(x)
         return x
-```text
+```
 
 **RandomRotation**: Random rotation
 
@@ -505,7 +505,7 @@ struct RandomRotation(Transform):
         """Apply random rotation."""
         var angle = random_uniform(self.degrees[0], self.degrees[1])
         return rotate_image(x, angle)
-```text
+```
 
 ## Usage Examples
 
@@ -630,7 +630,7 @@ struct MyDataset(Dataset):
 
 var dataset = MyDataset(my_data)
 var loader = DataLoader(dataset, batch_size=32)
-```text
+```
 
 ## Performance Considerations
 
@@ -715,7 +715,7 @@ var val_loader = DataLoader(val_dataset, batch_size=64, shuffle=False)
 for epoch in range(num_epochs):
     var train_loss = train_epoch(model, optimizer, train_loader, loss_fn)
     var val_loss = validate_epoch(model, val_loader, loss_fn)
-```text
+```
 
 ## Recent Enhancements (Issue #2637)
 
@@ -741,7 +741,7 @@ Planned features for future releases:
 
 ## References
 
-- [PyTorch DataLoader](https://docs.pytorch.org/docs/stable/data.html)
+- [PyTorch DataLoader](https://pytorch.org/docs/stable/data.html)
 - [TensorFlow Dataset API](https://www.tensorflow.org/guide/data)
 - [Mojo Performance Guide](https://docs.modular.com/mojo/faq/#performance)
 
