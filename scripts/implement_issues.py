@@ -137,6 +137,49 @@ def run(
 # Cache for external issue states (avoid repeated API calls)
 _external_issue_cache: dict[int, bool] = {}  # issue_num -> is_closed
 
+# Cache for repo owner/name
+_repo_info_cache: tuple[str, str] | None = None
+
+
+def get_repo_info() -> tuple[str, str]:
+    """Get the repo owner and name from git remote.
+
+    Returns (owner, name) tuple. Caches result for subsequent calls.
+    """
+    global _repo_info_cache
+    if _repo_info_cache is not None:
+        return _repo_info_cache
+
+    # Try gh repo view first (most reliable)
+    cp = run(["gh", "repo", "view", "--json", "owner,name"])
+    if cp.returncode == 0:
+        try:
+            data = json.loads(cp.stdout)
+            owner = data.get("owner", {}).get("login", "")
+            name = data.get("name", "")
+            if owner and name:
+                _repo_info_cache = (owner, name)
+                return _repo_info_cache
+        except json.JSONDecodeError:
+            pass
+
+    # Fallback: parse git remote URL
+    cp = run(["git", "remote", "get-url", "origin"])
+    if cp.returncode == 0:
+        url = cp.stdout.strip()
+        # Handle both SSH and HTTPS URLs
+        # SSH: git@github.com:owner/repo.git
+        # HTTPS: https://github.com/owner/repo.git
+        match = re.search(r"[:/]([^/]+)/([^/]+?)(?:\.git)?$", url)
+        if match:
+            _repo_info_cache = (match.group(1), match.group(2))
+            return _repo_info_cache
+
+    # Last resort fallback
+    log("WARN", "Could not detect repo owner/name, using defaults")
+    _repo_info_cache = ("mvillmow", "ProjectOdyssey")
+    return _repo_info_cache
+
 
 def prefetch_issue_states(issue_nums: list[int]) -> None:
     """Batch fetch issue states using GraphQL to populate cache.
@@ -150,9 +193,8 @@ def prefetch_issue_states(issue_nums: list[int]) -> None:
 
     log("DEBUG", f"Prefetching states for {len(to_fetch)} external issues...")
 
-    # Build GraphQL query
-    repo_owner = "mvillmow"
-    repo_name = "ProjectOdyssey"
+    # Get repo info from git
+    repo_owner, repo_name = get_repo_info()
 
     # Batch in groups of 50
     batch_size = 50
@@ -979,8 +1021,7 @@ class IssueImplementer:
 
         # Build GraphQL query for batch fetch
         # GitHub GraphQL allows fetching multiple nodes by ID
-        repo_owner = "mvillmow"
-        repo_name = "ProjectOdyssey"
+        repo_owner, repo_name = get_repo_info()
 
         # Build query fragments for each issue
         fragments = []
