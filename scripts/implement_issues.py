@@ -550,7 +550,7 @@ class DependencyResolver:
         Algorithm:
         1. Filter issues not yet completed, paused, or in progress
         2. For each pending issue, check if all depends_on are in completed set
-        3. Filter out issues with external dependencies (not in the epic)
+        3. Check external dependencies (not in epic) - if all are closed, treat as satisfied
         4. Return issues sorted by priority (P0 first) then by number
         """
         all_issues = self.get_all_issue_numbers()
@@ -566,23 +566,34 @@ class DependencyResolver:
                 # Check for external dependencies (not in epic)
                 external_deps = info.depends_on - all_issues
                 if external_deps:
-                    info.status = "blocked_external"
-                    continue
+                    # Check if ALL external deps are closed
+                    open_external = {d for d in external_deps if not is_issue_closed(d)}
+                    if open_external:
+                        info.status = "blocked_external"
+                        continue
+                    # All external deps are closed, treat as satisfied
 
                 # All internal dependencies must be completed
-                if info.depends_on.issubset(self._completed):
+                internal_deps = info.depends_on & all_issues
+                if internal_deps.issubset(self._completed):
                     ready.append(num)
 
             return sorted(ready, key=lambda n: (priority_order.get(self.issues[n].priority, 2), n))
 
     def get_blocked_by_external(self) -> dict[int, set[int]]:
-        """Return issues blocked by external dependencies."""
+        """Return issues blocked by OPEN external dependencies.
+
+        External dependencies that are closed are considered satisfied.
+        """
         all_issues = self.get_all_issue_numbers()
         blocked = {}
         for num, info in self.issues.items():
             external_deps = info.depends_on - all_issues
             if external_deps:
-                blocked[num] = external_deps
+                # Filter out closed external issues
+                open_external = {d for d in external_deps if not is_issue_closed(d)}
+                if open_external:
+                    blocked[num] = open_external
         return blocked
 
     def get_all_pending_issues(self) -> list[int]:
