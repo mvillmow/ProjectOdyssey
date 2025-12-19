@@ -90,6 +90,9 @@ def write_secure(path: pathlib.Path, content: str) -> None:
 _verbose_mode = False
 _debug_mode = False
 
+# Global lock for stdout/stderr to prevent output races
+_output_lock = threading.Lock()
+
 
 def set_verbose(verbose: bool, debug: bool = False) -> None:
     """Set the global verbose and debug modes."""
@@ -104,12 +107,13 @@ def log(level: str, msg: str) -> None:
         return
     ts = time.strftime("%H:%M:%S")
     out = sys.stderr if level in {"WARN", "ERROR"} else sys.stdout
-    # Clear current line and move to new line before printing
-    # This ensures log messages don't overlap with status line
-    if sys.stdout.isatty():
-        sys.stdout.write("\r\033[K")  # Clear the status line
-        sys.stdout.flush()
-    print(f"[{level}] {ts} {msg}", file=out, flush=True)
+    with _output_lock:
+        # Clear current line and move to new line before printing
+        # This ensures log messages don't overlap with status line
+        if sys.stdout.isatty():
+            sys.stdout.write("\r\033[K")  # Clear the status line
+            sys.stdout.flush()
+        print(f"[{level}] {ts} {msg}", file=out, flush=True)
 
 
 # ---------------------------------------------------------------------
@@ -431,6 +435,18 @@ class StatusTracker:
                     lines.append(f"  Thread {slot}: [Idle        ]")
             return lines
 
+    def _get_state_key(self) -> str:
+        """Get a key representing the meaningful state (excluding elapsed time)."""
+        with self._lock:
+            parts = [str(self._completed_count), str(self._total_count)]
+            for slot in range(self._max_workers):
+                if slot in self._slots:
+                    item_id, stage, info, _ = self._slots[slot]
+                    parts.append(f"{item_id}:{stage}:{info}")
+                else:
+                    parts.append("idle")
+            return "|".join(parts)
+
     def _render_compact(self) -> str:
         """Render a single-line compact status."""
         with self._lock:
@@ -458,22 +474,24 @@ class StatusTracker:
 
     def _display_loop(self) -> None:
         """Background thread that refreshes the status display."""
-        last_status = ""
+        last_state_key = ""
 
         while not self._stop_event.is_set():
-            status = self._render_compact()
+            state_key = self._get_state_key()
 
-            if self._is_tty:
-                # Single-line update using carriage return
-                sys.stdout.write(f"\r  Status: {status}\033[K")
-                sys.stdout.flush()
+            # Only print when meaningful state changes (not just elapsed time)
+            if state_key != last_state_key:
+                status = self._render_compact()
+                with _output_lock:
+                    if self._is_tty:
+                        # Single-line update using carriage return
+                        sys.stdout.write(f"\r  Status: {status}\033[K")
+                        sys.stdout.flush()
+                    else:
+                        print(f"  Status: {status}")
+                        sys.stdout.flush()
+                last_state_key = state_key
                 self._lines_printed = 1
-            else:
-                # Non-TTY: only print when status changes
-                if status != last_status:
-                    print(f"  Status: {status}")
-                    sys.stdout.flush()
-                    last_status = status
 
             self._update_event.wait(STATUS_REFRESH_INTERVAL)
             self._update_event.clear()
