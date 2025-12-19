@@ -33,9 +33,9 @@ from .reduction_ops import (
 # ============================================================================
 
 
-fn _reduce_all_impl[dtype: DType, Op: ReduceOp](
-    result: ExTensor, tensor: ExTensor, numel: Int
-):
+fn _reduce_all_impl[
+    dtype: DType, Op: ReduceOp
+](result: ExTensor, tensor: ExTensor, numel: Int):
     """Generic dtype-specialized reduction over all elements."""
     var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
     var out_ptr = result._data.bitcast[Scalar[dtype]]()
@@ -50,9 +50,9 @@ fn _reduce_all_impl[dtype: DType, Op: ReduceOp](
     out_ptr[0] = Scalar[dtype](final_val)
 
 
-fn _dispatch_reduce_all[Op: ReduceOp](
-    result: ExTensor, tensor: ExTensor, numel: Int
-) raises:
+fn _dispatch_reduce_all[
+    Op: ReduceOp
+](result: ExTensor, tensor: ExTensor, numel: Int) raises:
     """Generic runtime dispatch for reduction over all elements."""
     var dt = tensor.dtype()
     if dt == DType.float16:
@@ -69,7 +69,9 @@ fn _dispatch_reduce_all[Op: ReduceOp](
         raise Error("reduce_all: unsupported dtype")
 
 
-fn _reduce_axis_impl[dtype: DType, Op: ReduceOp](
+fn _reduce_axis_impl[
+    dtype: DType, Op: ReduceOp
+](
     result: ExTensor,
     tensor: ExTensor,
     outer_size: Int,
@@ -97,7 +99,9 @@ fn _reduce_axis_impl[dtype: DType, Op: ReduceOp](
             out_ptr[result_idx] = Scalar[dtype](final_val)
 
 
-fn _dispatch_reduce_axis[Op: ReduceOp](
+fn _dispatch_reduce_axis[
+    Op: ReduceOp
+](
     result: ExTensor,
     tensor: ExTensor,
     outer_size: Int,
@@ -128,8 +132,6 @@ fn _dispatch_reduce_axis[Op: ReduceOp](
         )
     else:
         raise Error("reduce_axis: unsupported dtype")
-
-
 
 
 fn sum(
@@ -183,7 +185,9 @@ fn sum(
         var axis_size = sizes[1]
         var inner_size = sizes[2]
 
-        _dispatch_reduce_axis[SumOp](result, tensor, outer_size, axis_size, inner_size)
+        _dispatch_reduce_axis[SumOp](
+            result, tensor, outer_size, axis_size, inner_size
+        )
         return result^
 
 
@@ -235,7 +239,9 @@ fn mean(
         var axis_size = sizes[1]
         var inner_size = sizes[2]
 
-        _dispatch_reduce_axis[MeanOp](result, tensor, outer_size, axis_size, inner_size)
+        _dispatch_reduce_axis[MeanOp](
+            result, tensor, outer_size, axis_size, inner_size
+        )
         return result^
 
 
@@ -287,7 +293,9 @@ fn max_reduce(
         var axis_size = sizes[1]
         var inner_size = sizes[2]
 
-        _dispatch_reduce_axis[MaxOp](result, tensor, outer_size, axis_size, inner_size)
+        _dispatch_reduce_axis[MaxOp](
+            result, tensor, outer_size, axis_size, inner_size
+        )
         return result^
 
 
@@ -339,7 +347,9 @@ fn min_reduce(
         var axis_size = sizes[1]
         var inner_size = sizes[2]
 
-        _dispatch_reduce_axis[MinOp](result, tensor, outer_size, axis_size, inner_size)
+        _dispatch_reduce_axis[MinOp](
+            result, tensor, outer_size, axis_size, inner_size
+        )
         return result^
 
 
@@ -348,9 +358,9 @@ fn min_reduce(
 # ============================================================================
 
 
-fn reduce_backward[Op: ReduceBackwardOp](
-    grad_output: ExTensor, x: ExTensor, axis: Int = -1
-) raises -> ExTensor:
+fn reduce_backward[
+    Op: ReduceBackwardOp
+](grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> ExTensor:
     """Generic backward pass for reduction operations.
 
     Consolidates the coordinate transformation logic used by all backward passes.
@@ -429,7 +439,9 @@ fn reduce_backward[Op: ReduceBackwardOp](
 
             # Use Op-specific gradient computation
             var input_val = x._get_float64(result_idx)
-            var grad = op.compute_gradient(grad_val, input_val, axis_values, axis_size)
+            var grad = op.compute_gradient(
+                grad_val, input_val, axis_values, axis_size
+            )
             result._set_float64(result_idx, grad)
 
     return result^
