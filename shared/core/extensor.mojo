@@ -34,6 +34,7 @@ from collections import List
 from memory import UnsafePointer, memset_zero, alloc
 from sys.info import simd_width_of
 from math import ceildiv, sqrt, log, cos, sin
+from utils.numerics import inf as numeric_inf, neg_inf as numeric_neg_inf
 from random import random_float64
 
 # Memory safety constants
@@ -3000,9 +3001,8 @@ fn inf_tensor(shape: List[Int], dtype: DType) raises -> ExTensor:
 
     var tensor = ExTensor(shape, dtype)
 
-    # Fill tensor with +inf values
-    # IEEE 754 +Inf is represented as 1.0 / 0.0
-    var inf_value = 1.0 / 0.0
+    # Fill tensor with +inf values using proper IEEE 754 infinity constant
+    var inf_value: Float64 = numeric_inf[DType.float64]()
 
     for i in range(tensor.numel()):
         tensor._set_float64(i, inf_value)
@@ -3039,9 +3039,8 @@ fn neg_inf_tensor(shape: List[Int], dtype: DType) raises -> ExTensor:
 
     var tensor = ExTensor(shape, dtype)
 
-    # Fill tensor with -inf values
-    # IEEE 754 -Inf is represented as -1.0 / 0.0
-    var neg_inf_value = -1.0 / 0.0
+    # Fill tensor with -inf values using proper IEEE 754 infinity constant
+    var neg_inf_value: Float64 = numeric_neg_inf[DType.float64]()
 
     for i in range(tensor.numel()):
         tensor._set_float64(i, neg_inf_value)
