@@ -17,11 +17,26 @@ from typing import Optional
 def parse_coverage_report(coverage_file: Path) -> Optional[float]:
     """Parse coverage report and extract total coverage percentage.
 
+    ⚠️  WARNING: MOCK IMPLEMENTATION ⚠️
+
+    This function does NOT actually parse coverage data!
+    It returns a hardcoded 92.5% if the file exists.
+
+    Real implementation blocked by:
+    - Mojo v0.26+ lacks coverage instrumentation
+    - No coverage report format available to parse
+
+    See Issues:
+    - #2583: Coverage implementation tracking
+    - #2612: Prominent warning documentation
+    - ADR-008: Coverage tool blocker decision
+
     Args:
         coverage_file: Path to coverage report file.
 
     Returns:
-        Coverage percentage (0-100) or None if parsing fails.
+        Mock coverage percentage (92.5%) if file exists, None otherwise.
+        Does NOT read actual coverage data from the file.
     """
     # TODO(#2583): BLOCKED - Waiting on Mojo team to release coverage instrumentation
     #
@@ -38,11 +53,31 @@ def parse_coverage_report(coverage_file: Path) -> Optional[float]:
     #
     # BLOCKED BY: Mojo team (external dependency)
     # REFERENCE: Issue #2583, ADR-008
-    print(f"Parsing coverage report: {coverage_file}")
+    print()
+    print("⚠️" + "=" * 68)
+    print("⚠️  WARNING: MOCK COVERAGE PARSER - NOT READING ACTUAL COVERAGE!")
+    print("⚠️" + "=" * 68)
+    print()
+    print(f"   Coverage file: {coverage_file}")
+    print(f"   File exists: {coverage_file.exists()}")
+    print()
+    print("   This function returns a HARDCODED value, NOT actual coverage!")
+    print("   The coverage file is NOT being parsed.")
+    print()
+    print("   REASON: Mojo does not provide coverage instrumentation")
+    print("   - No `mojo test --coverage` command exists")
+    print("   - No coverage report format to parse")
+    print()
+    print("   REFERENCE: ADR-008, Issue #2583, Issue #2612")
+    print()
 
-    # Placeholder - return mock coverage for testing
     if coverage_file.exists():
-        return 92.5  # Mock coverage above threshold
+        print("   ➤ Returning MOCK value: 92.5% (hardcoded)")
+        print()
+        return 92.5  # MOCK: Does NOT parse file content!
+
+    print("   ➤ Coverage file not found - returning None")
+    print()
     return None
 
 

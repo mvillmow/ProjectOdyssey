@@ -530,6 +530,35 @@ tooling becomes available.
    - Context, rationale, alternatives, consequences
    - Future implementation plan
 
+### Phase 2: Prominent Runtime Warnings (Issue #2612)
+
+**Status**: Implemented
+
+Added prominent runtime warnings to `parse_coverage_report()` function:
+
+1. **Updated docstring** with WARNING section
+   - Clear "⚠️ WARNING: MOCK IMPLEMENTATION ⚠️" header
+   - Explicit statement: "Does NOT actually parse coverage data!"
+   - References to Issues #2583 and #2612
+   - References to ADR-008
+
+2. **Added runtime warning output**
+   - Prominent warning banner with emoji (⚠️) and visual separators (=)
+   - File existence check output
+   - Clear statement: "returns HARDCODED value, NOT actual coverage"
+   - Mojo limitation explanation
+   - Reference information for ADR-008, #2583, #2612
+   - Arrow (➤) indicating mock value being returned
+
+3. **Created unit tests** (`tests/scripts/test_check_coverage.py`)
+   - Verifies mock value (92.5%) is returned
+   - Verifies warnings are printed for both existing and nonexistent files
+   - Validates warning content (MOCK, WARNING, ADR-008, issue references)
+   - Validates explanation of Mojo limitation
+   - Confirms prominent formatting (emoji, borders, arrows)
+
+See Issue #2612 for implementation details.
+
 ### Phase 2: GitHub Issue Update
 
 **Tasks**:
