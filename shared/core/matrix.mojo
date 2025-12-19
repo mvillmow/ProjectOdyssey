@@ -817,6 +817,154 @@ fn outer(a: ExTensor, b: ExTensor) raises -> ExTensor:
 # ============================================================================
 
 
+fn _matmul_2d_2d_grad_a_impl[
+    dtype: DType
+](
+    grad_a: ExTensor,
+    grad_output: ExTensor,
+    b: ExTensor,
+    grad_out_rows: Int,
+    grad_out_cols: Int,
+    b_rows: Int,
+):
+    """Compute grad_a = grad_output @ B^T for 2D @ 2D matmul.
+
+    Args:
+        grad_a: Output tensor to fill (shape: grad_out_rows x b_rows).
+        grad_output: Gradient from upstream (shape: grad_out_rows x grad_out_cols).
+        b: Second input from forward (shape: b_rows x grad_out_cols).
+        grad_out_rows: Number of rows in grad_output.
+        grad_out_cols: Number of columns in grad_output (= number of rows in B^T).
+        b_rows: Number of rows in B (= number of columns in B^T).
+
+    Computation: grad_a[i, j] = sum_n (grad_output[i, n] * B[j, n])
+    """
+    var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
+    var b_ptr = b._data.bitcast[Scalar[dtype]]()
+    var out_ptr = grad_a._data.bitcast[Scalar[dtype]]()
+
+    var b_cols = grad_out_cols
+
+    for i in range(grad_out_rows):
+        for j in range(b_rows):
+            var sum_val = Scalar[dtype](0)
+            for n in range(grad_out_cols):
+                # grad_output[i, n]
+                var grad_elem = grad_ptr[i * grad_out_cols + n]
+                # B[j, n]
+                var b_elem = b_ptr[j * b_cols + n]
+                sum_val += grad_elem * b_elem
+            # grad_a[i, j] = sum
+            out_ptr[i * b_rows + j] = sum_val
+
+
+fn _matmul_2d_2d_grad_b_impl[
+    dtype: DType
+](
+    grad_b: ExTensor,
+    a: ExTensor,
+    grad_output: ExTensor,
+    a_rows: Int,
+    a_cols: Int,
+    grad_out_cols: Int,
+):
+    """Compute grad_b = A^T @ grad_output for 2D @ 2D matmul.
+
+    Args:
+        grad_b: Output tensor to fill (shape: a_cols x grad_out_cols).
+        a: First input from forward (shape: a_rows x a_cols).
+        grad_output: Gradient from upstream (shape: a_rows x grad_out_cols).
+        a_rows: Number of rows in A.
+        a_cols: Number of columns in A.
+        grad_out_cols: Number of columns in grad_output.
+
+    Computation: grad_b[j, n] = sum_i (A[i, j] * grad_output[i, n])
+    """
+    var a_ptr = a._data.bitcast[Scalar[dtype]]()
+    var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
+    var out_ptr = grad_b._data.bitcast[Scalar[dtype]]()
+
+    for j in range(a_cols):
+        for n in range(grad_out_cols):
+            var sum_val = Scalar[dtype](0)
+            for i in range(a_rows):
+                # A[i, j]
+                var a_elem = a_ptr[i * a_cols + j]
+                # grad_output[i, n]
+                var grad_elem = grad_ptr[i * grad_out_cols + n]
+                sum_val += a_elem * grad_elem
+            # grad_b[j, n] = sum
+            out_ptr[j * grad_out_cols + n] = sum_val
+
+
+fn _dispatch_matmul_2d_2d_grad_a(
+    grad_a: ExTensor,
+    grad_output: ExTensor,
+    b: ExTensor,
+    grad_out_rows: Int,
+    grad_out_cols: Int,
+    b_rows: Int,
+) raises:
+    """Runtime dispatch for grad_a computation in 2D @ 2D matmul backward."""
+    var dt = grad_output.dtype()
+    if dt == DType.float16:
+        _matmul_2d_2d_grad_a_impl[DType.float16](
+            grad_a, grad_output, b, grad_out_rows, grad_out_cols, b_rows
+        )
+    elif dt == DType.float32:
+        _matmul_2d_2d_grad_a_impl[DType.float32](
+            grad_a, grad_output, b, grad_out_rows, grad_out_cols, b_rows
+        )
+    elif dt == DType.float64:
+        _matmul_2d_2d_grad_a_impl[DType.float64](
+            grad_a, grad_output, b, grad_out_rows, grad_out_cols, b_rows
+        )
+    elif dt == DType.int32:
+        _matmul_2d_2d_grad_a_impl[DType.int32](
+            grad_a, grad_output, b, grad_out_rows, grad_out_cols, b_rows
+        )
+    elif dt == DType.int64:
+        _matmul_2d_2d_grad_a_impl[DType.int64](
+            grad_a, grad_output, b, grad_out_rows, grad_out_cols, b_rows
+        )
+    else:
+        raise Error("matmul_backward: unsupported dtype")
+
+
+fn _dispatch_matmul_2d_2d_grad_b(
+    grad_b: ExTensor,
+    a: ExTensor,
+    grad_output: ExTensor,
+    a_rows: Int,
+    a_cols: Int,
+    grad_out_cols: Int,
+) raises:
+    """Runtime dispatch for grad_b computation in 2D @ 2D matmul backward."""
+    var dt = a.dtype()
+    if dt == DType.float16:
+        _matmul_2d_2d_grad_b_impl[DType.float16](
+            grad_b, a, grad_output, a_rows, a_cols, grad_out_cols
+        )
+    elif dt == DType.float32:
+        _matmul_2d_2d_grad_b_impl[DType.float32](
+            grad_b, a, grad_output, a_rows, a_cols, grad_out_cols
+        )
+    elif dt == DType.float64:
+        _matmul_2d_2d_grad_b_impl[DType.float64](
+            grad_b, a, grad_output, a_rows, a_cols, grad_out_cols
+        )
+    elif dt == DType.int32:
+        _matmul_2d_2d_grad_b_impl[DType.int32](
+            grad_b, a, grad_output, a_rows, a_cols, grad_out_cols
+        )
+    elif dt == DType.int64:
+        _matmul_2d_2d_grad_b_impl[DType.int64](
+            grad_b, a, grad_output, a_rows, a_cols, grad_out_cols
+        )
+    else:
+        raise Error("matmul_backward: unsupported dtype")
+
+
 fn matmul_backward(
     grad_output: ExTensor, a: ExTensor, b: ExTensor
 ) raises -> GradientPair:
