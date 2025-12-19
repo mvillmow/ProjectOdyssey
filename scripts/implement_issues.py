@@ -2318,9 +2318,12 @@ Examples:
                     # Filter out issues already in progress (in futures)
                     ready = [n for n in ready if n not in futures.values()]
 
-                    # Spawn new tasks up to max_parallel
+                    # Spawn new tasks up to max_parallel + buffer
+                    # Keep buffer of work queued so workers don't sit idle between poll cycles
                     spawned_this_iteration = 0
-                    available = actual_workers - active_count
+                    queue_buffer = actual_workers  # Pre-queue one extra item per worker
+                    max_queued = actual_workers + queue_buffer
+                    available = max_queued - active_count
 
                     log(
                         "DEBUG",
