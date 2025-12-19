@@ -1221,23 +1221,36 @@ Focus on what functionality was added or fixed. Do not include implementation de
 
         # Build fix prompt
         log("DEBUG", "  Building fix prompt for Claude")
-        fix_prompt = f"""You are fixing CI failures for GitHub issue #{issue}.
+        fix_prompt = f"""You are a code fix agent. Your task is to fix CI failures for GitHub issue #{issue}.
 
+## Working Directory
+Your current working directory is: {worktree}
+All file operations should be relative to this directory.
+
+## Branch
+You are on branch: {branch}
+
+## PR Information
 PR #{pr_number} has failing CI checks:
 {chr(10).join(failure_info)}
 
-Here are the relevant failure logs:
+## Failure Logs
 ```
 {log_content}
 ```
 
-Please:
+## Instructions
 1. Analyze the failure logs to understand what's broken
-2. Fix the issues in the code
-3. Run tests locally if possible to verify
-4. Ensure your fixes follow the existing code patterns
+2. Use the Read tool to examine the failing code
+3. Use the Edit tool to fix the issues in the code
+4. Run tests with `pixi run mojo test` to verify fixes
+5. DO NOT just output text - you MUST make actual file changes
 
-When done, all files should be saved.
+## Critical Rules
+- You MUST edit files to fix the issues - do not just describe what to do
+- Use absolute paths starting with {worktree}
+- Follow Mojo v0.25.7+ syntax (out self for constructors, mut self for mutating methods)
+- If logs are empty, run `pixi run mojo test` to see the actual errors
 """
 
         # Run Claude to fix
@@ -1399,19 +1412,34 @@ When done, all files should be saved.
                     raise RuntimeError(f"git rebase/merge failed: {cp.stderr}")
 
             # 4. Run implementation with retries
-            implementation_prompt = f"""You are implementing GitHub issue #{issue}: {title}
+            implementation_prompt = f"""You are a code implementation agent. Your task is to implement GitHub issue #{issue}.
 
-Here is the implementation plan:
+## Issue Title
+{title}
 
+## Working Directory
+Your current working directory is: {worktree}
+All file operations should be relative to this directory.
+
+## Branch
+You are on branch: {worktree.name}
+
+## Implementation Plan
 {plan}
 
-Please implement this plan step by step. Make sure to:
-1. Follow the plan exactly
-2. Write clean, well-documented code
-3. Follow existing code patterns in the repository
-4. Run tests if applicable
+## Instructions
+1. Read and understand the plan above
+2. Create or modify the necessary files to implement the plan
+3. Use the Write tool to create new files and Edit tool to modify existing files
+4. Write clean, well-documented Mojo code following the existing patterns in shared/core/
+5. Run tests with `pixi run mojo test` if applicable
+6. DO NOT just output text - you MUST make actual file changes
 
-When you're done, ensure all files are saved.
+## Critical Rules
+- You MUST create or modify files - do not just describe what to do
+- Use absolute paths starting with {worktree}
+- Follow Mojo v0.25.7+ syntax (out self for constructors, mut self for mutating methods)
+- Check existing code patterns before implementing
 """
 
             success = False
