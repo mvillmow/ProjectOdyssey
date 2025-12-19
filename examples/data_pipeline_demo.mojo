@@ -48,7 +48,9 @@ from collections import List
 # ============================================================================
 
 
-fn create_demo_dataset(num_samples: Int = 32, num_classes: Int = 10) raises -> Tuple[ExTensor, ExTensor]:
+fn create_demo_dataset(
+    num_samples: Int = 32, num_classes: Int = 10
+) raises -> Tuple[ExTensor, ExTensor]:
     """Create synthetic training data for demonstration.
 
     Args:
@@ -58,7 +60,10 @@ fn create_demo_dataset(num_samples: Int = 32, num_classes: Int = 10) raises -> T
     Returns:
         Tuple of (images, labels) tensors.
     """
-    print(f"Creating synthetic dataset: {num_samples} samples, {num_classes} classes")
+    print(
+        f"Creating synthetic dataset: {num_samples} samples,"
+        f" {num_classes} classes"
+    )
 
     # Create batch of random-like data (all ones for simplicity)
     var image_shape: List[Int] = [num_samples, 3, 32, 32]
@@ -106,8 +111,10 @@ fn demo_basic_pipeline() raises:
 
     for i in range(min(2, batches.__len__())):  # Print first 2 batches
         var batch = batches[i]
-        print(f"  Batch {i}: data shape={batch.data.shape()[0]} samples, "
-              f"labels shape={batch.labels.shape()}, indices={batch.indices.__len__()}")
+        print(
+            f"  Batch {i}: data shape={batch.data.shape()[0]} samples, labels"
+            f" shape={batch.labels.shape()}, indices={batch.indices.__len__()}"
+        )
 
 
 # ============================================================================
@@ -222,8 +229,10 @@ fn demo_complete_pipeline() raises:
         # Show cache statistics after epoch
         var cache_size, hits, misses = cached.get_cache_stats()
         var hit_rate = cached.get_hit_rate()
-        print(f"    - Cache stats: size={cache_size}, hits={hits}, "
-              f"misses={misses}, hit_rate={hit_rate:.2f}")
+        print(
+            f"    - Cache stats: size={cache_size}, hits={hits}, "
+            f"misses={misses}, hit_rate={hit_rate:.2f}"
+        )
 
 
 # ============================================================================
@@ -301,7 +310,8 @@ fn main() raises:
     print("\n" + "=" * 70)
     print("Summary: Efficient Data Pipeline Architecture")
     print("=" * 70)
-    print("""
+    print(
+        """
 Key Takeaways:
 1. Compose components (Dataset -> Transform -> Cache -> Sampler -> Loader)
 2. Use RandomSampler for training (enables epoch shuffling)
@@ -321,7 +331,8 @@ Next Steps:
 - Apply transforms in data pipelines
 - Enable shuffling with RandomSampler
 - Cache datasets that fit in memory
-    """)
+    """
+    )
 
     print("=" * 70)
     print("Demo complete!")
