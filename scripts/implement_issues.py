@@ -324,34 +324,49 @@ class StatusTracker:
                     lines.append(f"  Thread {slot}: [Idle        ]")
             return lines
 
+    def _render_compact(self) -> str:
+        """Render a single-line compact status."""
+        with self._lock:
+            parts = []
+
+            # Progress
+            if self._total_count > 0:
+                parts.append(f"[{self._completed_count}/{self._total_count}]")
+
+            # Active threads
+            active = []
+            for slot in range(self._max_workers):
+                if slot in self._slots:
+                    item_id, stage, info, start_time = self._slots[slot]
+                    elapsed = self._format_elapsed(start_time)
+                    short_info = f" {info[:20]}" if info else ""
+                    active.append(f"#{item_id}:{stage[:8]}({elapsed}){short_info}")
+
+            if active:
+                parts.append(" | ".join(active))
+            else:
+                parts.append("Waiting...")
+
+            return " ".join(parts)
+
     def _display_loop(self) -> None:
         """Background thread that refreshes the status display."""
-        last_main_stage = ""
-        first_render = True
+        last_status = ""
 
         while not self._stop_event.is_set():
-            lines = self._render_status()
-            num_lines = len(lines)
+            status = self._render_compact()
 
             if self._is_tty:
-                if not first_render:
-                    sys.stdout.write(f"\033[{num_lines}A")
-                for line in lines:
-                    sys.stdout.write(f"\r{line}\033[K\n")
+                # Single-line update using carriage return
+                sys.stdout.write(f"\r  Status: {status}\033[K")
                 sys.stdout.flush()
-                first_render = False
-                self._lines_printed = num_lines
+                self._lines_printed = 1
             else:
-                with self._lock:
-                    if self.MAIN_THREAD in self._slots:
-                        _, stage, info, _ = self._slots[self.MAIN_THREAD]
-                        current = f"{stage}:{info}"
-                        if current != last_main_stage:
-                            progress = f"[{self._completed_count}/{self._total_count}]" if self._total_count > 0 else ""
-                            info_str = f" - {info}" if info else ""
-                            print(f"  Progress: {stage}{progress}{info_str}")
-                            sys.stdout.flush()
-                            last_main_stage = current
+                # Non-TTY: only print when status changes
+                if status != last_status:
+                    print(f"  Status: {status}")
+                    sys.stdout.flush()
+                    last_status = status
 
             self._update_event.wait(STATUS_REFRESH_INTERVAL)
             self._update_event.clear()
