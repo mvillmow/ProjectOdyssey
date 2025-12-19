@@ -686,6 +686,47 @@ class WorktreeManager:
                     return True
             return False
 
+    def create_for_existing_branch(self, issue: int, remote_branch: str) -> pathlib.Path:
+        """Create a worktree for an existing remote branch. Thread-safe."""
+        with self._lock:
+            worktree_path = self.worktree_base / f"{issue}-{remote_branch}"
+
+            if worktree_path.exists():
+                log("DEBUG", f"Worktree already exists: {worktree_path}")
+                # Make sure it's on the right branch and up to date
+                run(["git", "fetch", "origin", remote_branch], cwd=worktree_path)
+                run(["git", "reset", "--hard", f"origin/{remote_branch}"], cwd=worktree_path)
+                return worktree_path
+
+            # Fetch the remote branch first
+            run(["git", "fetch", "origin", remote_branch], cwd=self.repo_root)
+
+            # Create worktree tracking the remote branch
+            cp = run(
+                [
+                    "git",
+                    "worktree",
+                    "add",
+                    "--track",
+                    "-b",
+                    remote_branch,
+                    str(worktree_path),
+                    f"origin/{remote_branch}",
+                ],
+                cwd=self.repo_root,
+            )
+
+            if cp.returncode != 0:
+                # Branch might already exist locally, try without -b
+                cp = run(
+                    ["git", "worktree", "add", str(worktree_path), remote_branch],
+                    cwd=self.repo_root,
+                )
+                if cp.returncode != 0:
+                    raise RuntimeError(f"Failed to create worktree for {remote_branch}: {cp.stderr}")
+
+            return worktree_path
+
     def list_active(self) -> dict[int, pathlib.Path]:
         """List active worktrees mapped to issue numbers."""
         result = {}
@@ -1143,25 +1184,14 @@ Focus on what functionality was added or fixed. Do not include implementation de
 
         log("INFO", f"  CI failures: {len(failing)} checks failed")
 
-        # Get or create worktree for the branch
-        log("DEBUG", f"  Setting up worktree for branch: {branch}")
+        # Get or create worktree for the existing PR branch
+        log("DEBUG", f"  Setting up worktree for existing branch: {branch}")
         self._update_status(slot, issue, "Worktree", "setting up")
-        worktree = self.worktree_manager.create(issue, branch)
-        log("DEBUG", f"  Worktree created: {worktree}")
+        worktree = self.worktree_manager.create_for_existing_branch(issue, branch)
+        log("DEBUG", f"  Worktree ready: {worktree}")
         self.state.in_progress[issue] = str(worktree)
         self.state.pr_numbers[issue] = pr_number
         self.state.save(self.state_file)
-
-        # Checkout the PR branch
-        log("DEBUG", f"  Fetching origin/{branch}")
-        cp = run(["git", "fetch", "origin", branch], cwd=worktree)
-        log("DEBUG", f"  git fetch returned: {cp.returncode}")
-        log("DEBUG", f"  Checking out branch: {branch}")
-        cp = run(["git", "checkout", branch], cwd=worktree)
-        if cp.returncode != 0:
-            log("DEBUG", f"  Checkout failed, trying checkout -b: {cp.stderr}")
-            cp = run(["git", "checkout", "-b", branch, f"origin/{branch}"], cwd=worktree)
-        log("DEBUG", f"  git checkout returned: {cp.returncode}")
 
         # Fetch CI logs
         log("DEBUG", "  Fetching CI run info")
