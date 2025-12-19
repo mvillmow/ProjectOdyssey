@@ -138,10 +138,68 @@ def run(
 _external_issue_cache: dict[int, bool] = {}  # issue_num -> is_closed
 
 
+def prefetch_issue_states(issue_nums: list[int]) -> None:
+    """Batch fetch issue states using GraphQL to populate cache.
+
+    This reduces API calls when checking multiple external dependencies.
+    """
+    # Filter to issues not already cached
+    to_fetch = [n for n in issue_nums if n not in _external_issue_cache]
+    if not to_fetch:
+        return
+
+    log("DEBUG", f"Prefetching states for {len(to_fetch)} external issues...")
+
+    # Build GraphQL query
+    repo_owner = "mvillmow"
+    repo_name = "ProjectOdyssey"
+
+    # Batch in groups of 50
+    batch_size = 50
+    for i in range(0, len(to_fetch), batch_size):
+        batch = to_fetch[i : i + batch_size]
+
+        fragments = []
+        for j, num in enumerate(batch):
+            fragments.append(f"issue{j}: issue(number: {num}) {{ number state }}")
+
+        query = f"""
+        query {{
+          repository(owner: "{repo_owner}", name: "{repo_name}") {{
+            {chr(10).join(fragments)}
+          }}
+        }}
+        """
+
+        cp = run(["gh", "api", "graphql", "-f", f"query={query}"])
+        if cp.returncode == 0:
+            try:
+                data = json.loads(cp.stdout)
+                repo_data = data.get("data", {}).get("repository", {})
+                for j, num in enumerate(batch):
+                    issue_data = repo_data.get(f"issue{j}")
+                    if issue_data:
+                        is_closed = issue_data.get("state", "OPEN").upper() == "CLOSED"
+                        _external_issue_cache[num] = is_closed
+                    else:
+                        _external_issue_cache[num] = False
+            except (json.JSONDecodeError, KeyError):
+                # Mark all as not closed on parse error
+                for num in batch:
+                    if num not in _external_issue_cache:
+                        _external_issue_cache[num] = False
+        else:
+            # Mark all as not closed on API error
+            for num in batch:
+                if num not in _external_issue_cache:
+                    _external_issue_cache[num] = False
+
+
 def is_issue_closed(issue_num: int) -> bool:
     """Check if an external issue is closed via GitHub API.
 
     Results are cached to avoid repeated API calls.
+    Use prefetch_issue_states() first for batch operations.
     """
     if issue_num in _external_issue_cache:
         return _external_issue_cache[issue_num]
@@ -911,15 +969,62 @@ class IssueImplementer:
             break
         return cp
 
+    def _fetch_issues_batch(self, issue_nums: list[int]) -> dict[int, dict]:
+        """Fetch multiple issues in one GraphQL query.
+
+        Returns dict mapping issue number to {title, state} or empty dict on error.
+        """
+        if not issue_nums:
+            return {}
+
+        # Build GraphQL query for batch fetch
+        # GitHub GraphQL allows fetching multiple nodes by ID
+        repo_owner = "mvillmow"
+        repo_name = "ProjectOdyssey"
+
+        # Build query fragments for each issue
+        fragments = []
+        for i, num in enumerate(issue_nums):
+            fragments.append(f"issue{i}: issue(number: {num}) {{ number title state }}")
+
+        query = f"""
+        query {{
+          repository(owner: "{repo_owner}", name: "{repo_name}") {{
+            {chr(10).join(fragments)}
+          }}
+        }}
+        """
+
+        cp = self._gh_call(["gh", "api", "graphql", "-f", f"query={query}"])
+        if cp.returncode != 0:
+            log("DEBUG", f"GraphQL batch fetch failed: {cp.stderr}")
+            return {}
+
+        try:
+            data = json.loads(cp.stdout)
+            repo_data = data.get("data", {}).get("repository", {})
+            result = {}
+            for i, num in enumerate(issue_nums):
+                issue_data = repo_data.get(f"issue{i}")
+                if issue_data:
+                    result[num] = {
+                        "title": issue_data.get("title", f"Issue #{num}"),
+                        "state": issue_data.get("state", "OPEN"),
+                    }
+            return result
+        except (json.JSONDecodeError, KeyError) as e:
+            log("DEBUG", f"Failed to parse GraphQL response: {e}")
+            return {}
+
     def _fetch_issue_title(self, issue_num: int) -> str:
-        """Fetch title for a single issue (rate-limited)."""
+        """Fetch title for a single issue (fallback, rate-limited)."""
         cp = self._gh_call(["gh", "issue", "view", str(issue_num), "--json", "title"])
         if cp.returncode == 0:
             return json.loads(cp.stdout).get("title", f"Issue #{issue_num}")
         return f"Issue #{issue_num}"
 
     def fetch_titles_for_issues(self, issue_nums: list[int]) -> None:
-        """Fetch titles for a list of issues (rate-limited, with progress)."""
+        """Fetch titles for a list of issues using batched GraphQL queries."""
         if not issue_nums:
             return
 
@@ -929,12 +1034,27 @@ class IssueImplementer:
             return
 
         log("INFO", f"Fetching titles for {len(to_fetch)} issues...")
-        for idx, issue_num in enumerate(to_fetch, 1):
-            if idx % 5 == 0 or idx == len(to_fetch):
-                print(f"\r  Fetching: {idx}/{len(to_fetch)}", end="", flush=True)
-            title = self._fetch_issue_title(issue_num)
-            if issue_num in self.state.issues:
-                self.state.issues[issue_num].title = title
+
+        # Batch fetch in groups of 50 (GraphQL limit is higher but be conservative)
+        batch_size = 50
+        fetched = 0
+        for i in range(0, len(to_fetch), batch_size):
+            batch = to_fetch[i : i + batch_size]
+            results = self._fetch_issues_batch(batch)
+
+            for issue_num in batch:
+                if issue_num in results:
+                    if issue_num in self.state.issues:
+                        self.state.issues[issue_num].title = results[issue_num]["title"]
+                else:
+                    # Fallback to individual fetch if batch missed this one
+                    title = self._fetch_issue_title(issue_num)
+                    if issue_num in self.state.issues:
+                        self.state.issues[issue_num].title = title
+
+            fetched += len(batch)
+            print(f"\r  Fetched: {fetched}/{len(to_fetch)}", end="", flush=True)
+
         print()  # Newline after progress
 
     def parse_epic(self, epic_number: int) -> dict[int, IssueInfo]:
@@ -1903,6 +2023,13 @@ Examples:
     # Create resolver
     resolver = DependencyResolver(state.issues)
     resolver.initialize_from_state(state)
+
+    # Prefetch external issue states to avoid individual API calls
+    all_external = set()
+    for info in state.issues.values():
+        all_external.update(info.depends_on - set(state.issues.keys()))
+    if all_external:
+        prefetch_issue_states(list(all_external))
 
     # Handle analyze mode
     if opts.analyze:
