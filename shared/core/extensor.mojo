@@ -2932,6 +2932,123 @@ fn full_like(tensor: ExTensor, fill_value: Float64) raises -> ExTensor:
     return full(shape, fill_value, dtype)
 
 
+fn nan_tensor(shape: List[Int], dtype: DType) raises -> ExTensor:
+    """Create a tensor filled with NaN values.
+
+    Args:
+            shape: The shape of the output tensor.
+            dtype: The data type of tensor elements (must be floating-point).
+
+    Returns:
+            A new ExTensor filled with NaN values.
+
+    Raises:
+            Error: If dtype is not floating-point, or if tensor size exceeds MAX_TENSOR_BYTES.
+
+    Examples:
+        ```
+        var t = nan_tensor([3, 4], DType.float32)
+        # Creates 3x4 tensor filled with NaN
+        ```
+    """
+    # Only floating-point types support NaN
+    if (
+        dtype != DType.float16
+        and dtype != DType.float32
+        and dtype != DType.float64
+    ):
+        raise Error("nan_tensor: only floating-point dtypes support NaN")
+
+    var tensor = ExTensor(shape, dtype)
+
+    # Fill tensor with NaN values
+    # IEEE 754 NaN is represented as 0.0 / 0.0
+    var nan_value = 0.0 / 0.0
+
+    for i in range(tensor.numel()):
+        tensor._set_float64(i, nan_value)
+
+    return tensor^
+
+
+fn inf_tensor(shape: List[Int], dtype: DType) raises -> ExTensor:
+    """Create a tensor filled with positive infinity values.
+
+    Args:
+            shape: The shape of the output tensor.
+            dtype: The data type of tensor elements (must be floating-point).
+
+    Returns:
+            A new ExTensor filled with positive infinity values.
+
+    Raises:
+            Error: If dtype is not floating-point, or if tensor size exceeds MAX_TENSOR_BYTES.
+
+    Examples:
+        ```
+        var t = inf_tensor([3, 4], DType.float32)
+        # Creates 3x4 tensor filled with +inf
+        ```
+    """
+    # Only floating-point types support Inf
+    if (
+        dtype != DType.float16
+        and dtype != DType.float32
+        and dtype != DType.float64
+    ):
+        raise Error("inf_tensor: only floating-point dtypes support Inf")
+
+    var tensor = ExTensor(shape, dtype)
+
+    # Fill tensor with +inf values
+    # IEEE 754 +Inf is represented as 1.0 / 0.0
+    var inf_value = 1.0 / 0.0
+
+    for i in range(tensor.numel()):
+        tensor._set_float64(i, inf_value)
+
+    return tensor^
+
+
+fn neg_inf_tensor(shape: List[Int], dtype: DType) raises -> ExTensor:
+    """Create a tensor filled with negative infinity values.
+
+    Args:
+            shape: The shape of the output tensor.
+            dtype: The data type of tensor elements (must be floating-point).
+
+    Returns:
+            A new ExTensor filled with negative infinity values.
+
+    Raises:
+            Error: If dtype is not floating-point, or if tensor size exceeds MAX_TENSOR_BYTES.
+
+    Examples:
+        ```
+        var t = neg_inf_tensor([3, 4], DType.float32)
+        # Creates 3x4 tensor filled with -inf
+        ```
+    """
+    # Only floating-point types support Inf
+    if (
+        dtype != DType.float16
+        and dtype != DType.float32
+        and dtype != DType.float64
+    ):
+        raise Error("neg_inf_tensor: only floating-point dtypes support Inf")
+
+    var tensor = ExTensor(shape, dtype)
+
+    # Fill tensor with -inf values
+    # IEEE 754 -Inf is represented as -1.0 / 0.0
+    var neg_inf_value = -1.0 / 0.0
+
+    for i in range(tensor.numel()):
+        tensor._set_float64(i, neg_inf_value)
+
+    return tensor^
+
+
 fn randn(shape: List[Int], dtype: DType, seed: Int = 0) raises -> ExTensor:
     """Create tensor filled with random values from standard normal distribution.
 

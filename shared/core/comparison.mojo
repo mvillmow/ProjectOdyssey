@@ -81,6 +81,10 @@ fn _dispatch_compare_equal(
         _compare_equal_impl[DType.int64](
             result, a, b, strides_a, strides_b, result_shape, total_elems
         )
+    elif dtype == DType.bool:
+        _compare_equal_impl[DType.bool](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
     else:
         raise Error("equal: unsupported dtype")
 
@@ -151,6 +155,10 @@ fn _dispatch_compare_not_equal(
         )
     elif dtype == DType.int64:
         _compare_not_equal_impl[DType.int64](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.bool:
+        _compare_not_equal_impl[DType.bool](
             result, a, b, strides_a, strides_b, result_shape, total_elems
         )
     else:
@@ -225,6 +233,10 @@ fn _dispatch_compare_less(
         _compare_less_impl[DType.int64](
             result, a, b, strides_a, strides_b, result_shape, total_elems
         )
+    elif dtype == DType.bool:
+        _compare_less_impl[DType.bool](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
     else:
         raise Error("less: unsupported dtype")
 
@@ -295,6 +307,10 @@ fn _dispatch_compare_less_equal(
         )
     elif dtype == DType.int64:
         _compare_less_equal_impl[DType.int64](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
+    elif dtype == DType.bool:
+        _compare_less_equal_impl[DType.bool](
             result, a, b, strides_a, strides_b, result_shape, total_elems
         )
     else:
@@ -369,6 +385,10 @@ fn _dispatch_compare_greater(
         _compare_greater_impl[DType.int64](
             result, a, b, strides_a, strides_b, result_shape, total_elems
         )
+    elif dtype == DType.bool:
+        _compare_greater_impl[DType.bool](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
     else:
         raise Error("greater: unsupported dtype")
 
@@ -441,12 +461,39 @@ fn _dispatch_compare_greater_equal(
         _compare_greater_equal_impl[DType.int64](
             result, a, b, strides_a, strides_b, result_shape, total_elems
         )
+    elif dtype == DType.bool:
+        _compare_greater_equal_impl[DType.bool](
+            result, a, b, strides_a, strides_b, result_shape, total_elems
+        )
     else:
         raise Error("greater_equal: unsupported dtype")
 
 
 fn equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise equality comparison with broadcasting.
+
+    Performs exact equality comparison on all supported dtypes. Follows IEEE 754
+    semantics for floating-point comparisons:
+    - NaN != NaN (per IEEE 754 standard)
+    - Positive infinity == positive infinity
+    - Negative infinity == negative infinity
+    - Subnormal numbers are compared exactly
+
+    Note on Precision:
+    For floating-point dtypes, equality uses exact binary comparison, not
+    tolerance-based comparison. This means that values that are mathematically
+    equal but have different floating-point representations will compare as
+    unequal. For tolerance-based comparison, users should implement
+    custom logic using subtraction and comparison with a tolerance threshold.
+
+    Example (precision loss):
+        ```mojo
+        # These may not be equal due to floating-point arithmetic
+        var x = full([3], 0.1, DType.float32)
+        var y = divide(full([3], 1.0, DType.float32),
+                       full([3], 10.0, DType.float32))
+        var result = equal(x, y)  # May contain False values due to rounding
+        ```
 
     Args:
         a: First tensor.

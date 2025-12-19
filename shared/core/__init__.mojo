@@ -124,6 +124,9 @@ from .extensor import (
     ones_like,
     zeros_like,
     full_like,
+    nan_tensor,
+    inf_tensor,
+    neg_inf_tensor,
 )
 
 # ============================================================================

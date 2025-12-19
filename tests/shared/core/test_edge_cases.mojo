@@ -13,6 +13,9 @@ from shared.core import (
     ones,
     full,
     arange,
+    nan_tensor,
+    inf_tensor,
+    neg_inf_tensor,
     add,
     subtract,
     multiply,
@@ -36,6 +39,7 @@ from tests.shared.conftest import (
     assert_value_at,
     assert_all_values,
     assert_equal_int,
+    assert_true,
 )
 
 
@@ -150,44 +154,42 @@ fn test_large_dimension_count() raises:
 
 fn test_nan_propagation_add() raises:
     """Test that NaN propagates through addition."""
-    var shape = [3]
-    # var a = full(shape, Float32.nan, DType.float32)  # TODO(#2723): Create NaN tensor
-    # var b = ones(shape, DType.float32)
-    # var c = add(a, b)
+    var shape = List[Int]()
+    shape.append(3)
+    var a = nan_tensor(shape, DType.float32)
+    var b = ones(shape, DType.float32)
+    var c = add(a, b)
 
     # NaN + x = NaN
-    # for i in range(3):
-    #     varval = c._get_float64(i)
-    #     assert_true(isnan(val), "NaN should propagate through addition")
-    pass  # Placeholder until NaN support is added
+    for i in range(3):
+        var val = c._get_float64(i)
+        assert_true(isnan(val), "NaN should propagate through addition")
 
 
 fn test_nan_propagation_multiply() raises:
     """Test that NaN propagates through multiplication."""
     var shape = List[Int]()
     shape.append(3)
-    # var a = full(shape, Float32.nan, DType.float32)
-    # var b = full(shape, 0.0, DType.float32)
-    # var c = multiply(a, b)
+    var a = nan_tensor(shape, DType.float32)
+    var b = zeros(shape, DType.float32)
+    var c = multiply(a, b)
 
     # NaN * 0 = NaN (not 0!)
-    # for i in range(3):
-    #     varval = c._get_float64(i)
-    #     assert_true(isnan(val), "NaN * 0 should be NaN")
-    pass  # Placeholder
+    for i in range(3):
+        var val = c._get_float64(i)
+        assert_true(isnan(val), "NaN * 0 should be NaN")
 
 
 fn test_nan_equality() raises:
     """Test NaN equality (NaN != NaN per IEEE 754)."""
     var shape = List[Int]()
     shape.append(1)
-    # var a = full(shape, Float32.nan, DType.float32)
-    # var b = full(shape, Float32.nan, DType.float32)
-    # var c = equal(a, b)  # TODO(#2723): Implement equal()
+    var a = nan_tensor(shape, DType.float32)
+    var b = nan_tensor(shape, DType.float32)
+    var c = equal(a, b)
 
     # IEEE 754: NaN != NaN
-    # assert_value_at(c, 0, 0.0, 1e-8, "NaN != NaN should be False")
-    pass  # Placeholder
+    assert_value_at(c, 0, 0.0, 1e-8, "NaN != NaN should be False")
 
 
 # ============================================================================
@@ -199,73 +201,68 @@ fn test_inf_arithmetic() raises:
     """Test arithmetic with infinity."""
     var shape = List[Int]()
     shape.append(3)
-    # var a = full(shape, Float32.infinity, DType.float32)
-    # var b = full(shape, 1.0, DType.float32)
-    # var c = add(a, b)
+    var a = inf_tensor(shape, DType.float32)
+    var b = full(shape, 1.0, DType.float32)
+    var c = add(a, b)
 
     # inf + 1 = inf
-    # for i in range(3):
-    #     varval = c._get_float64(i)
-    #     assert_true(isinf(val), "inf + 1 should be inf")
-    pass  # Placeholder
+    for i in range(3):
+        var val = c._get_float64(i)
+        assert_true(isinf(val), "inf + 1 should be inf")
 
 
 fn test_inf_multiplication() raises:
     """Test infinity multiplication."""
     var shape = List[Int]()
     shape.append(3)
-    # var a = full(shape, Float32.infinity, DType.float32)
-    # var b = full(shape, 2.0, DType.float32)
-    # var c = multiply(a, b)
+    var a = inf_tensor(shape, DType.float32)
+    var b = full(shape, 2.0, DType.float32)
+    var c = multiply(a, b)
 
     # inf * 2 = inf
-    # for i in range(3):
-    #     varval = c._get_float64(i)
-    #     assert_true(isinf(val), "inf * 2 should be inf")
-    pass  # Placeholder
+    for i in range(3):
+        var val = c._get_float64(i)
+        assert_true(isinf(val), "inf * 2 should be inf")
 
 
 fn test_inf_times_zero() raises:
     """Test infinity times zero (should give NaN)."""
     var shape = List[Int]()
     shape.append(3)
-    # var a = full(shape, Float32.infinity, DType.float32)
-    # var b = zeros(shape, DType.float32)
-    # var c = multiply(a, b)
+    var a = inf_tensor(shape, DType.float32)
+    var b = zeros(shape, DType.float32)
+    var c = multiply(a, b)
 
     # inf * 0 = NaN (indeterminate form)
-    # for i in range(3):
-    #     varval = c._get_float64(i)
-    #     assert_true(isnan(val), "inf * 0 should be NaN")
-    pass  # Placeholder
+    for i in range(3):
+        var val = c._get_float64(i)
+        assert_true(isnan(val), "inf * 0 should be NaN")
 
 
 fn test_negative_inf() raises:
     """Test negative infinity."""
     var shape = List[Int]()
     shape.append(3)
-    # var a = full(shape, -Float32.infinity, DType.float32)
-    # var b = full(shape, 1.0, DType.float32)
-    # var c = add(a, b)
+    var a = neg_inf_tensor(shape, DType.float32)
+    var b = full(shape, 1.0, DType.float32)
+    var c = add(a, b)
 
     # -inf + 1 = -inf
-    # for i in range(3):
-    #     varval = c._get_float64(i)
-    #     assert_true(isinf(val) and val < 0, "-inf + 1 should be -inf")
-    pass  # Placeholder
+    for i in range(3):
+        var val = c._get_float64(i)
+        assert_true(isinf(val) and val < 0, "-inf + 1 should be -inf")
 
 
 fn test_inf_comparison() raises:
     """Test comparison with infinity."""
     var shape = List[Int]()
     shape.append(3)
-    # var a = full(shape, 1000000.0, DType.float32)
-    # var b = full(shape, Float32.infinity, DType.float32)
-    # var c = less(a, b)  # TODO(#2723): Implement less()
+    var a = full(shape, 1000000.0, DType.float32)
+    var b = inf_tensor(shape, DType.float32)
+    var c = less(a, b)
 
     # 1e6 < inf should be True
-    # assert_all_values(c, 1.0, 1e-8, "Finite < inf should be True")
-    pass  # Placeholder
+    assert_all_values(c, 1.0, 1e-8, "Finite < inf should be True")
 
 
 # ============================================================================
@@ -278,15 +275,14 @@ fn test_overflow_float32() raises:
     var shape = List[Int]()
     shape.append(2)
     # Create values close to float32 max
-    # var a = full(shape, 1e38, DType.float32)
-    # var b = full(shape, 1e38, DType.float32)
-    # var c = add(a, b)
+    var a = full(shape, 1e38, DType.float32)
+    var b = full(shape, 1e38, DType.float32)
+    var c = add(a, b)
 
     # Result should be infinity
-    # for i in range(2):
-    #     varval = c._get_float64(i)
-    #     assert_true(isinf(val), "Overflow should give infinity")
-    pass  # Placeholder
+    for i in range(2):
+        var val = c._get_float64(i)
+        assert_true(isinf(val), "Overflow should give infinity")
 
 
 fn test_overflow_int32() raises:
@@ -313,13 +309,12 @@ fn test_underflow_float64() raises:
     var shape = List[Int]()
     shape.append(2)
     # Create very small values
-    # var a = full(shape, 1e-300, DType.float64)
-    # var b = full(shape, 1e-100, DType.float64)
-    # var c = multiply(a, b)
+    var a = full(shape, 1e-300, DType.float64)
+    var b = full(shape, 1e-100, DType.float64)
+    var c = multiply(a, b)
 
     # Result may underflow to 0 (gradual underflow)
-    # assert_all_values(c, 0.0, 1e-320, "Underflow should give 0")
-    pass  # Placeholder
+    assert_all_values(c, 0.0, 1e-320, "Underflow should give 0")
 
 
 # ============================================================================
@@ -651,13 +646,15 @@ fn test_bool_dtype_operations() raises:
     """Test operations on bool dtype tensors."""
     var shape = List[Int]()
     shape.append(5)
-    var a = ones(shape, DType.bool)  # All True
-    var b = zeros(shape, DType.bool)  # All False
+    var a = ones(shape, DType.bool)  # All True (1)
+    var b = zeros(shape, DType.bool)  # All False (0)
 
-    # TODO(#2723): Test bool-specific operations (and, or, xor, not)
-    # var c = bitwise_and(a, b)  # Should be all False
-    # assert_all_values(c, 0.0, 1e-8, "True AND False should be False")
-    pass  # Placeholder
+    # Test equality comparison with bool dtypes
+    var c = equal(a, a)  # Should be all True
+    assert_all_values(c, 1.0, 1e-8, "True == True should be True")
+
+    var d = equal(a, b)  # Should be all False
+    assert_all_values(d, 0.0, 1e-8, "True == False should be False")
 
 
 fn test_int8_range() raises:
