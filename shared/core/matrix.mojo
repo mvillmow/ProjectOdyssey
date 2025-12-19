@@ -1062,10 +1062,23 @@ fn matmul_backward(
 
         return GradientPair(grad_a, grad_b)
 
-    # Handle 2D @ 2D and batched cases
-    # For C = A @ B, the gradients are:
-    # grad_a = grad_output @ B^T
-    # grad_b = A^T @ grad_output
+    # Handle 2D @ 2D case using specialized implementations
+    if a_ndim == 2 and b_ndim == 2:
+        var grad_out_rows = grad_output.shape()[0]
+        var grad_out_cols = grad_output.shape()[1]
+        var a_rows = a.shape()[0]
+        var a_cols = a.shape()[1]
+        var b_rows = b.shape()[0]
+
+        var grad_a = ExTensor(a.shape(), a.dtype())
+        var grad_b = ExTensor(b.shape(), b.dtype())
+
+        _dispatch_matmul_2d_2d_grad_a(grad_a, grad_output, b, grad_out_rows, grad_out_cols, b_rows)
+        _dispatch_matmul_2d_2d_grad_b(grad_b, a, grad_output, a_rows, a_cols, grad_out_cols)
+
+        return GradientPair(grad_a, grad_b)
+
+    # Handle batched cases (3D+)
     var b_t = transpose(b)
     var a_t = transpose(a)
 
