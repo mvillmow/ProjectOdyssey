@@ -1428,6 +1428,10 @@ class IssueImplementer:
             line_count = 0
 
             with log_file.open("w") as log_handle:
+                last_meaningful_line = ""
+                last_update_time = time.time()
+                update_interval = 0.5  # Update at most every 0.5 seconds
+
                 for line in proc.stdout:
                     if time.time() > deadline:
                         proc.kill()
@@ -1438,18 +1442,22 @@ class IssueImplementer:
                     output_lines.append(line)
                     line_count += 1
 
-                    # In verbose mode, print Claude output (but not too much)
-                    if self.opts.verbose:
-                        # Print significant lines
-                        stripped = line.strip()
-                        if stripped and not stripped.startswith("{") and len(stripped) < 200:
+                    # Extract meaningful output lines for status display
+                    stripped = line.strip()
+                    if stripped and not stripped.startswith("{") and len(stripped) < 200:
+                        # Clean up the line for display
+                        display_line = stripped[:60]
+                        last_meaningful_line = display_line
+
+                        # In verbose mode, print Claude output
+                        if self.opts.verbose:
                             print(f"    [Claude] {stripped[:100]}", flush=True)
 
-                    # Update status based on output patterns
-                    if "Editing" in line or "Writing" in line:
-                        self._update_status(slot, issue, "Claude", "editing")
-                    elif "Running" in line or "Bash" in line:
-                        self._update_status(slot, issue, "Claude", "running cmd")
+                    # Update status with throttling (at most every update_interval seconds)
+                    now = time.time()
+                    if last_meaningful_line and (now - last_update_time >= update_interval):
+                        self._update_status(slot, issue, "Claude", last_meaningful_line)
+                        last_update_time = now
 
             proc.wait()
             log("DEBUG", f"  Claude finished with {line_count} lines, exit code {proc.returncode}")
