@@ -259,11 +259,17 @@ fn divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
     Raises:
         Error: If shapes are not broadcast-compatible or dtypes don't match.
 
-    Note:
+    Note on Floating-Point Division:
         Division by zero follows IEEE 754 semantics for floating-point types:
         - x / 0.0 where x > 0 -> +inf
         - x / 0.0 where x < 0 -> -inf
         - 0.0 / 0.0 -> NaN
+
+    Note on Integer Division:
+        For integer dtypes, division by zero results in undefined behavior
+        (may produce errors, wrap-around, or saturate depending on the
+        underlying platform and Mojo implementation). Users should validate
+        that divisors are non-zero before dividing integer tensors.
 
     Examples:
         ```
