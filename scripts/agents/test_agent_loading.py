@@ -22,27 +22,13 @@ from typing import Dict, List, Optional, Tuple
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from common import get_agents_dir
 
-from agent_utils import extract_frontmatter_raw
+from agent_utils import AgentInfo, extract_frontmatter_parsed, find_agent_files
 
 try:
     import yaml
 except ImportError:
     print("Error: PyYAML is required. Install with: pip install pyyaml", file=sys.stderr)
     sys.exit(1)
-
-
-class AgentInfo:
-    """Information about an agent configuration."""
-
-    def __init__(self, file_path: Path, name: str, description: str, tools: str, model: str):
-        self.file_path = file_path
-        self.name = name
-        self.description = description
-        self.tools = tools
-        self.model = model
-
-    def __repr__(self):
-        return f"AgentInfo(name={self.name}, file={self.file_path.name})"
 
 
 
@@ -64,18 +50,13 @@ def load_agent(file_path: Path, verbose: bool = False) -> Optional[AgentInfo]:
         print(f"✗ {file_path.name}: Failed to read file - {e}", file=sys.stderr)
         return None
 
-    # Extract frontmatter
-    frontmatter_text = extract_frontmatter_raw(content)
-    if frontmatter_text is None:
-        print(f"✗ {file_path.name}: No YAML frontmatter found", file=sys.stderr)
+    # Extract and parse frontmatter
+    result = extract_frontmatter_parsed(content)
+    if result is None:
+        print(f"✗ {file_path.name}: No YAML frontmatter found or invalid YAML", file=sys.stderr)
         return None
 
-    # Parse YAML
-    try:
-        frontmatter = yaml.safe_load(frontmatter_text)
-    except yaml.YAMLError as e:
-        print(f"✗ {file_path.name}: YAML syntax error - {e}", file=sys.stderr)
-        return None
+    frontmatter_text, frontmatter = result
 
     if not isinstance(frontmatter, dict):
         print(f"✗ {file_path.name}: Frontmatter is not a YAML mapping", file=sys.stderr)
@@ -105,7 +86,7 @@ def load_agent(file_path: Path, verbose: bool = False) -> Optional[AgentInfo]:
     if verbose:
         print(f"✓ {file_path.name}: Loaded agent '{name}'")
 
-    return AgentInfo(file_path, name, description, tools, model)
+    return AgentInfo(file_path, frontmatter)
 
 
 def check_for_duplicates(agents: List[AgentInfo]) -> List[Tuple[str, List[Path]]]:
@@ -145,8 +126,8 @@ def test_agent_discovery(agents_dir: Path, verbose: bool = False) -> Tuple[List[
     """
     errors = []
 
-    # Find all markdown files
-    agent_files = sorted(agents_dir.glob('*.md'))
+    # Find all markdown files using shared utility
+    agent_files = find_agent_files(agents_dir)
 
     if not agent_files:
         errors.append(f"No .md files found in {agents_dir}")
@@ -198,9 +179,9 @@ def display_agents(agents: List[AgentInfo]):
 
     # Print each agent
     for agent in sorted(agents, key=lambda a: a.name):
-        tools_list = agent.tools.split(',')[:3]  # First 3 tools
-        tools_display = ','.join(t.strip() for t in tools_list)
-        if len(agent.tools.split(',')) > 3:
+        tools_list = agent.get_tools_list()[:3]  # First 3 tools
+        tools_display = ','.join(tools_list)
+        if len(agent.get_tools_list()) > 3:
             tools_display += ',...'
 
         print(f"{agent.name:<{max_name_len}}  "
