@@ -590,3 +590,642 @@ fn min_reduce_backward(
         ```
     """
     return reduce_backward[MinBackwardOp](grad_output, x, axis)
+
+
+# ============================================================================
+# Statistical Reduction Operations
+# ============================================================================
+
+
+fn variance(tensor: ExTensor, axis: Int = -1, ddof: Int = 0) raises -> ExTensor:
+    """Compute variance of tensor elements along an axis.
+
+    Variance measures how spread out values are from the mean.
+    Formula: var = sum((x - mean)^2) / (N - ddof)
+
+    Args:
+        tensor: Input tensor.
+        axis: Axis to reduce (-1 for all axes).
+        ddof: Delta degrees of freedom (0=population variance, 1=sample variance).
+
+    Returns:
+        A new tensor with variance along specified axis.
+
+    Examples:
+        ```
+            var t = tensor([1.0, 2.0, 3.0])
+            var v = variance(t, axis=-1, ddof=0)  # Population variance: 2/3
+            var s = variance(t, axis=-1, ddof=1)  # Sample variance: 1.0
+        ```
+    """
+    # Compute mean using existing mean() function
+    var mu = mean(tensor, axis)
+
+    if axis == -1:
+        # Variance of all elements
+        var result_shape = List[Int]()
+        var result = ExTensor(result_shape, tensor.dtype())
+
+        var mean_val = mu._get_float64(0)
+        var N = tensor.numel()
+        var sum_sq_diff = 0.0
+
+        for i in range(N):
+            var diff = tensor._get_float64(i) - mean_val
+            sum_sq_diff += diff * diff
+
+        var var_val = sum_sq_diff / Float64(N - ddof)
+        result._set_float64(0, var_val)
+        return result^
+    else:
+        # Variance along specific axis
+        if axis < 0 or axis >= tensor.dim():
+            raise Error(
+                "Axis "
+                + String(axis)
+                + " is out of bounds for tensor with "
+                + String(tensor.dim())
+                + " dimensions"
+            )
+
+        var result_shape = build_reduced_shape(tensor.shape(), axis, False)
+        var result = ExTensor(result_shape, tensor.dtype())
+
+        var sizes = compute_axis_strides(tensor.shape(), axis)
+        var outer_size = sizes[0]
+        var axis_size = sizes[1]
+        var inner_size = sizes[2]
+
+        for outer in range(outer_size):
+            for inner in range(inner_size):
+                # Get mean for this slice
+                var mean_idx = outer * inner_size + inner
+                var mean_val = mu._get_float64(mean_idx)
+
+                # Compute sum of squared differences
+                var sum_sq_diff = 0.0
+                for k in range(axis_size):
+                    var input_idx = (
+                        outer * axis_size * inner_size + k * inner_size + inner
+                    )
+                    var diff = tensor._get_float64(input_idx) - mean_val
+                    sum_sq_diff += diff * diff
+
+                var var_val = sum_sq_diff / Float64(axis_size - ddof)
+                result._set_float64(mean_idx, var_val)
+
+        return result^
+
+
+fn variance_backward(
+    grad_output: ExTensor, x: ExTensor, axis: Int = -1, ddof: Int = 0
+) raises -> ExTensor:
+    """Compute gradient for variance reduction.
+
+    For Y = variance(X, axis, ddof), given ∂L/∂Y, computes:
+        ∂L/∂X = 2 * (x - mean) / (N - ddof) * ∂L/∂Y
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor.
+        x: Original input tensor before reduction.
+        axis: Axis along which variance was computed (-1 for all axes).
+        ddof: Delta degrees of freedom used in variance.
+
+    Returns:
+        Gradient w.r.t. input (∂L/∂X).
+    """
+    var input_shape = x.shape()
+    var result = ExTensor(input_shape, grad_output.dtype())
+
+    # Compute mean (needed for gradient)
+    var mu = mean(x, axis)
+
+    if axis == -1:
+        # All elements reduced
+        var mean_val = mu._get_float64(0)
+        var grad_val = grad_output._get_float64(0)
+        var N = x.numel()
+        var scale = 2.0 / Float64(N - ddof)
+
+        for i in range(x.numel()):
+            var diff = x._get_float64(i) - mean_val
+            var grad = diff * scale * grad_val
+            result._set_float64(i, grad)
+    else:
+        # Per-axis gradient computation
+        var sizes = compute_axis_strides(input_shape, axis)
+        var outer_size = sizes[0]
+        var axis_size = sizes[1]
+        var inner_size = sizes[2]
+        var scale = 2.0 / Float64(axis_size - ddof)
+
+        for outer in range(outer_size):
+            for inner in range(inner_size):
+                var grad_idx = outer * inner_size + inner
+                var mean_val = mu._get_float64(grad_idx)
+                var grad_val = grad_output._get_float64(grad_idx)
+
+                for k in range(axis_size):
+                    var input_idx = (
+                        outer * axis_size * inner_size + k * inner_size + inner
+                    )
+                    var diff = x._get_float64(input_idx) - mean_val
+                    var grad = diff * scale * grad_val
+                    result._set_float64(input_idx, grad)
+
+    return result^
+
+
+fn std(tensor: ExTensor, axis: Int = -1, ddof: Int = 0) raises -> ExTensor:
+    """Compute standard deviation of tensor elements along an axis.
+
+    Standard deviation is the square root of variance.
+    Formula: std = sqrt(variance)
+
+    Args:
+        tensor: Input tensor.
+        axis: Axis to reduce (-1 for all axes).
+        ddof: Delta degrees of freedom (0=population, 1=sample).
+
+    Returns:
+        A new tensor with standard deviation along specified axis.
+
+    Examples:
+        ```
+            var t = tensor([1.0, 2.0, 3.0])
+            var s = std(t, axis=-1, ddof=0)  # sqrt(2/3) ≈ 0.8165
+        ```
+    """
+    from math import sqrt
+
+    var var_result = variance(tensor, axis, ddof)
+
+    # Apply sqrt element-wise
+    for i in range(var_result.numel()):
+        var val = var_result._get_float64(i)
+        var std_val = sqrt(val) if val >= 0.0 else 0.0
+        var_result._set_float64(i, std_val)
+
+    return var_result^
+
+
+fn std_backward(
+    grad_output: ExTensor, x: ExTensor, axis: Int = -1, ddof: Int = 0
+) raises -> ExTensor:
+    """Compute gradient for std reduction.
+
+    For Y = std(X, axis, ddof), given ∂L/∂Y, computes:
+        ∂L/∂X = (x - mean) / ((N - ddof) * std) * ∂L/∂Y
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor.
+        x: Original input tensor before reduction.
+        axis: Axis along which std was computed (-1 for all axes).
+        ddof: Delta degrees of freedom used in std.
+
+    Returns:
+        Gradient w.r.t. input (∂L/∂X).
+    """
+    var input_shape = x.shape()
+    var result = ExTensor(input_shape, grad_output.dtype())
+    var mu = mean(x, axis)
+    var sigma = std(x, axis, ddof)
+
+    alias EPSILON = 1e-8  # Prevent division by zero
+
+    if axis == -1:
+        var mean_val = mu._get_float64(0)
+        var std_val = sigma._get_float64(0)
+        var grad_val = grad_output._get_float64(0)
+        var N = x.numel()
+        var denom = Float64(N - ddof) * (std_val + EPSILON)
+
+        for i in range(x.numel()):
+            var diff = x._get_float64(i) - mean_val
+            var grad = (diff / denom) * grad_val
+            result._set_float64(i, grad)
+    else:
+        var sizes = compute_axis_strides(input_shape, axis)
+        var outer_size = sizes[0]
+        var axis_size = sizes[1]
+        var inner_size = sizes[2]
+
+        for outer in range(outer_size):
+            for inner in range(inner_size):
+                var grad_idx = outer * inner_size + inner
+                var mean_val = mu._get_float64(grad_idx)
+                var std_val = sigma._get_float64(grad_idx)
+                var grad_val = grad_output._get_float64(grad_idx)
+                var denom = Float64(axis_size - ddof) * (std_val + EPSILON)
+
+                for k in range(axis_size):
+                    var input_idx = (
+                        outer * axis_size * inner_size + k * inner_size + inner
+                    )
+                    var diff = x._get_float64(input_idx) - mean_val
+                    var grad = (diff / denom) * grad_val
+                    result._set_float64(input_idx, grad)
+
+    return result^
+
+
+fn median(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
+    """Compute median of tensor elements along an axis.
+
+    For odd count: returns the middle value after sorting.
+    For even count: returns the average of the two middle values.
+
+    Args:
+        tensor: Input tensor.
+        axis: Axis to reduce (-1 for all axes).
+
+    Returns:
+        A new tensor with median along specified axis.
+
+    Examples:
+        ```
+            var t = tensor([3.0, 1.0, 4.0, 2.0, 5.0])
+            var m = median(t, axis=-1)  # 3.0 (middle of sorted)
+        ```
+    """
+    if axis == -1:
+        # Median of all elements
+        var result_shape = List[Int]()
+        var result = ExTensor(result_shape, tensor.dtype())
+
+        # Collect all values
+        var N = tensor.numel()
+        var values = List[Float64]()
+        for i in range(N):
+            values.append(tensor._get_float64(i))
+
+        # Sort using bubble sort
+        for i in range(N):
+            for j in range(0, N - i - 1):
+                if values[j] > values[j + 1]:
+                    var temp = values[j]
+                    values[j] = values[j + 1]
+                    values[j + 1] = temp
+
+        var median_val: Float64
+        if N % 2 == 1:
+            median_val = values[N // 2]
+        else:
+            median_val = (values[N // 2 - 1] + values[N // 2]) / 2.0
+
+        result._set_float64(0, median_val)
+        return result^
+    else:
+        # Median along specific axis
+        if axis < 0 or axis >= tensor.dim():
+            raise Error(
+                "Axis "
+                + String(axis)
+                + " is out of bounds for tensor with "
+                + String(tensor.dim())
+                + " dimensions"
+            )
+
+        var result_shape = build_reduced_shape(tensor.shape(), axis, False)
+        var result = ExTensor(result_shape, tensor.dtype())
+
+        var sizes = compute_axis_strides(tensor.shape(), axis)
+        var outer_size = sizes[0]
+        var axis_size = sizes[1]
+        var inner_size = sizes[2]
+
+        for outer in range(outer_size):
+            for inner in range(inner_size):
+                # Collect values along axis
+                var values = List[Float64]()
+                for k in range(axis_size):
+                    var input_idx = (
+                        outer * axis_size * inner_size + k * inner_size + inner
+                    )
+                    values.append(tensor._get_float64(input_idx))
+
+                # Sort
+                for i in range(axis_size):
+                    for j in range(0, axis_size - i - 1):
+                        if values[j] > values[j + 1]:
+                            var temp = values[j]
+                            values[j] = values[j + 1]
+                            values[j + 1] = temp
+
+                var median_val: Float64
+                if axis_size % 2 == 1:
+                    median_val = values[axis_size // 2]
+                else:
+                    median_val = (
+                        values[axis_size // 2 - 1] + values[axis_size // 2]
+                    ) / 2.0
+
+                var result_idx = outer * inner_size + inner
+                result._set_float64(result_idx, median_val)
+
+        return result^
+
+
+fn median_backward(
+    grad_output: ExTensor, x: ExTensor, axis: Int = -1
+) raises -> ExTensor:
+    """Compute gradient for median (subgradient).
+
+    Gradient flows only to the median element(s).
+    For even count, gradient is split between two middle elements.
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor.
+        x: Original input tensor before reduction.
+        axis: Axis along which median was computed (-1 for all axes).
+
+    Returns:
+        Gradient w.r.t. input (∂L/∂X).
+    """
+    var input_shape = x.shape()
+    var result = ExTensor(input_shape, x.dtype())
+    result._fill_zero()  # Initialize all gradients to 0
+
+    if axis == -1:
+        var grad_val = grad_output._get_float64(0)
+        var N = x.numel()
+
+        # Collect values with their indices and sort
+        var values = List[Float64]()
+        var indices = List[Int]()
+        for i in range(N):
+            values.append(x._get_float64(i))
+            indices.append(i)
+
+        # Sort by value (bubble sort, keeping indices aligned)
+        for i in range(N):
+            for j in range(0, N - i - 1):
+                if values[j] > values[j + 1]:
+                    var temp_val = values[j]
+                    values[j] = values[j + 1]
+                    values[j + 1] = temp_val
+                    var temp_idx = indices[j]
+                    indices[j] = indices[j + 1]
+                    indices[j + 1] = temp_idx
+
+        if N % 2 == 1:
+            # Odd count: gradient to single median element
+            var mid_input_idx = indices[N // 2]
+            result._set_float64(mid_input_idx, grad_val)
+        else:
+            # Even count: split gradient between two middle elements
+            var lower_input_idx = indices[N // 2 - 1]
+            var upper_input_idx = indices[N // 2]
+            result._set_float64(lower_input_idx, grad_val / 2.0)
+            result._set_float64(upper_input_idx, grad_val / 2.0)
+    else:
+        # Per-axis backward
+        var sizes = compute_axis_strides(input_shape, axis)
+        var outer_size = sizes[0]
+        var axis_size = sizes[1]
+        var inner_size = sizes[2]
+
+        for outer in range(outer_size):
+            for inner in range(inner_size):
+                var grad_idx = outer * inner_size + inner
+                var grad_val = grad_output._get_float64(grad_idx)
+
+                # Collect values with their indices along axis
+                var values = List[Float64]()
+                var indices = List[Int]()
+                for k in range(axis_size):
+                    var input_idx = (
+                        outer * axis_size * inner_size + k * inner_size + inner
+                    )
+                    values.append(x._get_float64(input_idx))
+                    indices.append(input_idx)
+
+                # Sort by value
+                for i in range(axis_size):
+                    for j in range(0, axis_size - i - 1):
+                        if values[j] > values[j + 1]:
+                            var temp_val = values[j]
+                            values[j] = values[j + 1]
+                            values[j + 1] = temp_val
+                            var temp_idx = indices[j]
+                            indices[j] = indices[j + 1]
+                            indices[j + 1] = temp_idx
+
+                if axis_size % 2 == 1:
+                    var mid_input_idx = indices[axis_size // 2]
+                    result._set_float64(mid_input_idx, grad_val)
+                else:
+                    var lower_input_idx = indices[axis_size // 2 - 1]
+                    var upper_input_idx = indices[axis_size // 2]
+                    result._set_float64(lower_input_idx, grad_val / 2.0)
+                    result._set_float64(upper_input_idx, grad_val / 2.0)
+
+    return result^
+
+
+fn percentile(tensor: ExTensor, q: Float64, axis: Int = -1) raises -> ExTensor:
+    """Compute percentile of tensor elements along an axis.
+
+    Uses linear interpolation between adjacent ranked values.
+    q=0 returns minimum, q=50 returns median, q=100 returns maximum.
+
+    Args:
+        tensor: Input tensor.
+        q: Percentile to compute (must be in range [0, 100]).
+        axis: Axis to reduce (-1 for all axes).
+
+    Returns:
+        A new tensor with percentile along specified axis.
+
+    Examples:
+        ```
+            var t = tensor([1.0, 2.0, 3.0, 4.0, 5.0])
+            var p50 = percentile(t, 50.0, axis=-1)  # 3.0 (median)
+            var p0 = percentile(t, 0.0, axis=-1)    # 1.0 (min)
+            var p100 = percentile(t, 100.0, axis=-1) # 5.0 (max)
+        ```
+    """
+    if q < 0.0 or q > 100.0:
+        raise Error("percentile: q must be in range [0, 100], got " + String(q))
+
+    if axis == -1:
+        var result_shape = List[Int]()
+        var result = ExTensor(result_shape, tensor.dtype())
+
+        var N = tensor.numel()
+        var values = List[Float64]()
+        for i in range(N):
+            values.append(tensor._get_float64(i))
+
+        # Sort
+        for i in range(N):
+            for j in range(0, N - i - 1):
+                if values[j] > values[j + 1]:
+                    var temp = values[j]
+                    values[j] = values[j + 1]
+                    values[j + 1] = temp
+
+        # Linear interpolation
+        var position = Float64(N - 1) * q / 100.0
+        var lower_idx = Int(position)
+        var upper_idx = lower_idx + 1
+        if upper_idx >= N:
+            upper_idx = N - 1
+        var fraction = position - Float64(lower_idx)
+
+        var pct_val = (
+            values[lower_idx] * (1.0 - fraction) + values[upper_idx] * fraction
+        )
+        result._set_float64(0, pct_val)
+        return result^
+    else:
+        if axis < 0 or axis >= tensor.dim():
+            raise Error(
+                "Axis "
+                + String(axis)
+                + " is out of bounds for tensor with "
+                + String(tensor.dim())
+                + " dimensions"
+            )
+
+        var result_shape = build_reduced_shape(tensor.shape(), axis, False)
+        var result = ExTensor(result_shape, tensor.dtype())
+
+        var sizes = compute_axis_strides(tensor.shape(), axis)
+        var outer_size = sizes[0]
+        var axis_size = sizes[1]
+        var inner_size = sizes[2]
+
+        for outer in range(outer_size):
+            for inner in range(inner_size):
+                var values = List[Float64]()
+                for k in range(axis_size):
+                    var input_idx = (
+                        outer * axis_size * inner_size + k * inner_size + inner
+                    )
+                    values.append(tensor._get_float64(input_idx))
+
+                # Sort
+                for i in range(axis_size):
+                    for j in range(0, axis_size - i - 1):
+                        if values[j] > values[j + 1]:
+                            var temp = values[j]
+                            values[j] = values[j + 1]
+                            values[j + 1] = temp
+
+                var position = Float64(axis_size - 1) * q / 100.0
+                var lower_idx = Int(position)
+                var upper_idx = lower_idx + 1
+                if upper_idx >= axis_size:
+                    upper_idx = axis_size - 1
+                var fraction = position - Float64(lower_idx)
+
+                var pct_val = (
+                    values[lower_idx] * (1.0 - fraction)
+                    + values[upper_idx] * fraction
+                )
+                var result_idx = outer * inner_size + inner
+                result._set_float64(result_idx, pct_val)
+
+        return result^
+
+
+fn percentile_backward(
+    grad_output: ExTensor, x: ExTensor, q: Float64, axis: Int = -1
+) raises -> ExTensor:
+    """Compute gradient for percentile.
+
+    Distributes gradient to the interpolated elements proportionally.
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor.
+        x: Original input tensor before reduction.
+        q: Percentile that was computed.
+        axis: Axis along which percentile was computed (-1 for all axes).
+
+    Returns:
+        Gradient w.r.t. input (∂L/∂X).
+    """
+    var input_shape = x.shape()
+    var result = ExTensor(input_shape, x.dtype())
+    result._fill_zero()
+
+    if axis == -1:
+        var grad_val = grad_output._get_float64(0)
+        var N = x.numel()
+
+        # Sort with indices
+        var values = List[Float64]()
+        var indices = List[Int]()
+        for i in range(N):
+            values.append(x._get_float64(i))
+            indices.append(i)
+
+        for i in range(N):
+            for j in range(0, N - i - 1):
+                if values[j] > values[j + 1]:
+                    var temp_val = values[j]
+                    values[j] = values[j + 1]
+                    values[j + 1] = temp_val
+                    var temp_idx = indices[j]
+                    indices[j] = indices[j + 1]
+                    indices[j + 1] = temp_idx
+
+        var position = Float64(N - 1) * q / 100.0
+        var lower_sorted_idx = Int(position)
+        var upper_sorted_idx = lower_sorted_idx + 1
+        if upper_sorted_idx >= N:
+            upper_sorted_idx = N - 1
+        var fraction = position - Float64(lower_sorted_idx)
+
+        var lower_input_idx = indices[lower_sorted_idx]
+        var upper_input_idx = indices[upper_sorted_idx]
+
+        result._set_float64(lower_input_idx, (1.0 - fraction) * grad_val)
+        result._set_float64(upper_input_idx, fraction * grad_val)
+    else:
+        var sizes = compute_axis_strides(input_shape, axis)
+        var outer_size = sizes[0]
+        var axis_size = sizes[1]
+        var inner_size = sizes[2]
+
+        for outer in range(outer_size):
+            for inner in range(inner_size):
+                var grad_idx = outer * inner_size + inner
+                var grad_val = grad_output._get_float64(grad_idx)
+
+                var values = List[Float64]()
+                var indices = List[Int]()
+                for k in range(axis_size):
+                    var input_idx = (
+                        outer * axis_size * inner_size + k * inner_size + inner
+                    )
+                    values.append(x._get_float64(input_idx))
+                    indices.append(input_idx)
+
+                for i in range(axis_size):
+                    for j in range(0, axis_size - i - 1):
+                        if values[j] > values[j + 1]:
+                            var temp_val = values[j]
+                            values[j] = values[j + 1]
+                            values[j + 1] = temp_val
+                            var temp_idx = indices[j]
+                            indices[j] = indices[j + 1]
+                            indices[j + 1] = temp_idx
+
+                var position = Float64(axis_size - 1) * q / 100.0
+                var lower_sorted_idx = Int(position)
+                var upper_sorted_idx = lower_sorted_idx + 1
+                if upper_sorted_idx >= axis_size:
+                    upper_sorted_idx = axis_size - 1
+                var fraction = position - Float64(lower_sorted_idx)
+
+                var lower_input_idx = indices[lower_sorted_idx]
+                var upper_input_idx = indices[upper_sorted_idx]
+
+                result._set_float64(
+                    lower_input_idx, (1.0 - fraction) * grad_val
+                )
+                result._set_float64(upper_input_idx, fraction * grad_val)
+
+    return result^
