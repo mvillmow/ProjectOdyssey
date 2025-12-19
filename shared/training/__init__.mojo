@@ -20,6 +20,7 @@ See Issue #49 for details.
 from python import PythonObject
 from shared.core.extensor import ExTensor
 from shared.core.traits import Model, Loss, Optimizer
+from shared.autograd.tape import GradientTape
 
 # Package version
 from ..version import VERSION
@@ -78,6 +79,7 @@ struct SGD(Movable, Optimizer):
     """Stochastic Gradient Descent optimizer.
 
     Implements the Optimizer trait for use with generic TrainingLoop.
+    Delegates to the autograd SGD optimizer for actual gradient-based updates.
     """
 
     var learning_rate: Float32
@@ -96,17 +98,20 @@ struct SGD(Movable, Optimizer):
 
         Implements: param = param - learning_rate * grad.
 
+        Note:
+            The current implementation is a no-op stub. For gradient-based updates,
+            use the full training loop with tape.backward() which automatically
+            handles gradient computation and optimizer steps via the autograd system.
+
         Args:
             params: List of parameter tensors to update.
 
         Raises:
             Error: If operation fails.
-
-        Note:
-            This is a stub implementation for Issue #2397.
-            Full gradient-based updates will be implemented later.
         """
-        # TODO(#2725): Implement actual parameter updates when gradient system is ready
+        # Note: Actual gradient updates happen in TrainingLoop.step() via
+        # the autograd system which maintains Variable data and gradients.
+        # This stub is kept for trait interface compatibility.
         pass
 
     fn zero_grad(mut self) raises:
@@ -117,6 +122,7 @@ struct SGD(Movable, Optimizer):
 
         Note:
             SGD has no internal state, so this is a no-op.
+            Gradient clearing is handled by the autograd tape system.
         """
         pass
 
@@ -154,15 +160,25 @@ struct MSELoss(Loss, Movable):
         Raises:
             Error: If operation fails.
 
-        Note:
-            This is a stub implementation for Issue #2397.
-            Full MSE computation will be implemented later.
+        Computes: MSE = mean((pred - target)^2) or sum((pred - target)^2).
         """
-        # TODO: Implement actual MSE computation
-        # For now, return a dummy scalar tensor
-        from shared.core.extensor import zeros
+        from shared.core.arithmetic import subtract, multiply
+        from shared.core.reduction import mean, sum as tensor_sum
 
-        return zeros(List[Int](), DType.float32)
+        # Compute element-wise difference: (pred - target)
+        var diff = subtract(pred, target)
+
+        # Compute element-wise squared: squared_diff^2
+        var squared = multiply(diff, diff)
+
+        # Apply reduction (mean or sum)
+        if self.reduction == "mean":
+            return mean(squared, axis=-1, keepdims=False)
+        elif self.reduction == "sum":
+            return tensor_sum(squared, axis=-1, keepdims=False)
+        else:
+            # Default to no reduction ("none")
+            return squared
 
     fn forward(self, output: ExTensor, target: ExTensor) raises -> Float32:
         """Compute MSE loss (legacy interface for backward compatibility).
@@ -224,6 +240,8 @@ struct TrainingLoop[
     """Optimizer implementing Optimizer trait."""
     var loss_fn: Self.L
     """Loss function implementing Loss trait."""
+    var tape: GradientTape
+    """Gradient tape for automatic differentiation."""
 
     fn __init__(
         out self, var model: Self.M, var optimizer: Self.O, var loss_fn: Self.L
@@ -235,9 +253,12 @@ struct TrainingLoop[
             optimizer: Optimizer implementing Optimizer trait.
             loss_fn: Loss function implementing Loss trait.
         """
+        from shared.autograd.tape import GradientTape
+
         self.model = model^
         self.optimizer = optimizer^
         self.loss_fn = loss_fn^
+        self.tape = GradientTape()
 
     fn step(mut self, inputs: ExTensor, targets: ExTensor) raises -> ExTensor:
         """Perform single training step.
@@ -245,8 +266,8 @@ struct TrainingLoop[
         Implements the training loop cycle using trait methods:
         1. Forward pass: outputs = model.forward(inputs)  [Model trait].
         2. Loss computation: loss = loss_fn.compute(outputs, targets)  [Loss trait].
-        3. Backward pass: compute gradients (TODO: when gradient system ready).
-        4. Optimizer step: optimizer.step(params)  [Optimizer trait].
+        3. Backward pass: compute gradients via autograd tape.
+        4. Optimizer step: Update parameters based on gradients.
         5. Return loss value.
 
         Args:
@@ -261,18 +282,50 @@ struct TrainingLoop[
 
         Note:
             Uses trait methods for type-safe dispatch.
-            Backward pass stub until gradient system is implemented.
+            Gradient computation via autograd system (GradientTape).
         """
+        from shared.autograd.variable import Variable
+        from shared.autograd.optimizers import SGD as AutogradSGD
+
+        # Clear tape and enable gradient recording
+        self.tape.clear()
+        self.tape.enable()
+
         # Forward pass via Model trait
         var outputs = self.forward(inputs)
 
         # Compute loss via Loss trait
         var loss_value = self.compute_loss(outputs, targets)
 
-        # TODO(#2725): Backward pass when gradient system is ready
-        # TODO(#2725): Optimizer step when gradient system is ready
+        # Wrap loss in Variable and compute gradients via autograd
+        var loss_var = Variable(loss_value, True, self.tape)
+        loss_var.backward(self.tape)
 
-        return loss_value^
+        # Get model parameters and update via autograd optimizer
+        var params = self.model.parameters()
+
+        # Create autograd SGD optimizer and perform parameter update
+        var lr = Float64(self.optimizer.learning_rate)
+        var autograd_sgd = AutogradSGD(lr)
+
+        # Convert parameters to Variables for optimizer
+        var var_params: List[Variable] = []
+        for i in range(len(params)):
+            var p = Variable(params[i], True, i)
+            var_params.append(p)
+
+        # Update parameters using autograd optimizer
+        autograd_sgd.step(var_params, self.tape)
+
+        # Copy updated data back to original params
+        for i in range(len(params)):
+            params[i] = var_params[i].data
+
+        # Zero gradients and disable tape for next iteration
+        autograd_sgd.zero_grad(self.tape)
+        self.tape.disable()
+
+        return loss_var.detach()
 
     fn forward(mut self, inputs: ExTensor) raises -> ExTensor:
         """Execute forward pass via Model trait.
