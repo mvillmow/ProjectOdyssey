@@ -14,6 +14,7 @@ from shared.data import (
     TransformedDataset,
 )
 from shared.data.prefetch import PrefetchBuffer, PrefetchDataLoader
+from shared.data.loaders import Batch
 from shared.core.extensor import ExTensor, ones, zeros
 from collections import List
 

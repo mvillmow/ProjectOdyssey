@@ -89,12 +89,12 @@ fn test_cached_dataset_cache_hit() raises:
     var cached = CachedDataset(base_dataset^, max_cache_size=-1)
 
     # First access - cache miss
-    var _ = cached[0]
+    var _d1, _l1 = cached[0]
     assert_equal(cached.cache_hits, 0)
     assert_equal(cached.cache_misses, 1)
 
     # Second access - cache hit
-    var _ = cached[0]
+    var _d2, _l2 = cached[0]
     assert_equal(cached.cache_hits, 1)
     assert_equal(cached.cache_misses, 1)
 
@@ -115,7 +115,7 @@ fn test_cached_dataset_max_cache_size() raises:
 
     # Access 5 samples
     for i in range(5):
-        var _ = cached[i]
+        var _d, _l = cached[i]
 
     # Cache size should be limited to 3
     assert_equal(cached.cache.__len__(), 3)
@@ -135,7 +135,7 @@ fn test_cached_dataset_disabled_cache() raises:
     var base_dataset = ExTensorDataset(data^, labels^)
     var cached = CachedDataset(base_dataset^, max_cache_size=-1, cache_enabled=False)
 
-    var _ = cached[0]
+    var _d, _l = cached[0]
 
     # Cache should be empty
     assert_true(cached.cache.__len__() == 0)
@@ -176,7 +176,7 @@ fn test_cached_dataset_clear_cache() raises:
     var cached = CachedDataset(base_dataset^, max_cache_size=-1)
 
     # Add to cache
-    var _ = cached[0]
+    var _d, _l = cached[0]
     assert_equal(cached.cache.__len__(), 1)
 
     # Clear
@@ -228,8 +228,8 @@ fn test_cached_dataset_hit_rate() raises:
     assert_equal(cached.get_hit_rate(), Float32(0.0))
 
     # 2 accesses to same sample - 1 hit, 1 miss
-    var _ = cached[0]
-    var _ = cached[0]
+    var _d1, _l1 = cached[0]
+    var _d2, _l2 = cached[0]
 
     var hit_rate = cached.get_hit_rate()
     assert_almost_equal(hit_rate, Float32(0.5), Float32(0.01))
@@ -249,8 +249,8 @@ fn test_cached_dataset_get_stats() raises:
     var base_dataset = ExTensorDataset(data^, labels^)
     var cached = CachedDataset(base_dataset^, max_cache_size=-1)
 
-    var _ = cached[0]
-    var _ = cached[0]
+    var _d1, _l1 = cached[0]
+    var _d2, _l2 = cached[0]
 
     var cache_size, hits, misses = cached.get_cache_stats()
 
