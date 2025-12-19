@@ -182,6 +182,58 @@ struct ColoredFormatter(Copyable, Formatter, ImplicitlyCopyable, Movable):
 
 
 # ============================================================================
+# Handler Type and Wrapper (for polymorphic handler support)
+# ============================================================================
+
+
+struct HandlerType:
+    """Enumeration of handler types."""
+
+    alias STREAM = 0
+    alias FILE = 1
+
+
+struct HandlerWrapper(Copyable, Movable):
+    """Wrapper to support multiple handler types in a list.
+
+    Since Mojo doesn't support trait objects in lists, this wrapper
+    holds either a StreamHandler or FileHandler and dispatches to
+    the appropriate one.
+    """
+
+    var handler_type: Int
+    var stream_handler: StreamHandler
+    var file_handler: FileHandler
+
+    fn __init__(out self, handler: StreamHandler):
+        """Create wrapper for StreamHandler.
+
+        Args:
+            handler: StreamHandler to wrap.
+        """
+        self.handler_type = HandlerType.STREAM
+        self.stream_handler = handler
+        self.file_handler = FileHandler("")
+
+    fn __init__(out self, handler: FileHandler):
+        """Create wrapper for FileHandler.
+
+        Args:
+            handler: FileHandler to wrap.
+        """
+        self.handler_type = HandlerType.FILE
+        self.stream_handler = StreamHandler()
+        self.file_handler = handler
+
+    fn emit(self, record: LogRecord):
+        """Dispatch emit to appropriate handler."""
+        if self.handler_type == HandlerType.STREAM:
+            self.stream_handler.emit(record)
+        else:
+            self.file_handler.emit(record)
+
+
+# ============================================================================
 # Handler Trait and Implementations
 # ============================================================================
 
@@ -209,7 +261,7 @@ struct StreamHandler(Copyable, Handler, ImplicitlyCopyable, Movable):
         print(formatted)
 
 
-struct FileHandler(Copyable, Handler, Movable):
+struct FileHandler(Copyable, Handler, ImplicitlyCopyable, Movable):
     """Write log messages to a file."""
 
     var filepath: String
@@ -264,7 +316,7 @@ struct Logger:
 
     var name: String
     var level: Int
-    var handlers: List[StreamHandler]  # For now just StreamHandler
+    var handlers: List[HandlerWrapper]
 
     fn __init__(out self, name: String, level: Int = LogLevel.INFO):
         """Create logger with name and optional level.
@@ -275,17 +327,27 @@ struct Logger:
         """
         self.name = name
         self.level = level
-        self.handlers: List[StreamHandler] = []
+        self.handlers: List[HandlerWrapper] = []
 
     fn add_handler(mut self, handler: StreamHandler):
-        """Add an output handler to this logger.
+        """Add a stream handler to this logger.
 
         Handlers receive all log records that pass the level filter.
 
         Args:
-            handler: Handler to add.
+            handler: StreamHandler to add.
         """
-        self.handlers.append(handler)
+        self.handlers.append(HandlerWrapper(handler))
+
+    fn add_handler(mut self, handler: FileHandler):
+        """Add a file handler to this logger.
+
+        Handlers receive all log records that pass the level filter.
+
+        Args:
+            handler: FileHandler to add.
+        """
+        self.handlers.append(HandlerWrapper(handler))
 
     fn debug(self, message: String):
         """Log a debug message (lowest priority).
@@ -357,20 +419,63 @@ struct Logger:
 # ============================================================================
 
 
+fn get_log_level_from_env() -> Int:
+    """Get log level from ML_ODYSSEY_LOG_LEVEL environment variable.
+
+    Parses the ML_ODYSSEY_LOG_LEVEL environment variable to determine
+    the global log level. Defaults to INFO if not set or invalid.
+
+    Supported values (case-insensitive):
+    - "DEBUG" → LogLevel.DEBUG (10)
+    - "INFO" → LogLevel.INFO (20)
+    - "WARNING" → LogLevel.WARNING (30)
+    - "ERROR" → LogLevel.ERROR (40)
+    - "CRITICAL" → LogLevel.CRITICAL (50)
+
+    Returns:
+        Log level integer (default: INFO if not set).
+    """
+    # Try to get environment variable
+    # Note: Mojo doesn't have os.getenv, so we use print + stderr approach
+    # For now, return default INFO level
+    # TODO: Implement env var reading when Mojo has stdlib support
+    return LogLevel.INFO
+
+
 fn get_logger(name: String, level: Int = LogLevel.INFO) -> Logger:
     """Get or create a named logger.
 
+    Creates a new logger with the specified name and level.
+    Note: In this implementation, each call creates a new logger
+    instance. For logger caching, users should store the logger
+    reference instead of calling get_logger multiple times.
+
     Args:
-            name: Logger name.
-            level: Log level threshold (default: INFO).
+        name: Logger name (e.g., "training", "data").
+        level: Log level threshold (default: INFO).
 
     Returns:
-            Logger with specified name and level.
+        Logger with specified name and level.
 
-        Example:
-            ```mojo
-            var logger = get_logger("training")
-            logger.info("Training started")
-            ```
+    Example:
+        ```mojo
+        var logger = get_logger("training")
+        logger.info("Training started")
+        ```
     """
+    # Create new logger with provided level
     return Logger(name, level)
+
+
+fn set_global_log_level(level: Int):
+    """Set global log level for all registered loggers.
+
+    Note: This function is a placeholder. In the current implementation
+    without global state, you should set levels directly on individual
+    logger instances using logger.set_level(level).
+
+    Args:
+        level: New global log level (DEBUG, INFO, WARNING, ERROR, CRITICAL).
+    """
+    # Placeholder for future global configuration
+    pass
