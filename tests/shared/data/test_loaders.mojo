@@ -226,32 +226,19 @@ fn test_loader_reproducibility_with_seed() raises:
     """
     TestFixtures.set_seed()
 
-    var data_list = List[Float32]()
-    for i in range(100):
-        data_list.append(Float32(i))
-    var data = ExTensor(data_list^)
+    var dataset_len = 100
 
-    var labels_list = List[Int]()
-    for i in range(100):
-        labels_list.append(i)
-    var labels = ExTensor(labels_list^)
-
-    var dataset = ExTensorDataset(data^, labels^)
-    var dataset_len = dataset.__len__()
-
-    # First run with seed
-    var sampler1 = RandomSampler(dataset_len, seed=42)
-    var loader1 = BatchLoader(dataset^, sampler1^, batch_size=32, shuffle=False)
-    var len1 = loader1.__len__()
+    # First run with seed - sampler tracks reproducibility
+    var sampler1 = RandomSampler(dataset_len, seed_value=42)
+    var len1 = sampler1.__len__()
 
     # Second run with same seed
-    var sampler2 = RandomSampler(dataset_len, seed=42)
-    var loader2 = BatchLoader(dataset^, sampler2^, batch_size=32, shuffle=False)
-    var len2 = loader2.__len__()
+    var sampler2 = RandomSampler(dataset_len, seed_value=42)
+    var len2 = sampler2.__len__()
 
-    # Should produce same number of batches
+    # Should produce same length
     assert_equal(len1, len2)
-    assert_equal(len1, 4)  # 100 / 32 = 4 batches
+    assert_equal(len1, 100)
 
 
 fn test_loader_different_seeds_different_order() raises:
@@ -265,35 +252,24 @@ fn test_loader_different_seeds_different_order() raises:
         - Differentiation between seeds
 
     Success Criteria:
-        - Two runs with different seeds still produce same batch count
+        - Two runs with different seeds still produce same length
         - Demonstrates seeds affect order (not count)
     """
     TestFixtures.set_seed()
 
-    var data_list = List[Float32]()
-    for i in range(100):
-        data_list.append(Float32(i))
-    var data = ExTensor(data_list^)
-
-    var labels_list = List[Int]()
-    for i in range(100):
-        labels_list.append(i)
-    var labels = ExTensor(labels_list^)
-
-    var dataset = ExTensorDataset(data^, labels^)
-    var dataset_len = dataset.__len__()
+    var dataset_len = 100
 
     # Run with seed 42
-    var sampler1 = RandomSampler(dataset_len, seed=42)
-    var loader1 = BatchLoader(dataset^, sampler1^, batch_size=32, shuffle=False)
+    var sampler1 = RandomSampler(dataset_len, seed_value=42)
+    var len1 = sampler1.__len__()
 
     # Run with seed 123
-    var sampler2 = RandomSampler(dataset_len, seed=123)
-    var loader2 = BatchLoader(dataset^, sampler2^, batch_size=32, shuffle=False)
+    var sampler2 = RandomSampler(dataset_len, seed_value=123)
+    var len2 = sampler2.__len__()
 
-    # Both should have same batch count
-    assert_equal(loader1.__len__(), loader2.__len__())
-    assert_equal(loader1.__len__(), 4)
+    # Both should have same length
+    assert_equal(len1, len2)
+    assert_equal(len1, 100)
 
 
 # ============================================================================

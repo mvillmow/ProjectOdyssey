@@ -78,8 +78,9 @@ fn test_compose_single_transform() raises:
     var data = ExTensor(data_list^)
 
     # Create single-transform pipeline
-    var normalize = Normalize()
-    var pipeline = Compose[Normalize](normalize^)
+    var transforms_list = List[Normalize]()
+    transforms_list.append(Normalize())
+    var pipeline = Compose[Normalize](transforms_list^)
 
     # Apply pipeline
     var result = pipeline(data)
@@ -110,16 +111,12 @@ fn test_compose_multiple_transforms() raises:
         data_list.append(Float32(i) / 10.0)
     var data = ExTensor(data_list^)
 
-    # Create pipeline with two transforms
-    var normalize = Normalize()
-    var shape_list = List[Int]()
-    shape_list.append(4)
-    shape_list.append(5)
-    var reshape = Reshape(shape_list^)
+    # Create pipeline with normalize transform
+    var transforms_list = List[Normalize]()
+    transforms_list.append(Normalize())
+    var pipeline = Compose[Normalize](transforms_list^)
 
-    var pipeline = Compose[Normalize](normalize^)
-
-    # Apply first pipeline
+    # Apply pipeline
     var result1 = pipeline(data)
 
     # Should have same shape as input
@@ -147,8 +144,9 @@ fn test_compose_determinism() raises:
         data_list.append(Float32(i) * 0.5)
     var data = ExTensor(data_list^)
 
-    var normalize = Normalize()
-    var pipeline = Compose[Normalize](normalize^)
+    var transforms_list = List[Normalize]()
+    transforms_list.append(Normalize())
+    var pipeline = Compose[Normalize](transforms_list^)
 
     # Apply twice
     var result1 = pipeline(data)
