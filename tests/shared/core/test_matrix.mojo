@@ -1622,10 +1622,12 @@ fn main() raises:
     test_matmul_backward_shapes()
     print("✓ test_matmul_backward_shapes")
     # TODO(#2724): Fix matmul_backward gradient computation
-    # test_matmul_backward_gradient_a() and _b() have ~10000x gradient mismatch
-    # Analytical: ~1.5e-08, Numerical: ~-0.00015 - likely bug in backward pass
-    print("⚠ test_matmul_backward_gradient_a - SKIPPED (pending fix)")
-    print("⚠ test_matmul_backward_gradient_b - SKIPPED (pending fix)")
+    # test_matmul_backward_gradient_a() and _b() had ~10000x gradient mismatch
+    # Fixed by implementing direct matrix multiplication in backward pass
+    test_matmul_backward_gradient_a()
+    print("✓ test_matmul_backward_gradient_a")
+    test_matmul_backward_gradient_b()
+    print("✓ test_matmul_backward_gradient_b")
 
     # Matmul tests - matrix @ vector
     print("\n=== Matrix Multiplication: Matrix @ Vector ===")
