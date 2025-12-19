@@ -2514,9 +2514,14 @@ Examples:
 
         return 1 if any(r.status == "error" for r in results) else 0
 
-    # Run with curses UI
-    curses_ui = CursesUI(status_tracker, log_buffer, actual_workers)
-    exit_code = curses_ui.run(run_implementation)
+    # Run with curses UI if TTY available, otherwise run directly
+    if sys.stdout.isatty() and sys.stdin.isatty():
+        curses_ui = CursesUI(status_tracker, log_buffer, actual_workers)
+        exit_code = curses_ui.run(run_implementation)
+    else:
+        # Non-TTY mode: run directly without curses
+        log("INFO", "Non-TTY mode: running without curses UI")
+        exit_code = run_implementation()
 
     # Close and clear log buffer after curses exits
     log_buffer.close()
