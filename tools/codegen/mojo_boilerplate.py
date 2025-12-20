@@ -70,10 +70,8 @@ def generate_layer(layer_type: str, params: Dict[str, str]) -> str:
 
 def _generate_linear_layer(params: Dict[str, str]) -> str:
     """Generate a Linear (fully connected) layer."""
-    in_features = params.get("in_features", "in_features")
-    out_features = params.get("out_features", "out_features")
 
-    template = f"""struct LinearLayer:
+    template = """struct LinearLayer:
     var in_features: Int
     var out_features: Int
     var weights: Tensor[DType.float32]
@@ -96,11 +94,8 @@ def _generate_linear_layer(params: Dict[str, str]) -> str:
 
 def _generate_conv2d_layer(params: Dict[str, str]) -> str:
     """Generate a Conv2D layer."""
-    in_channels = params.get("in_channels", "in_channels")
-    out_channels = params.get("out_channels", "out_channels")
-    kernel_size = params.get("kernel_size", "3")
 
-    template = f"""struct Conv2DLayer:
+    template = """struct Conv2DLayer:
     var in_channels: Int
     var out_channels: Int
     var kernel_size: Int
@@ -125,38 +120,20 @@ def _generate_conv2d_layer(params: Dict[str, str]) -> str:
 
 def main() -> int:
     """Main CLI interface."""
-    parser = argparse.ArgumentParser(
-        description="Generate Mojo boilerplate code for common patterns"
-    )
+    parser = argparse.ArgumentParser(description="Generate Mojo boilerplate code for common patterns")
 
     subparsers = parser.add_subparsers(dest="command", help="Generation command")
 
     # Struct generation
     struct_parser = subparsers.add_parser("struct", help="Generate a struct")
     struct_parser.add_argument("name", help="Struct name")
-    struct_parser.add_argument(
-        "--fields",
-        nargs="+",
-        help="Fields as name:type pairs (e.g., x:Int y:Float64)"
-    )
-    struct_parser.add_argument(
-        "--no-init",
-        action="store_true",
-        help="Don't generate __init__ method"
-    )
+    struct_parser.add_argument("--fields", nargs="+", help="Fields as name:type pairs (e.g., x:Int y:Float64)")
+    struct_parser.add_argument("--no-init", action="store_true", help="Don't generate __init__ method")
 
     # Layer generation
     layer_parser = subparsers.add_parser("layer", help="Generate a neural network layer")
-    layer_parser.add_argument(
-        "layer_type",
-        choices=["Linear", "Conv2D"],
-        help="Layer type"
-    )
-    layer_parser.add_argument(
-        "--params",
-        nargs="+",
-        help="Layer parameters as key:value pairs"
-    )
+    layer_parser.add_argument("layer_type", choices=["Linear", "Conv2D"], help="Layer type")
+    layer_parser.add_argument("--params", nargs="+", help="Layer parameters as key:value pairs")
 
     args = parser.parse_args()
 

@@ -14,8 +14,6 @@ Coverage Target: >95%
 
 import pytest
 from pathlib import Path
-from typing import List
-from .conftest import MIN_DOC_LENGTH
 
 
 class TestREADME:
@@ -31,7 +29,6 @@ class TestREADME:
         readme = repo_root / "README.md"
 
         if not readme.exists():
-
             pytest.skip(f"Documentation file not created yet: {readme}")
         assert readme.exists(), "README.md should exist"
         assert readme.is_file(), "README.md should be a file"
@@ -49,9 +46,7 @@ class TestREADME:
 A Mojo-based AI research platform.
 """
         if not readme.exists():
-
             pytest.skip(f"Documentation file not created yet: {readme}")
-
 
         readme.write_text(content)
 
@@ -77,14 +72,12 @@ A Mojo-based AI research platform for reproducing classic papers.
 - Feature 2
 """
         if not readme.exists():
-
             pytest.skip(f"Documentation file not created yet: {readme}")
-
 
         readme.write_text(content)
 
         text = readme.read_text()
-        lines = [line for line in text.split('\n') if line.strip()]
+        lines = [line for line in text.split("\n") if line.strip()]
         assert len(lines) >= 3, "README should have description content"
 
     def test_readme_has_sections(self, repo_root: Path) -> None:
@@ -112,9 +105,7 @@ Quick start guide.
 Installation steps.
 """
         if not readme.exists():
-
             pytest.skip(f"Documentation file not created yet: {readme}")
-
 
         readme.write_text(content)
 
@@ -135,7 +126,6 @@ class TestQuickstart:
         quickstart = getting_started_dir / "quickstart.md"
 
         if not quickstart.exists():
-
             pytest.skip(f"Documentation file not created yet: {quickstart}")
         assert quickstart.exists(), "quickstart.md should exist"
         assert quickstart.is_file(), "quickstart.md should be a file"
@@ -153,9 +143,7 @@ class TestQuickstart:
 Get started quickly.
 """
         if not quickstart.exists():
-
             pytest.skip(f"Documentation file not created yet: {quickstart}")
-
 
         quickstart.write_text(content)
 
@@ -181,9 +169,7 @@ import ml_odyssey
 More examples.
 """
         if not quickstart.exists():
-
             pytest.skip(f"Documentation file not created yet: {quickstart}")
-
 
         quickstart.write_text(content)
 
@@ -204,7 +190,6 @@ class TestInstallation:
         installation = getting_started_dir / "installation.md"
 
         if not installation.exists():
-
             pytest.skip(f"Documentation file not created yet: {installation}")
         assert installation.exists(), "installation.md should exist"
         assert installation.is_file(), "installation.md should be a file"
@@ -222,9 +207,7 @@ class TestInstallation:
 How to install ML Odyssey.
 """
         if not installation.exists():
-
             pytest.skip(f"Documentation file not created yet: {installation}")
-
 
         installation.write_text(content)
 
@@ -252,9 +235,7 @@ Requirements.
 3. Step 3
 """
         if not installation.exists():
-
             pytest.skip(f"Documentation file not created yet: {installation}")
-
 
         installation.write_text(content)
 
@@ -292,9 +273,7 @@ class TestFirstPaper:
 Tutorial for first paper.
 """
         if not first_paper.exists():
-
             pytest.skip(f"Documentation file not created yet: {first_paper}")
-
 
         first_paper.write_text(content)
 
@@ -327,9 +306,7 @@ fn main():
 Where to go next.
 """
         if not first_paper.exists():
-
             pytest.skip(f"Documentation file not created yet: {first_paper}")
-
 
         first_paper.write_text(content)
 
@@ -352,7 +329,7 @@ class TestTier1Integration:
         # Create all Tier 1 documents
         gs_docs = ["quickstart.md", "installation.md", "first-paper.md"]
         for doc in gs_docs:
-            doc_path = (getting_started_dir / doc)
+            doc_path = getting_started_dir / doc
             if not doc_path.exists():
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
 
@@ -371,7 +348,7 @@ class TestTier1Integration:
         # Create all Tier 1 documents
         gs_docs = ["quickstart.md", "installation.md", "first-paper.md"]
         for doc in gs_docs:
-            doc_path = (getting_started_dir / doc)
+            doc_path = getting_started_dir / doc
             if not doc_path.exists():
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
 

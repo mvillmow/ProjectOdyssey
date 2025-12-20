@@ -17,11 +17,7 @@ import sys
 # Add tools directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "tools" / "paper-scaffold"))
 
-from validate import (
-    ValidationStatus,
-    PaperStructureValidator,
-    validate_paper_structure
-)
+from validate import ValidationStatus, validate_paper_structure
 
 
 class TestPaperNameNormalization:
@@ -30,26 +26,31 @@ class TestPaperNameNormalization:
     def test_normalize_simple_name(self):
         """Test simple name normalization."""
         from scaffold_enhanced import normalize_paper_name
+
         assert normalize_paper_name("LeNet-5") == "lenet-5"
 
     def test_normalize_with_spaces(self):
         """Test normalization with spaces."""
         from scaffold_enhanced import normalize_paper_name
+
         assert normalize_paper_name("LeNet 5") == "lenet-5"
 
     def test_normalize_with_special_chars(self):
         """Test normalization with special characters."""
         from scaffold_enhanced import normalize_paper_name
+
         assert normalize_paper_name("BERT: Pre-training") == "bert-pre-training"
 
     def test_normalize_consecutive_hyphens(self):
         """Test removal of consecutive hyphens."""
         from scaffold_enhanced import normalize_paper_name
+
         assert normalize_paper_name("GPT--2") == "gpt-2"
 
     def test_normalize_leading_trailing_hyphens(self):
         """Test removal of leading/trailing hyphens."""
         from scaffold_enhanced import normalize_paper_name
+
         assert normalize_paper_name("-AlexNet-") == "alexnet"
 
 
@@ -77,10 +78,10 @@ class TestDirectoryCreation:
                 "AUTHORS": "Test Author",
                 "YEAR": "2025",
                 "PAPER_URL": "http://example.com",
-                "DESCRIPTION": "Test description"
+                "DESCRIPTION": "Test description",
             },
             validate=False,
-            dry_run=True  # Don't actually create files
+            dry_run=True,  # Don't actually create files
         )
 
         assert result.success
@@ -97,11 +98,7 @@ class TestDirectoryCreation:
         paper_path.mkdir()
 
         # Run generator (should not fail on existing directory)
-        result = generator.generate(
-            paper_name="test-paper",
-            paper_metadata={},
-            validate=False
-        )
+        result = generator.generate(paper_name="test-paper", paper_metadata={}, validate=False)
 
         assert result.success
         assert paper_path in result.skipped_dirs
@@ -142,11 +139,7 @@ class TestFileGeneration:
         readme_path.write_text("Existing content")
 
         # Run generator
-        result = generator.generate(
-            paper_name="test-paper",
-            paper_metadata={},
-            validate=False
-        )
+        result = generator.generate(paper_name="test-paper", paper_metadata={}, validate=False)
 
         # File should be skipped, not overwritten
         assert readme_path in result.skipped_files or not readme_path.exists()
@@ -266,9 +259,9 @@ class TestEndToEnd:
                 "AUTHORS": "LeCun et al.",
                 "YEAR": "1998",
                 "PAPER_URL": "http://example.com",
-                "DESCRIPTION": "CNN for digit recognition"
+                "DESCRIPTION": "CNN for digit recognition",
             },
-            validate=True
+            validate=True,
         )
 
         # Check generation succeeded
@@ -287,11 +280,7 @@ class TestEndToEnd:
 
         generator = DirectoryGenerator(self.test_dir, verbose=False)
 
-        result = generator.generate(
-            paper_name="test-paper",
-            paper_metadata={},
-            dry_run=True
-        )
+        result = generator.generate(paper_name="test-paper", paper_metadata={}, dry_run=True)
 
         # Check nothing was actually created
         paper_path = self.test_dir / "test-paper"
@@ -312,7 +301,7 @@ class TestCLIArguments:
             [sys.executable, "tools/paper-scaffold/scaffold_enhanced.py", "--help"],
             capture_output=True,
             text=True,
-            cwd=Path(__file__).parent.parent.parent
+            cwd=Path(__file__).parent.parent.parent,
         )
 
         assert result.returncode == 0
@@ -335,15 +324,13 @@ class TestCLIArguments:
             [sys.executable, "tools/paper-scaffold/scaffold_enhanced.py", "--help"],
             capture_output=True,
             text=True,
-            cwd=Path(__file__).parent.parent.parent
+            cwd=Path(__file__).parent.parent.parent,
         )
 
         assert "--interactive" in result.stdout
 
     def test_paper_argument_optional(self):
         """Test --paper argument is optional (for interactive mode)."""
-        from scaffold_enhanced import main
-        import argparse
 
         # Verify argparse config allows missing --paper
         # This is indirectly tested by the help text not showing --paper as required
@@ -353,7 +340,7 @@ class TestCLIArguments:
             [sys.executable, "tools/paper-scaffold/scaffold_enhanced.py", "--help"],
             capture_output=True,
             text=True,
-            cwd=Path(__file__).parent.parent.parent
+            cwd=Path(__file__).parent.parent.parent,
         )
 
         # --paper should be optional (shown in [--paper PAPER] not just PAPER)
@@ -367,7 +354,7 @@ class TestCLIArguments:
             [sys.executable, "tools/paper-scaffold/scaffold_enhanced.py", "--help"],
             capture_output=True,
             text=True,
-            cwd=Path(__file__).parent.parent.parent
+            cwd=Path(__file__).parent.parent.parent,
         )
 
         assert "--dry-run" in result.stdout
@@ -381,7 +368,7 @@ class TestCLIArguments:
             [sys.executable, "tools/paper-scaffold/scaffold_enhanced.py", "--help"],
             capture_output=True,
             text=True,
-            cwd=Path(__file__).parent.parent.parent
+            cwd=Path(__file__).parent.parent.parent,
         )
 
         assert "--no-validate" in result.stdout
@@ -394,7 +381,7 @@ class TestCLIArguments:
             [sys.executable, "tools/paper-scaffold/scaffold_enhanced.py", "--help"],
             capture_output=True,
             text=True,
-            cwd=Path(__file__).parent.parent.parent
+            cwd=Path(__file__).parent.parent.parent,
         )
 
         assert "--quiet" in result.stdout
@@ -407,7 +394,7 @@ class TestCLIArguments:
             [sys.executable, "tools/paper-scaffold/scaffold_enhanced.py", "--help"],
             capture_output=True,
             text=True,
-            cwd=Path(__file__).parent.parent.parent
+            cwd=Path(__file__).parent.parent.parent,
         )
 
         assert "--output" in result.stdout
@@ -420,7 +407,7 @@ class TestCLIArguments:
             [sys.executable, "tools/paper-scaffold/scaffold_enhanced.py", "--help"],
             capture_output=True,
             text=True,
-            cwd=Path(__file__).parent.parent.parent
+            cwd=Path(__file__).parent.parent.parent,
         )
 
         assert "Examples:" in result.stdout
@@ -436,7 +423,7 @@ class TestCLIArguments:
             [sys.executable, "tools/paper-scaffold/scaffold_enhanced.py", "--help"],
             capture_output=True,
             text=True,
-            cwd=Path(__file__).parent.parent.parent
+            cwd=Path(__file__).parent.parent.parent,
         )
 
         # Default output should be papers/

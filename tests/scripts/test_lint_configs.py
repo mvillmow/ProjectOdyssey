@@ -64,6 +64,7 @@ training:
   epochs: 20
 """)
         result = linter.lint_file(yaml_file)
+        assert result is True
         # YAML parsers typically take the last value, but we should detect this
         assert len(linter.warnings) > 0 or len(linter.errors) > 0
 
@@ -92,6 +93,7 @@ class TestFormattingChecks:
         # Use actual tab character
         yaml_file.write_text("training:\n\tepochs: 10\n")
         result = linter.lint_file(yaml_file)
+        assert result is True
         # Should have warning or error about tabs
         assert len(linter.warnings) > 0 or len(linter.errors) > 0
         assert any("tab" in msg.lower() for msg in linter.warnings + linter.errors)
@@ -101,6 +103,7 @@ class TestFormattingChecks:
         yaml_file = temp_dir / "trailing.yaml"
         yaml_file.write_text("training:  \n  epochs: 10\n")
         result = linter.lint_file(yaml_file)
+        assert result is True
         # Should have warning about trailing whitespace
         assert len(linter.warnings) > 0
         assert any("trailing" in w.lower() or "whitespace" in w.lower() for w in linter.warnings)
@@ -118,6 +121,7 @@ optimizer:
   lr: 0.001
 """)
         result = linter.lint_file(yaml_file)
+        assert result is True
         # Should have warnings about deprecated keys
         assert len(linter.warnings) > 0
         deprecated_warnings = [w for w in linter.warnings if "deprecated" in w.lower()]
@@ -152,6 +156,7 @@ optimizer:
 """)
         result = linter.lint_file(yaml_file)
         assert result is True
+        assert result is True
 
     def test_missing_required_keys(self, linter, temp_dir):
         """Test detection of missing required keys."""
@@ -162,6 +167,7 @@ training:
   # missing batch_size
 """)
         result = linter.lint_file(yaml_file)
+        assert result is True
         # Should have error or warning about missing required key
         assert len(linter.errors) > 0 or len(linter.warnings) > 0
         assert any("batch_size" in msg.lower() for msg in linter.errors + linter.warnings)
@@ -296,6 +302,8 @@ class TestFileHandling:
         empty_file = temp_dir / "empty.yaml"
         empty_file.write_text("")
         result = linter.lint_file(empty_file)
+        assert result is True
+
         # Empty YAML is technically valid (null document)
         # Behavior depends on implementation
 
@@ -305,6 +313,7 @@ class TestFileHandling:
         text_file.write_text("not yaml content")
         # Should still try to parse as YAML
         result = linter.lint_file(text_file)
+        assert result is True
         # May pass if content happens to be valid YAML
 
 

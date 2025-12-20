@@ -16,17 +16,12 @@ Coverage Target: 100%
 import shutil
 from pathlib import Path
 
-import pytest
 
 
 class TestPapersSharedIntegration:
     """Test cases for papers and shared directory integration."""
 
-    def test_papers_can_reference_shared_paths(
-        self,
-        papers_dir: Path,
-        shared_dir: Path
-    ) -> None:
+    def test_papers_can_reference_shared_paths(self, papers_dir: Path, shared_dir: Path) -> None:
         """
         Test that papers can reference shared library paths.
 
@@ -44,20 +39,16 @@ class TestPapersSharedIntegration:
         assert shared_dir.exists(), "shared/ must exist"
 
         # Both should be at same level (siblings)
-        assert papers_dir.parent == shared_dir.parent, \
-            "papers/ and shared/ must be sibling directories"
+        assert papers_dir.parent == shared_dir.parent, "papers/ and shared/ must be sibling directories"
 
         # Path from papers to shared should be computable
         relative_path = Path("..") / "shared"
         shared_from_papers = papers_dir / relative_path
-        assert shared_from_papers.resolve() == shared_dir.resolve(), \
+        assert shared_from_papers.resolve() == shared_dir.resolve(), (
             "Relative path from papers to shared must resolve correctly"
+        )
 
-    def test_import_paths_resolve_correctly(
-        self,
-        papers_dir: Path,
-        shared_dir: Path
-    ) -> None:
+    def test_import_paths_resolve_correctly(self, papers_dir: Path, shared_dir: Path) -> None:
         """
         Test that import paths between papers and shared resolve.
 
@@ -76,14 +67,9 @@ class TestPapersSharedIntegration:
 
         for subdir in shared_subdirs:
             subdir_path = shared_dir / subdir
-            assert subdir_path.exists(), \
-                f"shared/{subdir}/ must be accessible from repository"
+            assert subdir_path.exists(), f"shared/{subdir}/ must be accessible from repository"
 
-    def test_no_circular_dependencies(
-        self,
-        papers_dir: Path,
-        shared_dir: Path
-    ) -> None:
+    def test_no_circular_dependencies(self, papers_dir: Path, shared_dir: Path) -> None:
         """
         Test that there are no circular dependencies.
 
@@ -102,20 +88,14 @@ class TestPapersSharedIntegration:
 
         # Papers are mentioned in documentation, but not as imports
         # Check for import-like references (would indicate circular dependency)
-        assert "from papers." not in content, \
-            "Shared library must not import from papers (circular dependency)"
-        assert "import papers." not in content, \
-            "Shared library must not import from papers (circular dependency)"
+        assert "from papers." not in content, "Shared library must not import from papers (circular dependency)"
+        assert "import papers." not in content, "Shared library must not import from papers (circular dependency)"
 
 
 class TestTemplateInstantiation:
     """Test cases for template instantiation workflow."""
 
-    def test_template_can_be_copied_to_papers_dir(
-        self,
-        template_dir: Path,
-        tmp_path: Path
-    ) -> None:
+    def test_template_can_be_copied_to_papers_dir(self, template_dir: Path, tmp_path: Path) -> None:
         """
         Test that template can be copied to create new paper in papers directory.
 
@@ -145,11 +125,7 @@ class TestTemplateInstantiation:
         assert (new_paper_dir / "tests").exists(), "New paper must have tests/"
         assert (new_paper_dir / "README.md").exists(), "New paper must have README.md"
 
-    def test_multiple_papers_can_coexist(
-        self,
-        template_dir: Path,
-        tmp_path: Path
-    ) -> None:
+    def test_multiple_papers_can_coexist(self, template_dir: Path, tmp_path: Path) -> None:
         """
         Test that multiple paper implementations can coexist.
 
@@ -180,15 +156,9 @@ class TestTemplateInstantiation:
 
         # Verify papers are independent (different paths)
         paper_paths = [mock_papers_dir / name for name in papers]
-        assert len(paper_paths) == len(set(paper_paths)), \
-            "All paper directories must be independent"
+        assert len(paper_paths) == len(set(paper_paths)), "All paper directories must be independent"
 
-    def test_new_paper_can_reference_shared(
-        self,
-        template_dir: Path,
-        shared_dir: Path,
-        tmp_path: Path
-    ) -> None:
+    def test_new_paper_can_reference_shared(self, template_dir: Path, shared_dir: Path, tmp_path: Path) -> None:
         """
         Test that new paper created from template can reference shared library.
 
@@ -214,8 +184,9 @@ class TestTemplateInstantiation:
 
         # This would resolve to shared in actual repository structure
         # Just verify the path construction works
-        assert relative_to_shared.parts == ("..", "..", "shared"), \
+        assert relative_to_shared.parts == ("..", "..", "shared"), (
             "Relative path to shared must be constructable from paper directory"
+        )
 
 
 class TestDirectoryPermissions:
@@ -234,8 +205,8 @@ class TestDirectoryPermissions:
             papers_dir: Papers directory path
         """
         import os
-        assert os.access(papers_dir, os.W_OK), \
-            "papers/ directory must be writable (for adding new papers)"
+
+        assert os.access(papers_dir, os.W_OK), "papers/ directory must be writable (for adding new papers)"
 
     def test_shared_directory_is_readable(self, shared_dir: Path) -> None:
         """
@@ -250,13 +221,10 @@ class TestDirectoryPermissions:
             shared_dir: Shared directory path
         """
         import os
-        assert os.access(shared_dir, os.R_OK), \
-            "shared/ directory must be readable (for imports)"
 
-    def test_template_is_readable_not_writable_in_production(
-        self,
-        template_dir: Path
-    ) -> None:
+        assert os.access(shared_dir, os.R_OK), "shared/ directory must be readable (for imports)"
+
+    def test_template_is_readable_not_writable_in_production(self, template_dir: Path) -> None:
         """
         Test that template should be read-only in production.
 
@@ -271,18 +239,14 @@ class TestDirectoryPermissions:
             template_dir: Template directory path
         """
         import os
-        assert os.access(template_dir, os.R_OK), \
-            "Template directory must be readable (for copying to new papers)"
+
+        assert os.access(template_dir, os.R_OK), "Template directory must be readable (for copying to new papers)"
 
 
 class TestWorkflowIntegration:
     """Test cases for complete workflow integration."""
 
-    def test_complete_new_paper_workflow(
-        self,
-        template_dir: Path,
-        tmp_path: Path
-    ) -> None:
+    def test_complete_new_paper_workflow(self, template_dir: Path, tmp_path: Path) -> None:
         """
         Test complete workflow for creating a new paper.
 
@@ -319,17 +283,10 @@ class TestWorkflowIntegration:
         model_file.write_text("# LeNet-5 model implementation")
 
         # Verify final state
-        assert readme.read_text().startswith("# LeNet-5"), \
-            "README should be customized"
-        assert model_file.exists(), \
-            "Source files should be created"
+        assert readme.read_text().startswith("# LeNet-5"), "README should be customized"
+        assert model_file.exists(), "Source files should be created"
 
-    def test_repository_structure_consistency(
-        self,
-        repo_root: Path,
-        papers_dir: Path,
-        shared_dir: Path
-    ) -> None:
+    def test_repository_structure_consistency(self, repo_root: Path, papers_dir: Path, shared_dir: Path) -> None:
         """
         Test that repository structure is consistent.
 
@@ -344,27 +301,19 @@ class TestWorkflowIntegration:
             shared_dir: Shared directory path
         """
         # Both directories should be direct children of repository root
-        assert papers_dir.parent == repo_root, \
-            "papers/ must be direct child of repository root"
-        assert shared_dir.parent == repo_root, \
-            "shared/ must be direct child of repository root"
+        assert papers_dir.parent == repo_root, "papers/ must be direct child of repository root"
+        assert shared_dir.parent == repo_root, "shared/ must be direct child of repository root"
 
         # Repository root should contain both directories
         root_contents = [item.name for item in repo_root.iterdir() if item.is_dir()]
-        assert "papers" in root_contents, \
-            "Repository root must contain papers/"
-        assert "shared" in root_contents, \
-            "Repository root must contain shared/"
+        assert "papers" in root_contents, "Repository root must contain papers/"
+        assert "shared" in root_contents, "Repository root must contain shared/"
 
 
 class TestDependencyGraph:
     """Test cases for dependency graph validation."""
 
-    def test_dependency_flow_is_acyclic(
-        self,
-        papers_dir: Path,
-        shared_dir: Path
-    ) -> None:
+    def test_dependency_flow_is_acyclic(self, papers_dir: Path, shared_dir: Path) -> None:
         """
         Test that dependency flow is acyclic (DAG).
 
@@ -383,15 +332,12 @@ class TestDependencyGraph:
 
         # Shared should document its independence from papers
         # It mentions papers in usage examples, but doesn't import from them
-        assert "from papers" not in content or "# In papers/" in content, \
+        assert "from papers" not in content or "# In papers/" in content, (
             "Shared library must not have dependency on papers (only usage examples)"
+        )
 
     def test_shared_subdirectories_follow_dependency_order(
-        self,
-        shared_core_dir: Path,
-        shared_training_dir: Path,
-        shared_data_dir: Path,
-        shared_utils_dir: Path
+        self, shared_core_dir: Path, shared_training_dir: Path, shared_data_dir: Path, shared_utils_dir: Path
     ) -> None:
         """
         Test that shared subdirectories follow documented dependency order.
@@ -411,10 +357,7 @@ class TestDependencyGraph:
         for subdir in subdirs:
             assert subdir.exists(), f"{subdir.name}/ must exist for dependency graph"
 
-    def test_papers_template_is_self_contained(
-        self,
-        template_dir: Path
-    ) -> None:
+    def test_papers_template_is_self_contained(self, template_dir: Path) -> None:
         """
         Test that template is self-contained and ready to use.
 
@@ -433,9 +376,6 @@ class TestDependencyGraph:
         content = readme.read_text()
 
         # Template should provide comprehensive guidance
-        assert "Implementation Guide" in content or "Step" in content, \
-            "Template should provide implementation guidance"
-        assert "Mojo" in content, \
-            "Template should mention Mojo language"
-        assert "src/" in content, \
-            "Template should document source directory structure"
+        assert "Implementation Guide" in content or "Step" in content, "Template should provide implementation guidance"
+        assert "Mojo" in content, "Template should mention Mojo language"
+        assert "src/" in content, "Template should document source directory structure"

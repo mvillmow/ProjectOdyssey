@@ -12,11 +12,9 @@ Test Categories:
 Coverage Target: >95%
 """
 
-import os
 import stat
 from pathlib import Path
-from typing import Generator
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -52,9 +50,7 @@ def papers_dir(mock_repo_root: Path) -> Path:
 class TestPapersDirectoryCreation:
     """Test cases for creating the papers/ directory."""
 
-    def test_create_papers_directory_success(
-        self, mock_repo_root: Path, papers_dir: Path
-    ) -> None:
+    def test_create_papers_directory_success(self, mock_repo_root: Path, papers_dir: Path) -> None:
         """
         Test successful creation of papers/ directory.
 
@@ -74,9 +70,7 @@ class TestPapersDirectoryCreation:
         assert papers_dir.exists(), "papers/ directory should exist after creation"
         assert papers_dir.is_dir(), "papers/ should be a directory, not a file"
 
-    def test_papers_directory_permissions(
-        self, mock_repo_root: Path, papers_dir: Path
-    ) -> None:
+    def test_papers_directory_permissions(self, mock_repo_root: Path, papers_dir: Path) -> None:
         """
         Test that papers/ directory has correct permissions.
 
@@ -97,15 +91,9 @@ class TestPapersDirectoryCreation:
         mode = dir_stat.st_mode
 
         # Assert: Directory has read, write, and execute permissions
-        assert (
-            mode & stat.S_IRUSR
-        ), "papers/ should have read permission for owner"
-        assert (
-            mode & stat.S_IWUSR
-        ), "papers/ should have write permission for owner"
-        assert (
-            mode & stat.S_IXUSR
-        ), "papers/ should have execute permission for owner"
+        assert mode & stat.S_IRUSR, "papers/ should have read permission for owner"
+        assert mode & stat.S_IWUSR, "papers/ should have write permission for owner"
+        assert mode & stat.S_IXUSR, "papers/ should have execute permission for owner"
 
         # Additional verification: Can create a file inside
         test_file = papers_dir / "test.txt"
@@ -113,9 +101,7 @@ class TestPapersDirectoryCreation:
         assert test_file.exists(), "Should be able to create files in papers/"
         test_file.unlink()  # Clean up
 
-    def test_papers_directory_location(
-        self, mock_repo_root: Path, papers_dir: Path
-    ) -> None:
+    def test_papers_directory_location(self, mock_repo_root: Path, papers_dir: Path) -> None:
         """
         Test that papers/ directory is created at correct location.
 
@@ -132,9 +118,7 @@ class TestPapersDirectoryCreation:
         papers_dir.mkdir(parents=True, exist_ok=True)
 
         # Assert: Directory location is correct
-        assert papers_dir.parent == mock_repo_root, (
-            "papers/ should be directly under repository root"
-        )
+        assert papers_dir.parent == mock_repo_root, "papers/ should be directly under repository root"
         assert papers_dir.name == "papers", "Directory name should be 'papers'"
         assert papers_dir.is_absolute(), "papers/ path should be absolute"
 
@@ -142,9 +126,7 @@ class TestPapersDirectoryCreation:
 class TestPapersDirectoryEdgeCases:
     """Test edge cases and error conditions for papers/ directory creation."""
 
-    def test_create_papers_directory_already_exists(
-        self, mock_repo_root: Path, papers_dir: Path
-    ) -> None:
+    def test_create_papers_directory_already_exists(self, mock_repo_root: Path, papers_dir: Path) -> None:
         """
         Test idempotent behavior when directory already exists.
 
@@ -168,9 +150,7 @@ class TestPapersDirectoryEdgeCases:
         assert papers_dir.exists(), "Directory should still exist after second creation"
         assert papers_dir.is_dir(), "papers/ should still be a directory"
 
-    def test_create_papers_directory_parent_missing(
-        self, tmp_path: Path
-    ) -> None:
+    def test_create_papers_directory_parent_missing(self, tmp_path: Path) -> None:
         """
         Test directory creation when parent directories need to be created.
 
@@ -195,9 +175,7 @@ class TestPapersDirectoryEdgeCases:
         assert nested_papers.exists(), "Target directory should be created"
         assert nested_papers.is_dir(), "Target should be a directory"
 
-    def test_create_papers_directory_permission_denied(
-        self, mock_repo_root: Path, papers_dir: Path
-    ) -> None:
+    def test_create_papers_directory_permission_denied(self, mock_repo_root: Path, papers_dir: Path) -> None:
         """
         Test handling of permission denied errors.
 
@@ -211,21 +189,15 @@ class TestPapersDirectoryEdgeCases:
             papers_dir: Expected papers directory path
         """
         # Arrange: Mock mkdir to raise PermissionError
-        with patch.object(Path, 'mkdir', side_effect=PermissionError(
-            "Permission denied: cannot create directory"
-        )):
+        with patch.object(Path, "mkdir", side_effect=PermissionError("Permission denied: cannot create directory")):
             # Act & Assert: Attempting to create directory should raise PermissionError
             with pytest.raises(PermissionError) as exc_info:
                 papers_dir.mkdir(parents=True, exist_ok=True)
 
             # Verify error message
-            assert "Permission denied" in str(exc_info.value), (
-                "Error message should indicate permission was denied"
-            )
+            assert "Permission denied" in str(exc_info.value), "Error message should indicate permission was denied"
 
-    def test_create_papers_directory_without_exist_ok(
-        self, mock_repo_root: Path, papers_dir: Path
-    ) -> None:
+    def test_create_papers_directory_without_exist_ok(self, mock_repo_root: Path, papers_dir: Path) -> None:
         """
         Test that FileExistsError is raised when exist_ok=False.
 
@@ -252,9 +224,7 @@ class TestPapersDirectoryEdgeCases:
 class TestPapersDirectoryIntegration:
     """Integration tests for papers/ directory functionality."""
 
-    def test_can_create_subdirectory_in_papers(
-        self, mock_repo_root: Path, papers_dir: Path
-    ) -> None:
+    def test_can_create_subdirectory_in_papers(self, mock_repo_root: Path, papers_dir: Path) -> None:
         """
         Test creating subdirectories within papers/.
 
@@ -294,9 +264,7 @@ class TestPapersDirectoryIntegration:
         assert alexnet_dir.parent == papers_dir, "alexnet parent should be papers/"
         assert resnet_dir.parent == papers_dir, "resnet parent should be papers/"
 
-    def test_papers_directory_can_contain_files(
-        self, mock_repo_root: Path, papers_dir: Path
-    ) -> None:
+    def test_papers_directory_can_contain_files(self, mock_repo_root: Path, papers_dir: Path) -> None:
         """
         Test that files can be created within papers/ directory.
 
@@ -320,13 +288,9 @@ class TestPapersDirectoryIntegration:
         # Assert: File exists and has correct content
         assert readme_file.exists(), "README.md should exist in papers/"
         assert readme_file.is_file(), "README.md should be a file"
-        assert readme_file.read_text() == test_content, (
-            "File content should match what was written"
-        )
+        assert readme_file.read_text() == test_content, "File content should match what was written"
 
-    def test_papers_directory_listing(
-        self, mock_repo_root: Path, papers_dir: Path
-    ) -> None:
+    def test_papers_directory_listing(self, mock_repo_root: Path, papers_dir: Path) -> None:
         """
         Test listing contents of papers/ directory.
 
@@ -356,17 +320,13 @@ class TestPapersDirectoryIntegration:
         assert len(contents) == 3, "papers/ should contain 3 items"
 
         content_names = {item.name for item in contents}
-        assert content_names == {"lenet5", "alexnet", "README.md"}, (
-            "Directory should contain expected items"
-        )
+        assert content_names == {"lenet5", "alexnet", "README.md"}, "Directory should contain expected items"
 
 
 class TestPapersDirectoryRealWorld:
     """Real-world scenario tests for papers/ directory."""
 
-    def test_complete_workflow_papers_directory(
-        self, mock_repo_root: Path, papers_dir: Path
-    ) -> None:
+    def test_complete_workflow_papers_directory(self, mock_repo_root: Path, papers_dir: Path) -> None:
         """
         Test complete workflow of creating and using papers/ directory.
 

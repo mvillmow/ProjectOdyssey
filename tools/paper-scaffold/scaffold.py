@@ -63,7 +63,7 @@ def create_paper_structure(
     paper_url: str,
     description: str,
     output_dir: Path,
-    templates_dir: Path
+    templates_dir: Path,
 ) -> None:
     """
     Create complete paper implementation directory structure.
@@ -98,7 +98,7 @@ def create_paper_structure(
     # Create subdirectories
     (base_dir / "tests").mkdir(exist_ok=True)
     (base_dir / "notes").mkdir(exist_ok=True)
-    print(f"  Created subdirectories: tests/, notes/")
+    print("  Created subdirectories: tests/, notes/")
 
     # Template files to generate
     template_files = {
@@ -141,9 +141,9 @@ def create_paper_structure(
     print(f"\n✓ Successfully created paper structure at: {base_dir}")
     print("\nNext steps:")
     print(f"  1. cd {base_dir}")
-    print(f"  2. Review and update README.md")
-    print(f"  3. Implement model in model.mojo")
-    print(f"  4. Run tests: mojo tests/test_model.mojo")
+    print("  2. Review and update README.md")
+    print("  3. Implement model in model.mojo")
+    print("  4. Run tests: mojo tests/test_model.mojo")
 
 
 def main() -> int:
@@ -161,51 +161,17 @@ Example usage:
     --url "http://yann.lecun.com/exdb/publis/pdf/lecun-01a.pdf" \\
     --description "Convolutional neural network for handwritten digit recognition" \\
     --output papers/
-        """
+        """,
     )
 
-    parser.add_argument(
-        "--paper",
-        required=True,
-        help="Short paper name (e.g., 'lenet5', 'alexnet')"
-    )
-    parser.add_argument(
-        "--title",
-        required=True,
-        help="Full paper title"
-    )
-    parser.add_argument(
-        "--authors",
-        required=True,
-        help="Paper authors"
-    )
-    parser.add_argument(
-        "--year",
-        required=True,
-        help="Publication year"
-    )
-    parser.add_argument(
-        "--url",
-        required=True,
-        help="URL to original paper"
-    )
-    parser.add_argument(
-        "--description",
-        default="TODO: Add paper description",
-        help="Brief paper description"
-    )
-    parser.add_argument(
-        "--output",
-        type=Path,
-        default=Path("papers"),
-        help="Output directory (default: papers/)"
-    )
-    parser.add_argument(
-        "--templates",
-        type=Path,
-        default=None,
-        help="Templates directory (default: auto-detect)"
-    )
+    parser.add_argument("--paper", required=True, help="Short paper name (e.g., 'lenet5', 'alexnet')")
+    parser.add_argument("--title", required=True, help="Full paper title")
+    parser.add_argument("--authors", required=True, help="Paper authors")
+    parser.add_argument("--year", required=True, help="Publication year")
+    parser.add_argument("--url", required=True, help="URL to original paper")
+    parser.add_argument("--description", default="TODO: Add paper description", help="Brief paper description")
+    parser.add_argument("--output", type=Path, default=Path("papers"), help="Output directory (default: papers/)")
+    parser.add_argument("--templates", type=Path, default=None, help="Templates directory (default: auto-detect)")
 
     args = parser.parse_args()
 
@@ -230,7 +196,7 @@ Example usage:
             paper_url=args.url,
             description=args.description,
             output_dir=args.output,
-            templates_dir=args.templates
+            templates_dir=args.templates,
         )
 
         return 0
@@ -238,6 +204,7 @@ Example usage:
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         import traceback
+
         traceback.print_exc()
         return 1
 

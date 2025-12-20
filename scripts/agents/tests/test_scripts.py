@@ -10,7 +10,7 @@ import json
 import subprocess
 import sys
 from pathlib import Path
-from typing import Dict, List
+from typing import List
 
 import pytest
 
@@ -18,6 +18,7 @@ import pytest
 # ============================================================================
 # Path Helpers
 # ============================================================================
+
 
 @pytest.fixture(scope="session")
 def scripts_dir(repo_root: Path) -> Path:
@@ -30,21 +31,18 @@ def agent_scripts(scripts_dir: Path) -> List[Path]:
     """Get all agent utility scripts."""
     if not scripts_dir.exists():
         return []
-    return sorted([
-        f for f in scripts_dir.glob("*.py")
-        if f.name not in ["__init__.py"] and not f.name.startswith("test_")
-    ])
+    return sorted(
+        [f for f in scripts_dir.glob("*.py") if f.name not in ["__init__.py"] and not f.name.startswith("test_")]
+    )
 
 
 # ============================================================================
 # Script Execution Helpers
 # ============================================================================
 
+
 def run_script(
-    script_path: Path,
-    args: List[str] = None,
-    cwd: Path = None,
-    check: bool = False
+    script_path: Path, args: List[str] = None, cwd: Path = None, check: bool = False
 ) -> subprocess.CompletedProcess:
     """
     Run a Python script and return the result.
@@ -62,18 +60,13 @@ def run_script(
     if args:
         cmd.extend(args)
 
-    return subprocess.run(
-        cmd,
-        cwd=cwd or script_path.parent.parent.parent,
-        capture_output=True,
-        text=True,
-        check=check
-    )
+    return subprocess.run(cmd, cwd=cwd or script_path.parent.parent.parent, capture_output=True, text=True, check=check)
 
 
 # ============================================================================
 # Script Existence Tests
 # ============================================================================
+
 
 @pytest.mark.scripts
 class TestScriptsExist:
@@ -90,7 +83,7 @@ class TestScriptsExist:
             "list_agents.py",
             "agent_stats.py",
             "check_frontmatter.py",
-            "test_agent_loading.py"
+            "test_agent_loading.py",
         ]
 
         for script_name in expected_scripts:
@@ -103,13 +96,11 @@ class TestScriptsExist:
             content = script_file.read_text()
 
             # Should have shebang
-            assert content.startswith("#!"), \
-                f"Script {script_file.name} missing shebang line"
+            assert content.startswith("#!"), f"Script {script_file.name} missing shebang line"
 
             # Shebang should be python3
-            first_line = content.split('\n')[0]
-            assert "python" in first_line.lower(), \
-                f"Script {script_file.name} shebang not for Python: {first_line}"
+            first_line = content.split("\n")[0]
+            assert "python" in first_line.lower(), f"Script {script_file.name} shebang not for Python: {first_line}"
 
     def test_script_has_docstring(self, agent_scripts: List[Path]):
         """Test that each script has a module docstring."""
@@ -117,20 +108,20 @@ class TestScriptsExist:
             content = script_file.read_text()
 
             # Look for docstring after shebang
-            lines = content.split('\n')
+            lines = content.split("\n")
             doc_start = None
             for i, line in enumerate(lines[1:10], 1):  # Check first 10 lines
                 if '"""' in line or "'''" in line:
                     doc_start = i
                     break
 
-            assert doc_start is not None, \
-                f"Script {script_file.name} missing module docstring"
+            assert doc_start is not None, f"Script {script_file.name} missing module docstring"
 
 
 # ============================================================================
 # validate_agents.py Tests
 # ============================================================================
+
 
 @pytest.mark.scripts
 class TestValidateAgentsScript:
@@ -154,8 +145,7 @@ class TestValidateAgentsScript:
         result = run_script(script, cwd=repo_root)
 
         # Should exit with 0 or 1 (not crash)
-        assert result.returncode in [0, 1], \
-            f"Script crashed with code {result.returncode}: {result.stderr}"
+        assert result.returncode in [0, 1], f"Script crashed with code {result.returncode}: {result.stderr}"
 
     def test_verbose_option_works(self, scripts_dir: Path, repo_root: Path, agents_dir: Path):
         """Test that --verbose option produces more output."""
@@ -171,8 +161,9 @@ class TestValidateAgentsScript:
         result_verbose = run_script(script, ["--verbose"], cwd=repo_root)
 
         # Verbose should have more or equal output
-        assert len(result_verbose.stdout) >= len(result_normal.stdout), \
+        assert len(result_verbose.stdout) >= len(result_normal.stdout), (
             "Verbose mode should produce at least as much output"
+        )
 
     def test_detects_missing_frontmatter(self, scripts_dir: Path, tmp_path: Path):
         """Test that script detects missing frontmatter."""
@@ -184,11 +175,7 @@ class TestValidateAgentsScript:
         test_file.write_text("# Test Agent\n\nNo frontmatter here.")
 
         script = scripts_dir / "validate_agents.py"
-        result = run_script(
-            script,
-            ["--agents-dir", str(test_agents_dir)],
-            cwd=tmp_path
-        )
+        result = run_script(script, ["--agents-dir", str(test_agents_dir)], cwd=tmp_path)
 
         # Should fail validation
         assert result.returncode == 1, "Should detect missing frontmatter"
@@ -198,6 +185,7 @@ class TestValidateAgentsScript:
 # ============================================================================
 # list_agents.py Tests
 # ============================================================================
+
 
 @pytest.mark.scripts
 class TestListAgentsScript:
@@ -258,6 +246,7 @@ class TestListAgentsScript:
 # agent_stats.py Tests
 # ============================================================================
 
+
 @pytest.mark.scripts
 class TestAgentStatsScript:
     """Test agent_stats.py script."""
@@ -307,8 +296,7 @@ class TestAgentStatsScript:
         result = run_script(script, ["--format", "markdown"], cwd=repo_root)
 
         assert result.returncode == 0, f"Script failed: {result.stderr}"
-        assert "# Agent System Statistics" in result.stdout, \
-            "Markdown should have main heading"
+        assert "# Agent System Statistics" in result.stdout, "Markdown should have main heading"
         assert "## " in result.stdout, "Markdown should have section headings"
 
     def test_output_file_option(self, scripts_dir: Path, repo_root: Path, tmp_path: Path, agents_dir: Path):
@@ -319,11 +307,7 @@ class TestAgentStatsScript:
         output_file = tmp_path / "stats.txt"
         script = scripts_dir / "agent_stats.py"
 
-        result = run_script(
-            script,
-            ["--format", "text", "--output", str(output_file)],
-            cwd=repo_root
-        )
+        result = run_script(script, ["--format", "text", "--output", str(output_file)], cwd=repo_root)
 
         assert result.returncode == 0, f"Script failed: {result.stderr}"
         assert output_file.exists(), "Output file should be created"
@@ -333,6 +317,7 @@ class TestAgentStatsScript:
 # ============================================================================
 # check_frontmatter.py Tests
 # ============================================================================
+
 
 @pytest.mark.scripts
 class TestCheckFrontmatterScript:
@@ -355,13 +340,13 @@ class TestCheckFrontmatterScript:
         result = run_script(script, cwd=repo_root)
 
         # Should complete (exit 0 or 1, not crash)
-        assert result.returncode in [0, 1], \
-            f"Script crashed with code {result.returncode}"
+        assert result.returncode in [0, 1], f"Script crashed with code {result.returncode}"
 
 
 # ============================================================================
 # Error Handling Tests
 # ============================================================================
+
 
 @pytest.mark.scripts
 class TestScriptErrorHandling:
@@ -372,27 +357,18 @@ class TestScriptErrorHandling:
         # Run scripts with a non-existent agents directory
         nonexistent_dir = tmp_path / "nonexistent"
 
-        scripts_to_test = [
-            "validate_agents.py",
-            "list_agents.py"
-        ]
+        scripts_to_test = ["validate_agents.py", "list_agents.py"]
 
         for script_name in scripts_to_test:
             script = scripts_dir / script_name
             if not script.exists():
                 continue
 
-            result = run_script(
-                script,
-                ["--agents-dir", str(nonexistent_dir)],
-                cwd=tmp_path
-            )
+            result = run_script(script, ["--agents-dir", str(nonexistent_dir)], cwd=tmp_path)
 
             # Should fail gracefully with error message
-            assert result.returncode != 0, \
-                f"{script_name} should fail with missing directory"
-            assert len(result.stderr) > 0 or "Error" in result.stdout, \
-                f"{script_name} should show error message"
+            assert result.returncode != 0, f"{script_name} should fail with missing directory"
+            assert len(result.stderr) > 0 or "Error" in result.stdout, f"{script_name} should show error message"
 
     def test_empty_agents_dir(self, scripts_dir: Path, tmp_path: Path):
         """Test that scripts handle empty agents directory."""
@@ -400,26 +376,17 @@ class TestScriptErrorHandling:
         empty_dir = tmp_path / "empty_agents"
         empty_dir.mkdir()
 
-        scripts_to_test = [
-            "validate_agents.py",
-            "list_agents.py",
-            "agent_stats.py"
-        ]
+        scripts_to_test = ["validate_agents.py", "list_agents.py", "agent_stats.py"]
 
         for script_name in scripts_to_test:
             script = scripts_dir / script_name
             if not script.exists():
                 continue
 
-            result = run_script(
-                script,
-                ["--agents-dir", str(empty_dir)],
-                cwd=tmp_path
-            )
+            result = run_script(script, ["--agents-dir", str(empty_dir)], cwd=tmp_path)
 
             # Should handle gracefully (may fail or show empty results)
-            assert result.returncode in [0, 1], \
-                f"{script_name} should handle empty directory gracefully"
+            assert result.returncode in [0, 1], f"{script_name} should handle empty directory gracefully"
 
     def test_invalid_arguments(self, scripts_dir: Path, repo_root: Path):
         """Test that scripts reject invalid arguments."""
@@ -436,6 +403,7 @@ class TestScriptErrorHandling:
 # Script Output Format Tests
 # ============================================================================
 
+
 @pytest.mark.scripts
 class TestScriptOutputFormats:
     """Test that script outputs are well-formatted."""
@@ -451,12 +419,7 @@ class TestScriptOutputFormats:
         output = result.stdout + result.stderr
 
         # Should show summary statistics
-        summary_indicators = [
-            "Total files:",
-            "Total agents:",
-            "files",
-            "agents"
-        ]
+        summary_indicators = ["Total files:", "Total agents:", "files", "agents"]
 
         has_summary = any(indicator in output for indicator in summary_indicators)
         assert has_summary, "Should show summary of validation results"
@@ -472,20 +435,18 @@ class TestScriptOutputFormats:
         assert result.returncode == 0, "Script should succeed"
 
         # Output should have some structure
-        lines = result.stdout.split('\n')
+        lines = result.stdout.split("\n")
         assert len(lines) > 3, "Should have multiple lines of output"
 
         # Should have some organizational elements
-        has_structure = any(
-            c in result.stdout
-            for c in ['=', '-', 'Level', ':', '\n\n']
-        )
+        has_structure = any(c in result.stdout for c in ["=", "-", "Level", ":", "\n\n"])
         assert has_structure, "Output should have organizational structure"
 
 
 # ============================================================================
 # Integration Tests
 # ============================================================================
+
 
 @pytest.mark.scripts
 @pytest.mark.slow
@@ -497,11 +458,7 @@ class TestScriptIntegration:
         if not agents_dir.exists():
             pytest.skip("No agents directory")
 
-        scripts_with_agents_dir = [
-            "validate_agents.py",
-            "list_agents.py",
-            "agent_stats.py"
-        ]
+        scripts_with_agents_dir = ["validate_agents.py", "list_agents.py", "agent_stats.py"]
 
         agent_counts = {}
 
@@ -518,9 +475,10 @@ class TestScriptIntegration:
                 # Extract agent count from output
                 # Different scripts format this differently
                 import re
+
                 count_patterns = [
-                    r'Total [Aa]gents?:\s*(\d+)',
-                    r'(\d+)\s+agents?',
+                    r"Total [Aa]gents?:\s*(\d+)",
+                    r"(\d+)\s+agents?",
                     r'"total_agents":\s*(\d+)',
                 ]
 
@@ -533,8 +491,7 @@ class TestScriptIntegration:
         # If we got counts from multiple scripts, they should match
         if len(agent_counts) > 1:
             counts = list(agent_counts.values())
-            assert all(c == counts[0] for c in counts), \
-                f"Scripts report different agent counts: {agent_counts}"
+            assert all(c == counts[0] for c in counts), f"Scripts report different agent counts: {agent_counts}"
 
     def test_validate_then_list(self, scripts_dir: Path, repo_root: Path, agents_dir: Path):
         """Test that validate and list work on same agents."""

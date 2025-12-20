@@ -15,10 +15,6 @@ Coverage Target: >95%
 
 import pytest
 from pathlib import Path
-from typing import List
-from .conftest import MIN_DOC_LENGTH
-
-
 
 
 class TestTier1Completeness:
@@ -43,16 +39,13 @@ class TestTier1Completeness:
         tier_dir = docs_root / "getting-started"
 
         if not tier_dir.exists():
-
             pytest.skip(f"Tier directory not yet created: {tier_dir}")
         doc_path = tier_dir / doc_name
 
         if not doc_path.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc_path}")
         assert doc_path.exists(), f"{doc_name} should exist in getting-started/"
         assert doc_path.is_file(), f"{doc_name} should be a file"
-
 
 
 class TestTier2Completeness:
@@ -82,12 +75,10 @@ class TestTier2Completeness:
         tier_dir = docs_root / "core"
 
         if not tier_dir.exists():
-
             pytest.skip(f"Tier directory not yet created: {tier_dir}")
         doc_path = tier_dir / doc_name
 
         if not doc_path.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc_path}")
         assert doc_path.exists(), f"{doc_name} should exist in core/"
         assert doc_path.is_file(), f"{doc_name} should be a file"
@@ -116,14 +107,11 @@ class TestTier2Completeness:
         tier_dir = docs_root / "core"
 
         if not tier_dir.exists():
-
             pytest.skip(f"Tier directory not yet created: {tier_dir}")
         doc_path = tier_dir / doc_name
         content = f"# {doc_name.replace('-', ' ').title()}\n\nContent here.\n"
         if not doc_path.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc_path}")
-
 
         doc_path.write_text(content)
 
@@ -158,12 +146,10 @@ class TestTier3Completeness:
         tier_dir = docs_root / "advanced"
 
         if not tier_dir.exists():
-
             pytest.skip(f"Tier directory not yet created: {tier_dir}")
         doc_path = tier_dir / doc_name
 
         if not doc_path.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc_path}")
         assert doc_path.exists(), f"{doc_name} should exist in advanced/"
         assert doc_path.is_file(), f"{doc_name} should be a file"
@@ -190,14 +176,11 @@ class TestTier3Completeness:
         tier_dir = docs_root / "advanced"
 
         if not tier_dir.exists():
-
             pytest.skip(f"Tier directory not yet created: {tier_dir}")
         doc_path = tier_dir / doc_name
         content = f"# {doc_name.replace('-', ' ').title()}\n\nContent here.\n"
         if not doc_path.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc_path}")
-
 
         doc_path.write_text(content)
 
@@ -230,12 +213,10 @@ class TestTier4Completeness:
         tier_dir = docs_root / "dev"
 
         if not tier_dir.exists():
-
             pytest.skip(f"Tier directory not yet created: {tier_dir}")
         doc_path = tier_dir / doc_name
 
         if not doc_path.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc_path}")
         assert doc_path.exists(), f"{doc_name} should exist in dev/"
         assert doc_path.is_file(), f"{doc_name} should be a file"
@@ -260,14 +241,11 @@ class TestTier4Completeness:
         tier_dir = docs_root / "dev"
 
         if not tier_dir.exists():
-
             pytest.skip(f"Tier directory not yet created: {tier_dir}")
         doc_path = tier_dir / doc_name
         content = f"# {doc_name.replace('-', ' ').title()}\n\nContent here.\n"
         if not doc_path.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc_path}")
-
 
         doc_path.write_text(content)
 
@@ -290,18 +268,15 @@ class TestDocumentCompleteness:
         """
         # Create all tier directories
         for tier in ["getting-started", "core", "advanced", "dev"]:
-
             tier_path = docs_root / tier
 
             if not tier_path.exists():
-
                 pytest.skip(f"Tier directory not yet created: {tier_path}")
-
 
         # Create Tier 1 docs (3)
         tier1_docs = ["quickstart.md", "installation.md", "first-paper.md"]
         for doc in tier1_docs:
-            doc_path = (docs_root / "getting-started" / doc)
+            doc_path = docs_root / "getting-started" / doc
             if not doc_path.exists():
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
 
@@ -317,7 +292,7 @@ class TestDocumentCompleteness:
             "configuration.md",
         ]
         for doc in tier2_docs:
-            doc_path = (docs_root / "core" / doc)
+            doc_path = docs_root / "core" / doc
             if not doc_path.exists():
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
 
@@ -331,7 +306,7 @@ class TestDocumentCompleteness:
             "integration.md",
         ]
         for doc in tier3_docs:
-            doc_path = (docs_root / "advanced" / doc)
+            doc_path = docs_root / "advanced" / doc
             if not doc_path.exists():
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
 
@@ -343,7 +318,7 @@ class TestDocumentCompleteness:
             "ci-cd.md",
         ]
         for doc in tier4_docs:
-            doc_path = (docs_root / "dev" / doc)
+            doc_path = docs_root / "dev" / doc
             if not doc_path.exists():
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
 
@@ -354,13 +329,7 @@ class TestDocumentCompleteness:
         tier3_files = list((docs_root / "advanced").glob("*.md"))
         tier4_files = list((docs_root / "dev").glob("*.md"))
 
-        total = (
-            len(root_docs)
-            + len(tier1_files)
-            + len(tier2_files)
-            + len(tier3_files)
-            + len(tier4_files)
-        )
+        total = len(root_docs) + len(tier1_files) + len(tier2_files) + len(tier3_files) + len(tier4_files)
 
         assert total == 24, f"Should have 24 documents total, found {total}"
 
@@ -374,13 +343,12 @@ class TestDocumentCompleteness:
         # Create test documents with content
         for tier in ["getting-started", "core", "advanced", "dev"]:
             tier_dir = docs_root / tier
-            if not tier_dir.exists(): pytest.skip(f"Tier directory not yet created: {tier_dir}")
+            if not tier_dir.exists():
+                pytest.skip(f"Tier directory not yet created: {tier_dir}")
 
             test_doc = tier_dir / "test.md"
             if not test_doc.exists():
-
                 pytest.skip(f"Documentation file not created yet: {test_doc}")
-
 
             test_doc.write_text("# Test\n\nContent.\n")
 
@@ -396,14 +364,13 @@ class TestDocumentCompleteness:
         # Create test documents with headers
         for tier in ["getting-started", "core", "advanced", "dev"]:
             tier_dir = docs_root / tier
-            if not tier_dir.exists(): pytest.skip(f"Tier directory not yet created: {tier_dir}")
+            if not tier_dir.exists():
+                pytest.skip(f"Tier directory not yet created: {tier_dir}")
 
             test_doc = tier_dir / "test.md"
             content = "# Test Document\n\nContent here.\n"
             if not test_doc.exists():
-
                 pytest.skip(f"Documentation file not created yet: {test_doc}")
-
 
             test_doc.write_text(content)
 
@@ -431,7 +398,8 @@ class TestEnhancedQualityChecks:
             docs_root: Path to docs directory
         """
         tier_dir = docs_root / "core"
-        if not tier_dir.exists(): pytest.skip(f"Tier directory not yet created: {tier_dir}")
+        if not tier_dir.exists():
+            pytest.skip(f"Tier directory not yet created: {tier_dir}")
 
         doc = tier_dir / "example.md"
         # Valid Python code example
@@ -450,21 +418,20 @@ print(result)
 More content here.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
         text = doc.read_text()
         # Extract code from code blocks
         import re
-        code_blocks = re.findall(r'```python\n(.*?)\n```', text, re.DOTALL)
+
+        code_blocks = re.findall(r"```python\n(.*?)\n```", text, re.DOTALL)
 
         for i, code in enumerate(code_blocks):
             try:
                 # Attempt to compile (not execute) the code
-                compile(code, f'<code_block_{i}>', 'exec')
+                compile(code, f"<code_block_{i}>", "exec")
             except SyntaxError as e:
                 pytest.fail(f"Code block {i} has invalid Python syntax: {e}")
 
@@ -476,7 +443,8 @@ More content here.
             docs_root: Path to docs directory
         """
         tier_dir = docs_root / "core"
-        if not tier_dir.exists(): pytest.skip(f"Tier directory not yet created: {tier_dir}")
+        if not tier_dir.exists():
+            pytest.skip(f"Tier directory not yet created: {tier_dir}")
 
         doc = tier_dir / "reference.md"
         # Good: descriptive link text
@@ -487,32 +455,26 @@ See the [architecture documentation](../getting-started/architecture.md) for det
 For more information, refer to [testing guidelines](testing.md).
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
         text = doc.read_text()
         # Check for markdown links
         import re
-        links = re.findall(r'\[([^\]]+)\]\(([^)]+)\)', text)
+
+        links = re.findall(r"\[([^\]]+)\]\(([^)]+)\)", text)
 
         for link_text, link_url in links:
             # Link text should not be a URL
-            assert not link_text.startswith('http'), (
-                f"Link has bare URL as text: [{link_text}]({link_url}). "
-                f"Use descriptive text instead."
+            assert not link_text.startswith("http"), (
+                f"Link has bare URL as text: [{link_text}]({link_url}). Use descriptive text instead."
             )
             # Link text should not be the same as URL (except for anchors)
-            if not link_url.startswith('#'):
-                assert link_text != link_url, (
-                    f"Link text should be descriptive, not the URL itself: [{link_text}]"
-                )
+            if not link_url.startswith("#"):
+                assert link_text != link_url, f"Link text should be descriptive, not the URL itself: [{link_text}]"
             # Link text should be meaningful (at least 3 chars)
-            assert len(link_text) >= 3, (
-                f"Link text should be descriptive: [{link_text}]"
-            )
+            assert len(link_text) >= 3, f"Link text should be descriptive: [{link_text}]"
 
     def test_sections_have_sufficient_content_depth(self, docs_root: Path) -> None:
         """
@@ -522,7 +484,8 @@ For more information, refer to [testing guidelines](testing.md).
             docs_root: Path to docs directory
         """
         tier_dir = docs_root / "core"
-        if not tier_dir.exists(): pytest.skip(f"Tier directory not yet created: {tier_dir}")
+        if not tier_dir.exists():
+            pytest.skip(f"Tier directory not yet created: {tier_dir}")
 
         doc = tier_dir / "detailed.md"
         content = """# Detailed Documentation
@@ -553,24 +516,22 @@ For advanced users, this section covers edge cases, performance optimization,
 and integration patterns. It builds on the basics covered earlier.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
         text = doc.read_text()
-        lines = text.split('\n')
+        lines = text.split("\n")
 
         current_section = None
         section_content = []
         sections = {}
 
         for line in lines:
-            if line.startswith('## '):
+            if line.startswith("## "):
                 # Save previous section
                 if current_section:
-                    sections[current_section] = '\n'.join(section_content)
+                    sections[current_section] = "\n".join(section_content)
                 # Start new section
                 current_section = line[3:].strip()
                 section_content = []
@@ -579,18 +540,18 @@ and integration patterns. It builds on the basics covered earlier.
 
         # Save last section
         if current_section:
-            sections[current_section] = '\n'.join(section_content)
+            sections[current_section] = "\n".join(section_content)
 
         # Each section should have meaningful content (>50 chars excluding code blocks)
         for section_name, content in sections.items():
             # Remove code blocks for content analysis
             import re
-            content_no_code = re.sub(r'```.*?```', '', content, flags=re.DOTALL)
+
+            content_no_code = re.sub(r"```.*?```", "", content, flags=re.DOTALL)
             content_text = content_no_code.strip()
 
             assert len(content_text) > 50, (
-                f"Section '{section_name}' has insufficient content. "
-                f"Found {len(content_text)} chars, expected >50."
+                f"Section '{section_name}' has insufficient content. Found {len(content_text)} chars, expected >50."
             )
 
     def test_examples_are_clear_and_helpful(self, docs_root: Path) -> None:
@@ -601,7 +562,8 @@ and integration patterns. It builds on the basics covered earlier.
             docs_root: Path to docs directory
         """
         tier_dir = docs_root / "getting-started"
-        if not tier_dir.exists(): pytest.skip(f"Tier directory not yet created: {tier_dir}")
+        if not tier_dir.exists():
+            pytest.skip(f"Tier directory not yet created: {tier_dir}")
 
         doc = tier_dir / "tutorial.md"
         content = """# Tutorial
@@ -637,9 +599,7 @@ with MyComponent(name="advanced") as comp:
 The context manager ensures proper cleanup.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -647,15 +607,15 @@ The context manager ensures proper cleanup.
         import re
 
         # Find all code blocks
-        code_blocks = re.findall(r'```python\n(.*?)\n```', text, re.DOTALL)
+        code_blocks = re.findall(r"```python\n(.*?)\n```", text, re.DOTALL)
 
         for i, code in enumerate(code_blocks):
             # Code should have at least one comment OR be preceded/followed by explanatory text
-            has_comment = '#' in code
+            has_comment = "#" in code
 
             # Check for explanatory text around code block
             block_pattern = re.escape(code)
-            matches = list(re.finditer(r'```python\n' + block_pattern + r'\n```', text, re.DOTALL))
+            matches = list(re.finditer(r"```python\n" + block_pattern + r"\n```", text, re.DOTALL))
 
             has_explanation = False
             if matches:
@@ -664,18 +624,18 @@ The context manager ensures proper cleanup.
                 end = match.end()
 
                 # Check text before code block (up to 200 chars)
-                text_before = text[max(0, start-200):start].strip()
+                text_before = text[max(0, start - 200) : start].strip()
                 # Check text after code block (up to 200 chars)
-                text_after = text[end:min(len(text), end+200)].strip()
+                text_after = text[end : min(len(text), end + 200)].strip()
 
                 # Should have descriptive text before or after (not just header)
-                if (len(text_before) > 20 and not text_before.endswith('#')) or \
-                   (len(text_after) > 20 and not text_after.startswith('#')):
+                if (len(text_before) > 20 and not text_before.endswith("#")) or (
+                    len(text_after) > 20 and not text_after.startswith("#")
+                ):
                     has_explanation = True
 
             assert has_comment or has_explanation, (
-                f"Code block {i} lacks explanatory comments or surrounding text. "
-                f"Examples should be clear and helpful."
+                f"Code block {i} lacks explanatory comments or surrounding text. Examples should be clear and helpful."
             )
 
     @pytest.mark.parametrize(
@@ -686,9 +646,7 @@ The context manager ensures proper cleanup.
             ("advanced/optimization.md", 3),
         ],
     )
-    def test_documents_have_minimum_sections(
-        self, docs_root: Path, doc_file: str, min_sections: int
-    ) -> None:
+    def test_documents_have_minimum_sections(self, docs_root: Path, doc_file: str, min_sections: int) -> None:
         """
         Test that important documents have minimum number of sections.
 
@@ -702,24 +660,21 @@ The context manager ensures proper cleanup.
         # Create content with required sections
         sections = []
         for i in range(min_sections):
-            sections.append(f"""## Section {i+1}
+            sections.append(f"""## Section {i + 1}
 
-Content for section {i+1} with sufficient detail to be useful.
+Content for section {i + 1} with sufficient detail to be useful.
 This section provides information about a specific aspect of the topic.
 """)
 
         content = f"# {doc_path.stem.title()}\n\nIntroduction text.\n\n" + "\n".join(sections)
         if not doc_path.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc_path}")
-
 
         doc_path.write_text(content)
 
         text = doc_path.read_text()
-        section_count = text.count('\n## ')
+        section_count = text.count("\n## ")
 
         assert section_count >= min_sections, (
-            f"{doc_file} should have at least {min_sections} sections (##), "
-            f"found {section_count}"
+            f"{doc_file} should have at least {min_sections} sections (##), found {section_count}"
         )

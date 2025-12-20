@@ -15,7 +15,6 @@ Justification:
 Reference: ADR-001
 """
 
-import os
 import sys
 import subprocess
 import platform
@@ -25,19 +24,20 @@ from typing import Tuple, Optional
 
 class Color:
     """ANSI color codes for terminal output"""
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BLUE = '\033[94m'
-    RESET = '\033[0m'
-    BOLD = '\033[1m'
+
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    BLUE = "\033[94m"
+    RESET = "\033[0m"
+    BOLD = "\033[1m"
 
 
 def print_header(msg: str):
     """Print section header"""
-    print(f"\n{Color.BOLD}{Color.BLUE}{'='*60}{Color.RESET}")
+    print(f"\n{Color.BOLD}{Color.BLUE}{'=' * 60}{Color.RESET}")
     print(f"{Color.BOLD}{Color.BLUE}{msg}{Color.RESET}")
-    print(f"{Color.BOLD}{Color.BLUE}{'='*60}{Color.RESET}\n")
+    print(f"{Color.BOLD}{Color.BLUE}{'=' * 60}{Color.RESET}\n")
 
 
 def print_success(msg: str):
@@ -65,14 +65,9 @@ def run_command(cmd: list, check: bool = False) -> Tuple[int, str, str]:
 
     Returns:
         Tuple of (exit_code, stdout, stderr).
-   """
+    """
     try:
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=30
-        )
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
         return result.returncode, result.stdout.strip(), result.stderr.strip()
     except subprocess.TimeoutExpired:
         return 1, "", "Command timed out"
@@ -144,7 +139,7 @@ def install_python_dependencies(repo_root: Path) -> bool:
         print("  Creating minimal requirements.txt...")
 
         # Create basic requirements file
-        with open(req_file, 'w') as f:
+        with open(req_file, "w") as f:
             f.write("# Python dependencies for ML Odyssey tools\n\n")
             f.write("# Template engine (paper scaffolding, code generation)\n")
             f.write("jinja2>=3.0.0\n\n")

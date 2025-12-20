@@ -16,7 +16,6 @@ Usage:
 import sys
 import tempfile
 from pathlib import Path
-from typing import Dict
 
 import pytest
 
@@ -545,11 +544,7 @@ class TestValidateFrontmatterStructure:
             "custom_field": "value",
         }
         custom_required = {"custom_field": str}
-        errors = validate_frontmatter_structure(
-            frontmatter,
-            required_fields=custom_required,
-            optional_fields={}
-        )
+        errors = validate_frontmatter_structure(frontmatter, required_fields=custom_required, optional_fields={})
         assert len(errors) == 0
 
 

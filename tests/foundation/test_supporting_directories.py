@@ -97,9 +97,7 @@ class TestSupportingDirectoriesExistence:
 class TestSupportingDirectoriesLocation:
     """Test that directories are at correct location with proper configuration."""
 
-    def test_supporting_directories_at_root(
-        self, repo_root: Path, supporting_dirs: Dict[str, Path]
-    ) -> None:
+    def test_supporting_directories_at_root(self, repo_root: Path, supporting_dirs: Dict[str, Path]) -> None:
         """
         Test that all supporting directories are directly under repository root.
 
@@ -112,13 +110,9 @@ class TestSupportingDirectoriesLocation:
             supporting_dirs: Dictionary of all supporting directory paths
         """
         for dir_name, dir_path in supporting_dirs.items():
-            assert dir_path.parent == repo_root, (
-                f"{dir_name}/ should be directly under repository root"
-            )
+            assert dir_path.parent == repo_root, f"{dir_name}/ should be directly under repository root"
 
-    def test_directory_names_correct(
-        self, supporting_dirs: Dict[str, Path]
-    ) -> None:
+    def test_directory_names_correct(self, supporting_dirs: Dict[str, Path]) -> None:
         """
         Test that directory names are exactly as specified.
 
@@ -133,13 +127,10 @@ class TestSupportingDirectoriesLocation:
         actual_names = {dir_path.name for dir_path in supporting_dirs.values()}
 
         assert actual_names == expected_names, (
-            f"Directory names should match specification. "
-            f"Expected: {expected_names}, Got: {actual_names}"
+            f"Directory names should match specification. Expected: {expected_names}, Got: {actual_names}"
         )
 
-    def test_directory_permissions(
-        self, supporting_dirs: Dict[str, Path]
-    ) -> None:
+    def test_directory_permissions(self, supporting_dirs: Dict[str, Path]) -> None:
         """
         Test that directories have correct permissions.
 
@@ -155,15 +146,9 @@ class TestSupportingDirectoriesLocation:
             dir_stat = dir_path.stat()
             mode = dir_stat.st_mode
 
-            assert (
-                mode & stat.S_IRUSR
-            ), f"{dir_name}/ should have read permission"
-            assert (
-                mode & stat.S_IWUSR
-            ), f"{dir_name}/ should have write permission"
-            assert (
-                mode & stat.S_IXUSR
-            ), f"{dir_name}/ should have execute permission"
+            assert mode & stat.S_IRUSR, f"{dir_name}/ should have read permission"
+            assert mode & stat.S_IWUSR, f"{dir_name}/ should have write permission"
+            assert mode & stat.S_IXUSR, f"{dir_name}/ should have execute permission"
 
             # Verify we can create a test file
             test_file = dir_path / ".test_permissions"
@@ -175,9 +160,7 @@ class TestSupportingDirectoriesLocation:
 class TestSupportingDirectoriesReadme:
     """Test README.md presence and completeness for each directory."""
 
-    def test_each_directory_has_readme(
-        self, supporting_dirs: Dict[str, Path]
-    ) -> None:
+    def test_each_directory_has_readme(self, supporting_dirs: Dict[str, Path]) -> None:
         """
         Test that every supporting directory has a README.md file.
 
@@ -190,16 +173,10 @@ class TestSupportingDirectoriesReadme:
         """
         for dir_name, dir_path in supporting_dirs.items():
             readme_path = dir_path / "README.md"
-            assert readme_path.exists(), (
-                f"{dir_name}/README.md should exist"
-            )
-            assert readme_path.is_file(), (
-                f"{dir_name}/README.md should be a file"
-            )
+            assert readme_path.exists(), f"{dir_name}/README.md should exist"
+            assert readme_path.is_file(), f"{dir_name}/README.md should be a file"
 
-    def test_readme_not_empty(
-        self, supporting_dirs: Dict[str, Path]
-    ) -> None:
+    def test_readme_not_empty(self, supporting_dirs: Dict[str, Path]) -> None:
         """
         Test that README.md files are not empty.
 
@@ -221,9 +198,7 @@ class TestSupportingDirectoriesReadme:
                 f"(expected >{min_content_length} chars, got {len(content)})"
             )
 
-    def test_readme_has_title(
-        self, supporting_dirs: Dict[str, Path]
-    ) -> None:
+    def test_readme_has_title(self, supporting_dirs: Dict[str, Path]) -> None:
         """
         Test that README.md files have a markdown title (# header).
 
@@ -237,25 +212,18 @@ class TestSupportingDirectoriesReadme:
         for dir_name, dir_path in supporting_dirs.items():
             readme_path = dir_path / "README.md"
             content = readme_path.read_text()
-            lines = content.split('\n')
+            lines = content.split("\n")
 
             # Check first 5 lines for a markdown header
-            has_header = any(
-                line.strip().startswith('#')
-                for line in lines[:5]
-            )
+            has_header = any(line.strip().startswith("#") for line in lines[:5])
 
-            assert has_header, (
-                f"{dir_name}/README.md should have a markdown header (# Title)"
-            )
+            assert has_header, f"{dir_name}/README.md should have a markdown header (# Title)"
 
 
 class TestSupportingDirectoriesStructure:
     """Test subdirectory structure for each supporting directory."""
 
-    def test_benchmarks_subdirectory_structure(
-        self, benchmarks_dir: Path
-    ) -> None:
+    def test_benchmarks_subdirectory_structure(self, benchmarks_dir: Path) -> None:
         """
         Test benchmarks/ directory has expected subdirectories.
 
@@ -272,19 +240,13 @@ class TestSupportingDirectoriesStructure:
         for subdir_name in expected_subdirs:
             subdir_path = benchmarks_dir / subdir_name
             if not subdir_path.exists():
-                pytest.skip(
-                    f"Subdirectory not yet created: {subdir_name}/"
-                )
+                pytest.skip(f"Subdirectory not yet created: {subdir_name}/")
 
         # Verify expected subdirectories exist
         for subdir_name in expected_subdirs:
             subdir_path = benchmarks_dir / subdir_name
-            assert subdir_path.exists(), (
-                f"benchmarks/{subdir_name}/ should exist"
-            )
-            assert subdir_path.is_dir(), (
-                f"benchmarks/{subdir_name}/ should be a directory"
-            )
+            assert subdir_path.exists(), f"benchmarks/{subdir_name}/ should exist"
+            assert subdir_path.is_dir(), f"benchmarks/{subdir_name}/ should be a directory"
 
     def test_docs_subdirectory_structure(self, docs_dir: Path) -> None:
         """
@@ -309,9 +271,7 @@ class TestSupportingDirectoriesStructure:
         for tier_name in expected_tiers:
             tier_path = docs_dir / tier_name
             assert tier_path.exists(), f"docs/{tier_name}/ should exist"
-            assert tier_path.is_dir(), (
-                f"docs/{tier_name}/ should be a directory"
-            )
+            assert tier_path.is_dir(), f"docs/{tier_name}/ should be a directory"
 
     def test_agents_subdirectory_structure(self, agents_dir: Path) -> None:
         """
@@ -330,19 +290,13 @@ class TestSupportingDirectoriesStructure:
         for subdir_name in expected_subdirs:
             subdir_path = agents_dir / subdir_name
             if not subdir_path.exists():
-                pytest.skip(
-                    f"Subdirectory not yet created: {subdir_name}/"
-                )
+                pytest.skip(f"Subdirectory not yet created: {subdir_name}/")
 
         # Verify expected subdirectories exist
         for subdir_name in expected_subdirs:
             subdir_path = agents_dir / subdir_name
-            assert subdir_path.exists(), (
-                f"agents/{subdir_name}/ should exist"
-            )
-            assert subdir_path.is_dir(), (
-                f"agents/{subdir_name}/ should be a directory"
-            )
+            assert subdir_path.exists(), f"agents/{subdir_name}/ should exist"
+            assert subdir_path.is_dir(), f"agents/{subdir_name}/ should be a directory"
 
     def test_tools_subdirectory_structure(self, tools_dir: Path) -> None:
         """
@@ -362,19 +316,13 @@ class TestSupportingDirectoriesStructure:
         for subdir_name in expected_subdirs:
             subdir_path = tools_dir / subdir_name
             if not subdir_path.exists():
-                pytest.skip(
-                    f"Subdirectory not yet created: {subdir_name}/"
-                )
+                pytest.skip(f"Subdirectory not yet created: {subdir_name}/")
 
         # Verify expected subdirectories exist
         for subdir_name in expected_subdirs:
             subdir_path = tools_dir / subdir_name
-            assert subdir_path.exists(), (
-                f"tools/{subdir_name}/ should exist"
-            )
-            assert subdir_path.is_dir(), (
-                f"tools/{subdir_name}/ should be a directory"
-            )
+            assert subdir_path.exists(), f"tools/{subdir_name}/ should exist"
+            assert subdir_path.is_dir(), f"tools/{subdir_name}/ should be a directory"
 
     def test_configs_subdirectory_structure(self, configs_dir: Path) -> None:
         """
@@ -393,27 +341,19 @@ class TestSupportingDirectoriesStructure:
         for subdir_name in expected_subdirs:
             subdir_path = configs_dir / subdir_name
             if not subdir_path.exists():
-                pytest.skip(
-                    f"Subdirectory not yet created: {subdir_name}/"
-                )
+                pytest.skip(f"Subdirectory not yet created: {subdir_name}/")
 
         # Verify expected subdirectories exist
         for subdir_name in expected_subdirs:
             subdir_path = configs_dir / subdir_name
-            assert subdir_path.exists(), (
-                f"configs/{subdir_name}/ should exist"
-            )
-            assert subdir_path.is_dir(), (
-                f"configs/{subdir_name}/ should be a directory"
-            )
+            assert subdir_path.exists(), f"configs/{subdir_name}/ should exist"
+            assert subdir_path.is_dir(), f"configs/{subdir_name}/ should be a directory"
 
 
 class TestSupportingDirectoriesIntegration:
     """Integration tests for all supporting directories together."""
 
-    def test_all_supporting_directories_present(
-        self, supporting_dirs: Dict[str, Path]
-    ) -> None:
+    def test_all_supporting_directories_present(self, supporting_dirs: Dict[str, Path]) -> None:
         """
         Test that all 5 supporting directories are present.
 
@@ -425,17 +365,13 @@ class TestSupportingDirectoriesIntegration:
         Args:
             supporting_dirs: Dictionary of all supporting directory paths
         """
-        assert len(supporting_dirs) == 5, (
-            "Should have exactly 5 supporting directories"
-        )
+        assert len(supporting_dirs) == 5, "Should have exactly 5 supporting directories"
 
         for dir_name, dir_path in supporting_dirs.items():
             assert dir_path.exists(), f"{dir_name}/ should exist"
             assert dir_path.is_dir(), f"{dir_name}/ should be a directory"
 
-    def test_directories_ready_for_content(
-        self, supporting_dirs: Dict[str, Path]
-    ) -> None:
+    def test_directories_ready_for_content(self, supporting_dirs: Dict[str, Path]) -> None:
         """
         Test that directories are ready to receive content.
 
@@ -451,24 +387,18 @@ class TestSupportingDirectoriesIntegration:
             # Test subdirectory creation
             test_subdir = dir_path / ".test_subdir"
             test_subdir.mkdir(exist_ok=True)
-            assert test_subdir.exists(), (
-                f"Should be able to create subdirectories in {dir_name}/"
-            )
+            assert test_subdir.exists(), f"Should be able to create subdirectories in {dir_name}/"
 
             # Test file creation
             test_file = test_subdir / "test.txt"
             test_file.write_text("test content")
-            assert test_file.exists(), (
-                f"Should be able to create files in {dir_name}/ subdirectories"
-            )
+            assert test_file.exists(), f"Should be able to create files in {dir_name}/ subdirectories"
 
             # Clean up
             test_file.unlink()
             test_subdir.rmdir()
 
-    def test_supporting_directories_relationship(
-        self, repo_root: Path, supporting_dirs: Dict[str, Path]
-    ) -> None:
+    def test_supporting_directories_relationship(self, repo_root: Path, supporting_dirs: Dict[str, Path]) -> None:
         """
         Test relationships between supporting directories.
 
@@ -483,12 +413,8 @@ class TestSupportingDirectoriesIntegration:
         """
         # All should have same parent
         parents = {dir_path.parent for dir_path in supporting_dirs.values()}
-        assert len(parents) == 1, (
-            "All supporting directories should share the same parent"
-        )
-        assert parents.pop() == repo_root, (
-            "All supporting directories should be under repository root"
-        )
+        assert len(parents) == 1, "All supporting directories should share the same parent"
+        assert parents.pop() == repo_root, "All supporting directories should be under repository root"
 
         # No directory should be nested under another
         dir_paths = set(supporting_dirs.values())
@@ -496,17 +422,14 @@ class TestSupportingDirectoriesIntegration:
             for other_path in dir_paths:
                 if dir_path != other_path:
                     assert not str(dir_path).startswith(str(other_path) + "/"), (
-                        f"{dir_path.name}/ should not be nested under "
-                        f"{other_path.name}/"
+                        f"{dir_path.name}/ should not be nested under {other_path.name}/"
                     )
 
 
 class TestSupportingDirectoriesRealWorld:
     """Real-world scenario tests for supporting directories."""
 
-    def test_complete_supporting_directories_workflow(
-        self, repo_root: Path, supporting_dirs: Dict[str, Path]
-    ) -> None:
+    def test_complete_supporting_directories_workflow(self, repo_root: Path, supporting_dirs: Dict[str, Path]) -> None:
         """
         Test complete workflow using all supporting directories.
 
@@ -522,28 +445,20 @@ class TestSupportingDirectoriesRealWorld:
         """
         # Step 1: Verify all directories exist
         for dir_name, dir_path in supporting_dirs.items():
-            assert dir_path.exists() and dir_path.is_dir(), (
-                f"{dir_name}/ should exist and be a directory"
-            )
+            assert dir_path.exists() and dir_path.is_dir(), f"{dir_name}/ should exist and be a directory"
 
         # Step 2: Verify all have READMEs
         for dir_name, dir_path in supporting_dirs.items():
             readme = dir_path / "README.md"
-            assert readme.exists() and readme.is_file(), (
-                f"{dir_name}/README.md should exist"
-            )
+            assert readme.exists() and readme.is_file(), f"{dir_name}/README.md should exist"
 
         # Step 3: Verify structure is at repository root
         for dir_path in supporting_dirs.values():
-            assert dir_path.parent == repo_root, (
-                "All directories should be at repository root"
-            )
+            assert dir_path.parent == repo_root, "All directories should be at repository root"
 
         # Step 4: Verify ready for content (can create test files)
         for dir_name, dir_path in supporting_dirs.items():
             test_file = dir_path / ".test_workflow"
             test_file.write_text("workflow test")
-            assert test_file.exists(), (
-                f"Should be able to create content in {dir_name}/"
-            )
+            assert test_file.exists(), f"Should be able to create content in {dir_name}/"
             test_file.unlink()  # Clean up

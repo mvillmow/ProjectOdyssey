@@ -64,7 +64,6 @@ class TestDocumentationStructure:
         tier_path = docs_root / tier_dir
 
         if not tier_path.exists():
-
             pytest.skip(f"Tier directory not yet created: {tier_path}")
         assert tier_path.exists(), f"docs/{tier_dir}/ should exist"
         assert tier_path.is_dir(), f"docs/{tier_dir}/ should be a directory"
@@ -78,7 +77,6 @@ class TestDocumentationStructure:
         """
         tier1 = docs_root / "getting-started"
         if not tier1.exists():
-
             pytest.skip(f"Tier directory not yet created: {tier1}")
         assert tier1.parent == docs_root, "getting-started/ should be under docs/"
 
@@ -91,7 +89,6 @@ class TestDocumentationStructure:
         """
         tier2 = docs_root / "core"
         if not tier2.exists():
-
             pytest.skip(f"Tier directory not yet created: {tier2}")
         assert tier2.parent == docs_root, "core/ should be under docs/"
 
@@ -104,7 +101,6 @@ class TestDocumentationStructure:
         """
         tier3 = docs_root / "advanced"
         if not tier3.exists():
-
             pytest.skip(f"Tier directory not yet created: {tier3}")
         assert tier3.parent == docs_root, "advanced/ should be under docs/"
 
@@ -117,7 +113,6 @@ class TestDocumentationStructure:
         """
         tier4 = docs_root / "dev"
         if not tier4.exists():
-
             pytest.skip(f"Tier directory not yet created: {tier4}")
         assert tier4.parent == docs_root, "dev/ should be under docs/"
 
@@ -142,7 +137,6 @@ class TestDocumentationStructure:
         """
         expected_tiers = ["getting-started", "core", "advanced", "dev", "integration"]
         if not docs_root.exists():
-
             pytest.skip(f"Documentation not yet created: {docs_root}")
 
         for tier in expected_tiers:
@@ -164,7 +158,6 @@ class TestDocumentationStructure:
         """
         expected_tiers = {"getting-started", "core", "advanced", "dev", "integration"}
         if not docs_root.exists():
-
             pytest.skip(f"Documentation not yet created: {docs_root}")
 
         for tier in expected_tiers:
@@ -190,7 +183,6 @@ class TestDocumentationHierarchy:
         """
         tiers = ["getting-started", "core", "advanced", "dev", "integration"]
         if not docs_root.exists():
-
             pytest.skip(f"Documentation not yet created: {docs_root}")
 
         for tier in tiers:
@@ -212,7 +204,6 @@ class TestDocumentationHierarchy:
         """
         tiers = ["getting-started", "core", "advanced", "dev", "integration"]
         if not docs_root.exists():
-
             pytest.skip(f"Documentation not yet created: {docs_root}")
 
         for tier in tiers:
@@ -262,9 +253,7 @@ class TestCompleteFourTierStructure:
     Tier 4 (Development Guides): 4 documents
     """
 
-    def test_tier1_getting_started_docs_exist(
-        self, repo_root: Path, getting_started_docs: List[Path]
-    ) -> None:
+    def test_tier1_getting_started_docs_exist(self, repo_root: Path, getting_started_docs: List[Path]) -> None:
         """
         Test Tier 1: All 6 Getting Started documents exist.
 
@@ -388,9 +377,7 @@ class TestCompleteFourTierStructure:
             ("dev", 4),
         ],
     )
-    def test_tier_document_counts(
-        self, tier_directories: dict, tier_name: str, expected_count: int
-    ) -> None:
+    def test_tier_document_counts(self, tier_directories: dict, tier_name: str, expected_count: int) -> None:
         """
         Test that each tier has the correct number of documents.
 
@@ -403,13 +390,12 @@ class TestCompleteFourTierStructure:
 
         # Validate expected number of docs exist
         for i in range(expected_count):
-            doc = tier_path / f"doc{i+1}.md"
+            doc = tier_path / f"doc{i + 1}.md"
             if not doc.exists():
                 pytest.skip(f"Documentation file not created yet: {doc}")
 
         # Count markdown files
         md_files = list(tier_path.glob("*.md"))
         assert len(md_files) == expected_count, (
-            f"Tier {tier_name} should have {expected_count} documents, "
-            f"found {len(md_files)}"
+            f"Tier {tier_name} should have {expected_count} documents, found {len(md_files)}"
         )

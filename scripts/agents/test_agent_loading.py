@@ -17,21 +17,12 @@ Exit Codes:
 import argparse
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from common import get_agents_dir
 
 from agent_utils import AgentInfo, extract_frontmatter_parsed, find_agent_files
-
-try:
-    import yaml
-except ImportError:
-    print("Error: PyYAML is required. Install with: pip install pyyaml", file=sys.stderr)
-    sys.exit(1)
-
-
-
 
 def load_agent(file_path: Path, verbose: bool = False) -> Optional[AgentInfo]:
     """
@@ -45,7 +36,7 @@ def load_agent(file_path: Path, verbose: bool = False) -> Optional[AgentInfo]:
         AgentInfo object or None if loading failed
     """
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
     except Exception as e:
         print(f"✗ {file_path.name}: Failed to read file - {e}", file=sys.stderr)
         return None
@@ -63,21 +54,21 @@ def load_agent(file_path: Path, verbose: bool = False) -> Optional[AgentInfo]:
         return None
 
     # Extract required fields
-    name = frontmatter.get('name')
-    description = frontmatter.get('description')
-    tools = frontmatter.get('tools')
-    model = frontmatter.get('model')
+    name = frontmatter.get("name")
+    description = frontmatter.get("description")
+    tools = frontmatter.get("tools")
+    model = frontmatter.get("model")
 
     # Validate required fields are present
     missing = []
     if not name:
-        missing.append('name')
+        missing.append("name")
     if not description:
-        missing.append('description')
+        missing.append("description")
     if not tools:
-        missing.append('tools')
+        missing.append("tools")
     if not model:
-        missing.append('model')
+        missing.append("model")
 
     if missing:
         print(f"✗ {file_path.name}: Missing required fields: {', '.join(missing)}", file=sys.stderr)
@@ -105,10 +96,7 @@ def check_for_duplicates(agents: List[AgentInfo]) -> List[Tuple[str, List[Path]]
             name_to_files[agent.name] = []
         name_to_files[agent.name].append(agent.file_path)
 
-    duplicates = [
-        (name, files) for name, files in name_to_files.items()
-        if len(files) > 1
-    ]
+    duplicates = [(name, files) for name, files in name_to_files.items() if len(files) > 1]
 
     return duplicates
 
@@ -152,7 +140,7 @@ def test_agent_discovery(agents_dir: Path, verbose: bool = False) -> Tuple[List[
     duplicates = check_for_duplicates(loaded_agents)
     if duplicates:
         for name, files in duplicates:
-            file_names = ', '.join(f.name for f in files)
+            file_names = ", ".join(f.name for f in files)
             errors.append(f"Duplicate agent name '{name}' in files: {file_names}")
 
     return loaded_agents, errors
@@ -180,14 +168,13 @@ def display_agents(agents: List[AgentInfo]):
     # Print each agent
     for agent in sorted(agents, key=lambda a: a.name):
         tools_list = agent.get_tools_list()[:3]  # First 3 tools
-        tools_display = ','.join(tools_list)
+        tools_display = ",".join(tools_list)
         if len(agent.get_tools_list()) > 3:
-            tools_display += ',...'
+            tools_display += ",..."
 
-        print(f"{agent.name:<{max_name_len}}  "
-              f"{agent.file_path.name:<{max_file_len}}  "
-              f"{agent.model:<7}  "
-              f"{tools_display}")
+        print(
+            f"{agent.name:<{max_name_len}}  {agent.file_path.name:<{max_file_len}}  {agent.model:<7}  {tools_display}"
+        )
 
 
 def main():
@@ -205,18 +192,14 @@ Examples:
 
     # Specify custom agents directory
     python scripts/agents/test_agent_loading.py --agents-dir /path/to/agents
-        """
+        """,
     )
+    parser.add_argument("--verbose", "-v", action="store_true", help="Show verbose output")
     parser.add_argument(
-        '--verbose', '-v',
-        action='store_true',
-        help='Show verbose output'
-    )
-    parser.add_argument(
-        '--agents-dir',
+        "--agents-dir",
         type=Path,
         default=None,  # Will use get_agents_dir() if not specified
-        help='Path to agents directory (default: .claude/agents)'
+        help="Path to agents directory (default: .claude/agents)",
     )
 
     args = parser.parse_args()
@@ -227,7 +210,7 @@ Examples:
     # Find repository root
     repo_root = Path.cwd()
     while repo_root != repo_root.parent:
-        if (repo_root / '.claude').exists():
+        if (repo_root / ".claude").exists():
             break
         repo_root = repo_root.parent
     else:
@@ -268,5 +251,5 @@ Examples:
         return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

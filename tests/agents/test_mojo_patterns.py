@@ -29,6 +29,7 @@ MAX_FILE_SIZE = 102400  # 100KB max file size to prevent DoS
 @dataclass
 class MojoPatternInfo:
     """Information about Mojo patterns in an agent."""
+
     agent_name: str
     level: int
     is_implementation_agent: bool
@@ -44,32 +45,29 @@ class MojoPatternTester:
     MOJO_PATTERNS = {
         "fn_vs_def": {
             "keywords": ["fn vs def", "fn versus def", "`fn`", "`def`"],
-            "description": "Function definition guidance (fn vs def)"
+            "description": "Function definition guidance (fn vs def)",
         },
         "struct_vs_class": {
             "keywords": ["struct vs class", "struct versus class", "`struct`", "`class`"],
-            "description": "Type definition guidance (struct vs class)"
+            "description": "Type definition guidance (struct vs class)",
         },
         "simd": {
             "keywords": ["simd", "vectorization", "vectorize", "vector"],
-            "description": "SIMD/vectorization optimization"
+            "description": "SIMD/vectorization optimization",
         },
         "memory_management": {
             "keywords": ["owned", "borrowed", "inout", "lifetime"],
-            "description": "Memory management (owned, borrowed, inout)"
+            "description": "Memory management (owned, borrowed, inout)",
         },
         "performance": {
             "keywords": ["@parameter", "compile-time", "performance", "optimization"],
-            "description": "Performance optimization"
+            "description": "Performance optimization",
         },
         "type_safety": {
             "keywords": ["type safety", "type-safe", "raises", "error handling"],
-            "description": "Type safety and error handling"
+            "description": "Type safety and error handling",
         },
-        "traits": {
-            "keywords": ["trait", "protocol", "interface"],
-            "description": "Traits/protocols usage"
-        }
+        "traits": {"keywords": ["trait", "protocol", "interface"], "description": "Traits/protocols usage"},
     }
 
     def __init__(self, agents_dir: Path):
@@ -125,14 +123,14 @@ class MojoPatternTester:
             MojoPatternInfo
         """
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
         except Exception as e:
             self.errors.append(f"Failed to read {file_path.name}: {e}")
             logging.error(f"Failed to read {file_path.name}: {e}")
             return None
 
         # Extract agent name and level
-        name_match = re.search(r'name:\s*(.+)', content)
+        name_match = re.search(r"name:\s*(.+)", content)
         agent_name = name_match.group(1).strip() if name_match else file_path.stem
 
         level = self._detect_level(agent_name, content)
@@ -171,26 +169,26 @@ class MojoPatternTester:
             is_implementation_agent=is_implementation_agent,
             patterns_found=patterns_found,
             pattern_details=pattern_details,
-            completeness_score=completeness_score
+            completeness_score=completeness_score,
         )
 
     def _detect_level(self, name: str, content: str) -> int:
         """Detect agent level."""
-        level_match = re.search(r'Level (\d)', content)
+        level_match = re.search(r"Level (\d)", content)
         if level_match:
             return int(level_match.group(1))
 
-        if 'chief-architect' in name:
+        if "chief-architect" in name:
             return 0
-        elif 'orchestrator' in name:
+        elif "orchestrator" in name:
             return 1
-        elif 'design' in name:
+        elif "design" in name:
             return 2
-        elif 'specialist' in name:
+        elif "specialist" in name:
             return 3
-        elif 'junior' in name and 'engineer' in name:
+        elif "junior" in name and "engineer" in name:
             return 5
-        elif 'engineer' in name:
+        elif "engineer" in name:
             return 4
 
         return -1
@@ -210,14 +208,14 @@ class MojoPatternTester:
         if level in [3, 4, 5]:
             return True
 
-        impl_keywords = ['engineer', 'specialist', 'implementation', 'writer']
+        impl_keywords = ["engineer", "specialist", "implementation", "writer"]
         return any(keyword in name.lower() for keyword in impl_keywords)
 
     def test_pattern_coverage(self) -> None:
         """Test Mojo pattern coverage across agents."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("MOJO PATTERN COVERAGE")
-        print("="*80)
+        print("=" * 80)
 
         # Overall statistics
         total_agents = len(self.pattern_info)
@@ -231,15 +229,9 @@ class MojoPatternTester:
         # Pattern coverage by pattern type
         print("\n\nPattern Coverage by Type:")
         for pattern_name, pattern_config in self.MOJO_PATTERNS.items():
-            agents_with_pattern = [
-                info for info in self.pattern_info
-                if pattern_name in info.patterns_found
-            ]
+            agents_with_pattern = [info for info in self.pattern_info if pattern_name in info.patterns_found]
 
-            impl_with_pattern = [
-                info for info in impl_agents
-                if pattern_name in info.patterns_found
-            ]
+            impl_with_pattern = [info for info in impl_agents if pattern_name in info.patterns_found]
 
             print(f"\n{pattern_config['description']}:")
             print(f"  Total agents: {len(agents_with_pattern)}/{total_agents}")
@@ -248,15 +240,13 @@ class MojoPatternTester:
             if len(impl_agents) > 0:
                 coverage = len(impl_with_pattern) / len(impl_agents) * 100
                 if coverage < 50:
-                    self.warnings.append(
-                        f"Low coverage for '{pattern_name}' in implementation agents: {coverage:.1f}%"
-                    )
+                    self.warnings.append(f"Low coverage for '{pattern_name}' in implementation agents: {coverage:.1f}%")
 
     def test_implementation_agent_patterns(self) -> None:
         """Test that implementation agents have comprehensive Mojo guidance."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("IMPLEMENTATION AGENT MOJO GUIDANCE")
-        print("="*80)
+        print("=" * 80)
 
         impl_agents = [info for info in self.pattern_info if info.is_implementation_agent]
 
@@ -280,9 +270,7 @@ class MojoPatternTester:
 
             if missing_critical:
                 print(f"  ⚠ Missing critical patterns: {', '.join(sorted(missing_critical))}")
-                self.warnings.append(
-                    f"{info.agent_name} missing critical Mojo patterns: {', '.join(missing_critical)}"
-                )
+                self.warnings.append(f"{info.agent_name} missing critical Mojo patterns: {', '.join(missing_critical)}")
 
             # Show all patterns
             if info.patterns_found:
@@ -296,14 +284,11 @@ class MojoPatternTester:
 
     def test_fn_vs_def_guidance(self) -> None:
         """Test fn vs def guidance specifically."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("FN VS DEF GUIDANCE")
-        print("="*80)
+        print("=" * 80)
 
-        agents_with_guidance = [
-            info for info in self.pattern_info
-            if "fn_vs_def" in info.patterns_found
-        ]
+        agents_with_guidance = [info for info in self.pattern_info if "fn_vs_def" in info.patterns_found]
 
         print(f"\nAgents with fn vs def guidance: {len(agents_with_guidance)}")
 
@@ -314,30 +299,22 @@ class MojoPatternTester:
 
         # Check implementation agents specifically
         impl_agents = [info for info in self.pattern_info if info.is_implementation_agent]
-        impl_with_guidance = [
-            info for info in impl_agents
-            if "fn_vs_def" in info.patterns_found
-        ]
+        impl_with_guidance = [info for info in impl_agents if "fn_vs_def" in info.patterns_found]
 
         if impl_agents:
             coverage = len(impl_with_guidance) / len(impl_agents) * 100
             print(f"\nImplementation agent coverage: {len(impl_with_guidance)}/{len(impl_agents)} ({coverage:.1f}%)")
 
             if coverage < 80:
-                self.warnings.append(
-                    f"Low fn vs def guidance coverage in implementation agents: {coverage:.1f}%"
-                )
+                self.warnings.append(f"Low fn vs def guidance coverage in implementation agents: {coverage:.1f}%")
 
     def test_simd_optimization_guidance(self) -> None:
         """Test SIMD optimization guidance."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("SIMD OPTIMIZATION GUIDANCE")
-        print("="*80)
+        print("=" * 80)
 
-        agents_with_simd = [
-            info for info in self.pattern_info
-            if "simd" in info.patterns_found
-        ]
+        agents_with_simd = [info for info in self.pattern_info if "simd" in info.patterns_found]
 
         print(f"\nAgents with SIMD guidance: {len(agents_with_simd)}")
 
@@ -348,8 +325,9 @@ class MojoPatternTester:
 
         # SIMD is especially important for performance-critical agents
         perf_agents = [
-            info for info in self.pattern_info
-            if 'performance' in info.agent_name.lower() or 'optimization' in info.agent_name.lower()
+            info
+            for info in self.pattern_info
+            if "performance" in info.agent_name.lower() or "optimization" in info.agent_name.lower()
         ]
 
         if perf_agents:
@@ -358,20 +336,15 @@ class MojoPatternTester:
 
             for info in perf_agents:
                 if "simd" not in info.patterns_found:
-                    self.warnings.append(
-                        f"{info.agent_name} is performance-focused but lacks SIMD guidance"
-                    )
+                    self.warnings.append(f"{info.agent_name} is performance-focused but lacks SIMD guidance")
 
     def test_memory_management_guidance(self) -> None:
         """Test memory management guidance."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("MEMORY MANAGEMENT GUIDANCE")
-        print("="*80)
+        print("=" * 80)
 
-        agents_with_mem = [
-            info for info in self.pattern_info
-            if "memory_management" in info.patterns_found
-        ]
+        agents_with_mem = [info for info in self.pattern_info if "memory_management" in info.patterns_found]
 
         print(f"\nAgents with memory management guidance: {len(agents_with_mem)}")
 
@@ -381,25 +354,21 @@ class MojoPatternTester:
             print(f"  Keywords found: {', '.join(keywords)}")
 
         # Check implementation engineers specifically
-        impl_engineers = [
-            info for info in self.pattern_info
-            if info.level in [4, 5]
-        ]
+        impl_engineers = [info for info in self.pattern_info if info.level in [4, 5]]
 
         if impl_engineers:
-            engineers_with_mem = [
-                info for info in impl_engineers
-                if "memory_management" in info.patterns_found
-            ]
+            engineers_with_mem = [info for info in impl_engineers if "memory_management" in info.patterns_found]
 
             coverage = len(engineers_with_mem) / len(impl_engineers) * 100
-            print(f"\nImplementation engineer coverage: {len(engineers_with_mem)}/{len(impl_engineers)} ({coverage:.1f}%)")
+            print(
+                f"\nImplementation engineer coverage: {len(engineers_with_mem)}/{len(impl_engineers)} ({coverage:.1f}%)"
+            )
 
     def print_summary(self) -> None:
         """Print test summary."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("MOJO PATTERNS TEST SUMMARY")
-        print("="*80)
+        print("=" * 80)
 
         impl_agents = [info for info in self.pattern_info if info.is_implementation_agent]
 
@@ -433,7 +402,7 @@ class MojoPatternTester:
             if len(self.warnings) > 10:
                 print(f"  ... and {len(self.warnings) - 10} more")
 
-        print("="*80)
+        print("=" * 80)
 
 
 def main() -> int:
@@ -441,12 +410,9 @@ def main() -> int:
 
     Returns:
         Exit code (0 for success, 1 for errors).
-   """
+    """
     # Configure logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(levelname)s: %(message)s'
-    )
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
     logger = logging.getLogger(__name__)
 
     # Determine agents directory

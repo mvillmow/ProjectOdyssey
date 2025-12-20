@@ -20,7 +20,7 @@ import logging
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 from dataclasses import dataclass
 
 
@@ -36,6 +36,7 @@ MAX_TOOL_COUNT = 10  # Maximum number of tools (sanity check)
 @dataclass
 class ValidationResult:
     """Result of validating an agent configuration."""
+
     file_path: Path
     is_valid: bool
     errors: List[str]
@@ -76,9 +77,20 @@ class AgentConfigValidator:
     #
     # Common tools: Read, Write, Edit, Bash, Grep, Glob, WebFetch, WebSearch, etc.
     VALID_TOOLS = {
-        "Read", "Write", "Edit", "Bash", "Grep", "Glob",
-        "WebFetch", "WebSearch", "NotebookEdit",
-        "AskUserQuestion", "TodoWrite", "Task", "Skill", "SlashCommand"
+        "Read",
+        "Write",
+        "Edit",
+        "Bash",
+        "Grep",
+        "Glob",
+        "WebFetch",
+        "WebSearch",
+        "NotebookEdit",
+        "AskUserQuestion",
+        "TodoWrite",
+        "Task",
+        "Skill",
+        "SlashCommand",
     }
 
     # Valid model values
@@ -96,9 +108,15 @@ class AgentConfigValidator:
 
     # Mojo-specific keywords that should appear in relevant agents
     MOJO_KEYWORDS = {
-        "fn vs def", "struct vs class", "SIMD",
-        "@parameter", "owned", "borrowed",
-        "performance", "optimization", "vectorization"
+        "fn vs def",
+        "struct vs class",
+        "SIMD",
+        "@parameter",
+        "owned",
+        "borrowed",
+        "performance",
+        "optimization",
+        "vectorization",
     }
 
     def __init__(self, agents_dir: Path):
@@ -131,12 +149,11 @@ class AgentConfigValidator:
             file_size = agent_file.stat().st_size
             if file_size > MAX_FILE_SIZE:
                 logging.warning(f"Skipping {agent_file.name} (file too large: {file_size} bytes)")
-                self.results.append(ValidationResult(
-                    agent_file,
-                    False,
-                    [f"File too large: {file_size} bytes (max: {MAX_FILE_SIZE})"],
-                    []
-                ))
+                self.results.append(
+                    ValidationResult(
+                        agent_file, False, [f"File too large: {file_size} bytes (max: {MAX_FILE_SIZE})"], []
+                    )
+                )
                 continue
 
             result = self.validate_file(agent_file)
@@ -157,7 +174,7 @@ class AgentConfigValidator:
         warnings = []
 
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
         except Exception as e:
             errors.append(f"Failed to read file: {e}")
             logging.error(f"Failed to read {file_path.name}: {e}")
@@ -192,13 +209,13 @@ class AgentConfigValidator:
 
         Returns:
             Tuple of (errors, warnings, frontmatter_dict).
-       """
+        """
         errors = []
         warnings = []
         frontmatter = {}
 
         # Extract frontmatter
-        frontmatter_match = re.match(r'^---\n(.*?)\n---', content, re.DOTALL)
+        frontmatter_match = re.match(r"^---\n(.*?)\n---", content, re.DOTALL)
         if not frontmatter_match:
             errors.append("No YAML frontmatter found (must start with ---)")
             return errors, warnings, frontmatter
@@ -206,16 +223,16 @@ class AgentConfigValidator:
         frontmatter_text = frontmatter_match.group(1)
 
         # Parse frontmatter (simple key: value parsing)
-        for line in frontmatter_text.split('\n'):
+        for line in frontmatter_text.split("\n"):
             line = line.strip()
-            if not line or line.startswith('#'):
+            if not line or line.startswith("#"):
                 continue
 
-            if ':' not in line:
+            if ":" not in line:
                 errors.append(f"Invalid frontmatter line (no colon): {line}")
                 continue
 
-            key, value = line.split(':', 1)
+            key, value = line.split(":", 1)
             key = key.strip()
             value = value.strip()
             frontmatter[key] = value
@@ -226,20 +243,20 @@ class AgentConfigValidator:
             errors.append(f"Missing required fields: {', '.join(sorted(missing_fields))}")
 
         # Validate specific fields
-        if 'name' in frontmatter:
-            name = frontmatter['name']
-            if not re.match(r'^[a-z0-9-]+$', name):
+        if "name" in frontmatter:
+            name = frontmatter["name"]
+            if not re.match(r"^[a-z0-9-]+$", name):
                 errors.append(f"Invalid name format '{name}' (use lowercase, numbers, hyphens only)")
 
-        if 'description' in frontmatter:
-            desc = frontmatter['description']
+        if "description" in frontmatter:
+            desc = frontmatter["description"]
             if len(desc) < MIN_DESCRIPTION_LENGTH:
                 warnings.append(f"Description too short ({len(desc)} chars) - may not trigger auto-invocation")
-            if not any(word in desc.lower() for word in ['when', 'for', 'to', 'implement', 'design', 'test']):
+            if not any(word in desc.lower() for word in ["when", "for", "to", "implement", "design", "test"]):
                 warnings.append("Description should clearly state when to use this agent")
 
-        if 'tools' in frontmatter:
-            tools = [t.strip() for t in frontmatter['tools'].split(',')]
+        if "tools" in frontmatter:
+            tools = [t.strip() for t in frontmatter["tools"].split(",")]
             invalid_tools = [t for t in tools if t not in self.VALID_TOOLS]
             if invalid_tools:
                 errors.append(f"Invalid tools: {', '.join(invalid_tools)}")
@@ -248,8 +265,8 @@ class AgentConfigValidator:
             if len(tools) > MAX_TOOL_COUNT:
                 warnings.append(f"Large number of tools specified ({len(tools)}), verify this is intentional")
 
-        if 'model' in frontmatter:
-            model = frontmatter['model'].lower()
+        if "model" in frontmatter:
+            model = frontmatter["model"].lower()
             if model not in self.VALID_MODELS:
                 errors.append(f"Invalid model '{model}' (use: {', '.join(self.VALID_MODELS)})")
 
@@ -264,15 +281,15 @@ class AgentConfigValidator:
 
         Returns:
             Tuple of (errors, warnings).
-       """
+        """
         errors = []
         warnings = []
 
         filename = file_path.stem  # Without .md extension
 
         # Check that filename matches frontmatter name
-        if 'name' in frontmatter:
-            if filename != frontmatter['name']:
+        if "name" in frontmatter:
+            if filename != frontmatter["name"]:
                 errors.append(f"Filename '{filename}' doesn't match name '{frontmatter['name']}'")
 
         # Check for level patterns
@@ -300,8 +317,8 @@ class AgentConfigValidator:
         warnings = []
 
         # Check if this is an implementation-level agent
-        name = frontmatter.get('name', '')
-        is_implementation = any(word in name for word in ['engineer', 'specialist', 'implementation'])
+        name = frontmatter.get("name", "")
+        is_implementation = any(word in name for word in ["engineer", "specialist", "implementation"])
 
         if not is_implementation:
             return warnings  # Only check implementation agents
@@ -311,13 +328,15 @@ class AgentConfigValidator:
         found_keywords = [kw for kw in self.MOJO_KEYWORDS if kw.lower() in content_lower]
 
         # Commented out: Mojo guidance check is too strict for current agent design
-        # if not found_keywords:
-        #     warnings.append("Implementation agent should include Mojo-specific guidance (fn vs def, struct vs class, SIMD, etc.)")
-        # elif len(found_keywords) < 3:
-        #     warnings.append(f"Limited Mojo guidance found (only {len(found_keywords)} keywords)")
+        if not found_keywords:
+            warnings.append(
+                "Implementation agent should include Mojo-specific guidance (fn vs def, struct vs class, SIMD, etc.)"
+            )
+        elif len(found_keywords) < 3:
+            warnings.append(f"Limited Mojo guidance found (only {len(found_keywords)} keywords)")
 
         # Check for specific sections
-        if 'mojo' not in content_lower:
+        if "mojo" not in content_lower:
             warnings.append("No explicit 'Mojo' section found - consider adding Mojo-specific guidelines")
 
         return warnings
@@ -334,28 +353,25 @@ class AgentConfigValidator:
         warnings = []
 
         # Expected sections
-        expected_sections = [
-            "Role", "Responsibilities", "Scope",
-            "Delegation", "Workflow", "Examples"
-        ]
+        expected_sections = ["Role", "Responsibilities", "Scope", "Delegation", "Workflow", "Examples"]
 
         content_lower = content.lower()
         missing_sections = []
 
         for section in expected_sections:
             # Check for section headers (## Section or # Section)
-            if not re.search(rf'^#+ {section}', content, re.MULTILINE | re.IGNORECASE):
+            if not re.search(rf"^#+ {section}", content, re.MULTILINE | re.IGNORECASE):
                 missing_sections.append(section)
 
         if missing_sections:
             warnings.append(f"Missing recommended sections: {', '.join(missing_sections)}")
 
         # Check for delegation information
-        if 'delegate' not in content_lower and 'escalate' not in content_lower:
+        if "delegate" not in content_lower and "escalate" not in content_lower:
             warnings.append("No delegation/escalation guidance found")
 
         # Check for examples
-        if 'example' not in content_lower:
+        if "example" not in content_lower:
             warnings.append("No examples provided")
 
         return warnings
@@ -373,27 +389,27 @@ class AgentConfigValidator:
         total_errors = sum(len(r.errors) for r in self.results)
         total_warnings = sum(len(r.warnings) for r in self.results)
 
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("VALIDATION SUMMARY")
-        print("="*80)
+        print("=" * 80)
         print(f"Total files: {total}")
         print(f"Passed: {passed}")
         print(f"Failed: {failed}")
         print(f"Total errors: {total_errors}")
         print(f"Total warnings: {total_warnings}")
-        print("="*80)
+        print("=" * 80)
 
         # Print individual results
         for result in self.results:
             print(result)
 
         # Print final status
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         if failed == 0:
             print("ALL VALIDATIONS PASSED")
         else:
             print(f"VALIDATION FAILED: {failed} file(s) with errors")
-        print("="*80)
+        print("=" * 80)
 
 
 def main() -> int:
@@ -401,12 +417,9 @@ def main() -> int:
 
     Returns:
         Exit code (0 for success, 1 for failure).
-   """
+    """
     # Configure logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(levelname)s: %(message)s'
-    )
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
     logger = logging.getLogger(__name__)
 
     # Determine agents directory

@@ -13,12 +13,9 @@ Test Categories:
 Coverage Target: 100%
 """
 
-import os
 import stat
 from pathlib import Path
-from typing import Dict, List
 
-import pytest
 
 
 class TestPapersDirectoryStructure:
@@ -187,11 +184,7 @@ class TestSharedDirectoryStructure:
         assert init_file.is_file(), "shared/__init__.mojo must be a file"
 
     def test_shared_subdirectories_exist(
-        self,
-        shared_core_dir: Path,
-        shared_training_dir: Path,
-        shared_data_dir: Path,
-        shared_utils_dir: Path
+        self, shared_core_dir: Path, shared_training_dir: Path, shared_data_dir: Path, shared_utils_dir: Path
     ) -> None:
         """
         Test that all required shared subdirectories exist.
@@ -367,11 +360,7 @@ class TestSharedDirectoryStructure:
 class TestDirectoryHierarchy:
     """Test cases for directory hierarchy relationships."""
 
-    def test_papers_and_shared_are_siblings(
-        self,
-        papers_dir: Path,
-        shared_dir: Path
-    ) -> None:
+    def test_papers_and_shared_are_siblings(self, papers_dir: Path, shared_dir: Path) -> None:
         """
         Test that papers/ and shared/ are sibling directories.
 
@@ -383,14 +372,9 @@ class TestDirectoryHierarchy:
             papers_dir: Papers directory path
             shared_dir: Shared directory path
         """
-        assert papers_dir.parent == shared_dir.parent, \
-            "papers/ and shared/ must be in same parent directory"
+        assert papers_dir.parent == shared_dir.parent, "papers/ and shared/ must be in same parent directory"
 
-    def test_template_is_child_of_papers(
-        self,
-        papers_dir: Path,
-        template_dir: Path
-    ) -> None:
+    def test_template_is_child_of_papers(self, papers_dir: Path, template_dir: Path) -> None:
         """
         Test that _template/ is direct child of papers/.
 
@@ -402,8 +386,7 @@ class TestDirectoryHierarchy:
             papers_dir: Papers directory path
             template_dir: Template directory path
         """
-        assert template_dir.parent == papers_dir, \
-            "_template/ must be direct child of papers/"
+        assert template_dir.parent == papers_dir, "_template/ must be direct child of papers/"
 
     def test_shared_subdirectories_are_children(
         self,
@@ -411,7 +394,7 @@ class TestDirectoryHierarchy:
         shared_core_dir: Path,
         shared_training_dir: Path,
         shared_data_dir: Path,
-        shared_utils_dir: Path
+        shared_utils_dir: Path,
     ) -> None:
         """
         Test that all shared subdirectories are direct children.
@@ -427,11 +410,7 @@ class TestDirectoryHierarchy:
             shared_data_dir: Shared data directory path
             shared_utils_dir: Shared utils directory path
         """
-        assert shared_core_dir.parent == shared_dir, \
-            "core/ must be direct child of shared/"
-        assert shared_training_dir.parent == shared_dir, \
-            "training/ must be direct child of shared/"
-        assert shared_data_dir.parent == shared_dir, \
-            "data/ must be direct child of shared/"
-        assert shared_utils_dir.parent == shared_dir, \
-            "utils/ must be direct child of shared/"
+        assert shared_core_dir.parent == shared_dir, "core/ must be direct child of shared/"
+        assert shared_training_dir.parent == shared_dir, "training/ must be direct child of shared/"
+        assert shared_data_dir.parent == shared_dir, "data/ must be direct child of shared/"
+        assert shared_utils_dir.parent == shared_dir, "utils/ must be direct child of shared/"

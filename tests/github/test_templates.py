@@ -25,7 +25,7 @@ class TestIssueTemplates:
         assert len(template_files) > 0, "No .yml templates found"
 
         for template_file in template_files:
-            with open(template_file, 'r') as f:
+            with open(template_file, "r") as f:
                 try:
                     data = yaml.safe_load(f)
                     assert data is not None, f"{template_file.name} is empty"
@@ -37,7 +37,7 @@ class TestIssueTemplates:
         config_file = ISSUE_TEMPLATE_DIR / "config.yml"
         assert config_file.exists()
 
-        with open(config_file, 'r') as f:
+        with open(config_file, "r") as f:
             config = yaml.safe_load(f)
             assert config is not None
 
@@ -49,7 +49,7 @@ class TestBugReportTemplate:
     def template_data(self):
         """Load bug report template."""
         template_file = ISSUE_TEMPLATE_DIR / "01-bug-report.yml"
-        with open(template_file, 'r') as f:
+        with open(template_file, "r") as f:
             return yaml.safe_load(f)
 
     def test_template_exists(self):
@@ -83,8 +83,12 @@ class TestBugReportTemplate:
     def test_has_environment_field(self, template_data):
         """Test template has environment/system info field."""
         body = template_data.get("body", [])
-        env_fields = [field for field in body if "environment" in field.get("id", "").lower() or
-                     "system" in field.get("attributes", {}).get("label", "").lower()]
+        env_fields = [
+            field
+            for field in body
+            if "environment" in field.get("id", "").lower()
+            or "system" in field.get("attributes", {}).get("label", "").lower()
+        ]
         assert len(env_fields) > 0
 
 
@@ -95,7 +99,7 @@ class TestFeatureRequestTemplate:
     def template_data(self):
         """Load feature request template."""
         template_file = ISSUE_TEMPLATE_DIR / "02-feature-request.yml"
-        with open(template_file, 'r') as f:
+        with open(template_file, "r") as f:
             return yaml.safe_load(f)
 
     def test_template_exists(self):
@@ -121,7 +125,7 @@ class TestPaperImplementationTemplate:
     def template_data(self):
         """Load paper implementation template."""
         template_file = ISSUE_TEMPLATE_DIR / "03-paper-implementation.yml"
-        with open(template_file, 'r') as f:
+        with open(template_file, "r") as f:
             return yaml.safe_load(f)
 
     def test_template_exists(self):
@@ -148,7 +152,7 @@ class TestDocumentationTemplate:
     def template_data(self):
         """Load documentation template."""
         template_file = ISSUE_TEMPLATE_DIR / "04-documentation.yml"
-        with open(template_file, 'r') as f:
+        with open(template_file, "r") as f:
             return yaml.safe_load(f)
 
     def test_template_exists(self):
@@ -169,7 +173,7 @@ class TestInfrastructureTemplate:
     def template_data(self):
         """Load infrastructure template."""
         template_file = ISSUE_TEMPLATE_DIR / "05-infrastructure.yml"
-        with open(template_file, 'r') as f:
+        with open(template_file, "r") as f:
             return yaml.safe_load(f)
 
     def test_template_exists(self):
@@ -190,7 +194,7 @@ class TestQuestionTemplate:
     def template_data(self):
         """Load question template."""
         template_file = ISSUE_TEMPLATE_DIR / "06-question.yml"
-        with open(template_file, 'r') as f:
+        with open(template_file, "r") as f:
             return yaml.safe_load(f)
 
     def test_template_exists(self):
@@ -211,7 +215,7 @@ class TestPerformanceIssueTemplate:
     def template_data(self):
         """Load performance issue template."""
         template_file = ISSUE_TEMPLATE_DIR / "07-performance-issue.yml"
-        with open(template_file, 'r') as f:
+        with open(template_file, "r") as f:
             return yaml.safe_load(f)
 
     def test_template_exists(self):
@@ -228,17 +232,23 @@ class TestPerformanceIssueTemplate:
         """Test template has performance metrics fields."""
         body = template_data.get("body", [])
         # Should have current and expected metrics fields
-        metric_fields = [field for field in body if
-                        "metric" in field.get("id", "").lower() or
-                        "metric" in field.get("attributes", {}).get("label", "").lower()]
+        metric_fields = [
+            field
+            for field in body
+            if "metric" in field.get("id", "").lower()
+            or "metric" in field.get("attributes", {}).get("label", "").lower()
+        ]
         assert len(metric_fields) >= 2  # At least current and expected metrics
 
     def test_has_environment_field(self, template_data):
         """Test template has hardware/environment field."""
         body = template_data.get("body", [])
-        env_fields = [field for field in body if
-                     "environment" in field.get("id", "").lower() or
-                     "hardware" in field.get("attributes", {}).get("label", "").lower()]
+        env_fields = [
+            field
+            for field in body
+            if "environment" in field.get("id", "").lower()
+            or "hardware" in field.get("attributes", {}).get("label", "").lower()
+        ]
         assert len(env_fields) > 0
 
     def test_has_baseline_field(self, template_data):
@@ -256,7 +266,7 @@ class TestAllTemplatesConsistency:
         template_files = [f for f in ISSUE_TEMPLATE_DIR.glob("*.yml") if f.name != "config.yml"]
 
         for template_file in template_files:
-            with open(template_file, 'r') as f:
+            with open(template_file, "r") as f:
                 data = yaml.safe_load(f)
                 assert "labels" in data, f"{template_file.name} has no labels"
                 assert len(data["labels"]) > 0, f"{template_file.name} has empty labels"
@@ -266,7 +276,7 @@ class TestAllTemplatesConsistency:
         template_files = [f for f in ISSUE_TEMPLATE_DIR.glob("*.yml") if f.name != "config.yml"]
 
         for template_file in template_files:
-            with open(template_file, 'r') as f:
+            with open(template_file, "r") as f:
                 data = yaml.safe_load(f)
                 assert "title" in data, f"{template_file.name} has no title"
 
@@ -275,7 +285,7 @@ class TestAllTemplatesConsistency:
         template_files = [f for f in ISSUE_TEMPLATE_DIR.glob("*.yml") if f.name != "config.yml"]
 
         for template_file in template_files:
-            with open(template_file, 'r') as f:
+            with open(template_file, "r") as f:
                 data = yaml.safe_load(f)
                 assert "description" in data, f"{template_file.name} has no description"
                 assert len(data["description"]) > 0, f"{template_file.name} has empty description"

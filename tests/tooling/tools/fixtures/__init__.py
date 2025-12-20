@@ -169,7 +169,7 @@ Describe what this tool does.
 Test suite for {tool_name}.
 \"\"\"
 
-def test_{tool_name.replace('-', '_')}_placeholder():
+def test_{tool_name.replace("-", "_")}_placeholder():
     \"\"\"Placeholder test for {tool_name}.\"\"\"
     assert True
 """.strip()

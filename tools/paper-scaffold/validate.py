@@ -11,15 +11,15 @@ Justification: File I/O, regex validation, no performance requirements
 Reference: ADR-001
 """
 
-import re
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import List, Tuple
+from typing import List
 
 
 class ValidationStatus(Enum):
     """Status of validation result."""
+
     PASS = "PASS"
     FAIL = "FAIL"
     WARNING = "WARNING"
@@ -28,6 +28,7 @@ class ValidationStatus(Enum):
 @dataclass
 class FileValidationError:
     """Error found in a specific file."""
+
     file_path: Path
     error_message: str
     line_number: int | None = None
@@ -37,6 +38,7 @@ class FileValidationError:
 @dataclass
 class ValidationReport:
     """Comprehensive validation report."""
+
     status: ValidationStatus
     missing_directories: List[Path] = field(default_factory=list)
     missing_files: List[Path] = field(default_factory=list)
@@ -134,9 +136,7 @@ class PaperStructureValidator:
         # Check if paper directory exists
         if not self.paper_path.exists():
             report.status = ValidationStatus.FAIL
-            report.suggestions.append(
-                f"Paper directory does not exist: {self.paper_path}"
-            )
+            report.suggestions.append(f"Paper directory does not exist: {self.paper_path}")
             return report
 
         # Validate directory structure
@@ -170,9 +170,7 @@ class PaperStructureValidator:
         for dir_name in self.RECOMMENDED_DIRS:
             dir_path = self.paper_path / dir_name
             if not dir_path.exists():
-                report.warnings.append(
-                    f"Recommended directory missing: {dir_name}/"
-                )
+                report.warnings.append(f"Recommended directory missing: {dir_name}/")
 
     def _validate_files(self, report: ValidationReport) -> None:
         """Validate required files exist."""
@@ -201,9 +199,7 @@ class PaperStructureValidator:
             required_sections = ["#", "Overview", "Implementation"]
             for section in required_sections:
                 if section.lower() not in content.lower():
-                    report.warnings.append(
-                        f"README.md missing recommended section: {section}"
-                    )
+                    report.warnings.append(f"README.md missing recommended section: {section}")
 
             # Check it's not empty
             if len(content.strip()) < 50:
@@ -211,7 +207,7 @@ class PaperStructureValidator:
                     FileValidationError(
                         file_path=readme_path,
                         error_message="README.md appears to be empty or too short",
-                        suggestion="Add paper overview and implementation details"
+                        suggestion="Add paper overview and implementation details",
                     )
                 )
 
@@ -220,7 +216,7 @@ class PaperStructureValidator:
                 FileValidationError(
                     file_path=readme_path,
                     error_message=f"Could not read file: {e}",
-                    suggestion="Ensure file is valid UTF-8 text"
+                    suggestion="Ensure file is valid UTF-8 text",
                 )
             )
 
@@ -233,16 +229,14 @@ class PaperStructureValidator:
             if content.strip() and not content.strip().startswith("#"):
                 # Basic check: Mojo files should have some structure
                 if "fn " not in content and "def " not in content and "struct " not in content:
-                    report.warnings.append(
-                        f"{mojo_path.name}: No function or struct definitions found"
-                    )
+                    report.warnings.append(f"{mojo_path.name}: No function or struct definitions found")
 
         except Exception as e:
             report.invalid_files.append(
                 FileValidationError(
                     file_path=mojo_path,
                     error_message=f"Could not read file: {e}",
-                    suggestion="Ensure file is valid UTF-8 text"
+                    suggestion="Ensure file is valid UTF-8 text",
                 )
             )
 
@@ -250,15 +244,11 @@ class PaperStructureValidator:
         """Add actionable fix suggestions to report."""
         if report.missing_directories:
             dirs_to_create = " ".join(str(d) for d in report.missing_directories)
-            report.suggestions.append(
-                f"Create missing directories: mkdir -p {dirs_to_create}"
-            )
+            report.suggestions.append(f"Create missing directories: mkdir -p {dirs_to_create}")
 
         if report.missing_files:
             if self.paper_path / "README.md" in report.missing_files:
-                report.suggestions.append(
-                    "Create README.md from template: cp papers/_template/README.md ."
-                )
+                report.suggestions.append("Create README.md from template: cp papers/_template/README.md .")
 
 
 def validate_paper_structure(paper_path: Path) -> ValidationReport:

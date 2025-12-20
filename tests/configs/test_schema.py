@@ -18,6 +18,7 @@ from pathlib import Path
 try:
     import jsonschema
     from jsonschema import validate, ValidationError
+
     HAS_JSONSCHEMA = True
 except ImportError:
     HAS_JSONSCHEMA = False
@@ -38,7 +39,7 @@ def load_yaml_file(filepath):
     Returns:
         Parsed YAML content as dict
     """
-    with open(filepath, 'r') as f:
+    with open(filepath, "r") as f:
         return yaml.safe_load(f)
 
 
@@ -51,7 +52,7 @@ def load_json_file(filepath):
     Returns:
         Parsed JSON content as dict
     """
-    with open(filepath, 'r') as f:
+    with open(filepath, "r") as f:
         return json.load(f)
 
 
@@ -200,12 +201,7 @@ def test_training_schema_requires_optimizer():
     schema = load_yaml_file("configs/schemas/training.schema.yaml")
 
     # Config missing optimizer should fail
-    invalid_config = {
-        "training": {
-            "epochs": 100,
-            "batch_size": 32
-        }
-    }
+    invalid_config = {"training": {"epochs": 100, "batch_size": 32}}
 
     # Should raise ValidationError for missing optimizer
     # Exact behavior depends on schema design
@@ -224,12 +220,9 @@ def test_training_schema_validates_types():
     invalid_config = {
         "optimizer": {
             "name": "sgd",
-            "learning_rate": "not_a_number"  # Should be number
+            "learning_rate": "not_a_number",  # Should be number
         },
-        "training": {
-            "epochs": 100,
-            "batch_size": 32
-        }
+        "training": {"epochs": 100, "batch_size": 32},
     }
 
     with pytest.raises(ValidationError):
@@ -248,12 +241,12 @@ def test_training_schema_validates_ranges():
     invalid_config = {
         "optimizer": {
             "name": "sgd",
-            "learning_rate": -0.01  # Negative learning rate
+            "learning_rate": -0.01,  # Negative learning rate
         },
         "training": {
             "epochs": -10,  # Negative epochs
-            "batch_size": 0  # Zero batch size
-        }
+            "batch_size": 0,  # Zero batch size
+        },
     }
 
     with pytest.raises(ValidationError):
@@ -272,12 +265,9 @@ def test_training_schema_validates_enums():
     invalid_config = {
         "optimizer": {
             "name": "invalid_optimizer",  # Not in allowed list
-            "learning_rate": 0.01
+            "learning_rate": 0.01,
         },
-        "training": {
-            "epochs": 100,
-            "batch_size": 32
-        }
+        "training": {"epochs": 100, "batch_size": 32},
     }
 
     with pytest.raises(ValidationError):
@@ -301,7 +291,7 @@ def test_model_schema_validates_field_types():
     # Config with wrong type for extends should fail
     invalid_config = {
         "extends": 123,  # Should be string, not int
-        "num_classes": 10
+        "num_classes": 10,
     }
 
     with pytest.raises(ValidationError):
@@ -319,7 +309,7 @@ def test_model_schema_validates_num_classes():
     # Config with invalid num_classes should fail
     invalid_config = {
         "name": "TestModel",
-        "num_classes": -5  # Negative classes
+        "num_classes": -5,  # Negative classes
     }
 
     with pytest.raises(ValidationError):

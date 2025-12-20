@@ -24,8 +24,14 @@ class TestLabelColors:
     def test_label_colors_has_required_labels(self):
         """Test that all required labels are defined"""
         required_labels = [
-            'planning', 'documentation', 'testing', 'tdd',
-            'implementation', 'packaging', 'integration', 'cleanup'
+            "planning",
+            "documentation",
+            "testing",
+            "tdd",
+            "implementation",
+            "packaging",
+            "integration",
+            "cleanup",
         ]
         for label in required_labels:
             assert label in LABEL_COLORS, f"Missing label: {label}"
@@ -52,18 +58,18 @@ class TestGetRepoRoot:
     def test_get_repo_root_has_git_dir(self):
         """Test that repo root contains .git directory"""
         root = get_repo_root()
-        git_dir = root / '.git'
+        git_dir = root / ".git"
         assert git_dir.exists(), f"No .git directory found in {root}"
 
     def test_get_repo_root_has_expected_structure(self):
         """Test that repo root has expected directories"""
         root = get_repo_root()
-        expected_dirs = ['scripts', 'notes', '.claude']
+        expected_dirs = ["scripts", "notes", ".claude"]
         for dir_name in expected_dirs:
             dir_path = root / dir_name
             # Note: .claude and notes might not exist in all environments
             # So we just check scripts which should always exist
-            if dir_name == 'scripts':
+            if dir_name == "scripts":
                 assert dir_path.exists(), f"Missing {dir_name} directory"
 
 
@@ -84,8 +90,8 @@ class TestGetAgentsDir:
         """Test that agents dir is under .claude/agents"""
         try:
             agents_dir = get_agents_dir()
-            assert agents_dir.name == 'agents'
-            assert agents_dir.parent.name == '.claude'
+            assert agents_dir.name == "agents"
+            assert agents_dir.parent.name == ".claude"
         except RuntimeError:
             # Expected if agents directory doesn't exist
             pass
@@ -96,5 +102,5 @@ class TestGetAgentsDir:
 # See .claude/shared/github-issue-workflow.md
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

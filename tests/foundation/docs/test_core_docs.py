@@ -21,7 +21,6 @@ import pytest
 from pathlib import Path
 
 
-
 @pytest.fixture
 def core_docs_dir(repo_root: Path) -> Path:
     """
@@ -63,7 +62,6 @@ class TestCoreDocsExistence:
         doc_path = core_docs_dir / doc_name
 
         if not doc_path.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc_path}")
         assert doc_path.exists(), f"{doc_name} should exist"
         assert doc_path.is_file(), f"{doc_name} should be a file"
@@ -80,9 +78,7 @@ class TestCoreDocsExistence:
         title = doc_name.replace("-", " ").title().replace(".Md", "")
         content = f"# {title}\n\nContent here.\n"
         if not doc_path.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc_path}")
-
 
         doc_path.write_text(content)
 
@@ -98,7 +94,7 @@ class TestCoreDocsExistence:
             doc_name: Name of document to test
         """
         doc_path = core_docs_dir / doc_name
-        content = f"""# Document Title
+        content = """# Document Title
 
 ## Overview
 
@@ -109,9 +105,7 @@ Overview content.
 Detailed information.
 """
         if not doc_path.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc_path}")
-
 
         doc_path.write_text(content)
 
@@ -145,9 +139,7 @@ ml-odyssey/
 More content.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -177,9 +169,7 @@ Description of modules.
 Function signatures.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -211,9 +201,7 @@ class TestPaperImplementation:
 Code examples here.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -245,9 +233,7 @@ class TestTestingStrategy:
 Coverage requirements.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -279,9 +265,7 @@ fn example():
 More patterns.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -316,9 +300,7 @@ System architecture.
 How agents work together.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -352,9 +334,7 @@ class TestWorkflow:
 Detailed process.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -389,9 +369,7 @@ Configuration options.
 Environment setup.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -421,7 +399,7 @@ class TestTier2Integration:
         ]
 
         for doc in docs:
-            doc_path = (core_docs_dir / doc)
+            doc_path = core_docs_dir / doc
             if not doc_path.exists():
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
 
@@ -447,7 +425,7 @@ class TestTier2Integration:
         ]
 
         for doc in docs:
-            doc_path = (core_docs_dir / doc)
+            doc_path = core_docs_dir / doc
             if not doc_path.exists():
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
 
@@ -473,7 +451,7 @@ class TestTier2Integration:
         }
 
         for doc in expected_docs:
-            doc_path = (core_docs_dir / doc)
+            doc_path = core_docs_dir / doc
             if not doc_path.exists():
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
 

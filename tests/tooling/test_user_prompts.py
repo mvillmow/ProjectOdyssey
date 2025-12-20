@@ -11,7 +11,7 @@ Tests Issue #770 (User Prompts - Write Tests):
 
 import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from io import StringIO
 
 # Add tools directory to path
@@ -28,10 +28,10 @@ class TestInteractivePrompter:
         prompter = InteractivePrompter()
 
         # Mock user input
-        with patch('builtins.input', return_value='LeNet-5'):
+        with patch("builtins.input", return_value="LeNet-5"):
             result = prompter.prompt_for_paper_name()
 
-        assert result == 'LeNet-5'
+        assert result == "LeNet-5"
 
     def test_prompt_for_title(self):
         """Test prompting for paper title."""
@@ -39,10 +39,10 @@ class TestInteractivePrompter:
 
         prompter = InteractivePrompter()
 
-        with patch('builtins.input', return_value='LeNet-5: Gradient-Based Learning'):
+        with patch("builtins.input", return_value="LeNet-5: Gradient-Based Learning"):
             result = prompter.prompt_for_title()
 
-        assert result == 'LeNet-5: Gradient-Based Learning'
+        assert result == "LeNet-5: Gradient-Based Learning"
 
     def test_prompt_for_authors(self):
         """Test prompting for authors."""
@@ -50,10 +50,10 @@ class TestInteractivePrompter:
 
         prompter = InteractivePrompter()
 
-        with patch('builtins.input', return_value='LeCun et al.'):
+        with patch("builtins.input", return_value="LeCun et al."):
             result = prompter.prompt_for_authors()
 
-        assert result == 'LeCun et al.'
+        assert result == "LeCun et al."
 
     def test_prompt_with_default_value(self):
         """Test prompting accepts default values."""
@@ -63,7 +63,7 @@ class TestInteractivePrompter:
         prompter = InteractivePrompter()
 
         # User presses enter (empty input) to accept default
-        with patch('builtins.input', return_value=''):
+        with patch("builtins.input", return_value=""):
             result = prompter.prompt_for_year()
 
         # Should return current year as default
@@ -76,10 +76,10 @@ class TestInteractivePrompter:
 
         prompter = InteractivePrompter()
 
-        with patch('builtins.input', return_value='1998'):
+        with patch("builtins.input", return_value="1998"):
             result = prompter.prompt_for_year()
 
-        assert result == '1998'
+        assert result == "1998"
 
     def test_prompt_validation_empty_required_field(self):
         """Test validation prevents empty required fields."""
@@ -88,14 +88,14 @@ class TestInteractivePrompter:
         prompter = InteractivePrompter()
 
         # Simulate user entering empty string, then valid value
-        with patch('builtins.input', side_effect=['', 'LeNet-5']):
-            with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+        with patch("builtins.input", side_effect=["", "LeNet-5"]):
+            with patch("sys.stdout", new_callable=StringIO) as mock_stdout:
                 result = prompter.prompt_for_paper_name()
 
-        assert result == 'LeNet-5'
+        assert result == "LeNet-5"
         # Check that error message was displayed
         output = mock_stdout.getvalue()
-        assert 'required' in output.lower() or 'cannot be empty' in output.lower()
+        assert "required" in output.lower() or "cannot be empty" in output.lower()
 
     def test_prompt_validation_invalid_year(self):
         """Test validation rejects invalid years."""
@@ -104,13 +104,13 @@ class TestInteractivePrompter:
         prompter = InteractivePrompter()
 
         # Try invalid year, then valid year
-        with patch('builtins.input', side_effect=['abcd', '1998']):
-            with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+        with patch("builtins.input", side_effect=["abcd", "1998"]):
+            with patch("sys.stdout", new_callable=StringIO) as mock_stdout:
                 result = prompter.prompt_for_year()
 
-        assert result == '1998'
+        assert result == "1998"
         output = mock_stdout.getvalue()
-        assert 'invalid' in output.lower() or 'must be' in output.lower()
+        assert "invalid" in output.lower() or "must be" in output.lower()
 
     def test_prompt_validation_year_range(self):
         """Test year validation checks reasonable range."""
@@ -121,13 +121,13 @@ class TestInteractivePrompter:
 
         # Try year in future, then valid year
         future_year = str(datetime.datetime.now().year + 10)
-        with patch('builtins.input', side_effect=[future_year, '1998']):
-            with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+        with patch("builtins.input", side_effect=[future_year, "1998"]):
+            with patch("sys.stdout", new_callable=StringIO) as mock_stdout:
                 result = prompter.prompt_for_year()
 
-        assert result == '1998'
+        assert result == "1998"
         output = mock_stdout.getvalue()
-        assert 'future' in output.lower() or 'range' in output.lower()
+        assert "future" in output.lower() or "range" in output.lower()
 
     def test_prompt_optional_field(self):
         """Test optional fields can be skipped."""
@@ -136,11 +136,11 @@ class TestInteractivePrompter:
         prompter = InteractivePrompter()
 
         # User presses enter without providing value
-        with patch('builtins.input', return_value=''):
+        with patch("builtins.input", return_value=""):
             result = prompter.prompt_for_url()
 
         # Should return default placeholder
-        assert 'TODO' in result or result == ''
+        assert "TODO" in result or result == ""
 
     def test_prompt_url_validation(self):
         """Test URL validation accepts valid URLs."""
@@ -148,10 +148,10 @@ class TestInteractivePrompter:
 
         prompter = InteractivePrompter()
 
-        with patch('builtins.input', return_value='https://arxiv.org/abs/1234.5678'):
+        with patch("builtins.input", return_value="https://arxiv.org/abs/1234.5678"):
             result = prompter.prompt_for_url()
 
-        assert result == 'https://arxiv.org/abs/1234.5678'
+        assert result == "https://arxiv.org/abs/1234.5678"
 
     def test_collect_all_metadata(self):
         """Test collecting complete metadata."""
@@ -161,23 +161,23 @@ class TestInteractivePrompter:
 
         # Mock all user inputs
         inputs = [
-            'LeNet-5',                              # paper name
-            'LeNet-5: Gradient-Based Learning',    # title
-            'LeCun et al.',                         # authors
-            '1998',                                 # year
-            'http://yann.lecun.com/exdb/lenet/',   # url
-            'CNN for handwritten digit recognition' # description
+            "LeNet-5",  # paper name
+            "LeNet-5: Gradient-Based Learning",  # title
+            "LeCun et al.",  # authors
+            "1998",  # year
+            "http://yann.lecun.com/exdb/lenet/",  # url
+            "CNN for handwritten digit recognition",  # description
         ]
 
-        with patch('builtins.input', side_effect=inputs):
+        with patch("builtins.input", side_effect=inputs):
             metadata = prompter.collect_metadata()
 
-        assert metadata['PAPER_NAME'] == 'LeNet-5'
-        assert metadata['PAPER_TITLE'] == 'LeNet-5: Gradient-Based Learning'
-        assert metadata['AUTHORS'] == 'LeCun et al.'
-        assert metadata['YEAR'] == '1998'
-        assert metadata['PAPER_URL'] == 'http://yann.lecun.com/exdb/lenet/'
-        assert metadata['DESCRIPTION'] == 'CNN for handwritten digit recognition'
+        assert metadata["PAPER_NAME"] == "LeNet-5"
+        assert metadata["PAPER_TITLE"] == "LeNet-5: Gradient-Based Learning"
+        assert metadata["AUTHORS"] == "LeCun et al."
+        assert metadata["YEAR"] == "1998"
+        assert metadata["PAPER_URL"] == "http://yann.lecun.com/exdb/lenet/"
+        assert metadata["DESCRIPTION"] == "CNN for handwritten digit recognition"
 
     def test_collect_metadata_with_defaults(self):
         """Test collecting metadata using defaults."""
@@ -188,21 +188,21 @@ class TestInteractivePrompter:
 
         # Provide required fields, accept defaults for optional
         inputs = [
-            'LeNet-5',           # paper name
-            'LeNet-5 Paper',     # title
-            'LeCun et al.',      # authors
-            '',                  # year (use default)
-            '',                  # url (use default)
-            ''                   # description (use default)
+            "LeNet-5",  # paper name
+            "LeNet-5 Paper",  # title
+            "LeCun et al.",  # authors
+            "",  # year (use default)
+            "",  # url (use default)
+            "",  # description (use default)
         ]
 
-        with patch('builtins.input', side_effect=inputs):
+        with patch("builtins.input", side_effect=inputs):
             metadata = prompter.collect_metadata()
 
-        assert metadata['PAPER_NAME'] == 'LeNet-5'
-        assert metadata['PAPER_TITLE'] == 'LeNet-5 Paper'
-        assert metadata['AUTHORS'] == 'LeCun et al.'
-        assert metadata['YEAR'] == str(datetime.datetime.now().year)
+        assert metadata["PAPER_NAME"] == "LeNet-5"
+        assert metadata["PAPER_TITLE"] == "LeNet-5 Paper"
+        assert metadata["AUTHORS"] == "LeCun et al."
+        assert metadata["YEAR"] == str(datetime.datetime.now().year)
 
     def test_merge_with_existing_args(self):
         """Test merging prompts with existing CLI arguments."""
@@ -212,31 +212,31 @@ class TestInteractivePrompter:
 
         # Existing args from CLI
         existing = {
-            'paper': 'LeNet-5',
-            'title': 'LeNet-5 Paper',
-            'authors': None,      # Missing
-            'year': None,         # Missing
-            'url': None,          # Missing
-            'description': None   # Missing
+            "paper": "LeNet-5",
+            "title": "LeNet-5 Paper",
+            "authors": None,  # Missing
+            "year": None,  # Missing
+            "url": None,  # Missing
+            "description": None,  # Missing
         }
 
         # Only prompt for missing fields
         inputs = [
-            'LeCun et al.',   # authors (missing)
-            '1998',           # year (missing)
-            '',               # url (optional, use default)
-            ''                # description (optional, use default)
+            "LeCun et al.",  # authors (missing)
+            "1998",  # year (missing)
+            "",  # url (optional, use default)
+            "",  # description (optional, use default)
         ]
 
-        with patch('builtins.input', side_effect=inputs):
+        with patch("builtins.input", side_effect=inputs):
             metadata = prompter.collect_metadata(existing=existing)
 
         # Should use existing values where provided
-        assert metadata['PAPER_NAME'] == 'LeNet-5'
-        assert metadata['PAPER_TITLE'] == 'LeNet-5 Paper'
+        assert metadata["PAPER_NAME"] == "LeNet-5"
+        assert metadata["PAPER_TITLE"] == "LeNet-5 Paper"
         # Should prompt for missing values
-        assert metadata['AUTHORS'] == 'LeCun et al.'
-        assert metadata['YEAR'] == '1998'
+        assert metadata["AUTHORS"] == "LeCun et al."
+        assert metadata["YEAR"] == "1998"
 
     def test_help_text_display(self):
         """Test that helpful prompts are displayed."""
@@ -245,12 +245,12 @@ class TestInteractivePrompter:
         prompter = InteractivePrompter()
 
         # Mock input to capture the prompt message passed to input()
-        with patch('builtins.input', return_value='LeNet-5') as mock_input:
+        with patch("builtins.input", return_value="LeNet-5") as mock_input:
             prompter.prompt_for_paper_name()
 
         # Check that input() was called with a descriptive prompt
         call_args = mock_input.call_args[0][0]
-        assert 'paper' in call_args.lower() or 'name' in call_args.lower()
+        assert "paper" in call_args.lower() or "name" in call_args.lower()
 
     def test_example_text_display(self):
         """Test that examples are shown in prompts."""
@@ -259,12 +259,12 @@ class TestInteractivePrompter:
         prompter = InteractivePrompter()
 
         # Mock input to capture the prompt message
-        with patch('builtins.input', return_value='http://example.com') as mock_input:
+        with patch("builtins.input", return_value="http://example.com") as mock_input:
             prompter.prompt_for_url()
 
         # Check that input() was called with example text
         call_args = mock_input.call_args[0][0]
-        assert 'example' in call_args.lower() or 'http' in call_args.lower()
+        assert "example" in call_args.lower() or "http" in call_args.lower()
 
 
 class TestInteractiveMode:
@@ -288,7 +288,7 @@ if __name__ == "__main__":
     import traceback
 
     test_class = TestInteractivePrompter()
-    test_methods = [m for m in dir(test_class) if m.startswith('test_')]
+    test_methods = [m for m in dir(test_class) if m.startswith("test_")]
 
     passed = 0
     failed = 0

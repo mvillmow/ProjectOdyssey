@@ -1,6 +1,8 @@
 """Tests for dependency management in magic.toml."""
+
 import tomllib
 from pathlib import Path
+
 
 def test_dependencies_section_structure():
     """Verify dependencies section has correct structure."""

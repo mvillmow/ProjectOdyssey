@@ -21,7 +21,6 @@ References:
 """
 
 import argparse
-import os
 import pickle
 import struct
 import sys
@@ -119,13 +118,13 @@ def load_cifar10_batch(filepath: Path) -> Tuple[np.ndarray, np.ndarray]:
         - dict['data']: (10000, 3072) uint8 array (3072 = 32*32*3)
         - dict['labels']: (10000,) list of ints
         - Pixel order: R channel, G channel, B channel (all 1024 pixels each).
-   """
+    """
     with open(filepath, "rb") as f:
         batch = pickle.load(f, encoding="bytes")
 
     # Extract images and labels
     images_flat = batch[b"data"]  # (10000, 3072)
-    labels = batch[b"labels"]     # (10000,)
+    labels = batch[b"labels"]  # (10000,)
 
     # Reshape to (N, 3, 32, 32)
     images = images_flat.reshape(-1, 3, 32, 32)
@@ -144,14 +143,14 @@ def save_idx_labels(labels: np.ndarray, filepath: Path):
     IDX Format:
         [magic(4B)][count(4B)][label_data...]
         Magic number: 2049 (0x00000801).
-   """
+    """
     magic = 2049
     count = len(labels)
 
     with open(filepath, "wb") as f:
         # Write header
-        f.write(struct.pack(">I", magic))   # Magic number (big-endian)
-        f.write(struct.pack(">I", count))   # Number of items
+        f.write(struct.pack(">I", magic))  # Magic number (big-endian)
+        f.write(struct.pack(">I", count))  # Number of items
 
         # Write label data
         f.write(labels.tobytes())
@@ -169,17 +168,17 @@ def save_idx_images_rgb(images: np.ndarray, filepath: Path):
     IDX Format:
         [magic(4B)][count(4B)][channels(4B)][rows(4B)][cols(4B)][pixel_data...]
         Magic number: 2052 (custom extension for RGB).
-   """
+    """
     magic = 2052  # Custom magic for RGB images
     count, channels, rows, cols = images.shape
 
     with open(filepath, "wb") as f:
         # Write header
-        f.write(struct.pack(">I", magic))       # Magic number
-        f.write(struct.pack(">I", count))       # Number of images
-        f.write(struct.pack(">I", channels))    # Channels (3 for RGB)
-        f.write(struct.pack(">I", rows))        # Image height
-        f.write(struct.pack(">I", cols))        # Image width
+        f.write(struct.pack(">I", magic))  # Magic number
+        f.write(struct.pack(">I", count))  # Number of images
+        f.write(struct.pack(">I", channels))  # Channels (3 for RGB)
+        f.write(struct.pack(">I", rows))  # Image height
+        f.write(struct.pack(">I", cols))  # Image width
 
         # Write image data
         f.write(images.tobytes())
