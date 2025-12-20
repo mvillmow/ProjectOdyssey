@@ -219,7 +219,7 @@ jobs:
             pattern: "test_utilities.mojo test_utility.mojo test_utils.mojo test_validation.mojo test_integration.mojo"
           - name: "Data"
             path: "tests/shared/data"
-            pattern: "test_*.mojo"
+            pattern: "test_*.mojo datasets/test_*.mojo samplers/test_*.mojo transforms/test_*.mojo loaders/test_*.mojo formats/test_*.mojo"
           - name: "Integration Tests"
             path: "tests/shared/integration"
             pattern: "test_*.mojo"
@@ -247,6 +247,9 @@ jobs:
             # Other tests (test_gradients, test_loss_decrease, test_predictions, etc.) require:
             #   datasets/emnist/ which must be downloaded separately
             pattern: "test_lenet5.mojo test_model.mojo"
+          - name: "Test Examples"
+            path: "tests/examples"
+            pattern: "test_*.mojo"
           - name: "Core Types"
             path: "tests/core/types"
             pattern: "test_*.mojo"
