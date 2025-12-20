@@ -189,7 +189,7 @@ jobs:
           # Core Tests - Split into domain-specific groups for parallelization
           - name: "Core Tensors"
             path: "tests/shared/core"
-            pattern: "test_tensors.mojo test_arithmetic.mojo test_arithmetic_backward.mojo test_broadcasting.mojo test_shape.mojo test_shape_regression.mojo test_creation.mojo test_reduction.mojo test_reduction_forward.mojo test_matrix.mojo test_matmul.mojo test_pooling.mojo test_properties.mojo"
+            pattern: "test_tensors.mojo test_arithmetic.mojo test_arithmetic_backward.mojo test_broadcasting.mojo test_shape.mojo test_shape_regression.mojo test_creation.mojo test_reduction.mojo test_reduction_forward.mojo test_reduction_edge_cases.mojo test_matrix.mojo test_matmul.mojo test_pooling.mojo test_properties.mojo"
           - name: "Core Activations"
             path: "tests/shared/core"
             pattern: "test_activations.mojo test_activation_funcs.mojo test_activation_ops.mojo test_advanced_activations.mojo"
