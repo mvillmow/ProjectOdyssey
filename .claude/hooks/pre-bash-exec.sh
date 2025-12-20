@@ -2,111 +2,104 @@
 #
 # Pre-execution hook for Bash commands
 # Validates rm commands to prevent dangerous operations
-#
-# This hook is called before executing Bash commands in Claude Code.
-# It blocks dangerous rm patterns while allowing safe operations within the project.
 
 set -euo pipefail
 
-# Get the command to be executed
 COMMAND="$1"
 
-# Get the project root (absolute path)
 PROJECT_ROOT="${PROJECT_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+HOME_DIR="$(cd ~ && pwd)"
 
-# Function to check if a path is within the project directory
-is_within_project() {
-    local target_path="$1"
+# Resolve a path to an absolute canonical path (best-effort, no eval)
+resolve_path() {
+    local p="$1"
 
-    # Resolve to absolute path
-    if [[ "$target_path" = /* ]]; then
-        # Already absolute
-        local abs_path="$target_path"
-    else
-        # Relative path - resolve from current directory
-        abs_path="$(cd "$(dirname "$target_path")" 2>/dev/null && pwd)/$(basename "$target_path")" || return 1
+    # Expand ~ manually
+    if [[ "$p" == "~" ]]; then
+        printf "%s\n" "$HOME_DIR"
+        return
+    elif [[ "$p" == "~/"* ]]; then
+        printf "%s\n" "$HOME_DIR/${p#~/}"
+        return
     fi
 
-    # Check if the resolved path starts with PROJECT_ROOT
-    [[ "$abs_path" == "$PROJECT_ROOT"* ]]
+    # Absolute path
+    if [[ "$p" == /* ]]; then
+        printf "%s\n" "$p"
+        return
+    fi
+
+    # Relative path
+    printf "%s\n" "$(cd "$(dirname "$p")" 2>/dev/null && pwd)/$(basename "$p")"
 }
 
-# Function to validate rm commands
+is_within_project() {
+    local abs
+    abs="$(resolve_path "$1")" || return 1
+    [[ "$abs" == "$PROJECT_ROOT"* ]]
+}
+
 validate_rm_command() {
     local cmd="$1"
 
-    # Extract the rm command and its arguments
-    # Handle various forms: rm, rm -rf, sudo rm, etc.
+    # Normalize sudo rm → rm
+    cmd="${cmd#sudo }"
 
-    # Block dangerous patterns
+    # --- HARD BLOCKS ---
 
-    # Pattern 1: rm -rf / or variations
-    if echo "$cmd" | grep -qE '\brm\b.*-[rRf]*[rR][fF]*\s+/(\s|$)'; then
-        echo "ERROR: Blocked dangerous command - attempting to delete root directory" >&2
-        echo "Command: $cmd" >&2
+    # Root deletion
+    if echo "$cmd" | grep -Eq '\brm\b.*\s+/\s*$'; then
+        echo "ERROR: Blocked rm of /" >&2
         return 1
     fi
 
-    # Pattern 2: rm targeting .git directory or files
-    if echo "$cmd" | grep -qE '\brm\b.*\.git(/|$|\s)'; then
-        echo "ERROR: Blocked dangerous command - attempting to delete .git directory or files" >&2
-        echo "Command: $cmd" >&2
+    # Home directory deletion
+    if echo "$cmd" | grep -Eq '\brm\b.*\s+(~/?|\$HOME(/|$))'; then
+        echo "ERROR: Blocked rm targeting home directory" >&2
         return 1
     fi
 
-    # Pattern 3: rm with paths outside project directory
-    # Extract paths from rm command (after flags)
-    local paths
-    paths=$(echo "$cmd" | sed -n 's/.*\brm\b\s*\(-[rRfv]*\s*\)*\(.*\)/\2/p')
-
-    if [[ -n "$paths" ]]; then
-        # Check each path
-        for path in $paths; do
-            # Skip flags
-            [[ "$path" =~ ^- ]] && continue
-
-            # Check if path is absolute and outside project
-            if [[ "$path" = /* ]]; then
-                if ! is_within_project "$path"; then
-                    echo "ERROR: Blocked dangerous command - attempting to delete files outside project directory" >&2
-                    echo "Path: $path" >&2
-                    echo "Project root: $PROJECT_ROOT" >&2
-                    echo "Command: $cmd" >&2
-                    return 1
-                fi
-            fi
-
-            # Check if path resolves to parent directories using ../
-            if [[ "$path" =~ \.\./.*\.\. ]]; then
-                # Multiple levels of parent traversal - check carefully
-                if ! is_within_project "$path"; then
-                    echo "ERROR: Blocked dangerous command - path escapes project directory" >&2
-                    echo "Path: $path" >&2
-                    echo "Project root: $PROJECT_ROOT" >&2
-                    echo "Command: $cmd" >&2
-                    return 1
-                fi
-            fi
-        done
+    # .git deletion
+    if echo "$cmd" | grep -Eq '\brm\b.*\s+\.git(/|$|\s)'; then
+        echo "ERROR: Blocked rm targeting .git" >&2
+        return 1
     fi
 
-    # Pattern 4: sudo rm (requires extra caution)
-    if echo "$cmd" | grep -qE '\bsudo\s+rm\b'; then
-        echo "WARNING: Command uses sudo with rm - use extreme caution" >&2
-        echo "Command: $cmd" >&2
-        # Don't block, but warn
-    fi
+    # Extract arguments after rm
+    local args
+    args="$(echo "$cmd" | sed -n 's/.*\brm\b\s*\(-[A-Za-z]*\s*\)*\(.*\)/\2/p')"
+
+    for token in $args; do
+        [[ "$token" =~ ^- ]] && continue
+
+        local abs
+        abs="$(resolve_path "$token")"
+
+        # Block home even if expanded
+        if [[ "$abs" == "$HOME_DIR" || "$abs" == "$HOME_DIR/"* ]]; then
+            echo "ERROR: Blocked rm targeting home directory ($abs)" >&2
+            return 1
+        fi
+
+        # Block root traversal
+        if [[ "$abs" == "/" ]]; then
+            echo "ERROR: Blocked rm targeting /" >&2
+            return 1
+        fi
+
+        # Absolute path outside project
+        if [[ "$abs" == /* && "$abs" != "$PROJECT_ROOT"* ]]; then
+            echo "ERROR: Blocked rm outside project root" >&2
+            echo "Target: $abs" >&2
+            return 1
+        fi
+    done
 
     return 0
 }
 
-# Main validation logic
 if echo "$COMMAND" | grep -qE '\brm\b'; then
-    # Command contains rm - validate it
-    if ! validate_rm_command "$COMMAND"; then
-        exit 1
-    fi
+    validate_rm_command "$COMMAND" || exit 1
 fi
 
-# If we get here, the command is safe
 exit 0
