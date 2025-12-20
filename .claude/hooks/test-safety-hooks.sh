@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Test script for pre-bash-exec.sh safety hooks
+# Expanded test script for Claude pretooluse-input bash safety hook
 
 set -euo pipefail
 
@@ -12,11 +12,16 @@ NC='\033[0m'
 PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 export PROJECT_ROOT
 
-# Check for project-local hook first, then fall back to home directory
+# Locate hook
 if [[ -f ".claude/hooks/pre-bash-exec.sh" ]]; then
     HOOK_SCRIPT=".claude/hooks/pre-bash-exec.sh"
 else
     HOOK_SCRIPT="$HOME/.claude/hooks/pre-bash-exec.sh"
+fi
+
+if [[ ! -x "$HOOK_SCRIPT" ]]; then
+    echo "Hook script not found or not executable: $HOOK_SCRIPT"
+    exit 1
 fi
 
 total_tests=0
@@ -24,14 +29,24 @@ passed_tests=0
 failed_tests=0
 
 run_test() {
-    local name="$1"
-    local cmd="$2"
-    local should_pass="$3"
+    local cmd="$1"
+    local should_pass="$2"
 
     total_tests=$((total_tests + 1))
-    echo -n "Test $total_tests: $name "
+    echo -n "Test $total_tests: $cmd "
 
-    if bash "$HOOK_SCRIPT" "$cmd" 2>/dev/null; then
+    payload="$(cat <<EOF
+{
+  "tool": "bash",
+  "input": {
+    "command": "$cmd",
+    "cwd": "$PROJECT_ROOT"
+  }
+}
+EOF
+)"
+
+    if echo "$payload" | bash "$HOOK_SCRIPT" >/dev/null 2>&1; then
         if [[ "$should_pass" == "true" ]]; then
             echo -e "${GREEN}✓ PASS${NC}"
             passed_tests=$((passed_tests + 1))
@@ -51,34 +66,66 @@ run_test() {
 }
 
 echo "=== Dangerous ==="
-run_test "rm -rf /" "rm -rf /" false
-run_test "rm -rf / " "rm -rf / " false
-run_test "rm -rf ~/" "rm -rf ~/" false
-run_test "rm -rf \$HOME" "rm -rf \$HOME" false
-run_test "rm .git" "rm .git" false
-run_test "rm .git/config" "rm .git/config" false
-run_test "rm /etc/passwd" "rm /etc/passwd" false
-run_test "rm -rf /tmp/something" "rm -rf /tmp/something" false
-run_test "sudo rm -rf /tmp/file" "sudo rm -rf /tmp/file" false
-run_test "rm ./logs/test.log" "rm ./logs/test.log" false
-run_test "rm logs/test.log" "rm logs/test.log" false
+# rm / unlink cases
+run_test "rm -rf /" false
+run_test "rm -rf / " false
+run_test "rm -rf ~/" false
+run_test "rm -rf \$HOME" false
+run_test "rm .git" false
+run_test "rm .git/config" false
+run_test "rm /etc/passwd" false
+run_test "rm -rf /tmp/something" false
+run_test "sudo rm -rf /tmp/file" false
+run_test "rm ./logs/test.log" false
+run_test "rm logs/test.log" false
+run_test "rm -rf" false
+run_test "echo yes | rm file.txt" false
+run_test "cp README.md README.md && rm -rf ~/" false
+run_test "rm ./foo || echo yes" false
+run_test "rm ./foo; echo yes" false
+run_test "rm ./foo && rm ./bar" false
+
+# Non-rm destructive commands
+run_test "dd if=/dev/zero of=test.img" false
+run_test "mkfs.ext4 /dev/sda" false
+run_test "wipefs -a /dev/sda" false
+run_test "mount /dev/sda /mnt" false
+run_test "umount /mnt" false
+run_test "chmod -R 777 ./tests" false
+run_test "chown -R user:user ./tests" false
+run_test "chgrp -R staff ./tests" false
+run_test "tar -xf archive.tar" false
+run_test "unzip file.zip" false
+
+# find, xargs, git, rsync
+run_test "find ./tests -delete" false
+run_test "find ./tests -exec rm {} \\;" false
+run_test "echo ./tests | xargs rm" false
+run_test "git clean -fdx" false
+run_test "rsync -av --delete src/ dst/" false
+
+# dangerous shell expansions
+run_test "echo \$(ls)" false
+run_test "echo \`ls\`" false
+run_test "echo \${PATH}" false
 
 echo ""
 echo "=== Safe ==="
-run_test "rm temp.txt" "rm temp.txt" true
-run_test "rm -rf build/" "rm -rf build/" true
-run_test "rm ./tests/README.md" "rm ./tests/README.md" true
-run_test "rm tests/README.md" "rm tests/README.md" true
-run_test "rm file1.txt file2.txt" "rm file1.txt file2.txt" true
-run_test "ls -la" "ls -la" true
-run_test "git status" "git status" true
-run_test "rm -rf" "rm -rf" true
-run_test "echo yes | rm file.txt" "echo yes | rm file.txt" true
+run_test "rm ./tests/README.md" true
+run_test "rm tests/README.md" true
+run_test "rm README.md CLAUDE.md" true
+run_test "ls -la" true
+run_test "git status" true
+run_test "echo hello world" true
+run_test "mkdir -p ./tmp && touch ./tmp/file" true
+run_test "echo foo | tee ./tmp/output" true
+run_test "cp README.md ./tmp/" true
 
 if [[ -d "$PROJECT_ROOT/build" ]]; then
-    run_test "rm -rf absolute project path" "rm -rf $PROJECT_ROOT/build" true
+    run_test "rm -rf $PROJECT_ROOT/build" true
 fi
 
 echo ""
 echo "Passed: $passed_tests / $total_tests"
+
 [[ "$failed_tests" -eq 0 ]]
