@@ -12,7 +12,12 @@ NC='\033[0m'
 PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 export PROJECT_ROOT
 
-HOOK_SCRIPT=".claude/hooks/pre-bash-exec.sh"
+# Check for project-local hook first, then fall back to home directory
+if [[ -f ".claude/hooks/pre-bash-exec.sh" ]]; then
+    HOOK_SCRIPT=".claude/hooks/pre-bash-exec.sh"
+else
+    HOOK_SCRIPT="$HOME/.claude/hooks/pre-bash-exec.sh"
+fi
 
 total_tests=0
 passed_tests=0

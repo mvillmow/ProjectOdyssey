@@ -11,6 +11,7 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || pwd
 HOME_DIR="$(cd ~ && pwd)"
 
 # Resolve a path to an absolute canonical path (best-effort, no eval)
+# Returns empty string if parent directory doesn't exist (indicates unsafe path)
 resolve_path() {
     local p="$1"
 
@@ -29,8 +30,23 @@ resolve_path() {
         return
     fi
 
-    # Relative path
-    printf "%s\n" "$(cd "$(dirname "$p")" 2>/dev/null && pwd)/$(basename "$p")"
+    # Relative path - check if parent directory exists
+    local dir
+    dir="$(dirname "$p")"
+
+    # If directory doesn't exist, return special marker to block
+    if [[ "$dir" != "." && ! -d "$dir" ]]; then
+        printf "__NONEXISTENT__\n"
+        return
+    fi
+
+    # Handle ./ prefix
+    if [[ "$p" == "./"* ]]; then
+        p="${p#./}"
+    fi
+
+    # Use pwd to get absolute path
+    printf "%s\n" "$(pwd)/$p"
 }
 
 is_within_project() {
@@ -65,9 +81,9 @@ validate_rm_command() {
         return 1
     fi
 
-    # Extract arguments after rm
+    # Extract arguments after rm (use [[:space:]] for macOS compatibility)
     local args
-    args="$(echo "$cmd" | sed -n 's/.*\brm\b\s*\(-[A-Za-z]*\s*\)*\(.*\)/\2/p')"
+    args="$(echo "$cmd" | sed -n 's/.*rm[[:space:]]*\(-[A-Za-z]*[[:space:]]*\)*\(.*\)/\2/p')"
 
     for token in $args; do
         [[ "$token" =~ ^- ]] && continue
@@ -75,9 +91,9 @@ validate_rm_command() {
         local abs
         abs="$(resolve_path "$token")"
 
-        # Block home even if expanded
-        if [[ "$abs" == "$HOME_DIR" || "$abs" == "$HOME_DIR/"* ]]; then
-            echo "ERROR: Blocked rm targeting home directory ($abs)" >&2
+        # Block paths with non-existent parent directories (likely typos)
+        if [[ "$abs" == "__NONEXISTENT__" ]]; then
+            echo "ERROR: Blocked rm targeting non-existent directory" >&2
             return 1
         fi
 
@@ -87,8 +103,19 @@ validate_rm_command() {
             return 1
         fi
 
-        # Absolute path outside project
-        if [[ "$abs" == /* && "$abs" != "$PROJECT_ROOT"* ]]; then
+        # Allow if within project root (check this FIRST)
+        if [[ "$abs" == "$PROJECT_ROOT"/* ]]; then
+            continue
+        fi
+
+        # Block home directory itself or paths within home (but outside project)
+        if [[ "$abs" == "$HOME_DIR" || "$abs" == "$HOME_DIR/"* ]]; then
+            echo "ERROR: Blocked rm targeting home directory ($abs)" >&2
+            return 1
+        fi
+
+        # Block any absolute path outside project
+        if [[ "$abs" == /* ]]; then
             echo "ERROR: Blocked rm outside project root" >&2
             echo "Target: $abs" >&2
             return 1
