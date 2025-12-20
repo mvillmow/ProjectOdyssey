@@ -153,7 +153,8 @@ trait ReduceOp:
         ...
 
     fn compare(self, val: Float64, current_best: Float64) -> Bool:
-        """For extremum ops: returns True if val should replace current_best.
+        """
+        For extremum ops: returns True if val should replace current_best.
 
         This method is only meaningful for extremum operations (max/min).
         For non-extremum operations, this is never called.

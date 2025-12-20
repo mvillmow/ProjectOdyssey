@@ -345,13 +345,17 @@ struct NoGradContext(Copyable, Movable):
     tape.disable() / tape.enable() directly on the global tape.
 
     Example (future usage when full support is available):
+    ```
         with NoGradContext():
             var output = model(input)  # No gradients tracked
+    ```
 
     Current workaround:
+    ```
         tape.disable()
         var output = model(input)
         tape.enable()
+    ```
 
     Limitation Details:
         Full context manager implementation requires storing a mutable reference

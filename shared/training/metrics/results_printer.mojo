@@ -51,7 +51,6 @@ fn print_training_progress(
             Output:
             Epoch [1/200] Batch [10/100] Loss: 0.234000 LR: 0.010000
             ```
-
     """
     var output = "Epoch [" + String(epoch) + "/" + String(total_epochs) + "] "
     output = (
@@ -103,7 +102,6 @@ fn print_evaluation_summary(
             Test Loss:  0.645000  Test Acc:  89.10%
             ============================================================
             ```
-
     """
     print("=" * 60)
     print("Epoch [" + String(epoch) + "/" + String(total_epochs) + "] Results")
@@ -209,7 +207,6 @@ fn print_per_class_accuracy(
     Note:
             If class_names is provided, it must have same length as per_class_accuracies.
             If class_names is empty, classes are displayed as numeric indices.
-
     """
     var shape = per_class_accuracies.shape()
     var num_classes = shape[0]
@@ -454,19 +451,19 @@ fn print_training_summary(
     Raises:
             Error: If operation fails.
 
-        Example:
-            ```mojo
-            rint_training_summary(200, 0.034, 0.156, 0.965, 187)
-            Output:
-            ============================================================
-            Training Summary
-            ============================================================
-            Total Epochs:        200
-            Best Train Loss:     0.034000 (Epoch 187)
-            Best Test Loss:      0.156000
-            Best Accuracy:       96.50%
-            ============================================================
-            ```
+    Example:
+        ```mojo
+        rint_training_summary(200, 0.034, 0.156, 0.965, 187)
+        Output:
+        ============================================================
+        Training Summary
+        ============================================================
+        Total Epochs:        200
+        Best Train Loss:     0.034000 (Epoch 187)
+        Best Test Loss:      0.156000
+        Best Accuracy:       96.50%
+        ============================================================
+        ```
     """
     var best_acc_pct = best_accuracy * 100.0
 

@@ -165,7 +165,7 @@ fn clip_grad_global_norm_(
         Reference:
             On the difficulty of training Recurrent Neural Networks
             (Pascanu et al., 2013)
-            https://arxiv.org/abs/1211.1541.
+            `https://arxiv.org/abs/1211.1541`
     """
     if max_norm < 0.0:
         raise Error("max_norm must be non-negative, got: " + String(max_norm))

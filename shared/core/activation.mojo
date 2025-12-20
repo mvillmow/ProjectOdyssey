@@ -202,6 +202,7 @@ fn _prelu_impl[
 
     Parameters:
             dtype: Compile-time dtype parameter.
+
     Args:
             result: Output tensor (pre-allocated with same shape as input).
             tensor: Input tensor.

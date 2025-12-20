@@ -408,8 +408,5 @@ fn create_simple_dataloader(
 
     Returns:
         DataLoader instance.
-
-    Raises:
-        Error: If DataLoader initialization fails or batch_size is invalid.
     """
     return DataLoader(data^, labels^, batch_size)
