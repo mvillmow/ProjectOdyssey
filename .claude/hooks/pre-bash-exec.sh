@@ -6,6 +6,8 @@
 set -euo pipefail
 
 COMMAND="$1"
+EXIT_SUCCESS=0
+EXIT_FAILURE=2
 
 PROJECT_ROOT="${PROJECT_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 HOME_DIR="$(cd ~ && pwd)"
@@ -51,7 +53,7 @@ resolve_path() {
 
 is_within_project() {
     local abs
-    abs="$(resolve_path "$1")" || return 1
+    abs="$(resolve_path "$1")" || return $EXIT_FAILURE
     [[ "$abs" == "$PROJECT_ROOT"* ]]
 }
 
@@ -66,19 +68,19 @@ validate_rm_command() {
     # Root deletion
     if echo "$cmd" | grep -Eq '\brm\b.*\s+/\s*$'; then
         echo "ERROR: Blocked rm of /" >&2
-        return 1
+        return $EXIT_FAILURE
     fi
 
     # Home directory deletion
     if echo "$cmd" | grep -Eq '\brm\b.*\s+(~/?|\$HOME(/|$))'; then
         echo "ERROR: Blocked rm targeting home directory" >&2
-        return 1
+        return $EXIT_FAILURE
     fi
 
     # .git deletion
     if echo "$cmd" | grep -Eq '\brm\b.*\s+\.git(/|$|\s)'; then
         echo "ERROR: Blocked rm targeting .git" >&2
-        return 1
+        return $EXIT_FAILURE
     fi
 
     # Extract arguments after rm (use [[:space:]] for macOS compatibility)
@@ -94,13 +96,13 @@ validate_rm_command() {
         # Block paths with non-existent parent directories (likely typos)
         if [[ "$abs" == "__NONEXISTENT__" ]]; then
             echo "ERROR: Blocked rm targeting non-existent directory" >&2
-            return 1
+            return $EXIT_FAILURE
         fi
 
         # Block root traversal
         if [[ "$abs" == "/" ]]; then
             echo "ERROR: Blocked rm targeting /" >&2
-            return 1
+            return $EXIT_FAILURE
         fi
 
         # Allow if within project root (check this FIRST)
@@ -111,22 +113,22 @@ validate_rm_command() {
         # Block home directory itself or paths within home (but outside project)
         if [[ "$abs" == "$HOME_DIR" || "$abs" == "$HOME_DIR/"* ]]; then
             echo "ERROR: Blocked rm targeting home directory ($abs)" >&2
-            return 1
+            return $EXIT_FAILURE
         fi
 
         # Block any absolute path outside project
         if [[ "$abs" == /* ]]; then
             echo "ERROR: Blocked rm outside project root" >&2
             echo "Target: $abs" >&2
-            return 1
+            return $EXIT_FAILURE
         fi
     done
 
-    return 0
+    return $EXIT_SUCCESS
 }
 
 if echo "$COMMAND" | grep -qE '\brm\b'; then
-    validate_rm_command "$COMMAND" || exit 1
+    validate_rm_command "$COMMAND" || exit $EXIT_FAILURE
 fi
 
-exit 0
+exit $EXIT_SUCCESS
