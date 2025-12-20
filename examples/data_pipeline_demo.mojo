@@ -72,7 +72,13 @@ fn create_demo_dataset(
     for i in range(num_samples):
         labels_ptr[i * num_classes + (i % num_classes)] = Float32(1.0)
 
-    print("Creating synthetic dataset: " + String(num_samples) + " samples, " + String(num_classes) + " classes")
+    print(
+        "Creating synthetic dataset: "
+        + String(num_samples)
+        + " samples, "
+        + String(num_classes)
+        + " classes"
+    )
     return (images, labels)
 
 
@@ -111,9 +117,16 @@ fn demo_basic_pipeline() raises:
         var batch_labels_shape_1 = batches[i].labels.shape()[1]
         var batch_indices_len = batches[i].indices.__len__()
         print(
-            "  Batch " + String(i) + ": data shape=" + String(batch_data_shape)
-            + " samples, labels shape=[" + String(batch_labels_shape_0) + ", "
-            + String(batch_labels_shape_1) + "], indices=" + String(batch_indices_len)
+            "  Batch "
+            + String(i)
+            + ": data shape="
+            + String(batch_data_shape)
+            + " samples, labels shape=["
+            + String(batch_labels_shape_0)
+            + ", "
+            + String(batch_labels_shape_1)
+            + "], indices="
+            + String(batch_indices_len)
         )
 
 
@@ -150,9 +163,17 @@ fn demo_transform_pipeline() raises:
     var batch_shape_1 = batches[0].data.shape()[1]
     var batch_shape_2 = batches[0].data.shape()[2]
     var batch_shape_3 = batches[0].data.shape()[3]
-    print("✓ Batch data after transform: shape=[" + String(batch_shape_0) + ", "
-        + String(batch_shape_1) + ", " + String(batch_shape_2) + ", "
-        + String(batch_shape_3) + "]")
+    print(
+        "✓ Batch data after transform: shape=["
+        + String(batch_shape_0)
+        + ", "
+        + String(batch_shape_1)
+        + ", "
+        + String(batch_shape_2)
+        + ", "
+        + String(batch_shape_3)
+        + "]"
+    )
 
 
 # ============================================================================
@@ -183,7 +204,13 @@ fn demo_shuffling_pipeline() raises:
     print("✓ Simulating multiple epochs:")
     for epoch in range(2):
         var batches = loader.__iter__()
-        print("  Epoch " + String(epoch) + ": " + String(batches.__len__()) + " batches")
+        print(
+            "  Epoch "
+            + String(epoch)
+            + ": "
+            + String(batches.__len__())
+            + " batches"
+        )
 
 
 # ============================================================================
@@ -201,7 +228,9 @@ fn demo_complete_pipeline() raises:
 
     # Step 1: Create dataset
     var dataset = ExTensorDataset(images^, labels^)
-    print("✓ Step 1: Created dataset (" + String(dataset.__len__()) + " samples)")
+    print(
+        "✓ Step 1: Created dataset (" + String(dataset.__len__()) + " samples)"
+    )
 
     # Step 2: Apply transforms
     var normalize = Normalize(mean=0.5, std=0.5)
@@ -213,7 +242,9 @@ fn demo_complete_pipeline() raises:
     print("✓ Step 3: Created random sampler")
 
     # Step 4: Create batch loader
-    var loader = BatchLoader(transformed^, sampler^, batch_size=4, drop_last=False)
+    var loader = BatchLoader(
+        transformed^, sampler^, batch_size=4, drop_last=False
+    )
     print("✓ Step 4: Created batch loader (batch_size=4)")
 
     # Step 5: Create prefetch loader
@@ -257,7 +288,9 @@ fn demo_performance_comparison() raises:
     var sampler2 = SequentialSampler(transformed2.__len__())
     var loader2 = BatchLoader(transformed2^, sampler2^, batch_size=16)
     var batches2 = loader2.__iter__()
-    print("  ✓ " + String(batches2.__len__()) + " batches created with transforms")
+    print(
+        "  ✓ " + String(batches2.__len__()) + " batches created with transforms"
+    )
 
     # Configuration 3: With shuffling and caching
     print("\nConfiguration 3: Random sampling with caching")
@@ -267,10 +300,18 @@ fn demo_performance_comparison() raises:
     var sampler3 = RandomSampler(cached3.__len__())
     var loader3 = BatchLoader(cached3^, sampler3^, batch_size=16)
     var batches3 = loader3.__iter__()
-    print("  ✓ " + String(batches3.__len__()) + " batches created with shuffling & caching")
+    print(
+        "  ✓ "
+        + String(batches3.__len__())
+        + " batches created with shuffling & caching"
+    )
 
     print("\nConfiguration Summary:")
-    print("  All configurations produce " + String(batches1.__len__()) + " batches")
+    print(
+        "  All configurations produce "
+        + String(batches1.__len__())
+        + " batches"
+    )
     print("  Config 1: Simple sequential pipeline")
     print("  Config 2: Adds augmentation (transforms)")
     print("  Config 3: Adds shuffling & caching for better training")
