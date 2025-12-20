@@ -7,7 +7,7 @@ and that all references (skills, agents) resolve correctly.
 """
 
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import List
 
 import pytest
 
@@ -24,6 +24,7 @@ from conftest import (
 # ============================================================================
 # Agent File Existence Tests
 # ============================================================================
+
 
 @pytest.mark.integration
 class TestAgentFilesExist:
@@ -56,6 +57,7 @@ class TestAgentFilesExist:
 # YAML Frontmatter Tests
 # ============================================================================
 
+
 @pytest.mark.integration
 class TestAgentFrontmatter:
     """Test YAML frontmatter parsing and validation."""
@@ -82,12 +84,9 @@ class TestAgentFrontmatter:
             content = agent_file.read_text()
             frontmatter, body = parse_frontmatter(content)
 
-            assert frontmatter is not None, \
-                f"Agent file missing frontmatter: {agent_file.name}"
-            assert isinstance(frontmatter, dict), \
-                f"Frontmatter is not a dict: {agent_file.name}"
-            assert len(body) > 0, \
-                f"Agent file has no body content: {agent_file.name}"
+            assert frontmatter is not None, f"Agent file missing frontmatter: {agent_file.name}"
+            assert isinstance(frontmatter, dict), f"Frontmatter is not a dict: {agent_file.name}"
+            assert len(body) > 0, f"Agent file has no body content: {agent_file.name}"
 
     def test_agent_required_frontmatter_keys(self, all_agent_files: List[Path]):
         """Test that agent frontmatter has all required keys."""
@@ -100,8 +99,7 @@ class TestAgentFrontmatter:
 
             errors = validate_frontmatter_keys(frontmatter, required_keys, optional_keys)
 
-            assert not errors, \
-                f"Frontmatter validation failed for {agent_file.name}: {'; '.join(errors)}"
+            assert not errors, f"Frontmatter validation failed for {agent_file.name}: {'; '.join(errors)}"
 
     def test_agent_name_matches_filename(self, all_agent_files: List[Path]):
         """Test that agent name in frontmatter matches filename."""
@@ -112,8 +110,7 @@ class TestAgentFrontmatter:
             expected_name = agent_file.stem
             actual_name = frontmatter.get("name")
 
-            assert actual_name == expected_name, \
-                f"Agent name '{actual_name}' doesn't match filename '{expected_name}'"
+            assert actual_name == expected_name, f"Agent name '{actual_name}' doesn't match filename '{expected_name}'"
 
     def test_agent_description_not_empty(self, all_agent_files: List[Path]):
         """Test that agent description is not empty."""
@@ -122,10 +119,8 @@ class TestAgentFrontmatter:
             frontmatter, _ = parse_frontmatter(content)
 
             description = frontmatter.get("description", "")
-            assert len(description) > 0, \
-                f"Agent {agent_file.name} has empty description"
-            assert len(description) > 10, \
-                f"Agent {agent_file.name} description too short: '{description}'"
+            assert len(description) > 0, f"Agent {agent_file.name} has empty description"
+            assert len(description) > 10, f"Agent {agent_file.name} description too short: '{description}'"
 
     def test_agent_tools_valid(self, all_agent_files: List[Path]):
         """Test that agent tools list is valid."""
@@ -134,21 +129,27 @@ class TestAgentFrontmatter:
             frontmatter, _ = parse_frontmatter(content)
 
             tools = frontmatter.get("tools", "")
-            assert isinstance(tools, str), \
-                f"Tools must be a string in {agent_file.name}"
+            assert isinstance(tools, str), f"Tools must be a string in {agent_file.name}"
 
             # Valid tools from Claude Code
             valid_tools = {
-                "Read", "Write", "Edit", "Bash", "Grep", "Glob",
-                "NotebookEdit", "WebFetch", "WebSearch", "AskUserQuestion"
+                "Read",
+                "Write",
+                "Edit",
+                "Bash",
+                "Grep",
+                "Glob",
+                "NotebookEdit",
+                "WebFetch",
+                "WebSearch",
+                "AskUserQuestion",
             }
 
             if tools:  # Empty string is valid (no tools)
                 tool_list = [t.strip() for t in tools.split(",")]
                 invalid_tools = set(tool_list) - valid_tools
 
-                assert not invalid_tools, \
-                    f"Invalid tools in {agent_file.name}: {invalid_tools}"
+                assert not invalid_tools, f"Invalid tools in {agent_file.name}: {invalid_tools}"
 
     def test_agent_model_valid(self, all_agent_files: List[Path]):
         """Test that agent model is valid."""
@@ -159,13 +160,13 @@ class TestAgentFrontmatter:
             model = frontmatter.get("model", "")
             valid_models = ["sonnet", "opus", "haiku"]  # Claude model types
 
-            assert model in valid_models, \
-                f"Invalid model '{model}' in {agent_file.name}. Valid: {valid_models}"
+            assert model in valid_models, f"Invalid model '{model}' in {agent_file.name}. Valid: {valid_models}"
 
 
 # ============================================================================
 # Skill Reference Tests
 # ============================================================================
+
 
 @pytest.mark.integration
 class TestSkillReferences:
@@ -187,8 +188,7 @@ class TestSkillReferences:
                 # Resolve relative path from agent file
                 skill_path = resolve_relative_path(agent_file, skill_ref)
 
-                assert skill_path.exists(), \
-                    f"Skill reference broken in {agent_file.name}: {skill_ref} -> {skill_path}"
+                assert skill_path.exists(), f"Skill reference broken in {agent_file.name}: {skill_ref} -> {skill_path}"
 
     def test_skill_references_valid_format(self, all_agent_files: List[Path]):
         """Test that skill references follow the correct format."""
@@ -200,15 +200,18 @@ class TestSkillReferences:
 
             for skill_ref in skill_refs:
                 # Should point to ../skills/.../SKILL.md
-                assert skill_ref.startswith("../skills/"), \
+                assert skill_ref.startswith("../skills/"), (
                     f"Skill reference in {agent_file.name} should start with '../skills/': {skill_ref}"
-                assert skill_ref.endswith("/SKILL.md"), \
+                )
+                assert skill_ref.endswith("/SKILL.md"), (
                     f"Skill reference in {agent_file.name} should end with '/SKILL.md': {skill_ref}"
+                )
 
 
 # ============================================================================
 # Agent Reference Tests
 # ============================================================================
+
 
 @pytest.mark.integration
 class TestAgentReferences:
@@ -224,14 +227,13 @@ class TestAgentReferences:
 
             for agent_ref in agent_refs:
                 # Skip external references
-                if agent_ref.startswith('http'):
+                if agent_ref.startswith("http"):
                     continue
 
                 # Resolve relative path from agent file
                 ref_path = resolve_relative_path(agent_file, agent_ref)
 
-                assert ref_path.exists(), \
-                    f"Agent reference broken in {agent_file.name}: {agent_ref} -> {ref_path}"
+                assert ref_path.exists(), f"Agent reference broken in {agent_file.name}: {agent_ref} -> {ref_path}"
 
     def test_agent_references_valid_format(self, all_agent_files: List[Path]):
         """Test that agent references use correct path format."""
@@ -243,15 +245,18 @@ class TestAgentReferences:
 
             for agent_ref in agent_refs:
                 # Should be either ./file.md or ../agents/file.md
-                assert agent_ref.startswith(('./', '../agents/')), \
+                assert agent_ref.startswith(("./", "../agents/")), (
                     f"Agent reference in {agent_file.name} has invalid format: {agent_ref}"
-                assert agent_ref.endswith('.md'), \
+                )
+                assert agent_ref.endswith(".md"), (
                     f"Agent reference in {agent_file.name} should end with '.md': {agent_ref}"
+                )
 
 
 # ============================================================================
 # Agent Structure Tests
 # ============================================================================
+
 
 @pytest.mark.integration
 class TestAgentStructure:
@@ -263,8 +268,7 @@ class TestAgentStructure:
             content = agent_file.read_text()
             _, body = parse_frontmatter(content)
 
-            assert "## Role" in body, \
-                f"Agent {agent_file.name} missing '## Role' section"
+            assert "## Role" in body, f"Agent {agent_file.name} missing '## Role' section"
 
     def test_agent_has_scope_section(self, all_agent_files: List[Path]):
         """Test that agent file has a Scope section."""
@@ -272,8 +276,7 @@ class TestAgentStructure:
             content = agent_file.read_text()
             _, body = parse_frontmatter(content)
 
-            assert "## Scope" in body, \
-                f"Agent {agent_file.name} missing '## Scope' section"
+            assert "## Scope" in body, f"Agent {agent_file.name} missing '## Scope' section"
 
     def test_agent_has_responsibilities_section(self, all_agent_files: List[Path]):
         """Test that agent file has a Responsibilities section."""
@@ -281,8 +284,7 @@ class TestAgentStructure:
             content = agent_file.read_text()
             _, body = parse_frontmatter(content)
 
-            assert "## Responsibilities" in body, \
-                f"Agent {agent_file.name} missing '## Responsibilities' section"
+            assert "## Responsibilities" in body, f"Agent {agent_file.name} missing '## Responsibilities' section"
 
     def test_agent_has_workflow_phase(self, all_agent_files: List[Path]):
         """Test that agent file specifies workflow phase."""
@@ -290,8 +292,7 @@ class TestAgentStructure:
             content = agent_file.read_text()
             _, body = parse_frontmatter(content)
 
-            assert "## Workflow Phase" in body, \
-                f"Agent {agent_file.name} missing '## Workflow Phase' section"
+            assert "## Workflow Phase" in body, f"Agent {agent_file.name} missing '## Workflow Phase' section"
 
     def test_agent_has_success_criteria(self, all_agent_files: List[Path]):
         """Test that agent file has success criteria."""
@@ -299,13 +300,13 @@ class TestAgentStructure:
             content = agent_file.read_text()
             _, body = parse_frontmatter(content)
 
-            assert "## Success Criteria" in body, \
-                f"Agent {agent_file.name} missing '## Success Criteria' section"
+            assert "## Success Criteria" in body, f"Agent {agent_file.name} missing '## Success Criteria' section"
 
 
 # ============================================================================
 # Edge Cases and Error Handling
 # ============================================================================
+
 
 @pytest.mark.integration
 class TestEdgeCases:
@@ -359,11 +360,7 @@ description: test
 
     def test_validate_frontmatter_keys_with_unknown(self):
         """Test frontmatter validation with unknown keys."""
-        frontmatter = {
-            "name": "test",
-            "description": "test",
-            "unknown_key": "value"
-        }
+        frontmatter = {"name": "test", "description": "test", "unknown_key": "value"}
         required = ["name", "description"]
         optional = []
 

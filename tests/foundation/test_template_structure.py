@@ -18,13 +18,9 @@ import shutil
 from pathlib import Path
 from typing import Dict, List
 
-import pytest
 
 
-def validate_directory_structure(
-    base_path: Path,
-    expected_structure: Dict[str, List[str]]
-) -> List[str]:
+def validate_directory_structure(base_path: Path, expected_structure: Dict[str, List[str]]) -> List[str]:
     """
     Validate directory structure against expected layout.
 
@@ -34,7 +30,7 @@ def validate_directory_structure(
 
     Returns:
         List of validation errors (empty list if all valid).
-   """
+    """
     errors = []
 
     for dir_name, expected_items in expected_structure.items():
@@ -76,10 +72,7 @@ class TestTemplateDirectoryStructure:
         assert template_dir.exists(), "papers/_template/ must exist"
         assert template_dir.is_dir(), "papers/_template/ must be a directory"
 
-    def test_template_has_required_subdirectories(
-        self,
-        template_dir: Path
-    ) -> None:
+    def test_template_has_required_subdirectories(self, template_dir: Path) -> None:
         """
         Test that template has all required subdirectories.
 
@@ -120,8 +113,7 @@ class TestTemplateDirectoryStructure:
         assert readme.stat().st_size > 0, "Template README.md must not be empty"
 
         content = readme.read_text()
-        assert "Template" in content or "template" in content, \
-            "README must indicate it's a template"
+        assert "Template" in content or "template" in content, "README must indicate it's a template"
 
     def test_template_src_has_init(self, template_dir: Path) -> None:
         """
@@ -186,14 +178,7 @@ class TestTemplateDirectoryStructure:
             template_dir: Template directory path
         """
         # Directories that should have .gitkeep files
-        gitkeep_dirs = [
-            "src",
-            "scripts",
-            "tests",
-            "notebooks",
-            "examples",
-            "configs"
-        ]
+        gitkeep_dirs = ["src", "scripts", "tests", "notebooks", "examples", "configs"]
 
         for dir_name in gitkeep_dirs:
             gitkeep = template_dir / dir_name / ".gitkeep"
@@ -220,9 +205,7 @@ class TestTemplateCompleteness:
     """Test cases for template completeness."""
 
     def test_template_structure_matches_specification(
-        self,
-        template_dir: Path,
-        expected_template_structure: Dict[str, List[str]]
+        self, template_dir: Path, expected_template_structure: Dict[str, List[str]]
     ) -> None:
         """
         Test that template structure matches expected specification.
@@ -238,8 +221,7 @@ class TestTemplateCompleteness:
         """
         errors = validate_directory_structure(template_dir, expected_template_structure)
 
-        assert not errors, \
-            f"Template structure validation failed:\n" + "\n".join(errors)
+        assert not errors, "Template structure validation failed:\n" + "\n".join(errors)
 
     def test_template_readme_has_required_sections(self, template_dir: Path) -> None:
         """
@@ -257,21 +239,12 @@ class TestTemplateCompleteness:
         readme = template_dir / "README.md"
         content = readme.read_text()
 
-        required_sections = [
-            "Overview",
-            "Quick Start",
-            "Directory Structure",
-            "Directory Purposes"
-        ]
+        required_sections = ["Overview", "Quick Start", "Directory Structure", "Directory Purposes"]
 
         for section in required_sections:
-            assert section in content, \
-                f"Template README must have '{section}' section"
+            assert section in content, f"Template README must have '{section}' section"
 
-    def test_template_readme_documents_all_directories(
-        self,
-        template_dir: Path
-    ) -> None:
+    def test_template_readme_documents_all_directories(self, template_dir: Path) -> None:
         """
         Test that template README documents all directories.
 
@@ -294,22 +267,16 @@ class TestTemplateCompleteness:
         required_dirs = ["src/", "tests/", "data/", "configs/", "notebooks/", "examples/"]
 
         for dir_ref in required_dirs:
-            assert dir_ref in content, \
-                f"Template README must document {dir_ref} directory"
+            assert dir_ref in content, f"Template README must document {dir_ref} directory"
 
         # Special case: scripts directory (README uses "script/" singular)
-        assert "script/" in content or "scripts/" in content, \
-            "Template README must document scripts/ directory"
+        assert "script/" in content or "scripts/" in content, "Template README must document scripts/ directory"
 
 
 class TestTemplateCopyFunctionality:
     """Test cases for template copy functionality."""
 
-    def test_template_can_be_copied(
-        self,
-        template_dir: Path,
-        tmp_path: Path
-    ) -> None:
+    def test_template_can_be_copied(self, template_dir: Path, tmp_path: Path) -> None:
         """
         Test that template can be copied to create new paper.
 
@@ -335,11 +302,7 @@ class TestTemplateCopyFunctionality:
         assert (dest_dir / "src").exists(), "Copied template must have src/ directory"
         assert (dest_dir / "tests").exists(), "Copied template must have tests/ directory"
 
-    def test_copied_template_is_independent(
-        self,
-        template_dir: Path,
-        tmp_path: Path
-    ) -> None:
+    def test_copied_template_is_independent(self, template_dir: Path, tmp_path: Path) -> None:
         """
         Test that copied template is independent of original.
 
@@ -363,14 +326,12 @@ class TestTemplateCopyFunctionality:
         copied_readme.write_text("# Modified Paper Implementation")
 
         # Verify original is unchanged
-        assert original_readme.read_text() == original_content, \
+        assert original_readme.read_text() == original_content, (
             "Original template must not be affected by copy modifications"
+        )
 
     def test_copied_template_has_complete_structure(
-        self,
-        template_dir: Path,
-        tmp_path: Path,
-        expected_template_structure: Dict[str, List[str]]
+        self, template_dir: Path, tmp_path: Path, expected_template_structure: Dict[str, List[str]]
     ) -> None:
         """
         Test that copied template has complete structure.
@@ -392,17 +353,13 @@ class TestTemplateCopyFunctionality:
         # Validate copied structure
         errors = validate_directory_structure(dest_dir, expected_template_structure)
 
-        assert not errors, \
-            f"Copied template structure validation failed:\n" + "\n".join(errors)
+        assert not errors, "Copied template structure validation failed:\n" + "\n".join(errors)
 
 
 class TestTemplateDocumentation:
     """Test cases for template documentation quality."""
 
-    def test_template_readme_provides_usage_instructions(
-        self,
-        template_dir: Path
-    ) -> None:
+    def test_template_readme_provides_usage_instructions(self, template_dir: Path) -> None:
         """
         Test that template README provides clear usage instructions.
 
@@ -418,15 +375,10 @@ class TestTemplateDocumentation:
         content = readme.read_text()
 
         # Check for usage instructions
-        assert "cp -r" in content or "copy" in content.lower(), \
-            "README must provide template copy instructions"
-        assert "Implementation Guide" in content or "Step" in content, \
-            "README must provide implementation guide"
+        assert "cp -r" in content or "copy" in content.lower(), "README must provide template copy instructions"
+        assert "Implementation Guide" in content or "Step" in content, "README must provide implementation guide"
 
-    def test_template_readme_explains_directory_purposes(
-        self,
-        template_dir: Path
-    ) -> None:
+    def test_template_readme_explains_directory_purposes(self, template_dir: Path) -> None:
         """
         Test that template README explains each directory's purpose.
 
@@ -447,12 +399,11 @@ class TestTemplateDocumentation:
             ("src/", "implementation"),
             ("tests/", "test"),
             ("data/", "dataset"),
-            ("configs/", "configuration")
+            ("configs/", "configuration"),
         ]
 
         for dir_name, keyword in directory_sections:
             # Check that directory is mentioned near its purpose keyword
             assert dir_name in content, f"README must mention {dir_name}"
             # This is a loose check - just verify documentation exists
-            assert keyword in content.lower(), \
-                f"README should explain {dir_name} purpose related to {keyword}"
+            assert keyword in content.lower(), f"README should explain {dir_name} purpose related to {keyword}"

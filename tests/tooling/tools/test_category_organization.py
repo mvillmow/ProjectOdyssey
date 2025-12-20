@@ -15,15 +15,12 @@ Coverage Target: 95% (infrastructure validation)
 from pathlib import Path
 from typing import Dict
 
-import pytest
 
 
 class TestCategoryStructure:
     """Test cases for validating tool category structure."""
 
-    def test_paper_scaffold_category_structure(
-        self, category_paths: Dict[str, Path]
-    ) -> None:
+    def test_paper_scaffold_category_structure(self, category_paths: Dict[str, Path]) -> None:
         """
         Test that paper-scaffold category has correct structure.
 
@@ -46,9 +43,7 @@ class TestCategoryStructure:
         assert readme.exists(), "paper-scaffold/README.md should exist"
         assert readme.is_file(), "paper-scaffold/README.md should be a file"
 
-    def test_test_utils_category_structure(
-        self, category_paths: Dict[str, Path]
-    ) -> None:
+    def test_test_utils_category_structure(self, category_paths: Dict[str, Path]) -> None:
         """
         Test that test-utils category has correct structure.
 
@@ -70,9 +65,7 @@ class TestCategoryStructure:
         assert readme.exists(), "test-utils/README.md should exist"
         assert readme.is_file(), "test-utils/README.md should be a file"
 
-    def test_benchmarking_category_structure(
-        self, category_paths: Dict[str, Path]
-    ) -> None:
+    def test_benchmarking_category_structure(self, category_paths: Dict[str, Path]) -> None:
         """
         Test that benchmarking category has correct structure.
 
@@ -94,9 +87,7 @@ class TestCategoryStructure:
         assert readme.exists(), "benchmarking/README.md should exist"
         assert readme.is_file(), "benchmarking/README.md should be a file"
 
-    def test_codegen_category_structure(
-        self, category_paths: Dict[str, Path]
-    ) -> None:
+    def test_codegen_category_structure(self, category_paths: Dict[str, Path]) -> None:
         """
         Test that codegen category has correct structure.
 
@@ -118,9 +109,7 @@ class TestCategoryStructure:
         assert readme.exists(), "codegen/README.md should exist"
         assert readme.is_file(), "codegen/README.md should be a file"
 
-    def test_category_readme_location(
-        self, category_readmes: Dict[str, Path]
-    ) -> None:
+    def test_category_readme_location(self, category_readmes: Dict[str, Path]) -> None:
         """
         Test that each category has README.md at its root.
 
@@ -133,27 +122,19 @@ class TestCategoryStructure:
         """
         for category_name, readme_path in category_readmes.items():
             # Verify README exists
-            assert readme_path.exists(), (
-                f"{category_name}/README.md should exist at category root"
-            )
+            assert readme_path.exists(), f"{category_name}/README.md should exist at category root"
 
             # Verify it's a file
-            assert readme_path.is_file(), (
-                f"{category_name}/README.md should be a file"
-            )
+            assert readme_path.is_file(), f"{category_name}/README.md should be a file"
 
             # Verify it's at category root (parent is category directory)
-            assert readme_path.name == "README.md", (
-                f"{category_name} README should be named README.md"
-            )
+            assert readme_path.name == "README.md", f"{category_name} README should be named README.md"
 
 
 class TestCategoryNamingConventions:
     """Test cases for category naming conventions."""
 
-    def test_category_follows_naming_convention(
-        self, category_names: list
-    ) -> None:
+    def test_category_follows_naming_convention(self, category_names: list) -> None:
         """
         Test that all categories follow naming convention.
 
@@ -167,23 +148,15 @@ class TestCategoryNamingConventions:
         """
         for category in category_names:
             # Check lowercase (allowing hyphens)
-            assert category.replace("-", "").islower(), (
-                f"Category '{category}' should use lowercase"
-            )
+            assert category.replace("-", "").islower(), f"Category '{category}' should use lowercase"
 
             # Check no underscores (use hyphens instead)
-            assert "_" not in category, (
-                f"Category '{category}' should use hyphens, not underscores"
-            )
+            assert "_" not in category, f"Category '{category}' should use hyphens, not underscores"
 
             # Check reasonable length
-            assert 3 <= len(category) <= 30, (
-                f"Category '{category}' should have reasonable name length"
-            )
+            assert 3 <= len(category) <= 30, f"Category '{category}' should have reasonable name length"
 
-    def test_category_names_are_descriptive(
-        self, category_names: list
-    ) -> None:
+    def test_category_names_are_descriptive(self, category_names: list) -> None:
         """
         Test that category names are descriptive of their purpose.
 
@@ -205,13 +178,10 @@ class TestCategoryNamingConventions:
         # Verify all categories are from expected set
         actual_categories = set(category_names)
         assert actual_categories == expected_categories, (
-            f"Categories should match expected set. "
-            f"Got: {actual_categories}, Expected: {expected_categories}"
+            f"Categories should match expected set. Got: {actual_categories}, Expected: {expected_categories}"
         )
 
-    def test_category_paths_are_relative_to_tools(
-        self, tools_root: Path, category_paths: Dict[str, Path]
-    ) -> None:
+    def test_category_paths_are_relative_to_tools(self, tools_root: Path, category_paths: Dict[str, Path]) -> None:
         """
         Test that category paths are directly under tools/.
 
@@ -225,23 +195,17 @@ class TestCategoryNamingConventions:
         """
         for category_name, category_path in category_paths.items():
             # Verify parent is tools/
-            assert category_path.parent == tools_root, (
-                f"{category_name}/ should be directly under tools/"
-            )
+            assert category_path.parent == tools_root, f"{category_name}/ should be directly under tools/"
 
             # Verify path structure
             expected_path = tools_root / category_name
-            assert category_path == expected_path, (
-                f"{category_name} path should be tools/{category_name}"
-            )
+            assert category_path == expected_path, f"{category_name} path should be tools/{category_name}"
 
 
 class TestCategoryOrganization:
     """Test cases for overall category organization."""
 
-    def test_category_supports_subdirectories(
-        self, category_paths: Dict[str, Path]
-    ) -> None:
+    def test_category_supports_subdirectories(self, category_paths: Dict[str, Path]) -> None:
         """
         Test that categories can contain subdirectories.
 
@@ -263,21 +227,15 @@ class TestCategoryOrganization:
             test_subdir.mkdir(exist_ok=True)
 
             # Verify subdirectory exists
-            assert test_subdir.exists(), (
-                "Should be able to create subdirectories in categories"
-            )
-            assert test_subdir.is_dir(), (
-                "Created subdirectory should be a directory"
-            )
+            assert test_subdir.exists(), "Should be able to create subdirectories in categories"
+            assert test_subdir.is_dir(), "Created subdirectory should be a directory"
 
         finally:
             # Clean up test subdirectory
             if test_subdir.exists():
                 test_subdir.rmdir()
 
-    def test_category_can_contain_files(
-        self, category_paths: Dict[str, Path]
-    ) -> None:
+    def test_category_can_contain_files(self, category_paths: Dict[str, Path]) -> None:
         """
         Test that categories can contain files.
 
@@ -297,21 +255,15 @@ class TestCategoryOrganization:
                 test_file.write_text("test content")
 
                 # Verify file exists
-                assert test_file.exists(), (
-                    f"Should be able to create files in {category_name}/"
-                )
-                assert test_file.is_file(), (
-                    f"Created item should be a file in {category_name}/"
-                )
+                assert test_file.exists(), f"Should be able to create files in {category_name}/"
+                assert test_file.is_file(), f"Created item should be a file in {category_name}/"
 
             finally:
                 # Clean up test file
                 if test_file.exists():
                     test_file.unlink()
 
-    def test_categories_are_independent(
-        self, category_paths: Dict[str, Path]
-    ) -> None:
+    def test_categories_are_independent(self, category_paths: Dict[str, Path]) -> None:
         """
         Test that categories are independent of each other.
 
@@ -327,26 +279,20 @@ class TestCategoryOrganization:
         paths = list(category_paths.values())
 
         # Verify each category has unique path
-        assert len(paths) == len(set(paths)), (
-            "Each category should have unique path"
-        )
+        assert len(paths) == len(set(paths)), "Each category should have unique path"
 
         # Verify categories don't nest within each other
         for i, path1 in enumerate(paths):
             for j, path2 in enumerate(paths):
                 if i != j:
                     # path1 should not be parent of path2
-                    assert path2.parent != path1, (
-                        f"Categories should not nest: {path1.name} -> {path2.name}"
-                    )
+                    assert path2.parent != path1, f"Categories should not nest: {path1.name} -> {path2.name}"
 
 
 class TestLanguageStrategyAlignment:
     """Test cases for language strategy alignment with ADR-001."""
 
-    def test_paper_scaffold_language_documented(
-        self, category_readmes: Dict[str, Path]
-    ) -> None:
+    def test_paper_scaffold_language_documented(self, category_readmes: Dict[str, Path]) -> None:
         """
         Test that paper-scaffold README documents language choice.
 
@@ -363,20 +309,11 @@ class TestLanguageStrategyAlignment:
         # paper-scaffold should use Python for scaffolding script
         # and generate Mojo templates
         # Check if README mentions this or has "Coming Soon"
-        has_language_info = (
-            "python" in content or
-            "mojo" in content or
-            "coming soon" in content
-        )
+        has_language_info = "python" in content or "mojo" in content or "coming soon" in content
 
-        assert has_language_info, (
-            "paper-scaffold/README.md should mention language strategy "
-            "or have 'Coming Soon'"
-        )
+        assert has_language_info, "paper-scaffold/README.md should mention language strategy or have 'Coming Soon'"
 
-    def test_test_utils_language_documented(
-        self, category_readmes: Dict[str, Path]
-    ) -> None:
+    def test_test_utils_language_documented(self, category_readmes: Dict[str, Path]) -> None:
         """
         Test that test-utils README documents language choice.
 
@@ -390,20 +327,11 @@ class TestLanguageStrategyAlignment:
         content = readme_path.read_text().lower()
 
         # test-utils should primarily use Mojo
-        has_language_info = (
-            "mojo" in content or
-            "python" in content or
-            "coming soon" in content
-        )
+        has_language_info = "mojo" in content or "python" in content or "coming soon" in content
 
-        assert has_language_info, (
-            "test-utils/README.md should mention language strategy "
-            "or have 'Coming Soon'"
-        )
+        assert has_language_info, "test-utils/README.md should mention language strategy or have 'Coming Soon'"
 
-    def test_benchmarking_language_documented(
-        self, category_readmes: Dict[str, Path]
-    ) -> None:
+    def test_benchmarking_language_documented(self, category_readmes: Dict[str, Path]) -> None:
         """
         Test that benchmarking README documents language choice.
 
@@ -417,20 +345,11 @@ class TestLanguageStrategyAlignment:
         content = readme_path.read_text().lower()
 
         # benchmarking should use Mojo for accurate measurements
-        has_language_info = (
-            "mojo" in content or
-            "python" in content or
-            "coming soon" in content
-        )
+        has_language_info = "mojo" in content or "python" in content or "coming soon" in content
 
-        assert has_language_info, (
-            "benchmarking/README.md should mention language strategy "
-            "or have 'Coming Soon'"
-        )
+        assert has_language_info, "benchmarking/README.md should mention language strategy or have 'Coming Soon'"
 
-    def test_codegen_language_documented(
-        self, category_readmes: Dict[str, Path]
-    ) -> None:
+    def test_codegen_language_documented(self, category_readmes: Dict[str, Path]) -> None:
         """
         Test that codegen README documents language choice.
 
@@ -444,13 +363,6 @@ class TestLanguageStrategyAlignment:
         content = readme_path.read_text().lower()
 
         # codegen should use Python for templating
-        has_language_info = (
-            "python" in content or
-            "mojo" in content or
-            "coming soon" in content
-        )
+        has_language_info = "python" in content or "mojo" in content or "coming soon" in content
 
-        assert has_language_info, (
-            "codegen/README.md should mention language strategy "
-            "or have 'Coming Soon'"
-        )
+        assert has_language_info, "codegen/README.md should mention language strategy or have 'Coming Soon'"

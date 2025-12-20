@@ -191,11 +191,5 @@ def all_doc_files(
     Returns:
         List of all documentation file paths
     """
-    all_docs = (
-        getting_started_docs
-        + core_docs
-        + advanced_docs
-        + dev_docs
-        + [repo_root / doc for doc in ROOT_DOCS]
-    )
+    all_docs = getting_started_docs + core_docs + advanced_docs + dev_docs + [repo_root / doc for doc in ROOT_DOCS]
     return all_docs

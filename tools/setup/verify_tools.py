@@ -18,17 +18,18 @@ import sys
 import subprocess
 import argparse
 from pathlib import Path
-from typing import Tuple, List, Optional
+from typing import Tuple, Optional
 
 
 class Color:
     """ANSI color codes"""
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BLUE = '\033[94m'
-    RESET = '\033[0m'
-    BOLD = '\033[1m'
+
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    BLUE = "\033[94m"
+    RESET = "\033[0m"
+    BOLD = "\033[1m"
 
 
 def run_command(cmd: list) -> Tuple[int, str, str]:
@@ -39,14 +40,9 @@ def run_command(cmd: list) -> Tuple[int, str, str]:
 
     Returns:
         Tuple of (exit_code, stdout, stderr).
-   """
+    """
     try:
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=10
-        )
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
         return result.returncode, result.stdout.strip(), result.stderr.strip()
     except subprocess.TimeoutExpired:
         return 1, "", "Timeout"
@@ -83,12 +79,7 @@ def check_prerequisites(verbose: bool = False) -> int:
     # Python version
     version = sys.version_info
     python_ok = version.major == 3 and version.minor >= 8
-    check_item(
-        "Python",
-        python_ok,
-        f"{version.major}.{version.minor}.{version.micro} (requires 3.8+)",
-        verbose
-    )
+    check_item("Python", python_ok, f"{version.major}.{version.minor}.{version.micro} (requires 3.8+)", verbose)
     if not python_ok:
         errors += 1
 
@@ -139,7 +130,7 @@ def check_python_dependencies(verbose: bool = False) -> int:
 
         try:
             mod = __import__(package)
-            version = getattr(mod, '__version__', 'unknown')
+            version = getattr(mod, "__version__", "unknown")
             check_item(package, True, f"{version} - {description}", verbose)
         except ImportError:
             check_item(package, False, f"Not installed - {description}", verbose)

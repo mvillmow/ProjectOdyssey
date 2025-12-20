@@ -19,7 +19,7 @@ import logging
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional
 from dataclasses import dataclass
 
 
@@ -30,6 +30,7 @@ MAX_FILE_SIZE = 102400  # 100KB max file size to prevent DoS
 @dataclass
 class DelegationInfo:
     """Information about delegation patterns."""
+
     agent_name: str
     level: int
     delegates_to: List[str]
@@ -47,7 +48,7 @@ class DelegationTester:
         2: "Module Design Agents",
         3: "Component Specialists",
         4: "Implementation Engineers",
-        5: "Junior Engineers"
+        5: "Junior Engineers",
     }
 
     def __init__(self, agents_dir: Path):
@@ -103,14 +104,14 @@ class DelegationTester:
             DelegationInfo or None
         """
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
         except Exception as e:
             self.errors.append(f"Failed to read {file_path.name}: {e}")
             logging.error(f"Failed to read {file_path.name}: {e}")
             return None
 
         # Extract agent name and level
-        name_match = re.search(r'name:\s*(.+)', content)
+        name_match = re.search(r"name:\s*(.+)", content)
         if not name_match:
             self.errors.append(f"No name found in {file_path.name}")
             return None
@@ -134,7 +135,7 @@ class DelegationTester:
             delegates_to=delegates_to,
             coordinates_with=coordinates_with,
             escalates_to=escalates_to,
-            escalation_triggers=escalation_triggers
+            escalation_triggers=escalation_triggers,
         )
 
     def _detect_level(self, name: str, content: str) -> Optional[int]:
@@ -148,22 +149,22 @@ class DelegationTester:
             Level number (0-5) or None
         """
         # Check content for explicit level
-        level_match = re.search(r'Level (\d)', content)
+        level_match = re.search(r"Level (\d)", content)
         if level_match:
             return int(level_match.group(1))
 
         # Infer from name
-        if 'chief-architect' in name:
+        if "chief-architect" in name:
             return 0
-        elif 'orchestrator' in name:
+        elif "orchestrator" in name:
             return 1
-        elif 'design' in name:
+        elif "design" in name:
             return 2
-        elif 'specialist' in name:
+        elif "specialist" in name:
             return 3
-        elif 'junior' in name and 'engineer' in name:
+        elif "junior" in name and "engineer" in name:
             return 5
-        elif 'engineer' in name:
+        elif "engineer" in name:
             return 4
 
         return None
@@ -180,20 +181,20 @@ class DelegationTester:
         delegates = []
 
         # Look for "Delegates To:" or "Delegates to:" sections
-        delegate_pattern = r'(?:Delegates [Tt]o|delegates to):\s*(.+?)(?=\n\n|\n#|\Z)'
+        delegate_pattern = r"(?:Delegates [Tt]o|delegates to):\s*(.+?)(?=\n\n|\n#|\Z)"
         matches = re.finditer(delegate_pattern, content, re.DOTALL)
 
         for match in matches:
             delegate_text = match.group(1)
             # Extract agent names/types
             # Common patterns: "Agent Name", "Agent Name (Level X)", etc.
-            lines = delegate_text.strip().split('\n')
+            lines = delegate_text.strip().split("\n")
             for line in lines:
                 line = line.strip()
-                if line and not line.startswith('#'):
+                if line and not line.startswith("#"):
                     # Clean up markdown formatting
-                    line = re.sub(r'^\*\*|\*\*$', '', line)  # Remove bold
-                    line = re.sub(r'^\*|-', '', line)  # Remove list markers
+                    line = re.sub(r"^\*\*|\*\*$", "", line)  # Remove bold
+                    line = re.sub(r"^\*|-", "", line)  # Remove list markers
                     line = line.strip()
                     if line and len(line) < 100:  # Sanity check
                         delegates.append(line)
@@ -212,17 +213,17 @@ class DelegationTester:
         coordinates = []
 
         # Look for "Coordinates With:" sections
-        coord_pattern = r'Coordinates [Ww]ith:\s*(.+?)(?=\n\n|\n#|\Z)'
+        coord_pattern = r"Coordinates [Ww]ith:\s*(.+?)(?=\n\n|\n#|\Z)"
         matches = re.finditer(coord_pattern, content, re.DOTALL)
 
         for match in matches:
             coord_text = match.group(1)
-            lines = coord_text.strip().split('\n')
+            lines = coord_text.strip().split("\n")
             for line in lines:
                 line = line.strip()
-                if line and not line.startswith('#'):
-                    line = re.sub(r'^\*\*|\*\*$', '', line)
-                    line = re.sub(r'^\*|-', '', line)
+                if line and not line.startswith("#"):
+                    line = re.sub(r"^\*\*|\*\*$", "", line)
+                    line = re.sub(r"^\*|-", "", line)
                     line = line.strip()
                     if line and len(line) < 100:
                         coordinates.append(line)
@@ -240,7 +241,7 @@ class DelegationTester:
             Escalation target or None
         """
         # Look for explicit escalation mentions
-        escalate_pattern = r'Escalate[s]? to:\s*(.+?)(?=\n|\.|,)'
+        escalate_pattern = r"Escalate[s]? to:\s*(.+?)(?=\n|\.|,)"
         match = re.search(escalate_pattern, content, re.IGNORECASE)
 
         if match:
@@ -265,9 +266,9 @@ class DelegationTester:
 
         # Look for "Escalation Triggers" or "Escalate when" sections
         trigger_patterns = [
-            r'Escalation Triggers[:\s]+(.+?)(?=\n##|\Z)',
-            r'Escalate when[:\s]+(.+?)(?=\n##|\Z)',
-            r'Must [Ee]scalate[:\s]+(.+?)(?=\n##|\Z)'
+            r"Escalation Triggers[:\s]+(.+?)(?=\n##|\Z)",
+            r"Escalate when[:\s]+(.+?)(?=\n##|\Z)",
+            r"Must [Ee]scalate[:\s]+(.+?)(?=\n##|\Z)",
         ]
 
         for pattern in trigger_patterns:
@@ -275,11 +276,11 @@ class DelegationTester:
             for match in matches:
                 trigger_text = match.group(1)
                 # Extract bullet points or lines
-                lines = trigger_text.strip().split('\n')
+                lines = trigger_text.strip().split("\n")
                 for line in lines:
                     line = line.strip()
-                    if line and not line.startswith('#'):
-                        line = re.sub(r'^\*|-', '', line)
+                    if line and not line.startswith("#"):
+                        line = re.sub(r"^\*|-", "", line)
                         line = line.strip()
                         if line and len(line) > 10:  # Meaningful trigger
                             triggers.append(line)
@@ -291,9 +292,9 @@ class DelegationTester:
 
         Validates Level N → Level N+1 delegation for all levels.
         """
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("DELEGATION CHAIN VALIDATION")
-        print("="*80)
+        print("=" * 80)
 
         # Group agents by level
         agents_by_level: Dict[int, List[DelegationInfo]] = {}
@@ -310,7 +311,7 @@ class DelegationTester:
             agents = agents_by_level.get(level, [])
 
             if not agents:
-                print(f"  ⚠ No agents at this level")
+                print("  ⚠ No agents at this level")
                 continue
 
             for agent in agents:
@@ -322,22 +323,18 @@ class DelegationTester:
                         if len(agent.delegates_to) > 3:
                             print(f"      ... and {len(agent.delegates_to) - 3} more")
                     else:
-                        self.warnings.append(
-                            f"{agent.agent_name} (Level {level}) has no delegation targets defined"
-                        )
-                        print(f"    ⚠ WARNING: No delegation targets defined")
+                        self.warnings.append(f"{agent.agent_name} (Level {level}) has no delegation targets defined")
+                        print("    ⚠ WARNING: No delegation targets defined")
                 else:  # Junior engineers (level 5) should NOT delegate
                     if agent.delegates_to:
-                        self.warnings.append(
-                            f"{agent.agent_name} (Level 5 - Junior) should not delegate further"
-                        )
-                        print(f"    ⚠ WARNING: Junior engineer delegates (should not)")
+                        self.warnings.append(f"{agent.agent_name} (Level 5 - Junior) should not delegate further")
+                        print("    ⚠ WARNING: Junior engineer delegates (should not)")
 
     def test_escalation_paths(self) -> None:
         """Test that escalation paths are defined."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("ESCALATION PATH VALIDATION")
-        print("="*80)
+        print("=" * 80)
 
         for info in self.delegation_info:
             print(f"\n{info.agent_name} (Level {info.level}):")
@@ -345,9 +342,7 @@ class DelegationTester:
             if info.level == 0:
                 # Chief Architect has no one to escalate to
                 if info.escalates_to:
-                    self.warnings.append(
-                        f"{info.agent_name} is Level 0 but has escalation target: {info.escalates_to}"
-                    )
+                    self.warnings.append(f"{info.agent_name} is Level 0 but has escalation target: {info.escalates_to}")
                 print("  Escalates to: N/A (top level)")
             else:
                 if info.escalates_to:
@@ -369,9 +364,9 @@ class DelegationTester:
 
     def test_horizontal_coordination(self) -> None:
         """Test horizontal coordination patterns."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("HORIZONTAL COORDINATION VALIDATION")
-        print("="*80)
+        print("=" * 80)
 
         agents_with_coordination = [info for info in self.delegation_info if info.coordinates_with]
 
@@ -392,9 +387,9 @@ class DelegationTester:
 
     def print_summary(self) -> None:
         """Print test summary."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("DELEGATION TEST SUMMARY")
-        print("="*80)
+        print("=" * 80)
         print(f"Agents analyzed: {len(self.delegation_info)}")
         print(f"Errors: {len(self.errors)}")
         print(f"Warnings: {len(self.warnings)}")
@@ -409,7 +404,7 @@ class DelegationTester:
             for warning in self.warnings:
                 print(f"  - {warning}")
 
-        print("="*80)
+        print("=" * 80)
 
 
 def main() -> int:
@@ -417,12 +412,9 @@ def main() -> int:
 
     Returns:
         Exit code (0 for success, 1 for errors).
-   """
+    """
     # Configure logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(levelname)s: %(message)s'
-    )
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
     logger = logging.getLogger(__name__)
 
     # Determine agents directory

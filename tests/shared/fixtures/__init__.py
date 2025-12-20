@@ -179,9 +179,7 @@ def validate_markdown_links(file_path: Path) -> List[str]:
             if repo_root:
                 target_path = repo_root / link_url.lstrip("/")
             else:
-                broken_links.append(
-                    f"Cannot resolve absolute link: {link_url} (repo root not found)"
-                )
+                broken_links.append(f"Cannot resolve absolute link: {link_url} (repo root not found)")
                 continue
         else:
             # Relative path
@@ -230,9 +228,7 @@ def validate_markdown_code_blocks(file_path: Path) -> List[str]:
 
                 # Check if language is specified
                 if line.strip() == "```":
-                    errors.append(
-                        f"Line {i}: Code block missing language specification"
-                    )
+                    errors.append(f"Line {i}: Code block missing language specification")
             else:
                 # Ending code block
                 in_code_block = False
@@ -267,9 +263,7 @@ def find_repo_root(start_path: Path) -> Optional[Path]:
 # ============================================================================
 
 
-def validate_directory_structure(
-    root_dir: Path, expected_structure: Dict
-) -> List[str]:
+def validate_directory_structure(root_dir: Path, expected_structure: Dict) -> List[str]:
     """Validate directory structure matches expected layout.
 
     Args:
@@ -312,9 +306,7 @@ def validate_directory_structure(
                 if not full_path.exists():
                     errors.append(f"Missing directory: {display_path}")
                 elif not full_path.is_dir():
-                    errors.append(
-                        f"Expected directory but found file: {display_path}"
-                    )
+                    errors.append(f"Expected directory but found file: {display_path}")
                 else:
                     _check_structure(full_path, value, display_path)
 
@@ -498,11 +490,7 @@ def assert_files_equal(file1: Path, file2: Path):
     content2 = file2.read_text()
 
     assert content1 == content2, (
-        f"Files differ:\n"
-        f"File 1: {file1}\n"
-        f"File 2: {file2}\n"
-        f"Expected:\n{content1}\n"
-        f"Actual:\n{content2}"
+        f"Files differ:\nFile 1: {file1}\nFile 2: {file2}\nExpected:\n{content1}\nActual:\n{content2}"
     )
 
 
@@ -523,9 +511,7 @@ def assert_file_contains(file_path: Path, expected_content: str):
     """
     content = file_path.read_text()
     assert expected_content in content, (
-        f"Expected content not found in {file_path}:\n"
-        f"Looking for: {expected_content}\n"
-        f"File content:\n{content}"
+        f"Expected content not found in {file_path}:\nLooking for: {expected_content}\nFile content:\n{content}"
     )
 
 

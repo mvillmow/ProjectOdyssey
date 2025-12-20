@@ -19,7 +19,6 @@ import pytest
 from pathlib import Path
 
 
-
 @pytest.fixture
 def advanced_docs_dir(repo_root: Path) -> Path:
     """
@@ -59,7 +58,6 @@ class TestAdvancedDocsExistence:
         doc_path = advanced_docs_dir / doc_name
 
         if not doc_path.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc_path}")
         assert doc_path.exists(), f"{doc_name} should exist"
         assert doc_path.is_file(), f"{doc_name} should be a file"
@@ -76,9 +74,7 @@ class TestAdvancedDocsExistence:
         title = doc_name.replace("-", " ").title().replace(".Md", "")
         content = f"# {title}\n\nContent here.\n"
         if not doc_path.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc_path}")
-
 
         doc_path.write_text(content)
 
@@ -94,7 +90,7 @@ class TestAdvancedDocsExistence:
             doc_name: Name of document to test
         """
         doc_path = advanced_docs_dir / doc_name
-        content = f"""# Document Title
+        content = """# Document Title
 
 ## Overview
 
@@ -109,9 +105,7 @@ Technical details.
 Example code.
 """
         if not doc_path.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc_path}")
-
 
         doc_path.write_text(content)
 
@@ -151,9 +145,7 @@ fn simd_example():
 How to benchmark.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -191,9 +183,7 @@ struct CustomLayer:
 How to test layers.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -227,9 +217,7 @@ Inter-process communication.
 How to scale.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -263,9 +251,7 @@ How to create plots.
 Interactive tools.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -299,9 +285,7 @@ Available tools.
 Debugging strategies.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -335,9 +319,7 @@ API integration.
 Integration examples.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -365,7 +347,7 @@ class TestTier3Integration:
         ]
 
         for doc in docs:
-            doc_path = (advanced_docs_dir / doc)
+            doc_path = advanced_docs_dir / doc
             if not doc_path.exists():
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
 
@@ -389,7 +371,7 @@ class TestTier3Integration:
         ]
 
         for doc in docs:
-            doc_path = (advanced_docs_dir / doc)
+            doc_path = advanced_docs_dir / doc
             if not doc_path.exists():
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
 
@@ -413,7 +395,7 @@ class TestTier3Integration:
         }
 
         for doc in expected_docs:
-            doc_path = (advanced_docs_dir / doc)
+            doc_path = advanced_docs_dir / doc
             if not doc_path.exists():
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
 
@@ -440,7 +422,7 @@ class TestTier3Integration:
         ]
 
         for doc_name in doc_names:
-            doc_path = (advanced_docs_dir / doc_name)
+            doc_path = advanced_docs_dir / doc_name
             if not doc_path.exists():
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
 

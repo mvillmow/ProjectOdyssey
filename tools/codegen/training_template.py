@@ -15,16 +15,12 @@ Reference: ADR-001
 Last Review: 2025-11-16
 """
 
-from typing import Dict, List
+from typing import List
 import argparse
 import sys
 
 
-def generate_training_loop(
-    optimizer: str = "SGD",
-    loss_fn: str = "CrossEntropy",
-    metrics: List[str] = None
-) -> str:
+def generate_training_loop(optimizer: str = "SGD", loss_fn: str = "CrossEntropy", metrics: List[str] = None) -> str:
     """
     Generate a basic training loop template.
 
@@ -128,35 +124,16 @@ fn validate(
 
 def main() -> int:
     """Main CLI interface."""
-    parser = argparse.ArgumentParser(
-        description="Generate training loop boilerplate code"
-    )
+    parser = argparse.ArgumentParser(description="Generate training loop boilerplate code")
 
-    parser.add_argument(
-        "--optimizer",
-        default="SGD",
-        help="Optimizer name (default: SGD)"
-    )
-    parser.add_argument(
-        "--loss",
-        default="CrossEntropy",
-        help="Loss function name (default: CrossEntropy)"
-    )
-    parser.add_argument(
-        "--metrics",
-        nargs="+",
-        default=["loss"],
-        help="Metrics to track (default: loss)"
-    )
+    parser.add_argument("--optimizer", default="SGD", help="Optimizer name (default: SGD)")
+    parser.add_argument("--loss", default="CrossEntropy", help="Loss function name (default: CrossEntropy)")
+    parser.add_argument("--metrics", nargs="+", default=["loss"], help="Metrics to track (default: loss)")
 
     args = parser.parse_args()
 
     try:
-        code = generate_training_loop(
-            optimizer=args.optimizer,
-            loss_fn=args.loss,
-            metrics=args.metrics
-        )
+        code = generate_training_loop(optimizer=args.optimizer, loss_fn=args.loss, metrics=args.metrics)
         print(code)
         return 0
 

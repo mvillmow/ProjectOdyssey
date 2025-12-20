@@ -42,7 +42,7 @@ class InteractivePrompter:
         default: Optional[str] = None,
         required: bool = True,
         validator: Optional[callable] = None,
-        example: Optional[str] = None
+        example: Optional[str] = None,
     ) -> str:
         """
         Prompt user for input with validation.
@@ -56,7 +56,7 @@ class InteractivePrompter:
 
         Returns:
             User input (validated).
-       """
+        """
         # Build prompt message
         prompt_parts = [message]
 
@@ -100,12 +100,8 @@ class InteractivePrompter:
 
         Returns:
             Paper name (will be normalized to directory name).
-       """
-        return self._prompt(
-            message="Paper name (short identifier)",
-            example="LeNet-5, BERT, GPT-2",
-            required=True
-        )
+        """
+        return self._prompt(message="Paper name (short identifier)", example="LeNet-5, BERT, GPT-2", required=True)
 
     def prompt_for_title(self) -> str:
         """
@@ -117,7 +113,7 @@ class InteractivePrompter:
         return self._prompt(
             message="Full paper title",
             example="LeNet-5: Gradient-Based Learning Applied to Document Recognition",
-            required=True
+            required=True,
         )
 
     def prompt_for_authors(self) -> str:
@@ -127,11 +123,7 @@ class InteractivePrompter:
         Returns:
             Paper authors
         """
-        return self._prompt(
-            message="Authors",
-            example="LeCun et al., Vaswani et al.",
-            required=True
-        )
+        return self._prompt(message="Authors", example="LeCun et al., Vaswani et al.", required=True)
 
     def _validate_year(self, year_str: str) -> tuple[bool, str]:
         """
@@ -165,7 +157,7 @@ class InteractivePrompter:
 
         Returns:
             Publication year (defaults to current year).
-       """
+        """
         current_year = str(datetime.datetime.now().year)
 
         return self._prompt(
@@ -173,7 +165,7 @@ class InteractivePrompter:
             default=current_year,
             required=False,
             validator=self._validate_year,
-            example="1998, 2017"
+            example="1998, 2017",
         )
 
     def _validate_url(self, url: str) -> tuple[bool, str]:
@@ -191,7 +183,7 @@ class InteractivePrompter:
             return True, ""
 
         # Simple URL validation (starts with http:// or https://)
-        url_pattern = re.compile(r'^https?://')
+        url_pattern = re.compile(r"^https?://")
         if not url_pattern.match(url):
             return False, "URL must start with http:// or https://"
 
@@ -203,13 +195,13 @@ class InteractivePrompter:
 
         Returns:
             Paper URL (optional).
-       """
+        """
         result = self._prompt(
             message="Paper URL (optional)",
             default="",
             required=False,
             validator=self._validate_url,
-            example="https://arxiv.org/abs/1234.5678"
+            example="https://arxiv.org/abs/1234.5678",
         )
 
         # Return placeholder if empty
@@ -221,12 +213,12 @@ class InteractivePrompter:
 
         Returns:
             Brief paper description (optional).
-       """
+        """
         result = self._prompt(
             message="Brief description (optional)",
             default="",
             required=False,
-            example="Convolutional neural network for handwritten digit recognition"
+            example="Convolutional neural network for handwritten digit recognition",
         )
 
         # Return placeholder if empty
@@ -267,53 +259,53 @@ class InteractivePrompter:
             if not existing:
                 return True
             value = existing.get(field_name)
-            return value is None or value == '' or (isinstance(value, str) and value.startswith('TODO'))
+            return value is None or value == "" or (isinstance(value, str) and value.startswith("TODO"))
 
         # Paper name (required)
-        if needs_prompt('paper'):
-            metadata['PAPER_NAME'] = self.prompt_for_paper_name()
+        if needs_prompt("paper"):
+            metadata["PAPER_NAME"] = self.prompt_for_paper_name()
         else:
-            metadata['PAPER_NAME'] = existing['paper']
+            metadata["PAPER_NAME"] = existing["paper"]
             if not self.quiet:
                 print(f"Paper name: {metadata['PAPER_NAME']} (from arguments)")
 
         # Title (required)
-        if needs_prompt('title'):
-            metadata['PAPER_TITLE'] = self.prompt_for_title()
+        if needs_prompt("title"):
+            metadata["PAPER_TITLE"] = self.prompt_for_title()
         else:
-            metadata['PAPER_TITLE'] = existing['title']
+            metadata["PAPER_TITLE"] = existing["title"]
             if not self.quiet:
                 print(f"Title: {metadata['PAPER_TITLE']} (from arguments)")
 
         # Authors (required)
-        if needs_prompt('authors'):
-            metadata['AUTHORS'] = self.prompt_for_authors()
+        if needs_prompt("authors"):
+            metadata["AUTHORS"] = self.prompt_for_authors()
         else:
-            metadata['AUTHORS'] = existing['authors']
+            metadata["AUTHORS"] = existing["authors"]
             if not self.quiet:
                 print(f"Authors: {metadata['AUTHORS']} (from arguments)")
 
         # Year (optional, defaults to current year)
-        if needs_prompt('year'):
-            metadata['YEAR'] = self.prompt_for_year()
+        if needs_prompt("year"):
+            metadata["YEAR"] = self.prompt_for_year()
         else:
-            metadata['YEAR'] = existing['year']
+            metadata["YEAR"] = existing["year"]
             if not self.quiet:
                 print(f"Year: {metadata['YEAR']} (from arguments)")
 
         # URL (optional)
-        if needs_prompt('url'):
-            metadata['PAPER_URL'] = self.prompt_for_url()
+        if needs_prompt("url"):
+            metadata["PAPER_URL"] = self.prompt_for_url()
         else:
-            metadata['PAPER_URL'] = existing['url']
+            metadata["PAPER_URL"] = existing["url"]
             if not self.quiet:
                 print(f"URL: {metadata['PAPER_URL']} (from arguments)")
 
         # Description (optional)
-        if needs_prompt('description'):
-            metadata['DESCRIPTION'] = self.prompt_for_description()
+        if needs_prompt("description"):
+            metadata["DESCRIPTION"] = self.prompt_for_description()
         else:
-            metadata['DESCRIPTION'] = existing['description']
+            metadata["DESCRIPTION"] = existing["description"]
             if not self.quiet:
                 print(f"Description: {metadata['DESCRIPTION']} (from arguments)")
 

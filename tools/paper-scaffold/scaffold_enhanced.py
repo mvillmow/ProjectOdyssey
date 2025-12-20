@@ -25,6 +25,7 @@ from validate import validate_paper_structure, ValidationReport, ValidationStatu
 @dataclass
 class CreationResult:
     """Result of directory creation operation."""
+
     success: bool
     created_dirs: List[Path] = field(default_factory=list)
     created_files: List[Path] = field(default_factory=list)
@@ -111,14 +112,14 @@ def normalize_paper_name(name: str) -> str:
     name = name.lower()
 
     # Replace special characters and spaces with hyphens
-    name = re.sub(r'[^\w\s-]', '-', name)
-    name = re.sub(r'[\s_]+', '-', name)
+    name = re.sub(r"[^\w\s-]", "-", name)
+    name = re.sub(r"[\s_]+", "-", name)
 
     # Remove consecutive hyphens
-    name = re.sub(r'-+', '-', name)
+    name = re.sub(r"-+", "-", name)
 
     # Trim leading/trailing hyphens
-    name = name.strip('-')
+    name = name.strip("-")
 
     return name
 
@@ -157,7 +158,7 @@ def load_template(template_path: Path) -> str:
     if not template_path.exists():
         raise FileNotFoundError(f"Template not found: {template_path}")
 
-    return template_path.read_text(encoding='utf-8')
+    return template_path.read_text(encoding="utf-8")
 
 
 class DirectoryGenerator:
@@ -187,7 +188,7 @@ class DirectoryGenerator:
         paper_metadata: Dict[str, str],
         templates_dir: Path | None = None,
         validate: bool = True,
-        dry_run: bool = False
+        dry_run: bool = False,
     ) -> CreationResult:
         """
         Generate complete paper structure with validation.
@@ -223,14 +224,7 @@ class DirectoryGenerator:
 
         # Stage 2: Generate files from templates
         try:
-            self._generate_files(
-                paper_path,
-                normalized_name,
-                paper_metadata,
-                templates_dir,
-                result,
-                dry_run
-            )
+            self._generate_files(paper_path, normalized_name, paper_metadata, templates_dir, result, dry_run)
         except Exception as e:
             result.success = False
             result.errors.append((paper_path, f"File generation failed: {e}"))
@@ -244,12 +238,7 @@ class DirectoryGenerator:
 
         return result
 
-    def _create_structure(
-        self,
-        paper_path: Path,
-        result: CreationResult,
-        dry_run: bool
-    ) -> None:
+    def _create_structure(self, paper_path: Path, result: CreationResult, dry_run: bool) -> None:
         """
         Create directory structure (Stage 1).
 
@@ -292,7 +281,7 @@ class DirectoryGenerator:
         metadata: Dict[str, str],
         templates_dir: Path | None,
         result: CreationResult,
-        dry_run: bool
+        dry_run: bool,
     ) -> None:
         """
         Generate files from templates (Stage 2).
@@ -311,7 +300,7 @@ class DirectoryGenerator:
         variables = {
             "PAPER_NAME": paper_name,
             "MODEL_NAME": model_name,
-            **metadata  # Include all user-provided metadata
+            **metadata,  # Include all user-provided metadata
         }
 
         # Files to generate (template -> output path)
@@ -344,7 +333,7 @@ class DirectoryGenerator:
 
                 # Write output file
                 if not dry_run:
-                    output_path.write_text(rendered_content, encoding='utf-8')
+                    output_path.write_text(rendered_content, encoding="utf-8")
 
                 result.created_files.append(output_path)
                 if self.verbose:
@@ -384,82 +373,32 @@ Examples:
 
   # Skip validation
   python scaffold_enhanced.py --paper "GPT-2" --no-validate
-        """
+        """,
     )
 
     parser.add_argument(
-        "--paper",
-        required=False,
-        default=None,
-        help="Paper name (will be normalized to lowercase-with-hyphens)"
+        "--paper", required=False, default=None, help="Paper name (will be normalized to lowercase-with-hyphens)"
     )
+    parser.add_argument("--interactive", action="store_true", help="Force interactive mode (prompt for all metadata)")
+    parser.add_argument("--title", default="TODO: Add paper title", help="Full paper title")
+    parser.add_argument("--authors", default="TODO: Add authors", help="Paper authors")
+    parser.add_argument("--year", default="TODO", help="Publication year")
+    parser.add_argument("--url", default="TODO: Add paper URL", help="URL to original paper")
+    parser.add_argument("--description", default="TODO: Add description", help="Brief paper description")
+    parser.add_argument("--output", type=Path, default=Path("papers"), help="Output directory (default: papers/)")
+    parser.add_argument("--templates", type=Path, default=None, help="Templates directory (default: auto-detect)")
     parser.add_argument(
-        "--interactive",
-        action="store_true",
-        help="Force interactive mode (prompt for all metadata)"
+        "--dry-run", action="store_true", help="Show what would be created without actually creating it"
     )
-    parser.add_argument(
-        "--title",
-        default="TODO: Add paper title",
-        help="Full paper title"
-    )
-    parser.add_argument(
-        "--authors",
-        default="TODO: Add authors",
-        help="Paper authors"
-    )
-    parser.add_argument(
-        "--year",
-        default="TODO",
-        help="Publication year"
-    )
-    parser.add_argument(
-        "--url",
-        default="TODO: Add paper URL",
-        help="URL to original paper"
-    )
-    parser.add_argument(
-        "--description",
-        default="TODO: Add description",
-        help="Brief paper description"
-    )
-    parser.add_argument(
-        "--output",
-        type=Path,
-        default=Path("papers"),
-        help="Output directory (default: papers/)"
-    )
-    parser.add_argument(
-        "--templates",
-        type=Path,
-        default=None,
-        help="Templates directory (default: auto-detect)"
-    )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Show what would be created without actually creating it"
-    )
-    parser.add_argument(
-        "--no-validate",
-        action="store_true",
-        help="Skip validation after generation"
-    )
-    parser.add_argument(
-        "--quiet",
-        action="store_true",
-        help="Suppress progress output"
-    )
+    parser.add_argument("--no-validate", action="store_true", help="Skip validation after generation")
+    parser.add_argument("--quiet", action="store_true", help="Suppress progress output")
 
     args = parser.parse_args()
 
     try:
         # Check if interactive mode is needed
         needs_interactive = (
-            args.interactive or
-            not args.paper or
-            args.title.startswith("TODO") or
-            args.authors.startswith("TODO")
+            args.interactive or not args.paper or args.title.startswith("TODO") or args.authors.startswith("TODO")
         )
 
         # Use interactive prompts if needed
@@ -470,19 +409,19 @@ Examples:
 
             # Prepare existing args for prompter
             existing_args = {
-                'paper': args.paper,
-                'title': args.title,
-                'authors': args.authors,
-                'year': args.year,
-                'url': args.url,
-                'description': args.description,
+                "paper": args.paper,
+                "title": args.title,
+                "authors": args.authors,
+                "year": args.year,
+                "url": args.url,
+                "description": args.description,
             }
 
             # Collect metadata interactively
             metadata = prompter.collect_metadata(existing=existing_args)
 
             # Extract paper name from metadata
-            paper_name = metadata['PAPER_NAME']
+            paper_name = metadata["PAPER_NAME"]
         else:
             # Use CLI arguments directly
             paper_name = args.paper
@@ -495,10 +434,7 @@ Examples:
             }
 
         # Create generator
-        generator = DirectoryGenerator(
-            base_path=args.output,
-            verbose=not args.quiet
-        )
+        generator = DirectoryGenerator(base_path=args.output, verbose=not args.quiet)
 
         # Generate structure
         result = generator.generate(
@@ -506,7 +442,7 @@ Examples:
             paper_metadata=metadata,
             templates_dir=args.templates,
             validate=not args.no_validate,
-            dry_run=args.dry_run
+            dry_run=args.dry_run,
         )
 
         # Print summary
@@ -525,6 +461,7 @@ Examples:
     except Exception as e:
         print(f"\nError: {e}", file=sys.stderr)
         import traceback
+
         traceback.print_exc()
         return 1
 

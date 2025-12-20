@@ -20,7 +20,7 @@ from validation import (
     validate_directory_exists,
     extract_markdown_links,
     validate_relative_link,
-    count_markdown_issues
+    count_markdown_issues,
 )
 
 
@@ -198,33 +198,21 @@ class TestValidateRelativeLink(unittest.TestCase):
         target_file = self.test_dir / "target.md"
         target_file.write_text("# Target")
 
-        is_valid, error = validate_relative_link(
-            "target.md",
-            self.source_file,
-            self.test_dir
-        )
+        is_valid, error = validate_relative_link("target.md", self.source_file, self.test_dir)
 
         self.assertTrue(is_valid)
         self.assertIsNone(error)
 
     def test_validate_missing_relative_link(self):
         """Test validating a link to a missing file."""
-        is_valid, error = validate_relative_link(
-            "missing.md",
-            self.source_file,
-            self.test_dir
-        )
+        is_valid, error = validate_relative_link("missing.md", self.source_file, self.test_dir)
 
         self.assertFalse(is_valid)
         self.assertIn("not found", error.lower())
 
     def test_validate_anchor_only_link(self):
         """Test validating anchor-only links (should be skipped)."""
-        is_valid, error = validate_relative_link(
-            "#section",
-            self.source_file,
-            self.test_dir
-        )
+        is_valid, error = validate_relative_link("#section", self.source_file, self.test_dir)
 
         # Anchor-only links should be valid (skipped)
         self.assertTrue(is_valid)
@@ -247,8 +235,8 @@ code
         issues = count_markdown_issues(content)
         # Returns a dict of issue counts
         self.assertIsInstance(issues, dict)
-        self.assertEqual(issues['missing_language_tags'], 0)
-        self.assertEqual(issues['long_lines'], 0)
+        self.assertEqual(issues["missing_language_tags"], 0)
+        self.assertEqual(issues["long_lines"], 0)
 
     def test_count_code_block_without_language(self):
         """Test detecting code blocks without language."""
@@ -257,7 +245,7 @@ code without language
 ```"""
         issues = count_markdown_issues(content)
         # Returns dict with counts
-        self.assertGreater(issues['missing_language_tags'], 0)
+        self.assertGreater(issues["missing_language_tags"], 0)
 
     def test_count_multiple_blank_lines(self):
         """Test detecting multiple consecutive blank lines."""
@@ -267,8 +255,8 @@ code without language
 Multiple blank lines above"""
         issues = count_markdown_issues(content)
         # Returns dict with counts
-        self.assertGreater(issues['multiple_blank_lines'], 0)
+        self.assertGreater(issues["multiple_blank_lines"], 0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

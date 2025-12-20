@@ -17,7 +17,6 @@ import pytest
 from pathlib import Path
 
 
-
 @pytest.fixture
 def dev_docs_dir(repo_root: Path) -> Path:
     """
@@ -55,7 +54,6 @@ class TestDevDocsExistence:
         doc_path = dev_docs_dir / doc_name
 
         if not doc_path.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc_path}")
         assert doc_path.exists(), f"{doc_name} should exist"
         assert doc_path.is_file(), f"{doc_name} should be a file"
@@ -72,9 +70,7 @@ class TestDevDocsExistence:
         title = doc_name.replace("-", " ").title().replace(".Md", "")
         content = f"# {title}\n\nContent here.\n"
         if not doc_path.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc_path}")
-
 
         doc_path.write_text(content)
 
@@ -90,7 +86,7 @@ class TestDevDocsExistence:
             doc_name: Name of document to test
         """
         doc_path = dev_docs_dir / doc_name
-        content = f"""# Document Title
+        content = """# Document Title
 
 ## Overview
 
@@ -101,9 +97,7 @@ Development documentation overview.
 Technical details for developers.
 """
         if not doc_path.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc_path}")
-
 
         doc_path.write_text(content)
 
@@ -139,9 +133,7 @@ High-level architecture.
 Architectural decisions.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -170,9 +162,7 @@ Architectural decisions.
 More details.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -213,9 +203,7 @@ fn api_function():
 Class documentation.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -250,9 +238,7 @@ Description.
 Description.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -287,9 +273,7 @@ class TestReleaseProcess:
 - [ ] Docs updated
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -318,9 +302,7 @@ Semantic versioning (semver).
 How to bump versions.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -354,9 +336,7 @@ Automated testing.
 Deployment process.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -386,9 +366,7 @@ jobs:
 More examples.
 """
         if not doc.exists():
-
             pytest.skip(f"Documentation file not created yet: {doc}")
-
 
         doc.write_text(content)
 
@@ -414,7 +392,7 @@ class TestTier4Integration:
         ]
 
         for doc in docs:
-            doc_path = (dev_docs_dir / doc)
+            doc_path = dev_docs_dir / doc
             if not doc_path.exists():
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
 
@@ -442,7 +420,7 @@ class TestTier4Integration:
         ]
 
         for doc in docs:
-            doc_path = (dev_docs_dir / doc)
+            doc_path = dev_docs_dir / doc
             if not doc_path.exists():
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
 
@@ -470,7 +448,7 @@ class TestTier4Integration:
         }
 
         for doc in expected_docs:
-            doc_path = (dev_docs_dir / doc)
+            doc_path = dev_docs_dir / doc
             if not doc_path.exists():
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
 
@@ -495,7 +473,7 @@ class TestTier4Integration:
         ]
 
         for doc_name in doc_names:
-            doc_path = (dev_docs_dir / doc_name)
+            doc_path = dev_docs_dir / doc_name
             if not doc_path.exists():
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
 

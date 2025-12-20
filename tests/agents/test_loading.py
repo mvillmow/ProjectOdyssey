@@ -104,7 +104,7 @@ class AgentLoadingTester:
             AgentInfo if loaded successfully, None otherwise
         """
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
         except Exception as e:
             self.errors.append(f"Failed to read {file_path.name}: {e}")
             logging.error(f"Failed to read {file_path.name}: {e}")
@@ -128,10 +128,10 @@ class AgentLoadingTester:
             return None
 
         # Extract required fields
-        name = frontmatter.get('name', '')
-        description = frontmatter.get('description', '')
-        tools_str = frontmatter.get('tools', '')
-        model = frontmatter.get('model', '')
+        name = frontmatter.get("name", "")
+        description = frontmatter.get("description", "")
+        tools_str = frontmatter.get("tools", "")
+        model = frontmatter.get("model", "")
 
         if not all([name, description, tools_str, model]):
             self.errors.append(f"Missing required fields in {file_path.name}")
@@ -140,11 +140,7 @@ class AgentLoadingTester:
         # Extract additional info from content
         role = self._extract_role(content)
 
-        return AgentInfo(
-            file_path=file_path,
-            frontmatter=frontmatter,
-            role=role
-        )
+        return AgentInfo(file_path=file_path, frontmatter=frontmatter, role=role)
 
     def _extract_role(self, content: str) -> Optional[str]:
         """Extract role description from content.
@@ -156,11 +152,11 @@ class AgentLoadingTester:
             Role description or None
         """
         # Look for "## Role" section
-        role_match = re.search(r'^##\s+Role\s*\n(.+?)(?=\n##|\Z)', content, re.MULTILINE | re.DOTALL)
+        role_match = re.search(r"^##\s+Role\s*\n(.+?)(?=\n##|\Z)", content, re.MULTILINE | re.DOTALL)
         if role_match:
             role_text = role_match.group(1).strip()
             # Return first line/paragraph
-            return role_text.split('\n')[0].strip()
+            return role_text.split("\n")[0].strip()
 
         return None
 
@@ -170,17 +166,30 @@ class AgentLoadingTester:
         Returns:
             Dict mapping agent names to activation keywords
         """
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("ACTIVATION PATTERN ANALYSIS")
-        print("="*80)
+        print("=" * 80)
 
         activation_map = {}
 
         # Common activation keywords
         action_keywords = {
-            'implement', 'design', 'test', 'write', 'create', 'build',
-            'architect', 'orchestrate', 'coordinate', 'review', 'analyze',
-            'optimize', 'document', 'package', 'integrate', 'validate'
+            "implement",
+            "design",
+            "test",
+            "write",
+            "create",
+            "build",
+            "architect",
+            "orchestrate",
+            "coordinate",
+            "review",
+            "analyze",
+            "optimize",
+            "document",
+            "package",
+            "integrate",
+            "validate",
         }
 
         for agent in self.agents:
@@ -203,9 +212,9 @@ class AgentLoadingTester:
 
         Prints coverage report for levels 0-5.
         """
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("HIERARCHY COVERAGE")
-        print("="*80)
+        print("=" * 80)
 
         level_names = {
             0: "Meta-Orchestrator",
@@ -213,7 +222,7 @@ class AgentLoadingTester:
             2: "Module Design Agents",
             3: "Component Specialists",
             4: "Implementation Engineers",
-            5: "Junior Engineers"
+            5: "Junior Engineers",
         }
 
         agents_by_level: Dict[int, List[AgentInfo]] = {i: [] for i in range(6)}
@@ -232,16 +241,16 @@ class AgentLoadingTester:
                 print(f"  - {agent.name}")
 
             if count == 0:
-                print(f"  ⚠ WARNING: No agents defined for this level")
+                print("  ⚠ WARNING: No agents defined for this level")
 
     def test_tool_usage(self) -> None:
         """Analyze tool usage across agents.
 
         Prints report of which tools are used and by which agents.
         """
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("TOOL USAGE ANALYSIS")
-        print("="*80)
+        print("=" * 80)
 
         all_tools: Set[str] = set()
         tool_usage: Dict[str, List[str]] = {}
@@ -254,7 +263,7 @@ class AgentLoadingTester:
                 tool_usage[tool].append(agent.name)
 
         print(f"\nTotal unique tools: {len(all_tools)}")
-        print(f"\nTool usage:")
+        print("\nTool usage:")
 
         for tool in sorted(all_tools):
             agents = tool_usage[tool]
@@ -269,9 +278,9 @@ class AgentLoadingTester:
 
         Prints distribution of models (sonnet, opus, haiku).
         """
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("MODEL DISTRIBUTION")
-        print("="*80)
+        print("=" * 80)
 
         model_counts = {}
         model_agents: Dict[str, List[str]] = {}
@@ -296,9 +305,9 @@ class AgentLoadingTester:
 
     def print_summary(self) -> None:
         """Print overall summary."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("LOADING TEST SUMMARY")
-        print("="*80)
+        print("=" * 80)
         print(f"Agents directory: {self.agents_dir}")
         print(f"Agents discovered: {len(self.agents)}")
         print(f"Errors encountered: {len(self.errors)}")
@@ -308,7 +317,7 @@ class AgentLoadingTester:
             for error in self.errors:
                 print(f"  - {error}")
 
-        print("="*80)
+        print("=" * 80)
 
 
 def main() -> int:
@@ -316,12 +325,9 @@ def main() -> int:
 
     Returns:
         Exit code (0 for success, 1 for errors).
-   """
+    """
     # Configure logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(levelname)s: %(message)s'
-    )
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
     logger = logging.getLogger(__name__)
 
     # Determine agents directory

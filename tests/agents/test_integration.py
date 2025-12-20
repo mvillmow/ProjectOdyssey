@@ -17,7 +17,7 @@ import logging
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Set
 from dataclasses import dataclass
 
 
@@ -28,6 +28,7 @@ MAX_FILE_SIZE = 102400  # 100KB max file size to prevent DoS
 @dataclass
 class WorkflowInfo:
     """Information about agent workflow participation."""
+
     agent_name: str
     level: int
     phases: Set[str]  # Which phases this agent participates in
@@ -103,14 +104,14 @@ class IntegrationTester:
             WorkflowInfo
         """
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
         except Exception as e:
             self.errors.append(f"Failed to read {file_path.name}: {e}")
             logging.error(f"Failed to read {file_path.name}: {e}")
             return None
 
         # Extract agent name and level
-        name_match = re.search(r'name:\s*(.+)', content)
+        name_match = re.search(r"name:\s*(.+)", content)
         agent_name = name_match.group(1).strip() if name_match else file_path.stem
 
         level = self._detect_level(agent_name, content)
@@ -123,26 +124,26 @@ class IntegrationTester:
             level=level if level is not None else -1,
             phases=phases,
             supports_parallel=supports_parallel,
-            worktree_compatible=worktree_compatible
+            worktree_compatible=worktree_compatible,
         )
 
     def _detect_level(self, name: str, content: str) -> int:
         """Detect agent level."""
-        level_match = re.search(r'Level (\d)', content)
+        level_match = re.search(r"Level (\d)", content)
         if level_match:
             return int(level_match.group(1))
 
-        if 'chief-architect' in name:
+        if "chief-architect" in name:
             return 0
-        elif 'orchestrator' in name:
+        elif "orchestrator" in name:
             return 1
-        elif 'design' in name:
+        elif "design" in name:
             return 2
-        elif 'specialist' in name:
+        elif "specialist" in name:
             return 3
-        elif 'junior' in name and 'engineer' in name:
+        elif "junior" in name and "engineer" in name:
             return 5
-        elif 'engineer' in name:
+        elif "engineer" in name:
             return 4
 
         return -1
@@ -156,7 +157,7 @@ class IntegrationTester:
         for phase in self.PHASES:
             phase_lower = phase.lower()
             # Check for "Workflow Phase:" section or phase mentions
-            if re.search(rf'\b{phase_lower}\b', content_lower):
+            if re.search(rf"\b{phase_lower}\b", content_lower):
                 phases.add(phase)
 
         return phases
@@ -165,10 +166,7 @@ class IntegrationTester:
         """Check if agent supports parallel execution."""
         content_lower = content.lower()
 
-        parallel_indicators = [
-            'parallel', 'concurrent', 'simultaneously',
-            'independent', 'can run in parallel'
-        ]
+        parallel_indicators = ["parallel", "concurrent", "simultaneously", "independent", "can run in parallel"]
 
         return any(indicator in content_lower for indicator in parallel_indicators)
 
@@ -176,18 +174,15 @@ class IntegrationTester:
         """Check if agent mentions worktree compatibility."""
         content_lower = content.lower()
 
-        worktree_indicators = [
-            'worktree', 'git worktree', 'separate worktree',
-            'issue-specific', 'per-issue'
-        ]
+        worktree_indicators = ["worktree", "git worktree", "separate worktree", "issue-specific", "per-issue"]
 
         return any(indicator in content_lower for indicator in worktree_indicators)
 
     def test_phase_coverage(self) -> None:
         """Test that agents cover all workflow phases appropriately."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("5-PHASE WORKFLOW COVERAGE")
-        print("="*80)
+        print("=" * 80)
 
         # Group by phase
         agents_by_phase: Dict[str, List[str]] = {phase: [] for phase in self.PHASES}
@@ -212,9 +207,9 @@ class IntegrationTester:
 
     def test_level_phase_alignment(self) -> None:
         """Test that agent levels participate in expected phases."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("LEVEL-PHASE ALIGNMENT")
-        print("="*80)
+        print("=" * 80)
 
         for info in self.workflow_info:
             level = info.level
@@ -231,24 +226,20 @@ class IntegrationTester:
             # Check for missing expected phases
             missing = expected - actual
             if missing:
-                self.warnings.append(
-                    f"{info.agent_name} (L{level}) missing expected phases: {', '.join(missing)}"
-                )
+                self.warnings.append(f"{info.agent_name} (L{level}) missing expected phases: {', '.join(missing)}")
                 print(f"  ⚠ Missing: {', '.join(sorted(missing))}")
 
             # Check for unexpected phases
             unexpected = actual - expected
             if unexpected:
-                self.warnings.append(
-                    f"{info.agent_name} (L{level}) has unexpected phases: {', '.join(unexpected)}"
-                )
+                self.warnings.append(f"{info.agent_name} (L{level}) has unexpected phases: {', '.join(unexpected)}")
                 print(f"  ⚠ Unexpected: {', '.join(sorted(unexpected))}")
 
     def test_parallel_execution(self) -> None:
         """Test parallel execution support."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("PARALLEL EXECUTION SUPPORT")
-        print("="*80)
+        print("=" * 80)
 
         parallel_agents = [info for info in self.workflow_info if info.supports_parallel]
         non_parallel = [info for info in self.workflow_info if not info.supports_parallel]
@@ -269,9 +260,9 @@ class IntegrationTester:
 
     def test_worktree_integration(self) -> None:
         """Test git worktree integration."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("GIT WORKTREE INTEGRATION")
-        print("="*80)
+        print("=" * 80)
 
         worktree_agents = [info for info in self.workflow_info if info.worktree_compatible]
 
@@ -291,9 +282,9 @@ class IntegrationTester:
 
     def test_coordination_scenarios(self) -> None:
         """Test common coordination scenarios."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("COORDINATION SCENARIOS")
-        print("="*80)
+        print("=" * 80)
 
         # Scenario 1: Plan → Parallel (Test/Impl/Package) → Cleanup
         print("\nScenario 1: Full 5-Phase Workflow")
@@ -305,7 +296,8 @@ class IntegrationTester:
 
         print("\nParallel phase agents (Test/Impl/Package):")
         parallel_phase_agents = [
-            info for info in self.workflow_info
+            info
+            for info in self.workflow_info
             if any(phase in info.phases for phase in ["Test", "Implementation", "Packaging"])
         ]
         for info in parallel_phase_agents[:5]:
@@ -323,9 +315,9 @@ class IntegrationTester:
 
         # Test and Implementation engineers often coordinate
         test_impl_agents = [
-            info for info in self.workflow_info
-            if info.level in [4, 5] and
-            any(phase in info.phases for phase in ["Test", "Implementation"])
+            info
+            for info in self.workflow_info
+            if info.level in [4, 5] and any(phase in info.phases for phase in ["Test", "Implementation"])
         ]
 
         for info in test_impl_agents[:5]:
@@ -336,9 +328,9 @@ class IntegrationTester:
 
     def print_summary(self) -> None:
         """Print test summary."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("INTEGRATION TEST SUMMARY")
-        print("="*80)
+        print("=" * 80)
         print(f"Agents analyzed: {len(self.workflow_info)}")
         print(f"Errors: {len(self.errors)}")
         print(f"Warnings: {len(self.warnings)}")
@@ -355,7 +347,7 @@ class IntegrationTester:
             if len(self.warnings) > 10:
                 print(f"  ... and {len(self.warnings) - 10} more warnings")
 
-        print("="*80)
+        print("=" * 80)
 
 
 def main() -> int:
@@ -363,12 +355,9 @@ def main() -> int:
 
     Returns:
         Exit code (0 for success, 1 for errors).
-   """
+    """
     # Configure logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(levelname)s: %(message)s'
-    )
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
     logger = logging.getLogger(__name__)
 
     # Determine agents directory

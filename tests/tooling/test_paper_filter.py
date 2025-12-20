@@ -44,7 +44,6 @@ class TestPaperFiltering:
 
     def test_find_paper_by_exact_name(self):
         """Test finding paper by exact directory name."""
-        from pathlib import Path
 
         papers_dir = self.test_dir / "papers"
         target = "lenet-5"
@@ -138,17 +137,14 @@ class TestRunTestsScript:
         assert script_path.exists()
         # Check if file has execute permission
         import os
+
         assert os.access(script_path, os.X_OK), "Script is not executable"
 
     def test_help_option(self):
         """Test script has help option."""
         script_path = Path(".claude/skills/mojo-test-runner/scripts/run_tests.sh")
 
-        result = subprocess.run(
-            [str(script_path), "--help"],
-            capture_output=True,
-            text=True
-        )
+        result = subprocess.run([str(script_path), "--help"], capture_output=True, text=True)
 
         # Help should work (exit 0 or show usage)
         # We just verify it doesn't crash
@@ -159,13 +155,10 @@ class TestRunTestsScript:
         script_path = Path(".claude/skills/mojo-test-runner/scripts/run_tests.sh")
 
         # Try to get help/usage
-        result = subprocess.run(
-            [str(script_path), "--help"],
-            capture_output=True,
-            text=True
-        )
+        result = subprocess.run([str(script_path), "--help"], capture_output=True, text=True)
 
         output = result.stdout + result.stderr
+        print(output)
         # Should mention paper option (after implementation)
         # This test will initially fail, then pass after implementation
         # For now, we just check the script exists
@@ -184,7 +177,7 @@ class TestPaperTestFiltering:
             "papers/lenet-5/tests/test_model.mojo",
             "papers/lenet-5/tests/test_train.mojo",
             "papers/bert/tests/test_model.mojo",
-            "papers/gpt-2/tests/test_model.mojo"
+            "papers/gpt-2/tests/test_model.mojo",
         ]
 
         # Filter for lenet-5
@@ -199,7 +192,7 @@ class TestPaperTestFiltering:
         all_tests = [
             "papers/lenet-5/tests/test_model.mojo",
             "papers/bert/tests/test_model.mojo",
-            "papers/gpt-2/tests/test_model.mojo"
+            "papers/gpt-2/tests/test_model.mojo",
         ]
 
         # No filter - should run all
@@ -216,7 +209,7 @@ if __name__ == "__main__":
 
     # Run TestPaperFiltering tests
     test_class = TestPaperFiltering()
-    test_methods = [m for m in dir(test_class) if m.startswith('test_')]
+    test_methods = [m for m in dir(test_class) if m.startswith("test_")]
 
     passed = 0
     failed = 0
@@ -235,12 +228,13 @@ if __name__ == "__main__":
             failed += 1
             try:
                 test_class.teardown_method()
-            except:
+            except Exception as e:
+                print(f"✗ {method_name}: {e}")
                 pass
 
     # Run TestRunTestsScript tests
     test_class2 = TestRunTestsScript()
-    test_methods2 = [m for m in dir(test_class2) if m.startswith('test_')]
+    test_methods2 = [m for m in dir(test_class2) if m.startswith("test_")]
 
     for method_name in test_methods2:
         try:
@@ -255,7 +249,7 @@ if __name__ == "__main__":
 
     # Run TestPaperTestFiltering tests
     test_class3 = TestPaperTestFiltering()
-    test_methods3 = [m for m in dir(test_class3) if m.startswith('test_')]
+    test_methods3 = [m for m in dir(test_class3) if m.startswith("test_")]
 
     for method_name in test_methods3:
         try:

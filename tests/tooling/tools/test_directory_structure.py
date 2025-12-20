@@ -16,7 +16,6 @@ import stat
 from pathlib import Path
 from typing import Dict
 
-import pytest
 
 
 class TestToolsDirectoryCreation:
@@ -36,9 +35,7 @@ class TestToolsDirectoryCreation:
         assert tools_root.exists(), "tools/ directory should exist at repository root"
         assert tools_root.is_dir(), "tools/ should be a directory, not a file"
 
-    def test_tools_directory_location(
-        self, repo_root: Path, tools_root: Path
-    ) -> None:
+    def test_tools_directory_location(self, repo_root: Path, tools_root: Path) -> None:
         """
         Test that tools/ directory is at correct location.
 
@@ -51,9 +48,7 @@ class TestToolsDirectoryCreation:
             repo_root: Repository root directory
             tools_root: Path to tools/ directory
         """
-        assert tools_root.parent == repo_root, (
-            "tools/ should be directly under repository root"
-        )
+        assert tools_root.parent == repo_root, "tools/ should be directly under repository root"
         assert tools_root.name == "tools", "Directory name should be 'tools'"
         assert tools_root.is_absolute(), "tools/ path should be absolute"
 
@@ -74,15 +69,9 @@ class TestToolsDirectoryCreation:
         mode = dir_stat.st_mode
 
         # Assert: Directory has read, write, and execute permissions
-        assert (
-            mode & stat.S_IRUSR
-        ), "tools/ should have read permission for owner"
-        assert (
-            mode & stat.S_IWUSR
-        ), "tools/ should have write permission for owner"
-        assert (
-            mode & stat.S_IXUSR
-        ), "tools/ should have execute permission for owner"
+        assert mode & stat.S_IRUSR, "tools/ should have read permission for owner"
+        assert mode & stat.S_IWUSR, "tools/ should have write permission for owner"
+        assert mode & stat.S_IXUSR, "tools/ should have execute permission for owner"
 
         # Additional verification: Can create a file inside
         test_file = tools_root / ".test_permissions.txt"
@@ -112,9 +101,7 @@ class TestToolsDirectoryCreation:
 class TestCategoryDirectories:
     """Test cases for validating tool category directories."""
 
-    def test_all_category_directories_exist(
-        self, category_paths: Dict[str, Path]
-    ) -> None:
+    def test_all_category_directories_exist(self, category_paths: Dict[str, Path]) -> None:
         """
         Test that all 4 tool category directories exist.
 
@@ -128,16 +115,10 @@ class TestCategoryDirectories:
             category_paths: Dictionary of category paths
         """
         for category_name, category_path in category_paths.items():
-            assert category_path.exists(), (
-                f"tools/{category_name}/ should exist"
-            )
-            assert category_path.is_dir(), (
-                f"tools/{category_name}/ should be a directory"
-            )
+            assert category_path.exists(), f"tools/{category_name}/ should exist"
+            assert category_path.is_dir(), f"tools/{category_name}/ should be a directory"
 
-    def test_category_directory_names(
-        self, tools_root: Path, category_names: list
-    ) -> None:
+    def test_category_directory_names(self, tools_root: Path, category_names: list) -> None:
         """
         Test that category directories have correct names.
 
@@ -151,28 +132,19 @@ class TestCategoryDirectories:
             category_names: List of expected category names
         """
         # Get actual directory names (excluding README.md and other files)
-        actual_dirs = {
-            item.name for item in tools_root.iterdir()
-            if item.is_dir()
-        }
+        actual_dirs = {item.name for item in tools_root.iterdir() if item.is_dir()}
 
         # Expected categories
         expected_dirs = set(category_names)
 
         # Verify all expected directories are present
-        assert expected_dirs.issubset(actual_dirs), (
-            f"Missing categories: {expected_dirs - actual_dirs}"
-        )
+        assert expected_dirs.issubset(actual_dirs), f"Missing categories: {expected_dirs - actual_dirs}"
 
         # Verify naming convention (lowercase with hyphens)
         for name in actual_dirs:
-            assert name.islower() or "-" in name, (
-                f"Category '{name}' should use lowercase with hyphens"
-            )
+            assert name.islower() or "-" in name, f"Category '{name}' should use lowercase with hyphens"
 
-    def test_category_directory_permissions(
-        self, category_paths: Dict[str, Path]
-    ) -> None:
+    def test_category_directory_permissions(self, category_paths: Dict[str, Path]) -> None:
         """
         Test that all category directories have correct permissions.
 
@@ -189,19 +161,11 @@ class TestCategoryDirectories:
             mode = dir_stat.st_mode
 
             # Verify permissions
-            assert (mode & stat.S_IRUSR), (
-                f"{category_name}/ should have read permission"
-            )
-            assert (mode & stat.S_IWUSR), (
-                f"{category_name}/ should have write permission"
-            )
-            assert (mode & stat.S_IXUSR), (
-                f"{category_name}/ should have execute permission"
-            )
+            assert mode & stat.S_IRUSR, f"{category_name}/ should have read permission"
+            assert mode & stat.S_IWUSR, f"{category_name}/ should have write permission"
+            assert mode & stat.S_IXUSR, f"{category_name}/ should have execute permission"
 
-    def test_no_unexpected_directories(
-        self, tools_root: Path, category_names: list
-    ) -> None:
+    def test_no_unexpected_directories(self, tools_root: Path, category_names: list) -> None:
         """
         Test that no unexpected directories exist in tools/.
 
@@ -214,10 +178,7 @@ class TestCategoryDirectories:
             category_names: List of expected category names
         """
         # Get actual directory names
-        actual_dirs = {
-            item.name for item in tools_root.iterdir()
-            if item.is_dir()
-        }
+        actual_dirs = {item.name for item in tools_root.iterdir() if item.is_dir()}
 
         # Expected directories (only the 4 categories)
         expected_dirs = set(category_names)
@@ -230,17 +191,13 @@ class TestCategoryDirectories:
         allowed_extra = {"__pycache__", ".pytest_cache", "setup"}
         unexpected = unexpected - allowed_extra
 
-        assert len(unexpected) == 0, (
-            f"Unexpected directories in tools/: {unexpected}"
-        )
+        assert len(unexpected) == 0, f"Unexpected directories in tools/: {unexpected}"
 
 
 class TestToolsDirectoryIntegration:
     """Integration tests for tools/ directory functionality."""
 
-    def test_complete_directory_hierarchy(
-        self, tools_root: Path, category_paths: Dict[str, Path]
-    ) -> None:
+    def test_complete_directory_hierarchy(self, tools_root: Path, category_paths: Dict[str, Path]) -> None:
         """
         Test that complete tools/ directory hierarchy exists and is accessible.
 
@@ -258,21 +215,13 @@ class TestToolsDirectoryIntegration:
 
         # Verify all categories exist
         for category_name, category_path in category_paths.items():
-            assert category_path.exists(), (
-                f"{category_name}/ should exist"
-            )
-            assert category_path.is_dir(), (
-                f"{category_name}/ should be a directory"
-            )
+            assert category_path.exists(), f"{category_name}/ should exist"
+            assert category_path.is_dir(), f"{category_name}/ should be a directory"
 
             # Verify category is under tools/
-            assert category_path.parent == tools_root, (
-                f"{category_name}/ should be directly under tools/"
-            )
+            assert category_path.parent == tools_root, f"{category_name}/ should be directly under tools/"
 
-    def test_can_list_tools_directory_contents(
-        self, tools_root: Path, category_names: list
-    ) -> None:
+    def test_can_list_tools_directory_contents(self, tools_root: Path, category_names: list) -> None:
         """
         Test that tools/ directory contents can be listed.
 
@@ -294,18 +243,12 @@ class TestToolsDirectoryIntegration:
 
         # Verify all categories are in listing
         for category in category_names:
-            assert category in content_names, (
-                f"{category}/ should appear in directory listing"
-            )
+            assert category in content_names, f"{category}/ should appear in directory listing"
 
         # Verify README.md is in listing
-        assert "README.md" in content_names, (
-            "README.md should appear in directory listing"
-        )
+        assert "README.md" in content_names, "README.md should appear in directory listing"
 
-    def test_category_directories_can_contain_files(
-        self, category_paths: Dict[str, Path]
-    ) -> None:
+    def test_category_directories_can_contain_files(self, category_paths: Dict[str, Path]) -> None:
         """
         Test that files can be created in category directories.
 
@@ -327,12 +270,8 @@ class TestToolsDirectoryIntegration:
                 test_file.write_text(test_content)
 
                 # Verify file exists and has correct content
-                assert test_file.exists(), (
-                    f"Should be able to create files in {category_name}/"
-                )
-                assert test_file.read_text() == test_content, (
-                    f"File content should match in {category_name}/"
-                )
+                assert test_file.exists(), f"Should be able to create files in {category_name}/"
+                assert test_file.read_text() == test_content, f"File content should match in {category_name}/"
             finally:
                 # Clean up test file
                 if test_file.exists():

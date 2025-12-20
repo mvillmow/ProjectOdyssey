@@ -145,7 +145,7 @@ def expected_template_structure() -> Dict[str, List[str]]:
         "data": ["raw", "processed", "cache"],
         "configs": ["config.yaml", ".gitkeep"],
         "notebooks": [".gitkeep"],
-        "examples": [".gitkeep"]
+        "examples": [".gitkeep"],
     }
 
 
@@ -162,7 +162,7 @@ def expected_shared_structure() -> Dict[str, List[str]]:
         "core": ["README.md", "__init__.mojo"],
         "training": ["README.md", "__init__.mojo"],
         "data": ["README.md", "__init__.mojo"],
-        "utils": ["README.md", "__init__.mojo"]
+        "utils": ["README.md", "__init__.mojo"],
     }
 
 

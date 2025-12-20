@@ -49,7 +49,7 @@ repos:
       - id: ruff-check-python
         name: Ruff Check Python
         description: Lint Python files in scripts/, examples/, tests/, tools/ and all subdirectories using pixi run ruff check
-        entry: pixi run ruff check scripts/ examples/ tests/ tools/
+        entry: pixi run ruff check --fix scripts/ examples/ tests/ tools/
         language: system
         files: ^(scripts|examples|tests|tools)/.*\.py$
         types: [python]

@@ -8,13 +8,13 @@ distributable tarballs of the papers/ directory.
 import tarfile
 from pathlib import Path
 
-import pytest
 
 
 def test_package_papers_creates_tarball(tmp_path):
     """Test that the packaging script creates a valid tarball."""
     # Import the module
     import sys
+
     sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
     from package_papers import create_papers_tarball, get_repo_root
 
@@ -36,6 +36,7 @@ def test_tarball_contains_papers_directory(tmp_path):
     """Test that the tarball contains the papers/ directory structure."""
     # Import the module
     import sys
+
     sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
     from package_papers import create_papers_tarball, get_repo_root
 
@@ -61,6 +62,7 @@ def test_tarball_is_readable(tmp_path):
     """Test that the created tarball is valid and can be extracted."""
     # Import the module
     import sys
+
     sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
     from package_papers import create_papers_tarball, get_repo_root
 
@@ -89,6 +91,7 @@ def test_papers_readme_content(tmp_path):
     """Test that the tarball preserves the papers/README.md content."""
     # Import the module
     import sys
+
     sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
     from package_papers import create_papers_tarball, get_repo_root
 
@@ -122,6 +125,7 @@ def test_multiple_tarballs_same_day(tmp_path):
     """Test that multiple tarballs can be created on the same day."""
     # Import the module
     import sys
+
     sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
     from package_papers import create_papers_tarball, get_repo_root
 
