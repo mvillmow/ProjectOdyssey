@@ -157,7 +157,9 @@ fn test_factory_create_progress_bar():
 
 fn test_factory_create_progress_bar_with_metrics():
     """Test factory for metrics progress bar."""
-    var progress = create_progress_bar_with_metrics(total=100, description="Test")
+    var progress = create_progress_bar_with_metrics(
+        total=100, description="Test"
+    )
     _ = progress
 
 

@@ -329,7 +329,9 @@ struct ProgressBarWithETA(Copyable, Movable):
             description: Optional description to display.
             width: Width of the bar in characters.
         """
-        self.progress_with_metrics = ProgressBarWithMetrics(total, description, width)
+        self.progress_with_metrics = ProgressBarWithMetrics(
+            total, description, width
+        )
 
     fn set_metric(mut self, name: String, value: Float32):
         """Set or update a metric value.
@@ -390,7 +392,9 @@ struct ProgressBarWithETA(Copyable, Movable):
     fn _format_elapsed(self) -> String:
         """Format elapsed time since start."""
         var current_time_ns = Int(perf_counter_ns())
-        var elapsed_ns = current_time_ns - self.progress_with_metrics.progress.start_time_ns
+        var elapsed_ns = (
+            current_time_ns - self.progress_with_metrics.progress.start_time_ns
+        )
         var elapsed_secs = Float64(elapsed_ns) / 1_000_000_000.0
 
         if elapsed_secs < 0.1:
