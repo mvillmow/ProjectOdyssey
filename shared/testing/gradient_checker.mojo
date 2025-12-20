@@ -465,7 +465,9 @@ fn assert_gradients_close(
     if tolerance_exceeded:
         var a = analytical._get_float64(worst_idx)
         var n = numerical._get_float64(worst_idx)
-        var msg = message + ": worst gradient mismatch at index " + String(worst_idx)
+        var msg = (
+            message + ": worst gradient mismatch at index " + String(worst_idx)
+        )
         msg += "\n  Analytical: " + String(a)
         msg += "\n  Numerical:  " + String(n)
         msg += "\n  Difference: " + String(max_diff)
