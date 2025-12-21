@@ -91,7 +91,7 @@ fn test_shape_creation(shape: List[Int]) raises:
 
     except e:
         print("  CRASH during initialization:", e)
-        raise e
+        raise e^
 
 
 fn test_extensor_init_multidimensional() raises:
