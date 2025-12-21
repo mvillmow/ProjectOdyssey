@@ -49,7 +49,6 @@ struct ConfusionMatrix(Metric):
         var recall = cm.get_recall()
         var f1 = cm.get_f1_score()
 
-    Issue: #288-292 - Confusion matrix.
     """
 
     var num_classes: Int

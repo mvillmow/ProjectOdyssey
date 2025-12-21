@@ -15,8 +15,6 @@ Test coverage:
 - Edge cases (single class, single sample, all correct/all wrong)
 - Batch size variations
 - Progress reporting
-
-Issue: #2352 - Create shared/training/evaluation.mojo
 """
 
 from tests.shared.conftest import (

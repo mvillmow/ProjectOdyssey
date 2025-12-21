@@ -407,7 +407,6 @@ fn kaiming_uniform(
             He et al. (2015): "Delving Deep into Rectifiers: Surpassing Human-Level
             Performance on ImageNet Classification".
 
-        Issue: #263-267 - Kaiming/He initialization.
     """
     if fan_in <= 0 or fan_out <= 0:
         raise Error("kaiming_uniform: fan_in and fan_out must be positive")
@@ -490,7 +489,6 @@ fn kaiming_normal(
             He et al. (2015): "Delving Deep into Rectifiers: Surpassing Human-Level
             Performance on ImageNet Classification".
 
-        Issue: #263-267 - Kaiming/He initialization.
     """
     if fan_in <= 0 or fan_out <= 0:
         raise Error("kaiming_normal: fan_in and fan_out must be positive")
@@ -560,7 +558,6 @@ fn uniform(
             # With fixed seed
             var w_repro = uniform([50, 50], seed_val=42)
 
-        Issue: #268-272 - Uniform/Normal basic distributions.
     """
     if low >= high:
         raise Error("uniform: low must be less than high")
@@ -616,7 +613,6 @@ fn normal(
             # With fixed seed
             var w_repro = normal([50, 50], seed_val=42)
 
-        Issue: #268-272 - Uniform/Normal basic distributions.
     """
     if std <= 0.0:
         raise Error("normal: standard deviation must be positive")
@@ -663,7 +659,6 @@ fn constant(
             # Initialize bias with 0.01
             var bias = constant(List[Int](), 0.01)
 
-        Issue: #268-272 - Uniform/Normal basic distributions.
     """
     var result = ExTensor(shape, dtype)
     _dispatch_fill_constant(result, value)

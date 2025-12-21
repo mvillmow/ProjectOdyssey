@@ -1,19 +1,17 @@
 """Tests for results printer module.
 
 Comprehensive test suite for results printing functions including:
-- Training progress printer
-- Evaluation summary printer
-- Per-class accuracy printer
-- Confusion matrix printer
-- Training summary printer
+- Training progress printer.
+- Evaluation summary printer.
+- Per-class accuracy printer.
+- Confusion matrix printer.
+- Training summary printer.
 
 Test coverage:
-- Functional correctness of formatting
-- Edge cases (small/large values, special characters)
-- Output consistency
-- Tensor shape validation
-
-Issue: #2353 - Results printer
+- Functional correctness of formatting.
+- Edge cases (small/large values, special characters).
+- Output consistency.
+- Tensor shape validation.
 """
 
 from tests.shared.conftest import (

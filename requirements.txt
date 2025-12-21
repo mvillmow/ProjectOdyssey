@@ -9,3 +9,12 @@ ruff>=0.1.0
 
 # Type checking
 mypy>=1.0.0
+
+# Template engine (paper scaffolding, code generation)
+jinja2>=3.0.0
+
+# YAML parsing (configuration)
+pyyaml>=6.0
+
+# Optional: CLI framework (improves UX for command-line tools)
+click>=8.0.0

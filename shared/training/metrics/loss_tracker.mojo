@@ -31,7 +31,6 @@ struct Statistics(Copyable, Movable):
 
     Provides mean, standard deviation, min, max, and count of values
 
-    Issue: #283-287 - Loss tracking.
     """
 
     var mean: Float32
@@ -88,7 +87,6 @@ struct ComponentTracker(Copyable, Movable):
     Uses Welford's algorithm for numerically stable variance computation.
     and a circular buffer for moving average
 
-    Issue: #283-287 - Loss tracking.
     """
 
     var window_size: Int
@@ -268,7 +266,6 @@ struct LossTracker(Metric):
         var stats = tracker.get_statistics(component="total")
         var avg = tracker.get_average(component="total")
 
-    Issue: #283-287 - Loss tracking.
     """
 
     var window_size: Int

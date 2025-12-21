@@ -18,7 +18,6 @@ Features:
 - Top-k accuracy computation
 - Detailed evaluation output with progress tracking
 
-Issue: #2352 - Create shared/training/evaluation.mojo
 """
 
 from shared.core import ExTensor

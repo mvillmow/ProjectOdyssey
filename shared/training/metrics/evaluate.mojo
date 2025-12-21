@@ -20,7 +20,6 @@ Features:
 - Detailed evaluation output with accuracy percentage
 - Support for both int32 and int64 label types
 
-Issue: #2291 - Create consolidated evaluate() function
 """
 
 from shared.core import ExTensor

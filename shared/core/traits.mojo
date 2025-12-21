@@ -304,12 +304,10 @@ trait Composable(Differentiable):
         ```
 
         See Also:
-            - Issue #2401: Trait compose() blocked by Movable constraint.
             - https://docs.modular.com/mojo/manual/traits/.
         """
         raise Error(
             "compose() not yet supported - use manual composition instead. "
-            "See issue #2401 and Composable trait docstring for workaround."
         )
 
 

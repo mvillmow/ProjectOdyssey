@@ -54,7 +54,6 @@ fn top1_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float64:
             var acc2 = top1_accuracy(preds, labels)
     ```
 
-        Issue: #278-282 - Accuracy metrics.
     """
     # Determine if predictions are logits (2D) or class indices (1D)
     var pred_classes: ExTensor
@@ -190,7 +189,6 @@ fn topk_accuracy(
             var acc = topk_accuracy(logits, labels, k=5)  # Top-5 accuracy
     ```
 
-        Issue: #278-282 - Accuracy metrics.
     """
     # Validate shapes
     var shape_vec = predictions.shape()
@@ -325,7 +323,6 @@ fn per_class_accuracy(
             # per_class_acc[0] = accuracy for class 0, etc
     ```
 
-        Issue: #278-282 - Accuracy metrics.
     """
     # Get predicted classes
     var pred_classes: ExTensor
@@ -399,7 +396,6 @@ struct AccuracyMetric(Metric):
         var final_acc = metric.compute()
         metric.reset()  # For next epoch.
 
-    Issue: #278-282 - Accuracy metrics.
     """
 
     var correct_count: Int

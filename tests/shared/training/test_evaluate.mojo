@@ -7,8 +7,6 @@ Test coverage:
 - evaluate(): Generic model evaluation with predict() method
 - evaluate_batched(): Batched evaluation with forward() method
 - compute_accuracy_on_batch(): Single batch accuracy computation
-
-Issue: #2291 - Create consolidated evaluate() function
 """
 
 from tests.shared.conftest import (

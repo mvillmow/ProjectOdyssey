@@ -10,7 +10,6 @@ Features:
 - Confusion matrix visualization with formatting
 - Customizable column widths and separators
 
-Issue: #2353 - Results printer module
 """
 
 from collections import List
@@ -53,7 +52,6 @@ fn print_training_progress(
             Epoch [1/200] Batch [10/100] Loss: 0.234000 LR: 0.010000
             ```
 
-        Issue: #2353
     """
     var output = "Epoch [" + String(epoch) + "/" + String(total_epochs) + "] "
     output = (
@@ -106,7 +104,6 @@ fn print_evaluation_summary(
             ============================================================
             ```
 
-        Issue: #2353
     """
     print("=" * 60)
     print("Epoch [" + String(epoch) + "/" + String(total_epochs) + "] Results")
@@ -161,8 +158,6 @@ fn print_per_class_accuracy(per_class_accuracies: ExTensor) raises:
             1          0.945000
             ...
             ```
-
-        Issue: #2353
     """
     var default_names = List[String]()
     var shape = per_class_accuracies.shape()
@@ -215,7 +210,6 @@ fn print_per_class_accuracy(
             If class_names is provided, it must have same length as per_class_accuracies.
             If class_names is empty, classes are displayed as numeric indices.
 
-        Issue: #2353
     """
     var shape = per_class_accuracies.shape()
     var num_classes = shape[0]
@@ -295,8 +289,6 @@ fn print_confusion_matrix(matrix: ExTensor) raises:
             - Columns represent predicted labels.
             - Values are right-aligned within columns.
             - Classes displayed as numeric indices.
-
-        Issue: #2353
     """
     var default_names = List[String]()
     var shape = matrix.shape()
@@ -354,8 +346,6 @@ fn print_confusion_matrix(
             - Columns represent predicted labels.
             - Values are right-aligned within columns.
             - If class_names provided, used for row/column labels.
-
-        Issue: #2353
     """
     var shape = matrix.shape()
     var num_classes = shape[0]
@@ -477,8 +467,6 @@ fn print_training_summary(
             Best Accuracy:       96.50%
             ============================================================
             ```
-
-        Issue: #2353
     """
     var best_acc_pct = best_accuracy * 100.0
 
