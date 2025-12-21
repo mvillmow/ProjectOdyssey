@@ -1,11 +1,10 @@
 """Integration Tests for All CNN Architectures
 
-This script tests all 5 classic CNN architectures on CIFAR-10:
+This script tests all 4 classic CNN architectures on CIFAR-10:
     1. ResNet-18
     2. GoogLeNet (Inception-v1)
     3. MobileNetV1
-    4. DenseNet-121
-    5. VGG-16 (if available)
+    4. VGG-16 (if available)
 
 Tests:
     - Model initialization
@@ -182,8 +181,7 @@ fn main() raises:
     print("  1. ResNet-18")
     print("  2. GoogLeNet (Inception-v1)")
     print("  3. MobileNetV1")
-    print("  4. DenseNet-121")
-    print("  5. VGG-16 (if available)")
+    print("  4. VGG-16 (if available)")
     print()
 
     var results: List[Bool] = []
@@ -191,7 +189,7 @@ fn main() raises:
 
     # Test 1: ResNet-18
     print("\n" + "=" * 60)
-    print("TEST 1/5: ResNet-18")
+    print("TEST 1/4: ResNet-18")
     print("=" * 60)
     print("NOTE: Import paths use hyphens in directory names")
     print("Attempting: examples/resnet18-cifar10/model.mojo")
@@ -206,7 +204,7 @@ fn main() raises:
 
     # Test 2: GoogLeNet
     print("\n" + "=" * 60)
-    print("TEST 2/5: GoogLeNet (Inception-v1)")
+    print("TEST 2/4: GoogLeNet (Inception-v1)")
     print("=" * 60)
     var googlenet_passed = False
     print("⚠ Manual test required - cannot dynamically import with hyphens")
@@ -215,25 +213,16 @@ fn main() raises:
 
     # Test 3: MobileNetV1
     print("\n" + "=" * 60)
-    print("TEST 3/5: MobileNetV1")
+    print("TEST 3/4: MobileNetV1")
     print("=" * 60)
     var mobilenet_passed = False
     print("⚠ Manual test required - cannot dynamically import with hyphens")
     results.append(mobilenet_passed)
     model_names.append("MobileNetV1")
 
-    # Test 4: DenseNet-121
+    # Test 4: VGG-16
     print("\n" + "=" * 60)
-    print("TEST 4/5: DenseNet-121")
-    print("=" * 60)
-    var densenet_passed = False
-    print("⚠ Manual test required - cannot dynamically import with hyphens")
-    results.append(densenet_passed)
-    model_names.append("DenseNet-121")
-
-    # Test 5: VGG-16
-    print("\n" + "=" * 60)
-    print("TEST 5/5: VGG-16")
+    print("TEST 4/4: VGG-16")
     print("=" * 60)
     var vgg_passed = False
     print("⚠ Manual test required - cannot dynamically import with hyphens")

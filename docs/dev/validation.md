@@ -7,7 +7,7 @@ Links to [learnings.md](../learnings.md), [phases.md](phases.md).
 
 **File**: `CIFAR10_VALIDATION_REPORT.md`
 
-**Scope**: 6 architectures (AlexNet, ResNet18, DenseNet121, GoogLeNet, MobileNetV1, VGG16).
+**Scope**: 6 architectures (AlexNet, ResNet18, GoogLeNet, MobileNetV1, VGG16).
 
 **Results**: 0/23 files compile (100% fail).
 
@@ -19,7 +19,7 @@ Links to [learnings.md](../learnings.md), [phases.md](phases.md).
 - Missing: he_uniform, cross_entropy_loss.
 - F-strings unsupported.
 
-**Complexity**: ResNet18/DenseNet highest errors.
+**Complexity**: ResNet18 highest errors.
 
 **Fix Priority**: Core lib tuples/self (2-4h), functions (1-2h).
 

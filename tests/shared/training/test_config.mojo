@@ -2,7 +2,7 @@
 
 Tests the TrainingConfig struct which consolidates common training hyperparameters
 across all model implementations (LeNet-5, AlexNet, VGG-16, ResNet-18, MobileNetV1,
-DenseNet-121, GoogLeNet).
+GoogLeNet).
 
 Test Coverage:
 - Default configuration creation

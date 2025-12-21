@@ -280,7 +280,7 @@ jobs:
           - name: "Benchmark Framework"
             path: "benchmarks"
             pattern: "test_*.mojo"
-          # NOTE: Model-specific CIFAR10 E2E tests (DenseNet121, GoogleNet, MobileNetV1, ResNet18)
+          # NOTE: Model-specific CIFAR10 E2E tests (GoogleNet, MobileNetV1, ResNet18)
           # moved to weekly workflow to avoid dataset downloads on every PR
 
     name: "${{ matrix.test-group.name }}"

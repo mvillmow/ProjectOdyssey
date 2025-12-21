@@ -49,8 +49,6 @@ def find_test_files(root_dir: Path) -> List[Path]:
         "examples/lenet-emnist/test_predictions.mojo",
         "examples/lenet-emnist/test_training_metrics.mojo",
         "examples/lenet-emnist/test_weight_updates.mojo",
-        # CIFAR10 example tests (require dataset download)
-        "examples/densenet121-cifar10/test_model.mojo",
         "examples/googlenet-cifar10/test_model.mojo",
         "examples/mobilenetv1-cifar10/test_model.mojo",
         "examples/resnet18-cifar10/test_model.mojo",
@@ -60,7 +58,6 @@ def find_test_files(root_dir: Path) -> List[Path]:
     # These test full training loops and require significant runtime
     exclude_e2e_patterns = [
         "tests/models/test_alexnet_e2e.mojo",
-        "tests/models/test_densenet121_e2e.mojo",
         "tests/models/test_googlenet_e2e.mojo",
         "tests/models/test_lenet5_e2e.mojo",
         "tests/models/test_mobilenetv1_e2e.mojo",

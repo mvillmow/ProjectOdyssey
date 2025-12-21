@@ -7,7 +7,7 @@ Cross-references fixes [fixes.md](fixes.md), phases [phases.md](phases.md).
 
 **File**: `COMPREHENSIVE_REVIEW.md`
 
-**Scope**: 5 classic CNNs for CIFAR-10 (VGG16, ResNet18, GoogLeNet, MobileNetV1, DenseNet121).
+**Scope**: 5 classic CNNs for CIFAR-10 (VGG16, ResNet18, GoogLeNet, MobileNetV1).
 
 **Achievements**:
 
@@ -20,7 +20,6 @@ Cross-references fixes [fixes.md](fixes.md), phases [phases.md](phases.md).
 - ResNet: Skip connections.
 - GoogLeNet: Inception multi-scale.
 - MobileNet: Depthwise separable (250x VGG efficiency).
-- DenseNet: Dense connectivity (549 connections).
 
 **Grades**: B+ (87%) - Excellent impl/docs; needs autograd, SIMD, checkpointing.
 
@@ -29,7 +28,6 @@ Cross-references fixes [fixes.md](fixes.md), phases [phases.md](phases.md).
 | Model | Params | Ops | Rank |
 | ----- | ------ | --- | ---- |
 | MobileNetV1 | 4.2M | 60M | Efficiency #1 |
-| DenseNet121 | 7M | 600M | Accuracy #1 |
 | VGG16 | 15M | 15B | Baseline |
 
 **Limitations**: No training (manual backprop impractical), naive perf.

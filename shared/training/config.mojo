@@ -2,8 +2,7 @@
 
 This module provides a unified TrainingConfig struct that consolidates common
 training hyperparameters and configuration patterns found across all example
-implementations (LeNet-5, AlexNet, VGG-16, ResNet-18, MobileNetV1, DenseNet-121,
-GoogLeNet).
+implementations (LeNet-5, AlexNet, VGG-16, ResNet-18, MobileNetV1, GoogLeNet).
 
 Common Training Patterns (Consolidation):
 - Epoch count and batch size (vary by model/dataset)

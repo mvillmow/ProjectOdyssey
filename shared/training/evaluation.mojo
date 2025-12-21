@@ -8,7 +8,6 @@ Patterns consolidated from:
 - examples/alexnet-cifar10/inference.mojo (evaluate_model with top-1/top-5)
 - examples/resnet18-cifar10/inference.mojo (evaluate_model with per-class stats)
 - examples/vgg16-cifar10/inference.mojo (compute_test_accuracy)
-- examples/densenet121-cifar10/inference.mojo (evaluate_model with per-class stats)
 
 Features:
 - Generic EvaluationResult struct with accuracy, per-class stats, and raw counts

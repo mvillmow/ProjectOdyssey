@@ -11,7 +11,6 @@ Patterns consolidated from:
 - examples/vgg16-cifar10/train.mojo (fn compute_accuracy)
 - examples/googlenet-cifar10/train.mojo (fn compute_accuracy)
 - examples/mobilenetv1-cifar10/train.mojo (fn compute_accuracy)
-- examples/densenet121-cifar10/train.mojo (fn compute_accuracy)
 
 Features:
 - Generic evaluate() function for any model with predict() method

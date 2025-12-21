@@ -24,6 +24,7 @@ from common import get_agents_dir
 
 from agent_utils import AgentInfo, extract_frontmatter_parsed, find_agent_files
 
+
 def load_agent(file_path: Path, verbose: bool = False) -> Optional[AgentInfo]:
     """
     Load agent configuration from a markdown file.

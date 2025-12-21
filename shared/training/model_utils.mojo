@@ -17,7 +17,6 @@ Supported Architectures:
     - ResNet-18 (varies by architecture)
     - GoogLeNet (varies by architecture)
     - MobileNetV1 (varies by architecture)
-    - DenseNet-121 (varies by architecture)
 
 File Format:
     Each model weight is saved as a separate file:

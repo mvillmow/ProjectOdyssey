@@ -235,12 +235,6 @@ Test **unique layer configurations** only, defined by:
 - Differ only by channel count: 64, 128, 256, 512
 - Test one conv per unique channel configuration
 
-**DenseNet-121**: 58 conv layers → 14 unique tests (88% reduction!)
-
-- Bottleneck 1×1 convs: 4 variants (one per block)
-- Main 3×3 convs: 1 test (all identical config)
-- Transition convs: 1 test (same pattern)
-
 ### Documentation
 
 Each test clearly documents which layers it covers:

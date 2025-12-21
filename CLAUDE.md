@@ -1227,7 +1227,6 @@ All 7 models have comprehensive test coverage:
 | VGG-16 | 25 ops (13 conv) | 16 tests* | 10 tests | ~90s |
 | ResNet-18 | Residual blocks | 12 tests | 9 tests | ~90s |
 | MobileNetV1 | Depthwise sep. | 26 tests | 15 tests | ~90s |
-| DenseNet-121 | 58 conv | 14 tests** | 13 tests | ~108s |
 | GoogLeNet | Inception modules | 18 tests | 15 tests | ~90s |
 
 \* Heavy deduplication (13 conv → 5 unique tests)
