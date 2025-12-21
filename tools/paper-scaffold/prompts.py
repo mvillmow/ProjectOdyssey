@@ -101,7 +101,11 @@ class InteractivePrompter:
         Returns:
             Paper name (will be normalized to directory name).
         """
-        return self._prompt(message="Paper name (short identifier)", example="LeNet-5, BERT, GPT-2", required=True)
+        return self._prompt(
+            message="Paper name (short identifier)",
+            example="LeNet-5, BERT, GPT-2",
+            required=True,
+        )
 
     def prompt_for_title(self) -> str:
         """
@@ -147,7 +151,10 @@ class InteractivePrompter:
             return False, f"Year must be 1950 or later (got {year})"
 
         if year > current_year:
-            return False, f"Year cannot be in the future (current year is {current_year})"
+            return (
+                False,
+                f"Year cannot be in the future (current year is {current_year})",
+            )
 
         return True, ""
 

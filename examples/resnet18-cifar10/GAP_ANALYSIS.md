@@ -201,21 +201,6 @@ Once `batch_norm2d_backward` is available:
    - Verify loss decreases
    - Verify accuracy improves
 
-## Estimated Timeline
-
-- **Phase 1** (Batch Norm Backward): 4-6 hours
-  - Implementation: 2-3 hours
-  - Testing and validation: 2-3 hours
-
-- **Phase 2** (Training Script): 3-4 hours
-  - Backward pass implementation: 2-3 hours
-  - Parameter updates and scheduling: 1 hour
-
-- **Phase 3** (Validation): 2-3 hours
-  - Testing and debugging: 2-3 hours
-
-**Total**: 9-13 hours of development time
-
 ## References
 
 ### Batch Normalization

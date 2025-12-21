@@ -22,7 +22,11 @@ def fix_list_patterns(filepath):
     )
 
     # Pattern 2: Three-element lists
-    content = re.sub(r"List\[Int\]\(\)\.append\((\w+)\)\.append\((\w+)\)\.append\((\w+)\)", r"[\1, \2, \3]", content)
+    content = re.sub(
+        r"List\[Int\]\(\)\.append\((\w+)\)\.append\((\w+)\)\.append\((\w+)\)",
+        r"[\1, \2, \3]",
+        content,
+    )
 
     # Pattern 3: Two-element lists
     content = re.sub(r"List\[Int\]\(\)\.append\((\w+)\)\.append\((\w+)\)", r"[\1, \2]", content)

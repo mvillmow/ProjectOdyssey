@@ -87,7 +87,15 @@ class TestTemplateDirectoryStructure:
         Args:
             template_dir: Template directory path
         """
-        required_dirs = ["src", "scripts", "tests", "data", "configs", "notebooks", "examples"]
+        required_dirs = [
+            "src",
+            "scripts",
+            "tests",
+            "data",
+            "configs",
+            "notebooks",
+            "examples",
+        ]
 
         for dir_name in required_dirs:
             dir_path = template_dir / dir_name
@@ -238,7 +246,12 @@ class TestTemplateCompleteness:
         readme = template_dir / "README.md"
         content = readme.read_text()
 
-        required_sections = ["Overview", "Quick Start", "Directory Structure", "Directory Purposes"]
+        required_sections = [
+            "Overview",
+            "Quick Start",
+            "Directory Structure",
+            "Directory Purposes",
+        ]
 
         for section in required_sections:
             assert section in content, f"Template README must have '{section}' section"
@@ -263,7 +276,14 @@ class TestTemplateCompleteness:
         content = readme.read_text()
 
         # Check most directories with exact match
-        required_dirs = ["src/", "tests/", "data/", "configs/", "notebooks/", "examples/"]
+        required_dirs = [
+            "src/",
+            "tests/",
+            "data/",
+            "configs/",
+            "notebooks/",
+            "examples/",
+        ]
 
         for dir_ref in required_dirs:
             assert dir_ref in content, f"Template README must document {dir_ref} directory"
@@ -330,7 +350,10 @@ class TestTemplateCopyFunctionality:
         )
 
     def test_copied_template_has_complete_structure(
-        self, template_dir: Path, tmp_path: Path, expected_template_structure: Dict[str, List[str]]
+        self,
+        template_dir: Path,
+        tmp_path: Path,
+        expected_template_structure: Dict[str, List[str]],
     ) -> None:
         """
         Test that copied template has complete structure.

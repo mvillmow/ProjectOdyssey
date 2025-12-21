@@ -136,7 +136,10 @@ def extract_gzip(gzip_path: Path, output_dir: Path) -> None:
     print(f"Extracting {gzip_path}...")
 
     # First unzip the .zip file
-    result = subprocess.run(["unzip", "-q", "-o", str(gzip_path), "-d", str(output_dir)], capture_output=True)
+    result = subprocess.run(
+        ["unzip", "-q", "-o", str(gzip_path), "-d", str(output_dir)],
+        capture_output=True,
+    )
 
     if result.returncode != 0:
         raise RuntimeError(f"Failed to extract {gzip_path}")
@@ -231,7 +234,11 @@ def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(description="Download and extract EMNIST dataset")
     parser.add_argument(
-        "--split", type=str, default="balanced", choices=EMNIST_SPLITS, help="EMNIST split to use (default: balanced)"
+        "--split",
+        type=str,
+        default="balanced",
+        choices=EMNIST_SPLITS,
+        help="EMNIST split to use (default: balanced)",
     )
     parser.add_argument(
         "--output-dir",

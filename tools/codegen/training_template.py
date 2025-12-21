@@ -127,8 +127,17 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Generate training loop boilerplate code")
 
     parser.add_argument("--optimizer", default="SGD", help="Optimizer name (default: SGD)")
-    parser.add_argument("--loss", default="CrossEntropy", help="Loss function name (default: CrossEntropy)")
-    parser.add_argument("--metrics", nargs="+", default=["loss"], help="Metrics to track (default: loss)")
+    parser.add_argument(
+        "--loss",
+        default="CrossEntropy",
+        help="Loss function name (default: CrossEntropy)",
+    )
+    parser.add_argument(
+        "--metrics",
+        nargs="+",
+        default=["loss"],
+        help="Metrics to track (default: loss)",
+    )
 
     args = parser.parse_args()
 

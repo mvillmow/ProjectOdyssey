@@ -355,7 +355,10 @@ Examples:
     )
 
     parser.add_argument(
-        "--format", choices=["text", "json", "markdown"], default="text", help="Output format (default: text)"
+        "--format",
+        choices=["text", "json", "markdown"],
+        default="text",
+        help="Output format (default: text)",
     )
     parser.add_argument("--output", type=str, help="Write output to file (default: stdout)")
     parser.add_argument("--verbose", action="store_true", help="Include detailed breakdowns")

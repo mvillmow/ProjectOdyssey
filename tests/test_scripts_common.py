@@ -37,7 +37,8 @@ class TestCommonUtilities(unittest.TestCase):
             color = LABEL_COLORS[label]
             self.assertEqual(len(color), 6, f"Color for {label} should be 6 chars")
             self.assertTrue(
-                all(c in "0123456789abcdef" for c in color.lower()), f"Color for {label} should be hex: {color}"
+                all(c in "0123456789abcdef" for c in color.lower()),
+                f"Color for {label} should be hex: {color}",
             )
 
     def test_get_repo_root_returns_path(self):
@@ -53,7 +54,10 @@ class TestCommonUtilities(unittest.TestCase):
         repo_root = get_repo_root()
         git_dir = repo_root / ".git"
 
-        self.assertTrue(git_dir.exists(), f"Repository root should contain .git directory: {repo_root}")
+        self.assertTrue(
+            git_dir.exists(),
+            f"Repository root should contain .git directory: {repo_root}",
+        )
 
     def test_get_agents_dir_returns_path(self):
         """Test that get_agents_dir returns a Path object."""
@@ -69,7 +73,11 @@ class TestCommonUtilities(unittest.TestCase):
         agents_dir = get_agents_dir()
 
         expected = repo_root / ".claude" / "agents"
-        self.assertEqual(agents_dir.resolve(), expected.resolve(), "Agents dir should be .claude/agents")
+        self.assertEqual(
+            agents_dir.resolve(),
+            expected.resolve(),
+            "Agents dir should be .claude/agents",
+        )
 
 
 # NOTE: TestGetPlanDir removed - get_plan_dir() function removed
@@ -83,7 +91,11 @@ class TestLabelColors(unittest.TestCase):
     def test_phase_colors_consistent(self):
         """Test that related phases use consistent colors."""
         # Testing and TDD should use same color
-        self.assertEqual(LABEL_COLORS["testing"], LABEL_COLORS["tdd"], "Testing and TDD should use the same color")
+        self.assertEqual(
+            LABEL_COLORS["testing"],
+            LABEL_COLORS["tdd"],
+            "Testing and TDD should use the same color",
+        )
 
         # Packaging and integration should use same color
         self.assertEqual(
@@ -94,7 +106,13 @@ class TestLabelColors(unittest.TestCase):
 
     def test_no_duplicate_colors(self):
         """Test that primary phase labels use unique colors."""
-        primary_phases = ["planning", "testing", "implementation", "packaging", "cleanup"]
+        primary_phases = [
+            "planning",
+            "testing",
+            "implementation",
+            "packaging",
+            "cleanup",
+        ]
         colors_used = set()
 
         for phase in primary_phases:

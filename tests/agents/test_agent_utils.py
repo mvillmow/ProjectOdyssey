@@ -383,13 +383,15 @@ class TestLoadAgent:
         with tempfile.TemporaryDirectory() as tmpdir:
             tmppath = Path(tmpdir)
             agent_file = tmppath / "test-agent.md"
-            agent_file.write_text("""---
+            agent_file.write_text(
+                """---
 name: test-agent
 description: A test agent
 tools: Read,Write
 model: sonnet
 ---
-# Agent Content""")
+# Agent Content"""
+            )
 
             agent = load_agent(agent_file)
             assert agent is not None
@@ -401,11 +403,13 @@ model: sonnet
         with tempfile.TemporaryDirectory() as tmpdir:
             tmppath = Path(tmpdir)
             agent_file = tmppath / "bad-agent.md"
-            agent_file.write_text("""---
+            agent_file.write_text(
+                """---
 name: test-agent
   invalid: [
 ---
-# Content""")
+# Content"""
+            )
 
             agent = load_agent(agent_file)
             assert agent is None
@@ -437,13 +441,15 @@ class TestLoadAllAgents:
             # Create multiple agent files
             for i in range(3):
                 agent_file = tmppath / f"agent{i}.md"
-                agent_file.write_text(f"""---
+                agent_file.write_text(
+                    f"""---
 name: agent-{i}
 description: Test agent {i}
 tools: Read,Write
 model: sonnet
 ---
-# Content""")
+# Content"""
+                )
 
             agents = load_all_agents(tmppath)
             assert len(agents) == 3
@@ -457,13 +463,15 @@ model: sonnet
 
             # Valid file
             valid_file = tmppath / "valid.md"
-            valid_file.write_text("""---
+            valid_file.write_text(
+                """---
 name: valid-agent
 description: Valid
 tools: Read
 model: sonnet
 ---
-# Content""")
+# Content"""
+            )
 
             # Invalid file
             invalid_file = tmppath / "invalid.md"

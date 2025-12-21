@@ -40,7 +40,14 @@ REQUIRED_FIELDS = {
 }
 
 # Valid model names
-VALID_MODELS = {"sonnet", "opus", "haiku", "claude-3-5-sonnet", "claude-3-opus", "claude-3-haiku"}
+VALID_MODELS = {
+    "sonnet",
+    "opus",
+    "haiku",
+    "claude-3-5-sonnet",
+    "claude-3-opus",
+    "claude-3-haiku",
+}
 
 # Valid tool names (based on common Claude Code tools)
 VALID_TOOLS = {
@@ -238,7 +245,12 @@ def validate_delegation_patterns(content: str, frontmatter: Dict, result: Valida
         return
 
     # Other agents should have delegation information
-    delegation_keywords = ["Delegates To", "delegates to", "Coordinates With", "coordinates with"]
+    delegation_keywords = [
+        "Delegates To",
+        "delegates to",
+        "Coordinates With",
+        "coordinates with",
+    ]
     has_delegation = any(keyword in content for keyword in delegation_keywords)
 
     if not has_delegation and "orchestrator" in agent_name.lower():
@@ -360,7 +372,12 @@ Examples:
     python scripts/agents/validate_agents.py --verbose
         """,
     )
-    parser.add_argument("--verbose", "-v", action="store_true", help="Show verbose output including warnings")
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        action="store_true",
+        help="Show verbose output including warnings",
+    )
     parser.add_argument(
         "--agents-dir",
         type=Path,

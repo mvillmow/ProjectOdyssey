@@ -339,7 +339,12 @@ def main():
     )
     parser.add_argument("path", type=Path, help="Path to markdown file or directory")
     parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
-    parser.add_argument("-n", "--dry-run", action="store_true", help="Show what would be fixed without making changes")
+    parser.add_argument(
+        "-n",
+        "--dry-run",
+        action="store_true",
+        help="Show what would be fixed without making changes",
+    )
 
     args = parser.parse_args()
 

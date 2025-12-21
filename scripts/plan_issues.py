@@ -47,7 +47,18 @@ MAX_TITLE_LENGTH = 500
 # Shell metacharacters that are dangerous in replan reasons
 DANGEROUS_SHELL_CHARS = set(";|&$`<>")
 
-ALLOWED_EDITORS = {"vim", "vi", "emacs", "nano", "code", "subl", "nvim", "helix", "micro", "edit"}
+ALLOWED_EDITORS = {
+    "vim",
+    "vi",
+    "emacs",
+    "nano",
+    "code",
+    "subl",
+    "nvim",
+    "helix",
+    "micro",
+    "edit",
+}
 
 ALLOWED_TIMEZONES = {
     "America/Los_Angeles",
@@ -403,7 +414,11 @@ def wait_until(epoch: int) -> None:
                 return
             h, r = divmod(remaining, 3600)
             m, s = divmod(r, 60)
-            print(f"\r[INFO] Rate limit resets in {h:02d}:{m:02d}:{s:02d}", end="", flush=True)
+            print(
+                f"\r[INFO] Rate limit resets in {h:02d}:{m:02d}:{s:02d}",
+                end="",
+                flush=True,
+            )
             time.sleep(1)
     finally:
         signal.signal(signal.SIGINT, old_handler)
@@ -435,7 +450,10 @@ def gh_issue_json(issue: int) -> dict:
         # Retry on transient network errors
         if attempt < MAX_RETRIES:
             delay = 2**attempt
-            log("WARN", f"GitHub API error fetching #{issue} (attempt {attempt}/{MAX_RETRIES}): {cp.stderr.strip()}")
+            log(
+                "WARN",
+                f"GitHub API error fetching #{issue} (attempt {attempt}/{MAX_RETRIES}): {cp.stderr.strip()}",
+            )
             log("INFO", f"Retrying in {delay}s...")
             time.sleep(delay)
         else:
@@ -547,7 +565,15 @@ def delete_plan_comments(issue: int, comments: list[dict], *, pre_filtered: bool
             continue
 
         log("INFO", f"Deleting existing plan comment {comment_id} from #{issue}")
-        cp = run(["gh", "api", "-X", "DELETE", f"/repos/{{owner}}/{{repo}}/issues/comments/{comment_id}"])
+        cp = run(
+            [
+                "gh",
+                "api",
+                "-X",
+                "DELETE",
+                f"/repos/{{owner}}/{{repo}}/issues/comments/{comment_id}",
+            ]
+        )
         if cp.returncode == 0:
             deleted += 1
         else:
@@ -669,7 +695,19 @@ class Planner:
             return explicit
 
         for attempt in range(1, MAX_RETRIES + 1):
-            cp = run(["gh", "issue", "list", "--state", "open", "--limit", str(MAX_ISSUES_FETCH), "--json", "number"])
+            cp = run(
+                [
+                    "gh",
+                    "issue",
+                    "list",
+                    "--state",
+                    "open",
+                    "--limit",
+                    str(MAX_ISSUES_FETCH),
+                    "--json",
+                    "number",
+                ]
+            )
             if cp.returncode == 0:
                 issues = sorted([i["number"] for i in json.loads(cp.stdout)])
                 return issues[:limit] if limit else issues
@@ -677,7 +715,10 @@ class Planner:
             # Retry on transient network errors
             if attempt < MAX_RETRIES:
                 delay = 2**attempt
-                log("WARN", f"GitHub API error (attempt {attempt}/{MAX_RETRIES}): {cp.stderr.strip()}")
+                log(
+                    "WARN",
+                    f"GitHub API error (attempt {attempt}/{MAX_RETRIES}): {cp.stderr.strip()}",
+                )
                 log("INFO", f"Retrying in {delay}s...")
                 time.sleep(delay)
             else:
@@ -723,7 +764,10 @@ class Planner:
             # Title validation with truncation warning
             title = data.get("title") or "Untitled"
             if len(title) > MAX_TITLE_LENGTH:
-                log("WARN", f"Title unusually long ({len(title)} chars), truncating to {MAX_TITLE_LENGTH}")
+                log(
+                    "WARN",
+                    f"Title unusually long ({len(title)} chars), truncating to {MAX_TITLE_LENGTH}",
+                )
                 title = title[:MAX_TITLE_LENGTH] + "..."
 
             # Body size validation
@@ -766,7 +810,10 @@ class Planner:
                     if len(valid_plan_comments) > 1:
                         # Multiple valid plans - use Claude to pick the best
                         update_status("Evaluating", f"{len(valid_plan_comments)} plans")
-                        log("INFO", f"Found {len(valid_plan_comments)} valid plans, asking Claude to evaluate...")
+                        log(
+                            "INFO",
+                            f"Found {len(valid_plan_comments)} valid plans, asking Claude to evaluate...",
+                        )
 
                         # Prepare plans for evaluation
                         plans_for_eval = []
@@ -779,20 +826,29 @@ class Planner:
                         best_idx = select_best_plan_with_claude(plans_for_eval, timeout=self.opts.timeout)
                         inferior_plans = [c for idx, c in enumerate(valid_plan_comments) if idx != best_idx]
 
-                        log("INFO", f"Keeping plan {best_idx + 1}, deleting {len(inferior_plans)} other plan(s)")
+                        log(
+                            "INFO",
+                            f"Keeping plan {best_idx + 1}, deleting {len(inferior_plans)} other plan(s)",
+                        )
 
                         # Delete inferior plans
                         if not self.opts.dry_run:
                             update_status("Deleting", "inferior plans")
                             deleted = delete_plan_comments(issue, inferior_plans, pre_filtered=True)
                             if deleted > 0:
-                                log("INFO", f"Deleted {deleted} inferior plan comment(s)")
+                                log(
+                                    "INFO",
+                                    f"Deleted {deleted} inferior plan comment(s)",
+                                )
 
                     update_status("Skipped", "has plan")
                     return Result(issue, "skipped")
 
                 if rate_limited_comments:
-                    log("INFO", "Existing plan was rate-limited, will generate new plan...")
+                    log(
+                        "INFO",
+                        "Existing plan was rate-limited, will generate new plan...",
+                    )
 
             # Dry-run: show what would be done without calling Claude
             if self.opts.dry_run:
@@ -905,7 +961,10 @@ claude --model opus \\
             start_time = time.time()
             attempt_info = f"attempt {attempt}/{MAX_RETRIES}" if attempt > 1 else ""
             status("Calling", f"Claude API {attempt_info}".strip())
-            log("INFO", f"Generating plan with Claude Opus (timeout: {self.opts.timeout}s)...")
+            log(
+                "INFO",
+                f"Generating plan with Claude Opus (timeout: {self.opts.timeout}s)...",
+            )
 
             # Use streaming subprocess with live output (like bash's tee)
             proc = subprocess.Popen(
@@ -1123,15 +1182,41 @@ Examples:
     )
     p.add_argument("--limit", type=int, metavar="N", help="Only process first N issues")
     p.add_argument("--issues", metavar="N,M,...", help="Only process specific issue numbers")
-    p.add_argument("--auto", action="store_true", help="Non-interactive mode: skip editor, auto-post")
+    p.add_argument(
+        "--auto",
+        action="store_true",
+        help="Non-interactive mode: skip editor, auto-post",
+    )
     p.add_argument("--replan", action="store_true", help="Re-plan issues with existing plans")
     p.add_argument("--replan-reason", metavar="TXT", help="Re-plan with context (implies --replan)")
     p.add_argument("--dry-run", action="store_true", help="Preview which issues would be processed")
     p.add_argument("--cleanup", action="store_true", help="Delete temp directory on completion")
-    p.add_argument("--parallel", action="store_true", help="Process issues in parallel (requires --auto)")
-    p.add_argument("--max-parallel", type=int, default=4, metavar="N", help="Max concurrent jobs (default: 4)")
-    p.add_argument("--timeout", type=int, default=600, metavar="SEC", help="Timeout per issue (default: 600)")
-    p.add_argument("--throttle", type=float, default=0.0, metavar="SEC", help="Seconds between API calls")
+    p.add_argument(
+        "--parallel",
+        action="store_true",
+        help="Process issues in parallel (requires --auto)",
+    )
+    p.add_argument(
+        "--max-parallel",
+        type=int,
+        default=4,
+        metavar="N",
+        help="Max concurrent jobs (default: 4)",
+    )
+    p.add_argument(
+        "--timeout",
+        type=int,
+        default=600,
+        metavar="SEC",
+        help="Timeout per issue (default: 600)",
+    )
+    p.add_argument(
+        "--throttle",
+        type=float,
+        default=0.0,
+        metavar="SEC",
+        help="Seconds between API calls",
+    )
     p.add_argument("--json", action="store_true", help="Output results as JSON")
 
     args = p.parse_args()

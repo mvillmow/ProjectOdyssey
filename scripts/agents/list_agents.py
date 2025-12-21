@@ -170,9 +170,18 @@ Examples:
     python scripts/agents/list_agents.py --level 5 --verbose
         """,
     )
-    parser.add_argument("--verbose", "-v", action="store_true", help="Show detailed information for each agent")
     parser.add_argument(
-        "--level", "-l", type=int, choices=[0, 1, 2, 3, 4, 5], help="Show only agents at this level (0-5)"
+        "--verbose",
+        "-v",
+        action="store_true",
+        help="Show detailed information for each agent",
+    )
+    parser.add_argument(
+        "--level",
+        "-l",
+        type=int,
+        choices=[0, 1, 2, 3, 4, 5],
+        help="Show only agents at this level (0-5)",
     )
     parser.add_argument(
         "--agents-dir",

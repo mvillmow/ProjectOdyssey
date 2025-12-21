@@ -74,7 +74,11 @@ def download_with_retry(url: str, output_path: Path, max_retries: int = MAX_RETR
                             bar_length = 50
                             filled = int(bar_length * downloaded / total_size)
                             bar = "=" * filled + "-" * (bar_length - filled)
-                            print(f"\rDownloading: [{bar}] {percent:.1f}%", end="", flush=True)
+                            print(
+                                f"\rDownloading: [{bar}] {percent:.1f}%",
+                                end="",
+                                flush=True,
+                            )
 
                 print()  # New line after progress bar
                 return

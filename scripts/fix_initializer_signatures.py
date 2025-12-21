@@ -35,7 +35,9 @@ def fix_initializers(filepath):
             # Pattern: kaiming_normal(\n?      [shape],\n?      fan_in=value,\n?    )
             # Extract shape and fan_in
             shape_match = re.search(
-                r"kaiming_normal\(\s*(\[[^\]]+\])\s*,\s*fan_in\s*=\s*([^,\)]+)", call_text, re.MULTILINE | re.DOTALL
+                r"kaiming_normal\(\s*(\[[^\]]+\])\s*,\s*fan_in\s*=\s*([^,\)]+)",
+                call_text,
+                re.MULTILINE | re.DOTALL,
             )
 
             if shape_match:

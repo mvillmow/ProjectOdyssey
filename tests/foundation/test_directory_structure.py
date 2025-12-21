@@ -183,7 +183,11 @@ class TestSharedDirectoryStructure:
         assert init_file.is_file(), "shared/__init__.mojo must be a file"
 
     def test_shared_subdirectories_exist(
-        self, shared_core_dir: Path, shared_training_dir: Path, shared_data_dir: Path, shared_utils_dir: Path
+        self,
+        shared_core_dir: Path,
+        shared_training_dir: Path,
+        shared_data_dir: Path,
+        shared_utils_dir: Path,
     ) -> None:
         """
         Test that all required shared subdirectories exist.

@@ -128,7 +128,9 @@ def parse_agent_file(agents_dir: Path):
 
 
 def validate_frontmatter_keys(
-    frontmatter: Dict, required_keys: List[str], optional_keys: Optional[List[str]] = None
+    frontmatter: Dict,
+    required_keys: List[str],
+    optional_keys: Optional[List[str]] = None,
 ) -> List[str]:
     """
     Validate that frontmatter contains required keys.

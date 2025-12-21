@@ -285,7 +285,10 @@ def load_latest_state(logs_dir):
         with open(latest_state_file, "r") as f:
             return json.load(f)
     except Exception as e:
-        print(f"Warning: Could not load state file {latest_state_file}: {e}", file=sys.stderr)
+        print(
+            f"Warning: Could not load state file {latest_state_file}: {e}",
+            file=sys.stderr,
+        )
         return None
 
 
@@ -312,7 +315,10 @@ def process_plan_directory(plan_dir, section=None, dry_run=False, resume=False):
         state = load_latest_state(logs_dir)
         if state:
             processed_files = set(state.get("processed", []))
-            print(f"Resuming from previous state: {len(processed_files)} files already processed", file=sys.stderr)
+            print(
+                f"Resuming from previous state: {len(processed_files)} files already processed",
+                file=sys.stderr,
+            )
 
     # Find all plan.md files
     if section:
@@ -403,7 +409,11 @@ Examples:
         """,
     )
 
-    parser.add_argument("--dry-run", action="store_true", help="Show what would be done without making changes")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be done without making changes",
+    )
     parser.add_argument("--section", type=str, help="Process only one section (e.g., 01-foundation)")
     parser.add_argument("--resume", action="store_true", help="Resume from last saved state")
     parser.add_argument(
@@ -422,7 +432,10 @@ Examples:
         print("ERROR: This script is DEPRECATED.", file=sys.stderr)
         print("The notes/plan/ directory has been removed.", file=sys.stderr)
         print("Planning is now done directly through GitHub issues.", file=sys.stderr)
-        print("See .claude/shared/github-issue-workflow.md for the new workflow.", file=sys.stderr)
+        print(
+            "See .claude/shared/github-issue-workflow.md for the new workflow.",
+            file=sys.stderr,
+        )
         print("", file=sys.stderr)
         print("To update issues, use the GitHub CLI directly:", file=sys.stderr)
         print("    gh issue edit <number> --title '...' --body '...'", file=sys.stderr)

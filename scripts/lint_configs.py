@@ -426,7 +426,11 @@ def main():
     parser = argparse.ArgumentParser(description="Lint configuration files for ML Odyssey")
     parser.add_argument("paths", nargs="+", help="Configuration files or directories to lint")
     parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
-    parser.add_argument("--remove-unused", action="store_true", help="Remove unused parameters (not implemented)")
+    parser.add_argument(
+        "--remove-unused",
+        action="store_true",
+        help="Remove unused parameters (not implemented)",
+    )
 
     args = parser.parse_args()
 

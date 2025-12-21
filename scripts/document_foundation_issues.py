@@ -333,7 +333,7 @@ Cleanup activities completed for all configuration files:
 - Mojo format pre-commit hook disabled due to bug (modular/mojo#3612)
 - Added TODO comment with bug reference in `.pre-commit-config.yaml:34`
 - Will re-enable when bug is fixed upstream
-- Documented workaround (manual `mojo format` usage)
+- Documented workaround (manual `pixi run mojo format` usage)
 
 ### 3. Optimization
 

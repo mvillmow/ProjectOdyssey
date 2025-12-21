@@ -151,7 +151,10 @@ class AgentConfigValidator:
                 logging.warning(f"Skipping {agent_file.name} (file too large: {file_size} bytes)")
                 self.results.append(
                     ValidationResult(
-                        agent_file, False, [f"File too large: {file_size} bytes (max: {MAX_FILE_SIZE})"], []
+                        agent_file,
+                        False,
+                        [f"File too large: {file_size} bytes (max: {MAX_FILE_SIZE})"],
+                        [],
                     )
                 )
                 continue
@@ -353,7 +356,14 @@ class AgentConfigValidator:
         warnings = []
 
         # Expected sections
-        expected_sections = ["Role", "Responsibilities", "Scope", "Delegation", "Workflow", "Examples"]
+        expected_sections = [
+            "Role",
+            "Responsibilities",
+            "Scope",
+            "Delegation",
+            "Workflow",
+            "Examples",
+        ]
 
         content_lower = content.lower()
         missing_sections = []

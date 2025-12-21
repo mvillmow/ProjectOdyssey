@@ -75,7 +75,9 @@ def check_issue_exists(issue_number: int) -> bool:
     """Check if a GitHub issue exists."""
     try:
         result = subprocess.run(
-            ["gh", "issue", "view", str(issue_number), "--json", "number"], capture_output=True, text=True
+            ["gh", "issue", "view", str(issue_number), "--json", "number"],
+            capture_output=True,
+            text=True,
         )
         return result.returncode == 0
     except subprocess.SubprocessError:
@@ -138,7 +140,9 @@ def post_comment_to_issue(issue_number: int, content: str, dry_run: bool = False
 
         try:
             result = subprocess.run(
-                ["gh", "issue", "comment", str(issue_number), "--body-file", temp_path], capture_output=True, text=True
+                ["gh", "issue", "comment", str(issue_number), "--body-file", temp_path],
+                capture_output=True,
+                text=True,
             )
             if result.returncode == 0:
                 logging.info(f"Posted comment to issue #{issue_number}")
@@ -185,7 +189,17 @@ The content from the original README.md will be posted as a comment below.
 
         try:
             result = subprocess.run(
-                ["gh", "issue", "create", "--title", title, "--body-file", body_path, "--label", "migrated-notes"],
+                [
+                    "gh",
+                    "issue",
+                    "create",
+                    "--title",
+                    title,
+                    "--body-file",
+                    body_path,
+                    "--label",
+                    "migrated-notes",
+                ],
                 capture_output=True,
                 text=True,
             )
@@ -223,7 +237,10 @@ def format_migration_comment(content: str, source_path: str) -> str:
 
 
 def migrate_notes(
-    notes_dir: Path, state: MigrationState, dry_run: bool = False, limit: Optional[int] = None
+    notes_dir: Path,
+    state: MigrationState,
+    dry_run: bool = False,
+    limit: Optional[int] = None,
 ) -> MigrationState:
     """Migrate all notes to GitHub issues."""
 
@@ -371,7 +388,11 @@ def print_summary(state: MigrationState) -> None:
 
 def main():
     parser = argparse.ArgumentParser(description="Migrate notes/issues/ content to GitHub issues")
-    parser.add_argument("--dry-run", action="store_true", help="Show what would be done without making changes")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be done without making changes",
+    )
     parser.add_argument("--resume", action="store_true", help="Resume from saved state")
     parser.add_argument("--limit", type=int, help="Limit number of issues to process (for testing)")
     parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose logging")

@@ -48,7 +48,12 @@ class MojoPatternTester:
             "description": "Function definition guidance (fn vs def)",
         },
         "struct_vs_class": {
-            "keywords": ["struct vs class", "struct versus class", "`struct`", "`class`"],
+            "keywords": [
+                "struct vs class",
+                "struct versus class",
+                "`struct`",
+                "`class`",
+            ],
             "description": "Type definition guidance (struct vs class)",
         },
         "simd": {
@@ -67,7 +72,10 @@ class MojoPatternTester:
             "keywords": ["type safety", "type-safe", "raises", "error handling"],
             "description": "Type safety and error handling",
         },
-        "traits": {"keywords": ["trait", "protocol", "interface"], "description": "Traits/protocols usage"},
+        "traits": {
+            "keywords": ["trait", "protocol", "interface"],
+            "description": "Traits/protocols usage",
+        },
     }
 
     def __init__(self, agents_dir: Path):
@@ -157,7 +165,12 @@ class MojoPatternTester:
         # Calculate completeness score
         if is_implementation_agent:
             # Implementation agents should have most patterns
-            expected_patterns = {"fn_vs_def", "struct_vs_class", "memory_management", "type_safety"}
+            expected_patterns = {
+                "fn_vs_def",
+                "struct_vs_class",
+                "memory_management",
+                "type_safety",
+            }
             completeness_score = len(patterns_found & expected_patterns) / len(expected_patterns)
         else:
             # Non-implementation agents may have fewer patterns
@@ -255,7 +268,12 @@ class MojoPatternTester:
             return
 
         # Critical patterns for implementation agents
-        critical_patterns = {"fn_vs_def", "struct_vs_class", "memory_management", "type_safety"}
+        critical_patterns = {
+            "fn_vs_def",
+            "struct_vs_class",
+            "memory_management",
+            "type_safety",
+        }
 
         for info in impl_agents:
             print(f"\n{info.agent_name} (Level {info.level}):")

@@ -72,7 +72,15 @@ def check_required_sections(readme_path: Path, sections: List[str]) -> Tuple[boo
     readme_type = "default"
     parent_dir = readme_path.parent.name
 
-    if parent_dir in ["benchmarks", "docs", "agents", "tools", "configs", "shared", "tests"]:
+    if parent_dir in [
+        "benchmarks",
+        "docs",
+        "agents",
+        "tools",
+        "configs",
+        "shared",
+        "tests",
+    ]:
         readme_type = "directory"
     elif readme_path.parent.parent.name == "tools":
         readme_type = "tool"

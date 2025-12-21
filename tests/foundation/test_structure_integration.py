@@ -183,9 +183,11 @@ class TestTemplateInstantiation:
 
         # This would resolve to shared in actual repository structure
         # Just verify the path construction works
-        assert relative_to_shared.parts == ("..", "..", "shared"), (
-            "Relative path to shared must be constructable from paper directory"
-        )
+        assert relative_to_shared.parts == (
+            "..",
+            "..",
+            "shared",
+        ), "Relative path to shared must be constructable from paper directory"
 
 
 class TestDirectoryPermissions:
@@ -336,7 +338,11 @@ class TestDependencyGraph:
         )
 
     def test_shared_subdirectories_follow_dependency_order(
-        self, shared_core_dir: Path, shared_training_dir: Path, shared_data_dir: Path, shared_utils_dir: Path
+        self,
+        shared_core_dir: Path,
+        shared_training_dir: Path,
+        shared_data_dir: Path,
+        shared_utils_dir: Path,
     ) -> None:
         """
         Test that shared subdirectories follow documented dependency order.
@@ -352,7 +358,12 @@ class TestDependencyGraph:
             shared_utils_dir: Shared utils directory path
         """
         # All subdirectories must exist
-        subdirs = [shared_core_dir, shared_training_dir, shared_data_dir, shared_utils_dir]
+        subdirs = [
+            shared_core_dir,
+            shared_training_dir,
+            shared_data_dir,
+            shared_utils_dir,
+        ]
         for subdir in subdirs:
             assert subdir.exists(), f"{subdir.name}/ must exist for dependency graph"
 

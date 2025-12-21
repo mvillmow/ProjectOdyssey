@@ -390,7 +390,11 @@ def wait_until(epoch: int) -> None:
                 return
             h, r = divmod(remaining, 3600)
             m, s = divmod(r, 60)
-            print(f"\r[INFO] Rate limit resets in {h:02d}:{m:02d}:{s:02d}", end="", flush=True)
+            print(
+                f"\r[INFO] Rate limit resets in {h:02d}:{m:02d}:{s:02d}",
+                end="",
+                flush=True,
+            )
             time.sleep(1)
     finally:
         signal.signal(signal.SIGINT, old_handler)
@@ -885,7 +889,10 @@ class DependencyResolver:
             for num in self.issues:
                 if num not in self._completed and num not in self._paused and num not in self._in_progress:
                     pending.append(num)
-            return sorted(pending, key=lambda n: (priority_order.get(self.issues[n].priority, 2), n))
+            return sorted(
+                pending,
+                key=lambda n: (priority_order.get(self.issues[n].priority, 2), n),
+            )
 
     def mark_in_progress(self, issue: int) -> None:
         """Mark an issue as in progress."""
@@ -981,15 +988,30 @@ class WorktreeManager:
                 return worktree_path
 
             # Check if branch exists
-            cp = run(["git", "show-ref", "--verify", f"refs/heads/{branch_name}"], cwd=self.repo_root)
+            cp = run(
+                ["git", "show-ref", "--verify", f"refs/heads/{branch_name}"],
+                cwd=self.repo_root,
+            )
 
             if cp.returncode == 0:
                 # Branch exists, use it
-                cp = run(["git", "worktree", "add", str(worktree_path), branch_name], cwd=self.repo_root)
+                cp = run(
+                    ["git", "worktree", "add", str(worktree_path), branch_name],
+                    cwd=self.repo_root,
+                )
             else:
                 # Create new branch from main
                 cp = run(
-                    ["git", "worktree", "add", "-b", branch_name, str(worktree_path), "origin/main"], cwd=self.repo_root
+                    [
+                        "git",
+                        "worktree",
+                        "add",
+                        "-b",
+                        branch_name,
+                        str(worktree_path),
+                        "origin/main",
+                    ],
+                    cwd=self.repo_root,
                 )
 
             if cp.returncode != 0:
@@ -1004,7 +1026,10 @@ class WorktreeManager:
             for path in self.worktree_base.iterdir():
                 if path.name.startswith(f"{issue}-"):
                     branch_name = path.name
-                    cp = run(["git", "worktree", "remove", "--force", str(path)], cwd=self.repo_root)
+                    cp = run(
+                        ["git", "worktree", "remove", "--force", str(path)],
+                        cwd=self.repo_root,
+                    )
                     if cp.returncode != 0:
                         log("WARN", f"Failed to remove worktree: {cp.stderr}")
                         return False
@@ -1028,17 +1053,26 @@ class WorktreeManager:
                     # Check what branch this worktree is on
                     branch_cp = run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=existing_path)
                     if branch_cp.returncode == 0 and branch_cp.stdout.strip() == remote_branch:
-                        log("DEBUG", f"Found existing worktree for branch {remote_branch}: {existing_path}")
+                        log(
+                            "DEBUG",
+                            f"Found existing worktree for branch {remote_branch}: {existing_path}",
+                        )
                         # Update it to latest
                         run(["git", "fetch", "origin", remote_branch], cwd=existing_path)
-                        run(["git", "reset", "--hard", f"origin/{remote_branch}"], cwd=existing_path)
+                        run(
+                            ["git", "reset", "--hard", f"origin/{remote_branch}"],
+                            cwd=existing_path,
+                        )
                         return existing_path
 
             if worktree_path.exists():
                 log("DEBUG", f"Worktree path exists: {worktree_path}")
                 # Make sure it's on the right branch and up to date
                 run(["git", "fetch", "origin", remote_branch], cwd=worktree_path)
-                run(["git", "reset", "--hard", f"origin/{remote_branch}"], cwd=worktree_path)
+                run(
+                    ["git", "reset", "--hard", f"origin/{remote_branch}"],
+                    cwd=worktree_path,
+                )
                 return worktree_path
 
             # Fetch the remote branch first
@@ -1157,11 +1191,22 @@ class IssueImplementer:
             stderr_lower = cp.stderr.lower()
             is_network_error = any(
                 msg in stderr_lower
-                for msg in ["connection", "network", "timeout", "eof", "dns", "resolve", "rate limit"]
+                for msg in [
+                    "connection",
+                    "network",
+                    "timeout",
+                    "eof",
+                    "dns",
+                    "resolve",
+                    "rate limit",
+                ]
             )
             if is_network_error and attempt < retries:
                 delay = 2**attempt
-                log("WARN", f"API call failed (attempt {attempt}/{retries}), retrying in {delay}s...")
+                log(
+                    "WARN",
+                    f"API call failed (attempt {attempt}/{retries}), retrying in {delay}s...",
+                )
                 time.sleep(delay)
                 continue
             break
@@ -1273,7 +1318,10 @@ class IssueImplementer:
             if is_network_error:
                 if attempt < MAX_RETRIES:
                     delay = 2**attempt
-                    log("WARN", f"Network error fetching epic #{epic_number} (attempt {attempt}/{MAX_RETRIES})")
+                    log(
+                        "WARN",
+                        f"Network error fetching epic #{epic_number} (attempt {attempt}/{MAX_RETRIES})",
+                    )
                     log("INFO", f"Retrying in {delay}s...")
                     time.sleep(delay)
                     continue
@@ -1363,7 +1411,13 @@ class IssueImplementer:
         # Call plan_issues.py to generate plan
         scripts_dir = self.repo_root / "scripts"
         cp = run(
-            ["python3", str(scripts_dir / "plan_issues.py"), "--issues", str(issue), "--auto"],
+            [
+                "python3",
+                str(scripts_dir / "plan_issues.py"),
+                "--issues",
+                str(issue),
+                "--auto",
+            ],
             timeout=600,  # 10 minute timeout for plan generation
             cwd=self.repo_root,
         )
@@ -1460,7 +1514,10 @@ class IssueImplementer:
                         last_update_time = now
 
             proc.wait()
-            log("DEBUG", f"  Claude finished with {line_count} lines, exit code {proc.returncode}")
+            log(
+                "DEBUG",
+                f"  Claude finished with {line_count} lines, exit code {proc.returncode}",
+            )
             combined = "".join(output_lines)
 
             # Check for rate limit
@@ -1543,7 +1600,15 @@ Focus on what functionality was added or fixed. Do not include implementation de
 
         # Also check by branch name pattern (issue number prefix)
         cp = self._gh_call(
-            ["gh", "pr", "list", "--state", "all", "--json", "number,state,headRefName,statusCheckRollup"]
+            [
+                "gh",
+                "pr",
+                "list",
+                "--state",
+                "all",
+                "--json",
+                "number,state,headRefName,statusCheckRollup",
+            ]
         )
         if cp.returncode == 0:
             try:
@@ -1554,10 +1619,16 @@ Focus on what functionality was added or fixed. Do not include implementation de
                     if branch.startswith(f"{issue}-") or branch.startswith(f"{issue}_"):
                         state = pr.get("state", "")
                         if state == "OPEN":
-                            log("DEBUG", f"  Found existing PR by branch: #{pr['number']} ({branch})")
+                            log(
+                                "DEBUG",
+                                f"  Found existing PR by branch: #{pr['number']} ({branch})",
+                            )
                             return pr
                         elif state == "MERGED":
-                            log("DEBUG", f"  Found merged PR by branch: #{pr['number']} ({branch})")
+                            log(
+                                "DEBUG",
+                                f"  Found merged PR by branch: #{pr['number']} ({branch})",
+                            )
                             return pr
             except json.JSONDecodeError:
                 pass
@@ -1608,7 +1679,19 @@ Focus on what functionality was added or fixed. Do not include implementation de
         # Fetch CI logs
         log("DEBUG", "  Fetching CI run info")
         self._update_status(slot, issue, "CI", "analyzing failures")
-        cp = run(["gh", "run", "list", "--branch", branch, "--limit", "1", "--json", "databaseId"])
+        cp = run(
+            [
+                "gh",
+                "run",
+                "list",
+                "--branch",
+                branch,
+                "--limit",
+                "1",
+                "--json",
+                "databaseId",
+            ]
+        )
         run_id = None
         if cp.returncode == 0:
             try:
@@ -1675,7 +1758,10 @@ PR #{pr_number} has failing CI checks:
 
         if not success:
             log("DEBUG", f"  Claude failed: {output[-200:]}")
-            self._post_issue_update(issue, f"⚠️ Failed to fix CI failures automatically.\n\nError: {output[-200:]}")
+            self._post_issue_update(
+                issue,
+                f"⚠️ Failed to fix CI failures automatically.\n\nError: {output[-200:]}",
+            )
             duration = time.time() - start_time
             return WorkerResult(issue, "paused", pr_number, "fix failed", duration)
 
@@ -1738,7 +1824,12 @@ DO NOT describe what you're doing - just run the commands to commit.
             log("WARN", f"  Claude failed to commit fix, forcing commit for #{issue}")
             run(["git", "add", "-A"], cwd=worktree)
             run(
-                ["git", "commit", "-m", "fix: Address CI failures\n\nAutomated fix by implement_issues.py"],
+                [
+                    "git",
+                    "commit",
+                    "-m",
+                    "fix: Address CI failures\n\nAutomated fix by implement_issues.py",
+                ],
                 cwd=worktree,
             )
 
@@ -1786,7 +1877,16 @@ DO NOT describe what you're doing - just run the commands to commit.
         while time.time() - start < max_wait:
             self._update_status(slot, issue, "PR", "checking")
 
-            cp = run(["gh", "pr", "view", str(pr_number), "--json", "state,mergeStateStatus,statusCheckRollup"])
+            cp = run(
+                [
+                    "gh",
+                    "pr",
+                    "view",
+                    str(pr_number),
+                    "--json",
+                    "state,mergeStateStatus,statusCheckRollup",
+                ]
+            )
 
             if cp.returncode != 0:
                 self._update_status(slot, issue, "PR", "error")
@@ -1842,7 +1942,13 @@ DO NOT describe what you're doing - just run the commands to commit.
             plan = self._check_or_create_plan(issue, slot)
             if not plan:
                 log("WARN", f"  Could not get/create plan for #{issue}, skipping")
-                return WorkerResult(issue, "skipped", None, "No plan available", time.time() - start_time)
+                return WorkerResult(
+                    issue,
+                    "skipped",
+                    None,
+                    "No plan available",
+                    time.time() - start_time,
+                )
 
             # 2. Create worktree
             self._update_status(slot, issue, "Worktree", "creating")
@@ -1860,7 +1966,10 @@ DO NOT describe what you're doing - just run the commands to commit.
             if cp.returncode != 0:
                 # Try merge instead
                 run(["git", "rebase", "--abort"], cwd=worktree)
-                cp = run(["git", "merge", "origin/main", "-m", "Merge origin/main"], cwd=worktree)
+                cp = run(
+                    ["git", "merge", "origin/main", "-m", "Merge origin/main"],
+                    cwd=worktree,
+                )
                 if cp.returncode != 0:
                     raise RuntimeError(f"git rebase/merge failed: {cp.stderr}")
 
@@ -1994,7 +2103,10 @@ DO NOT describe what you're doing - just run the commands to commit.
                 cp = run(["git", "status", "--porcelain"], cwd=worktree)
                 if cp.stdout.strip():
                     # Claude still didn't commit - force commit ourselves
-                    log("WARN", f"  Claude failed to commit, forcing commit for #{issue}")
+                    log(
+                        "WARN",
+                        f"  Claude failed to commit, forcing commit for #{issue}",
+                    )
                     run(["git", "add", "-A"], cwd=worktree)
                     commit_msg = f"feat: Implement #{issue}\n\nCloses #{issue}\n\n{summary}"
                     run(["git", "commit", "-m", commit_msg], cwd=worktree)
@@ -2140,7 +2252,11 @@ Examples:
 """,
     )
     p.add_argument("--epic", type=int, required=True, help="Epic issue number to parse")
-    p.add_argument("--priority", choices=["P0", "P1", "P2"], help="Only process issues with this priority")
+    p.add_argument(
+        "--priority",
+        choices=["P0", "P1", "P2"],
+        help="Only process issues with this priority",
+    )
     p.add_argument("--issues", metavar="N,M,...", help="Only process specific issue numbers")
     p.add_argument(
         "--parallel",
@@ -2395,7 +2511,10 @@ Examples:
                         # Ready issues exist but we couldn't spawn any - something's wrong
                         stall_count += 1
                         if stall_count > 5:
-                            log("WARN", f"Stalled with {len(ready)} ready issues but cannot spawn. Exiting.")
+                            log(
+                                "WARN",
+                                f"Stalled with {len(ready)} ready issues but cannot spawn. Exiting.",
+                            )
                             break
                         time.sleep(1)
                         continue
@@ -2419,7 +2538,10 @@ Examples:
                         try:
                             result = future.result()
                         except Exception as e:
-                            log("ERROR", f"Future for #{issue_num} raised exception: {e}")
+                            log(
+                                "ERROR",
+                                f"Future for #{issue_num} raised exception: {e}",
+                            )
                             result = WorkerResult(issue_num, "paused", None, str(e), 0)
 
                         results.append(result)
@@ -2430,7 +2552,10 @@ Examples:
                             log("DEBUG", f"Main loop: marked #{issue_num} as completed")
                         else:
                             resolver.mark_paused(issue_num)
-                            log("DEBUG", f"Main loop: marked #{issue_num} as paused ({result.status})")
+                            log(
+                                "DEBUG",
+                                f"Main loop: marked #{issue_num} as paused ({result.status})",
+                            )
 
                         # Release slot (find slot first, then release without holding lock)
                         slot_to_release = None

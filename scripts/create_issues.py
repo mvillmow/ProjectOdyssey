@@ -171,7 +171,8 @@ class IssueParser:
     # Format 1: ## Plan Issue
     # Format 2: **Plan Issue**:
     ISSUE_SECTION_PATTERN = re.compile(
-        r"^(?:##\s+|\*\*)(Plan|Test|Implementation|Packaging|Cleanup) Issue(?:\s*$|\*\*:)", re.MULTILINE
+        r"^(?:##\s+|\*\*)(Plan|Test|Implementation|Packaging|Cleanup) Issue(?:\s*$|\*\*:)",
+        re.MULTILINE,
     )
 
     def __init__(self, file_path: Path):
@@ -263,7 +264,9 @@ class IssueParser:
         if not body_match:
             # Format 3: **Body**: without code block
             body_match = re.search(
-                r"\*\*Body\*\*:\s*\n\n(.+?)\n\n\*\*(?:GitHub Issue URL|URL)\*\*:", content, re.DOTALL
+                r"\*\*Body\*\*:\s*\n\n(.+?)\n\n\*\*(?:GitHub Issue URL|URL)\*\*:",
+                content,
+                re.DOTALL,
             )
 
         if not body_match:
@@ -295,7 +298,13 @@ class IssueParser:
 class IssueCreator:
     """Creates GitHub issues and updates markdown files"""
 
-    def __init__(self, repo: str, dry_run: bool = False, max_retries: int = 3, logger: Optional[logging.Logger] = None):
+    def __init__(
+        self,
+        repo: str,
+        dry_run: bool = False,
+        max_retries: int = 3,
+        logger: Optional[logging.Logger] = None,
+    ):
         self.repo = repo
         self.dry_run = dry_run
         self.max_retries = max_retries
@@ -314,7 +323,17 @@ class IssueCreator:
 
         try:
             # Build gh command
-            cmd = ["gh", "issue", "create", "--title", issue.title, "--body-file", body_file, "--repo", self.repo]
+            cmd = [
+                "gh",
+                "issue",
+                "create",
+                "--title",
+                issue.title,
+                "--body-file",
+                body_file,
+                "--repo",
+                self.repo,
+            ]
 
             # Add labels
             for label in issue.labels:
@@ -376,12 +395,14 @@ class IssueCreator:
 
             # Find the URL line within this section - handle multiple formats
             url_line_pattern = re.compile(
-                r"((?:\*\*)?(?:GitHub Issue URL|URL)(?:\*\*)?:\s*)\[(?:To be created|to be filled)\]", re.MULTILINE
+                r"((?:\*\*)?(?:GitHub Issue URL|URL)(?:\*\*)?:\s*)\[(?:To be created|to be filled)\]",
+                re.MULTILINE,
             )
 
             # Also handle bullet format
             url_bullet_pattern = re.compile(
-                r"(^-\s*(?:URL|GitHub Issue URL):\s*)\[(?:To be created|to be filled)\]", re.MULTILINE
+                r"(^-\s*(?:URL|GitHub Issue URL):\s*)\[(?:To be created|to be filled)\]",
+                re.MULTILINE,
             )
 
             # Search from the issue section onwards
@@ -583,7 +604,10 @@ def print_dry_run_summary(issues: List[Issue], stats: Statistics, show_limit: in
 
 
 def create_all_issues(
-    issues: List[Issue], creator: IssueCreator, state_manager: StateManager, dry_run: bool = False
+    issues: List[Issue],
+    creator: IssueCreator,
+    state_manager: StateManager,
+    dry_run: bool = False,
 ) -> Tuple[int, int]:
     """Create all issues and track progress"""
 
@@ -633,7 +657,11 @@ def create_all_issues(
 
 
 def create_all_issues_concurrent(
-    issues: List[Issue], creator: IssueCreator, state_manager: StateManager, dry_run: bool = False, max_workers: int = 5
+    issues: List[Issue],
+    creator: IssueCreator,
+    state_manager: StateManager,
+    dry_run: bool = False,
+    max_workers: int = 5,
 ) -> Tuple[int, int]:
     """Create all issues concurrently using ThreadPoolExecutor"""
 
@@ -679,7 +707,12 @@ def create_all_issues_concurrent(
 
         # Use tqdm if available
         iterator = (
-            tqdm(as_completed(future_to_issue), total=len(to_create), desc="Creating issues", unit="issue")
+            tqdm(
+                as_completed(future_to_issue),
+                total=len(to_create),
+                desc="Creating issues",
+                unit="issue",
+            )
             if HAS_TQDM
             else as_completed(future_to_issue)
         )
@@ -732,7 +765,12 @@ def setup_logging(log_dir: Path) -> logging.Logger:
 def get_repo_name() -> str:
     """Get the GitHub repository name from git remote"""
     try:
-        result = subprocess.run(["git", "remote", "get-url", "origin"], capture_output=True, text=True, check=True)
+        result = subprocess.run(
+            ["git", "remote", "get-url", "origin"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
 
         remote_url = result.stdout.strip()
 
@@ -765,15 +803,27 @@ def main():
         epilog=__doc__,
     )
 
-    parser.add_argument("--dry-run", action="store_true", help="Show what would be done without creating issues")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be done without creating issues",
+    )
 
-    parser.add_argument("--section", type=str, help="Only process a specific section (e.g., 01-foundation)")
+    parser.add_argument(
+        "--section",
+        type=str,
+        help="Only process a specific section (e.g., 01-foundation)",
+    )
 
     parser.add_argument("--file", type=str, help="Process a single github_issue.md file (for testing)")
 
     parser.add_argument("--resume", action="store_true", help="Resume from saved state")
 
-    parser.add_argument("--repo", type=str, help="GitHub repository (default: auto-detect from git remote)")
+    parser.add_argument(
+        "--repo",
+        type=str,
+        help="GitHub repository (default: auto-detect from git remote)",
+    )
 
     parser.add_argument("--no-color", action="store_true", help="Disable colored output")
 

@@ -105,9 +105,18 @@ ANALYSIS_SCHEMA = {
                         "enum": ["P0", "P1", "P2"],
                         "description": "P0=critical/foundation, P1=important, P2=nice-to-have",
                     },
-                    "reasoning": {"type": "string", "description": "Brief explanation of dependency analysis"},
+                    "reasoning": {
+                        "type": "string",
+                        "description": "Brief explanation of dependency analysis",
+                    },
                 },
-                "required": ["issue_number", "depends_on", "blocks", "priority", "reasoning"],
+                "required": [
+                    "issue_number",
+                    "depends_on",
+                    "blocks",
+                    "priority",
+                    "reasoning",
+                ],
             },
         }
     },
@@ -411,7 +420,11 @@ def wait_until(epoch: int) -> None:
                 return
             h, r = divmod(remaining, 3600)
             m, s = divmod(r, 60)
-            print(f"\r[INFO] Rate limit resets in {h:02d}:{m:02d}:{s:02d}", end="", flush=True)
+            print(
+                f"\r[INFO] Rate limit resets in {h:02d}:{m:02d}:{s:02d}",
+                end="",
+                flush=True,
+            )
             time.sleep(1)
     finally:
         signal.signal(signal.SIGINT, old_handler)
@@ -431,7 +444,10 @@ def gh_issue_json(issue: int) -> dict:
 
         if attempt < MAX_RETRIES:
             delay = 2**attempt
-            log("WARN", f"GitHub API error fetching #{issue} (attempt {attempt}/{MAX_RETRIES}): {cp.stderr.strip()}")
+            log(
+                "WARN",
+                f"GitHub API error fetching #{issue} (attempt {attempt}/{MAX_RETRIES}): {cp.stderr.strip()}",
+            )
             log("INFO", f"Retrying in {delay}s...")
             time.sleep(delay)
         else:
@@ -456,7 +472,15 @@ def delete_dependency_comments(issue: int, comments: list[dict]) -> int:
             continue
 
         log("INFO", f"Deleting existing dependency comment {comment_id} from #{issue}")
-        cp = run(["gh", "api", "-X", "DELETE", f"/repos/{{owner}}/{{repo}}/issues/comments/{comment_id}"])
+        cp = run(
+            [
+                "gh",
+                "api",
+                "-X",
+                "DELETE",
+                f"/repos/{{owner}}/{{repo}}/issues/comments/{comment_id}",
+            ]
+        )
         if cp.returncode == 0:
             deleted += 1
         else:
@@ -657,7 +681,10 @@ class IssueAnalyzer:
                 start_time = time.time()
                 attempt_info = f"attempt {attempt}/{MAX_RETRIES}" if attempt > 1 else ""
                 update_status("Calling", f"Claude {attempt_info}".strip())
-                log("INFO", f"  Calling Claude {self.opts.model} (timeout: {self.opts.timeout}s)...")
+                log(
+                    "INFO",
+                    f"  Calling Claude {self.opts.model} (timeout: {self.opts.timeout}s)...",
+                )
 
                 # Build command
                 cmd = [
@@ -686,7 +713,10 @@ class IssueAnalyzer:
                     )
                 except subprocess.TimeoutExpired:
                     update_status("Timeout", "retrying...")
-                    log("WARN", f"  Claude timed out after {self.opts.timeout}s, retrying...")
+                    log(
+                        "WARN",
+                        f"  Claude timed out after {self.opts.timeout}s, retrying...",
+                    )
                     continue
 
                 # Save log
@@ -704,7 +734,10 @@ class IssueAnalyzer:
 
                 if cp.returncode != 0:
                     update_status("Retrying", f"exit {cp.returncode}")
-                    log("WARN", f"  Claude returned exit code {cp.returncode}, retrying...")
+                    log(
+                        "WARN",
+                        f"  Claude returned exit code {cp.returncode}, retrying...",
+                    )
                     time.sleep(2**attempt)
                     continue
 
@@ -751,7 +784,10 @@ class IssueAnalyzer:
 
                 elapsed = time.time() - start_time
                 update_status("Done", f"{elapsed:.0f}s")
-                log("INFO", f"  Analyzed {len(analysis.get('analyses', []))} issues in {elapsed:.0f}s")
+                log(
+                    "INFO",
+                    f"  Analyzed {len(analysis.get('analyses', []))} issues in {elapsed:.0f}s",
+                )
                 return Result(batch_num, "analyzed")
 
             raise RuntimeError(ERR_CLAUDE_RETRIES)
@@ -789,7 +825,10 @@ class IssueAnalyzer:
                 if deleted > 0:
                     log("INFO", f"  Deleted {deleted} existing dependency comment(s)")
             elif has_dependency_comment(comments):
-                log("INFO", f"  Issue #{issue_num} already has dependency comment, skipping")
+                log(
+                    "INFO",
+                    f"  Issue #{issue_num} already has dependency comment, skipping",
+                )
                 update_status("Skipped", "has comment")
                 return Result(issue_num, "skipped")
 
@@ -897,7 +936,11 @@ class IssueAnalyzer:
         # Sort issues by priority then number
         priority_order = {"P0": 0, "P1": 1, "P2": 2}
         sorted_issues = sorted(
-            self.state.analyses.items(), key=lambda x: (priority_order.get(x[1].get("priority", "P2"), 2), int(x[0]))
+            self.state.analyses.items(),
+            key=lambda x: (
+                priority_order.get(x[1].get("priority", "P2"), 2),
+                int(x[0]),
+            ),
         )
 
         # Build epic body
@@ -921,7 +964,11 @@ class IssueAnalyzer:
             priority = analysis.get("priority", "P2")
             if priority != current_priority:
                 current_priority = priority
-                priority_labels = {"P0": "Foundation", "P1": "Important", "P2": "Nice-to-have"}
+                priority_labels = {
+                    "P0": "Foundation",
+                    "P1": "Important",
+                    "P2": "Nice-to-have",
+                }
                 body_parts.append(f"### {priority}: {priority_labels.get(priority, priority)}")
                 body_parts.append("")
 
@@ -946,11 +993,33 @@ class IssueAnalyzer:
             ("epic", "5319e7", "Epic tracking issue"),
             ("tracking", "0e8a16", "Progress tracking"),
         ]:
-            run(["gh", "label", "create", label, "--color", color, "--description", desc, "--force"])
+            run(
+                [
+                    "gh",
+                    "label",
+                    "create",
+                    label,
+                    "--color",
+                    color,
+                    "--description",
+                    desc,
+                    "--force",
+                ]
+            )
 
         # Create epic
         proc = subprocess.Popen(
-            ["gh", "issue", "create", "--title", epic_title, "--label", "epic,tracking", "--body-file", "-"],
+            [
+                "gh",
+                "issue",
+                "create",
+                "--title",
+                epic_title,
+                "--label",
+                "epic,tracking",
+                "--body-file",
+                "-",
+            ],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -991,15 +1060,37 @@ Examples:
   %(prog)s --analyze --parallel          Parallel batch analysis
 """,
     )
-    p.add_argument("--analyze", action="store_true", help="Analyze batch files to determine dependencies")
-    p.add_argument("--apply", action="store_true", help="Apply dependency comments to GitHub issues")
+    p.add_argument(
+        "--analyze",
+        action="store_true",
+        help="Analyze batch files to determine dependencies",
+    )
+    p.add_argument(
+        "--apply",
+        action="store_true",
+        help="Apply dependency comments to GitHub issues",
+    )
     p.add_argument("--create-epic", action="store_true", help="Create tracking epic issue")
-    p.add_argument("--combine", action="store_true", help="Combine analysis files into dependency graph")
+    p.add_argument(
+        "--combine",
+        action="store_true",
+        help="Combine analysis files into dependency graph",
+    )
     p.add_argument("--dry-run", action="store_true", help="Preview actions without making changes")
-    p.add_argument("--reanalyze", action="store_true", help="Re-analyze batches/issues with existing results")
+    p.add_argument(
+        "--reanalyze",
+        action="store_true",
+        help="Re-analyze batches/issues with existing results",
+    )
     p.add_argument("--cleanup", action="store_true", help="Delete temp directory on completion")
     p.add_argument("--parallel", action="store_true", help="Process batches in parallel")
-    p.add_argument("--max-parallel", type=int, default=4, metavar="N", help="Max concurrent jobs (default: 4)")
+    p.add_argument(
+        "--max-parallel",
+        type=int,
+        default=4,
+        metavar="N",
+        help="Max concurrent jobs (default: 4)",
+    )
     p.add_argument(
         "--timeout",
         type=int,
@@ -1008,13 +1099,29 @@ Examples:
         help=f"Timeout per batch (default: {CLAUDE_TIMEOUT})",
     )
     p.add_argument(
-        "--throttle", type=float, default=1.0, metavar="SEC", help="Seconds between API calls (default: 1.0)"
+        "--throttle",
+        type=float,
+        default=1.0,
+        metavar="SEC",
+        help="Seconds between API calls (default: 1.0)",
     )
     p.add_argument(
-        "--model", default="haiku", choices=["haiku", "sonnet", "opus"], help="Claude model (default: haiku)"
+        "--model",
+        default="haiku",
+        choices=["haiku", "sonnet", "opus"],
+        help="Claude model (default: haiku)",
     )
-    p.add_argument("--batch-dir", type=pathlib.Path, default=pathlib.Path("/tmp"), help="Directory with batch files")
-    p.add_argument("--state-dir", type=pathlib.Path, help="Directory to persist state (default: tempdir)")
+    p.add_argument(
+        "--batch-dir",
+        type=pathlib.Path,
+        default=pathlib.Path("/tmp"),
+        help="Directory with batch files",
+    )
+    p.add_argument(
+        "--state-dir",
+        type=pathlib.Path,
+        help="Directory to persist state (default: tempdir)",
+    )
     p.add_argument("--json", action="store_true", help="Output results as JSON")
 
     args = p.parse_args()

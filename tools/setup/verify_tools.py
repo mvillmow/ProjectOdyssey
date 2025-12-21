@@ -79,7 +79,12 @@ def check_prerequisites(verbose: bool = False) -> int:
     # Python version
     version = sys.version_info
     python_ok = version.major == 3 and version.minor >= 8
-    check_item("Python", python_ok, f"{version.major}.{version.minor}.{version.micro} (requires 3.8+)", verbose)
+    check_item(
+        "Python",
+        python_ok,
+        f"{version.major}.{version.minor}.{version.micro} (requires 3.8+)",
+        verbose,
+    )
     if not python_ok:
         errors += 1
 

@@ -129,7 +129,10 @@ def create_paper_structure(
     placeholder_files = [
         ("data.mojo", "# TODO: Data loading and preprocessing"),
         ("metrics.mojo", "# TODO: Evaluation metrics"),
-        ("notes/architecture.md", "# Architecture Notes\n\nTODO: Add architecture details"),
+        (
+            "notes/architecture.md",
+            "# Architecture Notes\n\nTODO: Add architecture details",
+        ),
         ("notes/results.md", "# Reproduction Results\n\nTODO: Document results"),
     ]
 
@@ -169,9 +172,23 @@ Example usage:
     parser.add_argument("--authors", required=True, help="Paper authors")
     parser.add_argument("--year", required=True, help="Publication year")
     parser.add_argument("--url", required=True, help="URL to original paper")
-    parser.add_argument("--description", default="TODO: Add paper description", help="Brief paper description")
-    parser.add_argument("--output", type=Path, default=Path("papers"), help="Output directory (default: papers/)")
-    parser.add_argument("--templates", type=Path, default=None, help="Templates directory (default: auto-detect)")
+    parser.add_argument(
+        "--description",
+        default="TODO: Add paper description",
+        help="Brief paper description",
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=Path("papers"),
+        help="Output directory (default: papers/)",
+    )
+    parser.add_argument(
+        "--templates",
+        type=Path,
+        default=None,
+        help="Templates directory (default: auto-detect)",
+    )
 
     args = parser.parse_args()
 
@@ -183,8 +200,14 @@ Example usage:
 
         # Validate templates directory
         if not args.templates.exists():
-            print(f"Error: Templates directory not found: {args.templates}", file=sys.stderr)
-            print("Please specify --templates or ensure templates/ exists.", file=sys.stderr)
+            print(
+                f"Error: Templates directory not found: {args.templates}",
+                file=sys.stderr,
+            )
+            print(
+                "Please specify --templates or ensure templates/ exists.",
+                file=sys.stderr,
+            )
             return 1
 
         # Create paper structure

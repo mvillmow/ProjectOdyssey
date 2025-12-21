@@ -27,7 +27,16 @@ def find_markdown_files(directory: Path, exclude_dirs: Optional[Set[str]] = None
         List of Path objects for markdown files
     """
     if exclude_dirs is None:
-        exclude_dirs = {"node_modules", ".git", "venv", "__pycache__", ".pytest_cache", "dist", "build", ".tox"}
+        exclude_dirs = {
+            "node_modules",
+            ".git",
+            "venv",
+            "__pycache__",
+            ".pytest_cache",
+            "dist",
+            "build",
+            ".tox",
+        }
 
     markdown_files = []
     for md_file in directory.rglob("*.md"):
@@ -168,7 +177,12 @@ def count_markdown_issues(content: str) -> dict:
     Returns:
         Dictionary of issue counts
     """
-    issues = {"multiple_blank_lines": 0, "missing_language_tags": 0, "long_lines": 0, "trailing_whitespace": 0}
+    issues = {
+        "multiple_blank_lines": 0,
+        "missing_language_tags": 0,
+        "long_lines": 0,
+        "trailing_whitespace": 0,
+    }
 
     lines = content.split("\n")
 

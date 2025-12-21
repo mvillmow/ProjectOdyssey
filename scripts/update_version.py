@@ -152,7 +152,11 @@ def main() -> int:
     """
     parser = argparse.ArgumentParser(description="Update ML Odyssey version across all version files")
     parser.add_argument("version", help="New version string (format: MAJOR.MINOR.PATCH, e.g., 0.1.0)")
-    parser.add_argument("--verify-only", action="store_true", help="Only verify version consistency, don't update")
+    parser.add_argument(
+        "--verify-only",
+        action="store_true",
+        help="Only verify version consistency, don't update",
+    )
 
     args = parser.parse_args()
 

@@ -141,15 +141,21 @@ def parse_ci_matrix(workflow_file: Path) -> Dict[str, Dict[str, str]]:
 
     # Also parse separate test jobs (test-configs, test-training, test-benchmarks, test-core-layers, test-example-arithmetic)
     # These are standalone jobs outside the matrix
-    for job_name in ["test-configs", "test-training", "test-benchmarks", "test-core-layers", "test-example-arithmetic"]:
+    for job_name in [
+        "test-configs",
+        "test-training",
+        "test-benchmarks",
+        "test-core-layers",
+        "test-example-arithmetic",
+    ]:
         job = jobs.get(job_name, {})
         if job:
             # Extract the test command from the "Run X tests" step
             steps = job.get("steps", [])
             for step in steps:
                 run_cmd = step.get("run", "")
-                # Parse command like: just ci-test-group tests/configs "test_*.mojo"
-                if "ci-test-group" in run_cmd:
+                # Parse command like: just test-group tests/configs "test_*.mojo"
+                if "test-group" in run_cmd:
                     parts = run_cmd.split()
                     if len(parts) >= 3:
                         path = parts[2]  # tests/configs or tests/shared/training
@@ -214,7 +220,11 @@ def check_coverage(
     return uncovered, coverage_by_group
 
 
-def generate_report(uncovered: Set[Path], test_files: List[Path], coverage_by_group: Dict[str, Set[Path]]) -> str:
+def generate_report(
+    uncovered: Set[Path],
+    test_files: List[Path],
+    coverage_by_group: Dict[str, Set[Path]],
+) -> str:
     """Generate a detailed validation report."""
     report_lines = []
     report_lines.append("## Test Coverage Validation Report")

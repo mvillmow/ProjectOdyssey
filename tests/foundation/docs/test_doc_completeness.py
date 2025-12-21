@@ -660,11 +660,13 @@ The context manager ensures proper cleanup.
         # Create content with required sections
         sections = []
         for i in range(min_sections):
-            sections.append(f"""## Section {i + 1}
+            sections.append(
+                f"""## Section {i + 1}
 
 Content for section {i + 1} with sufficient detail to be useful.
 This section provides information about a specific aspect of the topic.
-""")
+"""
+            )
 
         content = f"# {doc_path.stem.title()}\n\nIntroduction text.\n\n" + "\n".join(sections)
         if not doc_path.exists():

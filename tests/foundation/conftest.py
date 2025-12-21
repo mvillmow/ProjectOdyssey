@@ -138,7 +138,16 @@ def expected_template_structure() -> Dict[str, List[str]]:
         Dictionary mapping directory paths to expected contents
     """
     return {
-        "root": ["README.md", "src", "scripts", "tests", "data", "configs", "notebooks", "examples"],
+        "root": [
+            "README.md",
+            "src",
+            "scripts",
+            "tests",
+            "data",
+            "configs",
+            "notebooks",
+            "examples",
+        ],
         "src": ["__init__.mojo", ".gitkeep"],
         "scripts": [".gitkeep"],
         "tests": ["__init__.mojo", ".gitkeep"],

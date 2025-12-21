@@ -48,7 +48,14 @@ OPTIONAL_FIELDS = {
 }
 
 # Valid model names
-VALID_MODELS = {"sonnet", "opus", "haiku", "claude-3-5-sonnet", "claude-3-opus", "claude-3-haiku"}
+VALID_MODELS = {
+    "sonnet",
+    "opus",
+    "haiku",
+    "claude-3-5-sonnet",
+    "claude-3-opus",
+    "claude-3-haiku",
+}
 
 
 def validate_field_type(field_name: str, value: Any, expected_type: type) -> Optional[str]:
@@ -183,7 +190,12 @@ Examples:
     python scripts/agents/check_frontmatter.py --verbose
         """,
     )
-    parser.add_argument("--verbose", "-v", action="store_true", help="Show verbose output including warnings")
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        action="store_true",
+        help="Show verbose output including warnings",
+    )
     parser.add_argument(
         "--agents-dir",
         type=Path,

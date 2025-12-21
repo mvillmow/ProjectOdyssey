@@ -41,7 +41,13 @@ CIFAR10_URL = "https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz"
 CIFAR10_MD5 = "c58f30108f718f92721af3b95e74349a"
 
 # CIFAR-10 structure
-TRAIN_BATCHES = ["data_batch_1", "data_batch_2", "data_batch_3", "data_batch_4", "data_batch_5"]
+TRAIN_BATCHES = [
+    "data_batch_1",
+    "data_batch_2",
+    "data_batch_3",
+    "data_batch_4",
+    "data_batch_5",
+]
 TEST_BATCH = "test_batch"
 
 

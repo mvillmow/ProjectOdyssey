@@ -166,7 +166,13 @@ class IntegrationTester:
         """Check if agent supports parallel execution."""
         content_lower = content.lower()
 
-        parallel_indicators = ["parallel", "concurrent", "simultaneously", "independent", "can run in parallel"]
+        parallel_indicators = [
+            "parallel",
+            "concurrent",
+            "simultaneously",
+            "independent",
+            "can run in parallel",
+        ]
 
         return any(indicator in content_lower for indicator in parallel_indicators)
 
@@ -174,7 +180,13 @@ class IntegrationTester:
         """Check if agent mentions worktree compatibility."""
         content_lower = content.lower()
 
-        worktree_indicators = ["worktree", "git worktree", "separate worktree", "issue-specific", "per-issue"]
+        worktree_indicators = [
+            "worktree",
+            "git worktree",
+            "separate worktree",
+            "issue-specific",
+            "per-issue",
+        ]
 
         return any(indicator in content_lower for indicator in worktree_indicators)
 

@@ -90,7 +90,9 @@ def get_os_info() -> str:
 
 
 def get_tool_info(
-    tool_name: str, version_flag: str = "--version", version_extract: Optional[callable] = None
+    tool_name: str,
+    version_flag: str = "--version",
+    version_extract: Optional[callable] = None,
 ) -> Tuple[str, str]:
     """
     Get version and path information for a tool.

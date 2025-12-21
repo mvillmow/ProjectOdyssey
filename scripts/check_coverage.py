@@ -117,10 +117,16 @@ def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(description="Check test coverage against threshold")
     parser.add_argument(
-        "--threshold", type=float, default=90.0, help="Minimum required coverage percentage (default: 90.0)"
+        "--threshold",
+        type=float,
+        default=90.0,
+        help="Minimum required coverage percentage (default: 90.0)",
     )
     parser.add_argument(
-        "--path", type=str, default="shared/", help="Path to source code being tested (default: shared/)"
+        "--path",
+        type=str,
+        default="shared/",
+        help="Path to source code being tested (default: shared/)",
     )
     parser.add_argument(
         "--coverage-file",

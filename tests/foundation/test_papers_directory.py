@@ -189,7 +189,11 @@ class TestPapersDirectoryEdgeCases:
             papers_dir: Expected papers directory path
         """
         # Arrange: Mock mkdir to raise PermissionError
-        with patch.object(Path, "mkdir", side_effect=PermissionError("Permission denied: cannot create directory")):
+        with patch.object(
+            Path,
+            "mkdir",
+            side_effect=PermissionError("Permission denied: cannot create directory"),
+        ):
             # Act & Assert: Attempting to create directory should raise PermissionError
             with pytest.raises(PermissionError) as exc_info:
                 papers_dir.mkdir(parents=True, exist_ok=True)
@@ -320,7 +324,11 @@ class TestPapersDirectoryIntegration:
         assert len(contents) == 3, "papers/ should contain 3 items"
 
         content_names = {item.name for item in contents}
-        assert content_names == {"lenet5", "alexnet", "README.md"}, "Directory should contain expected items"
+        assert content_names == {
+            "lenet5",
+            "alexnet",
+            "README.md",
+        }, "Directory should contain expected items"
 
 
 class TestPapersDirectoryRealWorld:

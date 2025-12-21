@@ -26,7 +26,12 @@ class DeprecatedPattern:
     """Represents a deprecated Mojo syntax pattern."""
 
     def __init__(
-        self, name: str, pattern: str, suggestion: str, context_lines: int = 2, in_code_blocks_only: bool = True
+        self,
+        name: str,
+        pattern: str,
+        suggestion: str,
+        context_lines: int = 2,
+        in_code_blocks_only: bool = True,
     ):
         self.name = name
         self.pattern = re.compile(pattern, re.MULTILINE)
@@ -53,7 +58,9 @@ DEPRECATED_PATTERNS = [
         suggestion="Use `@fieldwise_init` with traits instead of `@value`",
     ),
     DeprecatedPattern(
-        name="DynamicVector usage", pattern=r"\bDynamicVector\b", suggestion="Use `List` instead of `DynamicVector`"
+        name="DynamicVector usage",
+        pattern=r"\bDynamicVector\b",
+        suggestion="Use `List` instead of `DynamicVector`",
     ),
     DeprecatedPattern(
         name="Tuple return syntax",

@@ -224,7 +224,14 @@ class DirectoryGenerator:
 
         # Stage 2: Generate files from templates
         try:
-            self._generate_files(paper_path, normalized_name, paper_metadata, templates_dir, result, dry_run)
+            self._generate_files(
+                paper_path,
+                normalized_name,
+                paper_metadata,
+                templates_dir,
+                result,
+                dry_run,
+            )
         except Exception as e:
             result.success = False
             result.errors.append((paper_path, f"File generation failed: {e}"))
@@ -377,18 +384,37 @@ Examples:
     )
 
     parser.add_argument(
-        "--paper", required=False, default=None, help="Paper name (will be normalized to lowercase-with-hyphens)"
+        "--paper",
+        required=False,
+        default=None,
+        help="Paper name (will be normalized to lowercase-with-hyphens)",
     )
-    parser.add_argument("--interactive", action="store_true", help="Force interactive mode (prompt for all metadata)")
+    parser.add_argument(
+        "--interactive",
+        action="store_true",
+        help="Force interactive mode (prompt for all metadata)",
+    )
     parser.add_argument("--title", default="TODO: Add paper title", help="Full paper title")
     parser.add_argument("--authors", default="TODO: Add authors", help="Paper authors")
     parser.add_argument("--year", default="TODO", help="Publication year")
     parser.add_argument("--url", default="TODO: Add paper URL", help="URL to original paper")
     parser.add_argument("--description", default="TODO: Add description", help="Brief paper description")
-    parser.add_argument("--output", type=Path, default=Path("papers"), help="Output directory (default: papers/)")
-    parser.add_argument("--templates", type=Path, default=None, help="Templates directory (default: auto-detect)")
     parser.add_argument(
-        "--dry-run", action="store_true", help="Show what would be created without actually creating it"
+        "--output",
+        type=Path,
+        default=Path("papers"),
+        help="Output directory (default: papers/)",
+    )
+    parser.add_argument(
+        "--templates",
+        type=Path,
+        default=None,
+        help="Templates directory (default: auto-detect)",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be created without actually creating it",
     )
     parser.add_argument("--no-validate", action="store_true", help="Skip validation after generation")
     parser.add_argument("--quiet", action="store_true", help="Suppress progress output")
