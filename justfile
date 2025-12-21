@@ -608,15 +608,6 @@ ci-package:
     echo "Packaging shared library with strict analysis..."
     pixi run mojo package $STRICT -I "$REPO_ROOT" shared -o build/ProjectOdyssey-shared.mojopkg
 
-# CI: Compile/validate shared package (no output kept)
-ci-compile:
-    #!/usr/bin/env bash
-    set -e
-    REPO_ROOT="$(pwd)"
-    STRICT="--validate-doc-strings"
-    echo "Compiling shared package for validation..."
-    pixi run mojo package $STRICT -I "$REPO_ROOT" shared -o /tmp/shared.mojopkg
-
 # CI: Run all Mojo tests
 ci-test-mojo:
     #!/usr/bin/env bash
@@ -648,11 +639,6 @@ ci-validate:
     @just ci-test-mojo
     @echo "✅ CI validation complete"
 
-# CI: Lint all files
-ci-lint:
-    @echo "Running linters..."
-    @pre-commit run --all-files
-
 # ==============================================================================
 # Utility
 # ==============================================================================
@@ -676,7 +662,7 @@ help:
     @echo "Docker:    docker-up, docker-down, docker-shell, docker-logs"
     @echo "Dev:       dev, shell, docs, docs-serve"
     @echo "CI:        ci, ci-full, pre-commit, validate"
-    @echo "CI (GHA):  ci-build, ci-package, ci-compile, ci-test-group, ci-test-mojo, ci-validate"
+    @echo "CI (GHA):  ci-build, ci-package, ci-test-group, ci-test-mojo, ci-validate"
     @echo "Utility:   help, status, clean, version"
     @echo ""
     @echo "Examples:"
