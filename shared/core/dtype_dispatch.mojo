@@ -862,9 +862,9 @@ fn _gelu_impl[
     """
     from math import exp, erf, tanh as math_tanh
 
-    alias SQRT_2_OVER_PI = 0.7978845608028654
-    alias GELU_COEFF = 0.044715
-    alias SQRT_2 = 1.4142135623730951
+    comptime SQRT_2_OVER_PI = 0.7978845608028654
+    comptime GELU_COEFF = 0.044715
+    comptime SQRT_2 = 1.4142135623730951
 
     var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
     var out_ptr = result._data.bitcast[Scalar[dtype]]()
@@ -960,10 +960,10 @@ fn _gelu_backward_impl[
     """
     from math import exp, erf, tanh as math_tanh
 
-    alias SQRT_2 = 1.4142135623730951
-    alias SQRT_2_OVER_PI = 0.7978845608028654
-    alias GELU_COEFF = 0.044715
-    alias INV_SQRT_2PI = 0.3989422804014327
+    comptime SQRT_2 = 1.4142135623730951
+    comptime SQRT_2_OVER_PI = 0.7978845608028654
+    comptime GELU_COEFF = 0.044715
+    comptime INV_SQRT_2PI = 0.3989422804014327
 
     var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
     var x_ptr = x._data.bitcast[Scalar[dtype]]()

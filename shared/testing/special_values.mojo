@@ -62,12 +62,12 @@ from random import seed as random_seed, random_float64
 # Special Test Value Constants
 # ============================================================================
 
-alias SPECIAL_VALUE_ZERO: Float64 = 0.0
-alias SPECIAL_VALUE_HALF: Float64 = 0.5
-alias SPECIAL_VALUE_ONE: Float64 = 1.0
-alias SPECIAL_VALUE_ONE_HALF: Float64 = 1.5
-alias SPECIAL_VALUE_NEG_HALF: Float64 = -0.5
-alias SPECIAL_VALUE_NEG_ONE: Float64 = -1.0
+comptime SPECIAL_VALUE_ZERO: Float64 = 0.0
+comptime SPECIAL_VALUE_HALF: Float64 = 0.5
+comptime SPECIAL_VALUE_ONE: Float64 = 1.0
+comptime SPECIAL_VALUE_ONE_HALF: Float64 = 1.5
+comptime SPECIAL_VALUE_NEG_HALF: Float64 = -0.5
+comptime SPECIAL_VALUE_NEG_ONE: Float64 = -1.0
 
 
 # ============================================================================

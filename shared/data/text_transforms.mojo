@@ -452,5 +452,5 @@ struct RandomSynonymReplacement(Copyable, Movable, TextTransform):
 #         self.transforms.append(transform)
 #
 #
-# # Type alias for more intuitive naming
-# alias TextPipeline = TextCompose
+# # Type comptime for more intuitive naming
+# comptime TextPipeline = TextCompose

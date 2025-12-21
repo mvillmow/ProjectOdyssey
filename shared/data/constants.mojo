@@ -28,21 +28,21 @@ from collections import List
 # CIFAR-10 Format Constants
 # ============================================================================
 
-alias CIFAR10_IMAGE_SIZE: Int = 32
-alias CIFAR10_CHANNELS: Int = 3
-alias CIFAR10_BYTES_PER_IMAGE: Int = 3073
-alias CIFAR10_NUM_CLASSES: Int = 10
+comptime CIFAR10_IMAGE_SIZE: Int = 32
+comptime CIFAR10_CHANNELS: Int = 3
+comptime CIFAR10_BYTES_PER_IMAGE: Int = 3073
+comptime CIFAR10_NUM_CLASSES: Int = 10
 
 
 # ============================================================================
 # CIFAR-100 Format Constants
 # ============================================================================
 
-alias CIFAR100_IMAGE_SIZE: Int = 32
-alias CIFAR100_CHANNELS: Int = 3
-alias CIFAR100_BYTES_PER_IMAGE: Int = 3074
-alias CIFAR100_NUM_CLASSES_FINE: Int = 100
-alias CIFAR100_NUM_CLASSES_COARSE: Int = 20
+comptime CIFAR100_IMAGE_SIZE: Int = 32
+comptime CIFAR100_CHANNELS: Int = 3
+comptime CIFAR100_BYTES_PER_IMAGE: Int = 3074
+comptime CIFAR100_NUM_CLASSES_FINE: Int = 100
+comptime CIFAR100_NUM_CLASSES_COARSE: Int = 20
 
 
 # ============================================================================

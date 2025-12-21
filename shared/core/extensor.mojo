@@ -38,8 +38,8 @@ from utils.numerics import inf as numeric_inf, neg_inf as numeric_neg_inf
 from random import random_float64
 
 # Memory safety constants
-alias MAX_TENSOR_BYTES: Int = 2_000_000_000  # 2 GB max per tensor
-alias WARN_TENSOR_BYTES: Int = 500_000_000  # 500 MB warning threshold
+comptime MAX_TENSOR_BYTES: Int = 2_000_000_000  # 2 GB max per tensor
+comptime WARN_TENSOR_BYTES: Int = 500_000_000  # 500 MB warning threshold
 
 
 struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
@@ -481,7 +481,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
     fn num_elements(self) -> Int:
         """Return the total number of elements in the tensor.
 
-        This is an alias for numel() for API compatibility.
+        This is an comptime for numel() for API compatibility.
 
         Returns:
             The product of all dimension sizes.

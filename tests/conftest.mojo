@@ -11,21 +11,21 @@ from shared.core.extensor import ExTensor, zeros, ones
 # ============================================================================
 
 # Default tolerance for floating-point comparisons
-alias DEFAULT_RTOL = 1e-5
-alias DEFAULT_ATOL = 1e-8
-alias DEFAULT_FLOAT_DTYPE = DType.float32
+comptime DEFAULT_RTOL = 1e-5
+comptime DEFAULT_ATOL = 1e-8
+comptime DEFAULT_FLOAT_DTYPE = DType.float32
 
 # Per-dtype relative tolerances
-alias RTOL_FP32 = 1e-5
-alias RTOL_FP16 = 1e-2
-alias RTOL_BF16 = 1e-1
-alias RTOL_FP8 = 1e-1
+comptime RTOL_FP32 = 1e-5
+comptime RTOL_FP16 = 1e-2
+comptime RTOL_BF16 = 1e-1
+comptime RTOL_FP8 = 1e-1
 
 # Per-dtype absolute tolerances
-alias ATOL_FP32 = 1e-8
-alias ATOL_FP16 = 1e-3
-alias ATOL_BF16 = 1e-2
-alias ATOL_FP8 = 1e-2
+comptime ATOL_FP32 = 1e-8
+comptime ATOL_FP16 = 1e-3
+comptime ATOL_BF16 = 1e-2
+comptime ATOL_FP8 = 1e-2
 
 
 # ============================================================================

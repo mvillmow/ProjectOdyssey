@@ -79,38 +79,38 @@ from collections import List
 # followed by 2x2 max pooling with stride=2 (halving size).
 
 # Input dimensions (CIFAR-10)
-alias INPUT_HEIGHT = 32
-alias INPUT_WIDTH = 32
-alias INPUT_CHANNELS = 3
+comptime INPUT_HEIGHT = 32
+comptime INPUT_WIDTH = 32
+comptime INPUT_CHANNELS = 3
 
 # VGG-16 uses uniform conv parameters: 3x3 kernel, stride=1, padding=1
-alias CONV_KERNEL_SIZE = 3
-alias CONV_STRIDE = 1
-alias CONV_PADDING = 1
+comptime CONV_KERNEL_SIZE = 3
+comptime CONV_STRIDE = 1
+comptime CONV_PADDING = 1
 
 # VGG-16 uses uniform pool parameters: 2x2 kernel, stride=2, padding=0
-alias POOL_KERNEL_SIZE = 2
-alias POOL_STRIDE = 2
-alias POOL_PADDING = 0
+comptime POOL_KERNEL_SIZE = 2
+comptime POOL_STRIDE = 2
+comptime POOL_PADDING = 0
 
 # Block 1 channel sizes
-alias BLOCK1_CHANNELS = 64
+comptime BLOCK1_CHANNELS = 64
 
 # Block 2 channel sizes
-alias BLOCK2_CHANNELS = 128
+comptime BLOCK2_CHANNELS = 128
 
 # Block 3 channel sizes
-alias BLOCK3_CHANNELS = 256
+comptime BLOCK3_CHANNELS = 256
 
 # Block 4 channel sizes
-alias BLOCK4_CHANNELS = 512
+comptime BLOCK4_CHANNELS = 512
 
 # Block 5 channel sizes
-alias BLOCK5_CHANNELS = 512
+comptime BLOCK5_CHANNELS = 512
 
 # Fully connected layer sizes
-alias FC1_OUT_FEATURES = 512
-alias FC2_OUT_FEATURES = 512
+comptime FC1_OUT_FEATURES = 512
+comptime FC2_OUT_FEATURES = 512
 
 
 fn compute_flattened_size() -> Int:

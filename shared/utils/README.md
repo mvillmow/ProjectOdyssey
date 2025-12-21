@@ -107,11 +107,11 @@ struct Logger:
 @fieldwise_init
 struct LogLevel(Copyable, Movable):
     """Log level enumeration."""
-    alias DEBUG = 10
-    alias INFO = 20
-    alias WARNING = 30
-    alias ERROR = 40
-    alias CRITICAL = 50
+    comptime DEBUG = 10
+    comptime INFO = 20
+    comptime WARNING = 30
+    comptime ERROR = 40
+    comptime CRITICAL = 50
 ```text
 
 #### Handlers

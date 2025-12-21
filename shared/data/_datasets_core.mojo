@@ -596,5 +596,5 @@ fn load_emnist_test(
 # ============================================================================
 
 
-# Type alias for backwards compatibility
-alias TensorDataset = ExTensorDataset
+# Type comptime for backwards compatibility
+comptime TensorDataset = ExTensorDataset

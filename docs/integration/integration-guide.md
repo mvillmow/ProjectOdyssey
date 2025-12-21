@@ -240,7 +240,7 @@ fn conv2d_3x3_fixed(
 1. **Edge Detection Kernels:**
 
    ```mojo
-   alias SobelX = FixedTensor[3, 3, DType.float32]
+   comptime SobelX = FixedTensor[3, 3, DType.float32]
    var sobel_x = SobelX()
    sobel_x[0, 0] = -1.0; sobel_x[0, 2] = 1.0
    sobel_x[1, 0] = -2.0; sobel_x[1, 2] = 2.0
@@ -250,7 +250,7 @@ fn conv2d_3x3_fixed(
 2. **BatchNorm Parameters:**
 
    ```mojo
-   alias BatchNormParams = FixedTensor[1, 256, DType.float32]
+   comptime BatchNormParams = FixedTensor[1, 256, DType.float32]
    var gamma = BatchNormParams(1.0)  # All ones
    var beta = BatchNormParams(0.0)   # All zeros
    ```text
@@ -258,7 +258,7 @@ fn conv2d_3x3_fixed(
 3. **Small Weight Matrices:**
 
    ```mojo
-   alias EmbeddingWeights = FixedTensor[512, 128, DType.float32]
+   comptime EmbeddingWeights = FixedTensor[512, 128, DType.float32]
    var embeddings = EmbeddingWeights()
    ```text
 

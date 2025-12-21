@@ -39,7 +39,7 @@ from tests.shared.conftest import BenchmarkStatistics, BenchmarkResult
 
 
 fn test_linear_backward_result_alias() raises:
-    """Test LinearBackwardResult is an alias for GradientTriple."""
+    """Test LinearBackwardResult is an comptime for GradientTriple."""
     print("Testing LinearBackwardResult alias...")
 
     # Create test tensors
@@ -51,7 +51,7 @@ fn test_linear_backward_result_alias() raises:
     var grad_weights = zeros(shape, DType.float32)
     var grad_bias = zeros(shape, DType.float32)
 
-    # Create using alias name
+    # Create using comptime name
     var result: LinearBackwardResult = LinearBackwardResult(
         grad_input^, grad_weights^, grad_bias^
     )
@@ -65,11 +65,11 @@ fn test_linear_backward_result_alias() raises:
     )
     assert_shape(result.grad_bias, shape, "grad_bias should have correct shape")
 
-    print("  ✓ LinearBackwardResult alias works correctly")
+    print("  ✓ LinearBackwardResult comptime works correctly")
 
 
 fn test_conv2d_backward_result_alias() raises:
-    """Test Conv2dBackwardResult is an alias for GradientTriple."""
+    """Test Conv2dBackwardResult is an comptime for GradientTriple."""
     print("Testing Conv2dBackwardResult alias...")
 
     # Create test tensors with 4D shape
@@ -83,7 +83,7 @@ fn test_conv2d_backward_result_alias() raises:
     var grad_weights = zeros(shape, DType.float32)
     var grad_bias = zeros(shape, DType.float32)
 
-    # Create using alias name
+    # Create using comptime name
     var result: Conv2dBackwardResult = Conv2dBackwardResult(
         grad_input^, grad_weights^, grad_bias^
     )
@@ -97,11 +97,11 @@ fn test_conv2d_backward_result_alias() raises:
     )
     assert_shape(result.grad_bias, shape, "grad_bias should have correct shape")
 
-    print("  ✓ Conv2dBackwardResult alias works correctly")
+    print("  ✓ Conv2dBackwardResult comptime works correctly")
 
 
 fn test_conv2d_no_bias_backward_result_alias() raises:
-    """Test Conv2dNoBiasBackwardResult is an alias for GradientPair."""
+    """Test Conv2dNoBiasBackwardResult is an comptime for GradientPair."""
     print("Testing Conv2dNoBiasBackwardResult alias...")
 
     var shape = List[Int]()
@@ -111,7 +111,7 @@ fn test_conv2d_no_bias_backward_result_alias() raises:
     var grad_input = zeros(shape, DType.float32)
     var grad_weights = zeros(shape, DType.float32)
 
-    # Create using alias name
+    # Create using comptime name
     var result: Conv2dNoBiasBackwardResult = Conv2dNoBiasBackwardResult(
         grad_input^, grad_weights^
     )
@@ -120,11 +120,11 @@ fn test_conv2d_no_bias_backward_result_alias() raises:
     assert_shape(result.grad_a, shape, "grad_a should have correct shape")
     assert_shape(result.grad_b, shape, "grad_b should have correct shape")
 
-    print("  ✓ Conv2dNoBiasBackwardResult alias works correctly")
+    print("  ✓ Conv2dNoBiasBackwardResult comptime works correctly")
 
 
 fn test_depthwise_conv2d_backward_result_alias() raises:
-    """Test DepthwiseConv2dBackwardResult is an alias for GradientTriple."""
+    """Test DepthwiseConv2dBackwardResult is an comptime for GradientTriple."""
     print("Testing DepthwiseConv2dBackwardResult alias...")
 
     var shape = List[Int]()
@@ -135,7 +135,7 @@ fn test_depthwise_conv2d_backward_result_alias() raises:
     var grad_weights = zeros(shape, DType.float32)
     var grad_bias = zeros(shape, DType.float32)
 
-    # Create using alias name
+    # Create using comptime name
     var result: DepthwiseConv2dBackwardResult = DepthwiseConv2dBackwardResult(
         grad_input^, grad_weights^, grad_bias^
     )
@@ -149,11 +149,11 @@ fn test_depthwise_conv2d_backward_result_alias() raises:
     )
     assert_shape(result.grad_bias, shape, "grad_bias should have correct shape")
 
-    print("  ✓ DepthwiseConv2dBackwardResult alias works correctly")
+    print("  ✓ DepthwiseConv2dBackwardResult comptime works correctly")
 
 
 fn test_depthwise_separable_conv2d_backward_result_alias() raises:
-    """Test DepthwiseSeparableConv2dBackwardResult is an alias for GradientQuad.
+    """Test DepthwiseSeparableConv2dBackwardResult is an comptime for GradientQuad.
     """
     print("Testing DepthwiseSeparableConv2dBackwardResult alias...")
 
@@ -166,7 +166,7 @@ fn test_depthwise_separable_conv2d_backward_result_alias() raises:
     var grad_c = zeros(shape, DType.float32)
     var grad_d = zeros(shape, DType.float32)
 
-    # Create using alias name
+    # Create using comptime name
     var result: DepthwiseSeparableConv2dBackwardResult = (
         DepthwiseSeparableConv2dBackwardResult(
             grad_a^, grad_b^, grad_c^, grad_d^
@@ -179,7 +179,7 @@ fn test_depthwise_separable_conv2d_backward_result_alias() raises:
     assert_shape(result.grad_c, shape, "grad_c should have correct shape")
     assert_shape(result.grad_d, shape, "grad_d should have correct shape")
 
-    print("  ✓ DepthwiseSeparableConv2dBackwardResult alias works correctly")
+    print("  ✓ DepthwiseSeparableConv2dBackwardResult comptime works correctly")
 
 
 # ============================================================================
@@ -188,7 +188,7 @@ fn test_depthwise_separable_conv2d_backward_result_alias() raises:
 
 
 fn test_linear_no_bias_backward_result_alias() raises:
-    """Test LinearNoBiasBackwardResult is an alias for GradientPair."""
+    """Test LinearNoBiasBackwardResult is an comptime for GradientPair."""
     print("Testing LinearNoBiasBackwardResult alias...")
 
     var shape = List[Int]()
@@ -198,7 +198,7 @@ fn test_linear_no_bias_backward_result_alias() raises:
     var grad_input = zeros(shape, DType.float32)
     var grad_weights = zeros(shape, DType.float32)
 
-    # Create using alias name
+    # Create using comptime name
     var result: LinearNoBiasBackwardResult = LinearNoBiasBackwardResult(
         grad_input^, grad_weights^
     )
@@ -207,7 +207,7 @@ fn test_linear_no_bias_backward_result_alias() raises:
     assert_shape(result.grad_a, shape, "grad_a should have correct shape")
     assert_shape(result.grad_b, shape, "grad_b should have correct shape")
 
-    print("  ✓ LinearNoBiasBackwardResult alias works correctly")
+    print("  ✓ LinearNoBiasBackwardResult comptime works correctly")
 
 
 # ============================================================================
@@ -216,10 +216,10 @@ fn test_linear_no_bias_backward_result_alias() raises:
 
 
 fn test_benchmark_statistics_alias() raises:
-    """Test BenchmarkStatistics is an alias for BenchmarkResult."""
+    """Test BenchmarkStatistics is an comptime for BenchmarkResult."""
     print("Testing BenchmarkStatistics alias...")
 
-    # Create using alias name
+    # Create using comptime name
     var bench: BenchmarkStatistics = BenchmarkStatistics(
         "test_bench", 10.5, 100.0, 5.0
     )
@@ -231,9 +231,9 @@ fn test_benchmark_statistics_alias() raises:
     assert_equal(bench.memory_mb, 5.0, "Memory should be stored")
 
     # BenchmarkStatistics IS BenchmarkResult (alias), so bench is already a BenchmarkResult
-    # No need to assign to another variable - the alias just means the type is the same
+    # No need to assign to another variable - the comptime just means the type is the same
 
-    print("  ✓ BenchmarkStatistics alias works correctly")
+    print("  ✓ BenchmarkStatistics comptime works correctly")
 
 
 # ============================================================================
@@ -258,7 +258,7 @@ fn test_alias_interoperability() raises:
         grad_input^, grad_weights^, grad_bias^
     )
 
-    # Since LinearBackwardResult is an alias for GradientTriple, the type IS the same
+    # Since LinearBackwardResult is an comptime for GradientTriple, the type IS the same
     # No assignment needed - just verify the triple works
     # Access fields through GradientTriple (same as LinearBackwardResult)
     assert_shape(triple.grad_input, shape, "grad_input should be accessible")
@@ -276,7 +276,7 @@ fn test_alias_interoperability() raises:
 
 
 fn main() raises:
-    """Run all backward compatibility alias tests."""
+    """Run all backward compatibility comptime tests."""
     print("\n=== Backward Compatibility Alias Tests ===\n")
 
     test_linear_backward_result_alias()
@@ -288,4 +288,4 @@ fn main() raises:
     test_benchmark_statistics_alias()
     test_alias_interoperability()
 
-    print("\n✓ All 8 backward compatibility alias tests passed\n")
+    print("\n✓ All 8 backward compatibility comptime tests passed\n")

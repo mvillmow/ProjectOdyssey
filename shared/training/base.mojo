@@ -39,8 +39,8 @@ struct CallbackSignal(Copyable, ImplicitlyCopyable, Movable):
 
 
 # Callback signal constants
-alias CONTINUE = CallbackSignal(0)
-alias STOP = CallbackSignal(1)
+comptime CONTINUE = CallbackSignal(0)
+comptime STOP = CallbackSignal(1)
 
 
 struct TrainingState(Copyable, Movable):

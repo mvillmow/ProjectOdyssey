@@ -29,8 +29,8 @@ from shared.data.generic_transforms import (
     AnyTransform,
 )
 
-# Type alias for test convenience
-alias Tensor = ExTensor
+# Type comptime for test convenience
+comptime Tensor = ExTensor
 
 
 # ============================================================================

@@ -642,7 +642,7 @@ fn divide_backward(
     Note:
         Uses epsilon = 1e-10 to prevent division by zero in b².
     """
-    alias EPSILON = 1e-10
+    comptime EPSILON = 1e-10
 
     # grad_a = grad_output / b (then reduce for broadcasting)
     var grad_a_unreduced = divide(grad_output, b)

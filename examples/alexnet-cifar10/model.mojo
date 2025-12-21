@@ -45,58 +45,58 @@ from collections import List
 # Change these values to experiment with different model sizes.
 
 # Input dimensions (CIFAR-10)
-alias INPUT_HEIGHT = 32
-alias INPUT_WIDTH = 32
-alias INPUT_CHANNELS = 3
+comptime INPUT_HEIGHT = 32
+comptime INPUT_WIDTH = 32
+comptime INPUT_CHANNELS = 3
 
 # Conv layer 1 hyperparameters
-alias CONV1_OUT_CHANNELS = 96
-alias CONV1_KERNEL_SIZE = 11
-alias CONV1_STRIDE = 4
-alias CONV1_PADDING = 2
+comptime CONV1_OUT_CHANNELS = 96
+comptime CONV1_KERNEL_SIZE = 11
+comptime CONV1_STRIDE = 4
+comptime CONV1_PADDING = 2
 
 # Pool layer 1 hyperparameters
-alias POOL1_KERNEL_SIZE = 3
-alias POOL1_STRIDE = 2
-alias POOL1_PADDING = 0
+comptime POOL1_KERNEL_SIZE = 3
+comptime POOL1_STRIDE = 2
+comptime POOL1_PADDING = 0
 
 # Conv layer 2 hyperparameters
-alias CONV2_OUT_CHANNELS = 256
-alias CONV2_KERNEL_SIZE = 5
-alias CONV2_STRIDE = 1
-alias CONV2_PADDING = 2
+comptime CONV2_OUT_CHANNELS = 256
+comptime CONV2_KERNEL_SIZE = 5
+comptime CONV2_STRIDE = 1
+comptime CONV2_PADDING = 2
 
 # Pool layer 2 hyperparameters
-alias POOL2_KERNEL_SIZE = 3
-alias POOL2_STRIDE = 2
-alias POOL2_PADDING = 0
+comptime POOL2_KERNEL_SIZE = 3
+comptime POOL2_STRIDE = 2
+comptime POOL2_PADDING = 0
 
 # Conv layer 3 hyperparameters
-alias CONV3_OUT_CHANNELS = 384
-alias CONV3_KERNEL_SIZE = 3
-alias CONV3_STRIDE = 1
-alias CONV3_PADDING = 1
+comptime CONV3_OUT_CHANNELS = 384
+comptime CONV3_KERNEL_SIZE = 3
+comptime CONV3_STRIDE = 1
+comptime CONV3_PADDING = 1
 
 # Conv layer 4 hyperparameters
-alias CONV4_OUT_CHANNELS = 384
-alias CONV4_KERNEL_SIZE = 3
-alias CONV4_STRIDE = 1
-alias CONV4_PADDING = 1
+comptime CONV4_OUT_CHANNELS = 384
+comptime CONV4_KERNEL_SIZE = 3
+comptime CONV4_STRIDE = 1
+comptime CONV4_PADDING = 1
 
 # Conv layer 5 hyperparameters
-alias CONV5_OUT_CHANNELS = 256
-alias CONV5_KERNEL_SIZE = 3
-alias CONV5_STRIDE = 1
-alias CONV5_PADDING = 1
+comptime CONV5_OUT_CHANNELS = 256
+comptime CONV5_KERNEL_SIZE = 3
+comptime CONV5_STRIDE = 1
+comptime CONV5_PADDING = 1
 
 # Pool layer 3 hyperparameters
-alias POOL3_KERNEL_SIZE = 3
-alias POOL3_STRIDE = 2
-alias POOL3_PADDING = 0
+comptime POOL3_KERNEL_SIZE = 3
+comptime POOL3_STRIDE = 2
+comptime POOL3_PADDING = 0
 
 # Fully connected layer sizes
-alias FC1_OUT_FEATURES = 4096
-alias FC2_OUT_FEATURES = 4096
+comptime FC1_OUT_FEATURES = 4096
+comptime FC2_OUT_FEATURES = 4096
 
 
 fn compute_flattened_size() -> Int:

@@ -21,7 +21,7 @@ Parallelize tensor and array operations using SIMD.
 ```mojo
 from sys.info import simdwidthof
 
-alias width = simdwidthof[DType.float32]()
+comptime width = simdwidthof[DType.float32]()
 
 # SIMD vector add
 for i in range(0, size, width):

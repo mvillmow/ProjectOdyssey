@@ -489,7 +489,7 @@ fn test_random_synonym_replacement_deterministic() raises:
 #
 # @skip("Issue #2086 - Mojo trait storage limitation prevents List[TextTransform]")
 # fn test_text_pipeline_alias()() raises:
-#     """Test TextPipeline alias works correctly."""
+#     """Test TextPipeline comptime works correctly."""
 #     var text = String("the quick fox")
 #
 #     var transforms : List[TextTransform] = []

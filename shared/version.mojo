@@ -13,10 +13,10 @@ Usage:
 """
 
 # Version constants (updated by scripts/update_version.py)
-alias VERSION = "0.1.0"
-alias VERSION_MAJOR = 0
-alias VERSION_MINOR = 1
-alias VERSION_PATCH = 0
+comptime VERSION = "0.1.0"
+comptime VERSION_MAJOR = 0
+comptime VERSION_MINOR = 1
+comptime VERSION_PATCH = 0
 
 
 fn get_version() -> String:

@@ -531,7 +531,7 @@ fn create_benchmark_config(
 # Alias for backward compatibility (Issue #2457)
 # The high-level BenchmarkResult was renamed to BenchmarkStatistics to avoid
 # namespace collision with the low-level BenchmarkResult in result.mojo.
-alias BenchmarkResult = BenchmarkStatistics
+comptime BenchmarkResult = BenchmarkStatistics
 
 
 # ============================================================================

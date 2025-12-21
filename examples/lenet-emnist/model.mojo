@@ -42,35 +42,35 @@ from collections import List
 # Change these values to experiment with different model sizes.
 
 # Input dimensions
-alias INPUT_HEIGHT = 28
-alias INPUT_WIDTH = 28
-alias INPUT_CHANNELS = 1
+comptime INPUT_HEIGHT = 28
+comptime INPUT_WIDTH = 28
+comptime INPUT_CHANNELS = 1
 
 # Conv layer 1 hyperparameters
-alias CONV1_OUT_CHANNELS = 6
-alias CONV1_KERNEL_SIZE = 5
-alias CONV1_STRIDE = 1
-alias CONV1_PADDING = 0
+comptime CONV1_OUT_CHANNELS = 6
+comptime CONV1_KERNEL_SIZE = 5
+comptime CONV1_STRIDE = 1
+comptime CONV1_PADDING = 0
 
 # Pool layer 1 hyperparameters
-alias POOL1_KERNEL_SIZE = 2
-alias POOL1_STRIDE = 2
-alias POOL1_PADDING = 0
+comptime POOL1_KERNEL_SIZE = 2
+comptime POOL1_STRIDE = 2
+comptime POOL1_PADDING = 0
 
 # Conv layer 2 hyperparameters
-alias CONV2_OUT_CHANNELS = 16
-alias CONV2_KERNEL_SIZE = 5
-alias CONV2_STRIDE = 1
-alias CONV2_PADDING = 0
+comptime CONV2_OUT_CHANNELS = 16
+comptime CONV2_KERNEL_SIZE = 5
+comptime CONV2_STRIDE = 1
+comptime CONV2_PADDING = 0
 
 # Pool layer 2 hyperparameters
-alias POOL2_KERNEL_SIZE = 2
-alias POOL2_STRIDE = 2
-alias POOL2_PADDING = 0
+comptime POOL2_KERNEL_SIZE = 2
+comptime POOL2_STRIDE = 2
+comptime POOL2_PADDING = 0
 
 # Fully connected layer sizes
-alias FC1_OUT_FEATURES = 120
-alias FC2_OUT_FEATURES = 84
+comptime FC1_OUT_FEATURES = 120
+comptime FC2_OUT_FEATURES = 84
 
 
 fn compute_flattened_size() -> Int:

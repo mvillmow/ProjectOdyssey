@@ -140,12 +140,12 @@ fn scaled_dot_product_attention_masked(
     return output
 
 
-# Type alias for scaled dot-product attention backward results
+# Type comptime for scaled dot-product attention backward results
 # Maps to GradientTriple with field name mapping:
 #   grad_input  -> grad_query  (query gradient)
 #   grad_weights -> grad_key    (key gradient)
 #   grad_bias  -> grad_value   (value gradient)
-alias ScaledDotProductAttentionBackwardResult = GradientTriple
+comptime ScaledDotProductAttentionBackwardResult = GradientTriple
 
 
 fn scaled_dot_product_attention_backward(

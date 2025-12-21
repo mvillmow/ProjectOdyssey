@@ -348,7 +348,7 @@ struct Conv2D:
         inout output: Tensor[DType.float32]
     ):
         """SIMD-optimized kernel application."""
-        alias simd_width = simdwidthof[DType.float32]()
+        comptime simd_width = simdwidthof[DType.float32]()
 
         # Vectorized convolution over spatial dimensions
         @parameter
