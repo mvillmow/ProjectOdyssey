@@ -904,7 +904,7 @@ just format                # Format all files
 # CI-specific commands (match GitHub Actions)
 just ci-validate           # Full CI validation (build + test)
 just build              # Build shared package
-just ci-compile            # Compile package (validation only)
+just ci-package           # Compile package (validation only)
 just ci-test-mojo          # Run all Mojo tests
 just test-group PATH PATTERN  # Run specific test group
 just pre-commit               # Run pre-commit hooks
