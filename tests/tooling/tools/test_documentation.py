@@ -16,7 +16,6 @@ from pathlib import Path
 from typing import Dict
 
 
-
 class TestMainReadmeDocumentation:
     """Test cases for main tools/README.md documentation."""
 

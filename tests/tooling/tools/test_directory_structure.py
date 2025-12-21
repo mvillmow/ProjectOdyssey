@@ -17,7 +17,6 @@ from pathlib import Path
 from typing import Dict
 
 
-
 class TestToolsDirectoryCreation:
     """Test cases for validating tools/ directory structure."""
 

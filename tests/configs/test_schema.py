@@ -198,10 +198,9 @@ def test_training_schema_requires_optimizer():
 
     Verifies required fields are enforced by schema.
     """
-    schema = load_yaml_file("configs/schemas/training.schema.yaml")
+    load_yaml_file("configs/schemas/training.schema.yaml")
 
     # Config missing optimizer should fail
-    invalid_config = {"training": {"epochs": 100, "batch_size": 32}}
 
     # Should raise ValidationError for missing optimizer
     # Exact behavior depends on schema design
@@ -328,7 +327,7 @@ def test_complex_config_validates():
     Verifies schema handles nested structures correctly.
     """
     # Load appropriate schema based on config content
-    config = load_yaml_file("tests/configs/fixtures/complex.yaml")
+    load_yaml_file("tests/configs/fixtures/complex.yaml")
 
     # Complex config may require multiple schemas
     # This test validates it can be validated

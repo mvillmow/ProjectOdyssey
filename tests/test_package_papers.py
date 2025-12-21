@@ -9,7 +9,6 @@ import tarfile
 from pathlib import Path
 
 
-
 def test_package_papers_creates_tarball(tmp_path):
     """Test that the packaging script creates a valid tarball."""
     # Import the module

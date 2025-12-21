@@ -17,7 +17,6 @@ import stat
 from pathlib import Path
 
 
-
 class TestPapersDirectoryStructure:
     """Test cases for papers/ directory structure."""
 

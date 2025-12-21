@@ -19,6 +19,7 @@ else:
 
 PROJECT_ROOT = Path.cwd()
 
+
 # -------------------------------
 # Helper to run the hook
 # -------------------------------
@@ -28,28 +29,23 @@ def run_hook(cmd: str) -> bool:
 
     Returns True if allowed, False if blocked.
     """
-    payload = {
-        "tool": "bash",
-        "input": {
-            "command": cmd,
-            "cwd": str(PROJECT_ROOT)
-        }
-    }
+    payload = {"tool": "bash", "input": {"command": cmd, "cwd": str(PROJECT_ROOT)}}
     proc = subprocess.run(
         [sys.executable, str(HOOK_SCRIPT)],
         input=json.dumps(payload).encode(),
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        stderr=subprocess.PIPE,
     )
     if proc.returncode == 0:
         return True
     else:
         # Optionally parse block reason
         try:
-            reason = json.loads(proc.stdout.decode()).get("reason", "")
+            json.loads(proc.stdout.decode()).get("reason", "")
         except json.JSONDecodeError:
-            reason = ""
+            pass
         return False
+
 
 # -------------------------------
 # Original dangerous commands
@@ -87,7 +83,7 @@ dangerous_commands = [
     "rsync -av --delete src/ dst/",
     "echo $(ls)",
     "echo `ls`",
-    "echo ${PATH}"
+    "echo ${PATH}",
 ]
 
 # -------------------------------
@@ -103,7 +99,7 @@ safe_commands = [
     "mkdir -p ./tmp && touch ./tmp/file",
     "echo foo | tee ./tmp/output",
     "cp README.md ./tmp/",
-    f"rm -rf {PROJECT_ROOT}/build" if (PROJECT_ROOT / "build").exists() else None
+    f"rm -rf {PROJECT_ROOT}/build" if (PROJECT_ROOT / "build").exists() else None,
 ]
 safe_commands = [c for c in safe_commands if c is not None]
 
@@ -117,7 +113,7 @@ complex_dangerous_commands = [
     "echo ./foo | xargs rm",
     "cat list.txt | xargs rm -f",
     "ls | grep pattern | xargs rm",
-    "rm \"$HOME/testfile\"",
+    'rm "$HOME/testfile"',
     "rm '~/testfile'",
     "rm ${HOME}/testfile",
     "find ./tmp -name '*.log' -exec rm {} \\;",
@@ -137,8 +133,9 @@ complex_safe_commands = [
     "echo foo | tee ./tmp/output | wc -l",
     "git status && git log --oneline",
     "echo 'hello' > output.txt",
-    "mkdir -p ./build && cp README.md ./build/"
+    "mkdir -p ./build && cp README.md ./build/",
 ]
+
 
 # -------------------------------
 # Parametrized tests
@@ -148,15 +145,18 @@ def test_dangerous_commands_blocked(cmd):
     allowed = run_hook(cmd)
     assert not allowed, f"Dangerous command passed but should be blocked: {cmd}"
 
+
 @pytest.mark.parametrize("cmd", safe_commands)
 def test_safe_commands_allowed(cmd):
     allowed = run_hook(cmd)
     assert allowed, f"Safe command blocked incorrectly: {cmd}"
 
+
 @pytest.mark.parametrize("cmd", complex_dangerous_commands)
 def test_complex_dangerous_commands_blocked(cmd):
     allowed = run_hook(cmd)
     assert not allowed, f"Complex dangerous command passed but should be blocked: {cmd}"
+
 
 @pytest.mark.parametrize("cmd", complex_safe_commands)
 def test_complex_safe_commands_allowed(cmd):

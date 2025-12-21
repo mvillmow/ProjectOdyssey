@@ -19,7 +19,6 @@ from pathlib import Path
 from typing import Dict, List
 
 
-
 def validate_directory_structure(base_path: Path, expected_structure: Dict[str, List[str]]) -> List[str]:
     """
     Validate directory structure against expected layout.

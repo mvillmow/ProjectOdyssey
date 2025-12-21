@@ -17,7 +17,6 @@ import shutil
 from pathlib import Path
 
 
-
 class TestPapersSharedIntegration:
     """Test cases for papers and shared directory integration."""
 

@@ -1,5 +1,6 @@
 import pytest
 
+
 class TestComponentNameIntegration:
     """Integration tests for ComponentName.
 

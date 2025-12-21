@@ -214,7 +214,7 @@ class TestPapersDirectoryEdgeCases:
         papers_dir.mkdir(parents=True, exist_ok=True)
 
         # Act & Assert: Creating again with exist_ok=False should raise error
-        with pytest.raises(FileExistsError) as exc_info:
+        with pytest.raises(FileExistsError):
             papers_dir.mkdir(parents=True, exist_ok=False)
 
         # Verify error is about file existing

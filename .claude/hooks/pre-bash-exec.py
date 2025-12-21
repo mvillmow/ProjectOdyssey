@@ -29,6 +29,7 @@ def block(msg: str):
     print(json.dumps({"action": "block", "reason": msg}))
     sys.exit(EXIT_BLOCK)
 
+
 def validate_path(p: str, project_root: Path, home_dir: Path):
     """
     Validate file paths for destructive commands.
@@ -58,6 +59,7 @@ def validate_path(p: str, project_root: Path, home_dir: Path):
     # New: rm target must exist
     if not p.exists():
         block(f"rm target does not exist: {p}")
+
 
 def split_commands(cmd: str):
     """

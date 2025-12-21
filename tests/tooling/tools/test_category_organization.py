@@ -16,7 +16,6 @@ from pathlib import Path
 from typing import Dict
 
 
-
 class TestCategoryStructure:
     """Test cases for validating tool category structure."""
 
