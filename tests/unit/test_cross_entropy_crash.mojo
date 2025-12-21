@@ -57,7 +57,7 @@ fn test_cross_entropy_small_batch() raises:
         print("Loss value:", loss[0])
     except e:
         print("ERROR:", e)
-        raise e
+        raise e^
 
 
 fn test_cross_entropy_varying_sizes() raises:
@@ -95,7 +95,7 @@ fn test_cross_entropy_varying_sizes() raises:
             print("  SUCCESS: Loss computed")
         except e:
             print("  CRASH:", e)
-            raise e
+            raise e^
 
 
 fn test_cross_entropy_edge_cases() raises:
@@ -116,7 +116,7 @@ fn test_cross_entropy_edge_cases() raises:
         print("  SUCCESS")
     except e:
         print("  CRASH:", e)
-        raise e
+        raise e^
 
     # Test 2: Many samples, few classes
     print("\nTest 3.2: 100 samples, 10 classes")
@@ -134,7 +134,7 @@ fn test_cross_entropy_edge_cases() raises:
         print("  SUCCESS")
     except e:
         print("  CRASH:", e)
-        raise e
+        raise e^
 
 
 fn main() raises:
