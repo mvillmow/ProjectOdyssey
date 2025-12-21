@@ -87,22 +87,22 @@ from shared.autograd.backward_ops import (
 
 
 # Operation types supported by the gradient tape
-alias OP_ADD = "add"
-alias OP_SUBTRACT = "subtract"
-alias OP_MULTIPLY = "multiply"
-alias OP_DIVIDE = "divide"
-alias OP_MATMUL = "matmul"
-alias OP_POWER = "power"
-alias OP_SUM = "sum"
-alias OP_MEAN = "mean"
-alias OP_RELU = "relu"
-alias OP_SIGMOID = "sigmoid"
-alias OP_TANH = "tanh"
-alias OP_SOFTMAX = "softmax"
-alias OP_NEG = "neg"
-alias OP_EXP = "exp"
-alias OP_LOG = "log"
-alias OP_SQRT = "sqrt"
+comptime OP_ADD = "add"
+comptime OP_SUBTRACT = "subtract"
+comptime OP_MULTIPLY = "multiply"
+comptime OP_DIVIDE = "divide"
+comptime OP_MATMUL = "matmul"
+comptime OP_POWER = "power"
+comptime OP_SUM = "sum"
+comptime OP_MEAN = "mean"
+comptime OP_RELU = "relu"
+comptime OP_SIGMOID = "sigmoid"
+comptime OP_TANH = "tanh"
+comptime OP_SOFTMAX = "softmax"
+comptime OP_NEG = "neg"
+comptime OP_EXP = "exp"
+comptime OP_LOG = "log"
+comptime OP_SQRT = "sqrt"
 
 
 struct GradientTape:

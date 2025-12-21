@@ -133,7 +133,7 @@ fn matmul_large_impl() raises:
 # ============================================================================
 
 # Constants
-alias MAX_INT64: Int64 = 9223372036854775807
+comptime MAX_INT64: Int64 = 9223372036854775807
 
 
 struct BenchmarkMetrics:

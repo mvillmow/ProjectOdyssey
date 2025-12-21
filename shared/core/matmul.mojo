@@ -43,16 +43,16 @@ from .extensor import ExTensor, zeros
 # ============================================================================
 
 # Cache blocking parameters (tuned for L1/L2 cache)
-alias BLOCK_M: Int = 64  # Block size in M dimension
-alias BLOCK_N: Int = 64  # Block size in N dimension
-alias BLOCK_K: Int = 64  # Block size in K dimension
+comptime BLOCK_M: Int = 64  # Block size in M dimension
+comptime BLOCK_N: Int = 64  # Block size in N dimension
+comptime BLOCK_K: Int = 64  # Block size in K dimension
 
 # Register blocking parameters (micro-kernel tile sizes)
-alias MICRO_M: Int = 4  # Number of rows in micro-tile
-alias MICRO_N: Int = 16  # Number of columns in micro-tile (must be multiple of SIMD width)
+comptime MICRO_M: Int = 4  # Number of rows in micro-tile
+comptime MICRO_N: Int = 16  # Number of columns in micro-tile (must be multiple of SIMD width)
 
 # Transpose threshold: only transpose B if matrix is large enough to amortize cost
-alias TRANSPOSE_THRESHOLD: Int = 64
+comptime TRANSPOSE_THRESHOLD: Int = 64
 
 
 # ============================================================================
@@ -211,7 +211,7 @@ fn _matmul_simd_float32(
     a: ExTensor, b: ExTensor, mut c: ExTensor, M: Int, K: Int, N: Int
 ) raises:
     """Float32-specific SIMD matmul implementation."""
-    alias simd_width = simd_width_of[DType.float32]()
+    comptime simd_width = simd_width_of[DType.float32]()
 
     var a_ptr = a._data.bitcast[Float32]()
     var b_ptr = b._data.bitcast[Float32]()
@@ -236,7 +236,7 @@ fn _matmul_simd_float64(
     a: ExTensor, b: ExTensor, mut c: ExTensor, M: Int, K: Int, N: Int
 ) raises:
     """Float64-specific SIMD matmul implementation."""
-    alias simd_width = simd_width_of[DType.float64]()
+    comptime simd_width = simd_width_of[DType.float64]()
 
     var a_ptr = a._data.bitcast[Float64]()
     var b_ptr = b._data.bitcast[Float64]()
@@ -325,7 +325,7 @@ fn _matmul_tiled_float32(
     a: ExTensor, b: ExTensor, mut c: ExTensor, M: Int, K: Int, N: Int
 ) raises:
     """Float32-specific cache-blocked SIMD matmul implementation."""
-    alias simd_width = simd_width_of[DType.float32]()
+    comptime simd_width = simd_width_of[DType.float32]()
 
     var a_ptr = a._data.bitcast[Float32]()
     var b_ptr = b._data.bitcast[Float32]()
@@ -363,7 +363,7 @@ fn _matmul_tiled_float64(
     a: ExTensor, b: ExTensor, mut c: ExTensor, M: Int, K: Int, N: Int
 ) raises:
     """Float64-specific cache-blocked SIMD matmul implementation."""
-    alias simd_width = simd_width_of[DType.float64]()
+    comptime simd_width = simd_width_of[DType.float64]()
 
     var a_ptr = a._data.bitcast[Float64]()
     var b_ptr = b._data.bitcast[Float64]()
@@ -484,7 +484,7 @@ fn _transpose_matrix_float32(b: ExTensor, K: Int, N: Int) raises -> ExTensor:
     var bt_ptr = b_t._data.bitcast[Float32]()
 
     # Transpose with blocking for cache efficiency
-    alias TILE = 32
+    comptime TILE = 32
     for i0 in range(0, K, TILE):
         var i1 = min(i0 + TILE, K)
         for j0 in range(0, N, TILE):
@@ -508,7 +508,7 @@ fn _transpose_matrix_float64(b: ExTensor, K: Int, N: Int) raises -> ExTensor:
     var bt_ptr = b_t._data.bitcast[Float64]()
 
     # Transpose with blocking for cache efficiency
-    alias TILE = 32
+    comptime TILE = 32
     for i0 in range(0, K, TILE):
         var i1 = min(i0 + TILE, K)
         for j0 in range(0, N, TILE):
@@ -526,7 +526,7 @@ fn _matmul_float32(
 ) raises:
     """Float32-specific fully optimized GEMM with transpose and register blocking.
     """
-    alias simd_width = simd_width_of[DType.float32]()
+    comptime simd_width = simd_width_of[DType.float32]()
 
     # Transpose B for contiguous access: B^T[j, k] = B[k, j]
     # This makes the dot product use contiguous memory in both operands
@@ -611,7 +611,7 @@ fn _matmul_float64(
 ) raises:
     """Float64-specific fully optimized GEMM with transpose and register blocking.
     """
-    alias simd_width = simd_width_of[DType.float64]()
+    comptime simd_width = simd_width_of[DType.float64]()
 
     # Transpose B for contiguous access
     var b_t = _transpose_matrix_float64(b, K, N)

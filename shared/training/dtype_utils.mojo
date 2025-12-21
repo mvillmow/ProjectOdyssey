@@ -18,7 +18,7 @@ Key Differences:
   - Precision: ~2 decimal digits
 
 BF16 trades precision for range compared to FP16. When Mojo adds native BF16
-support, this alias will be updated to use the real BF16 dtype.
+support, this comptime will be updated to use the real BF16 dtype.
 
 Usage:
     from shared.training.dtype_utils import bfloat16_dtype, is_reduced_precision
@@ -36,7 +36,7 @@ Usage:
 # DType Aliases
 # ============================================================================
 
-alias float16_dtype = DType.float16
+comptime float16_dtype = DType.float16
 """Float16 (FP16) dtype - Half precision floating point.
 
 Fully supported in Mojo. Use for mixed precision training
@@ -45,7 +45,7 @@ Fully supported in Mojo. Use for mixed precision training
 - Memory: 2 bytes
 """
 
-alias float32_dtype = DType.float32
+comptime float32_dtype = DType.float32
 """Float32 (FP32) dtype - Single precision floating point.
 
 Default precision for most training. Standard IEEE 754 format
@@ -54,7 +54,7 @@ Default precision for most training. Standard IEEE 754 format
 - Memory: 4 bytes
 """
 
-alias float64_dtype = DType.float64
+comptime float64_dtype = DType.float64
 """Float64 (FP64) dtype - Double precision floating point.
 
 High precision for numerical stability. Standard IEEE 754 format
@@ -63,9 +63,9 @@ High precision for numerical stability. Standard IEEE 754 format
 - Memory: 8 bytes
 """
 
-# WARNING: This is a temporary alias until BFloat16 is available in Mojo
+# WARNING: This is a temporary comptime until BFloat16 is available in Mojo
 # Currently maps to Float16, which has different numerical properties than BF16
-alias bfloat16_dtype = DType.float16
+comptime bfloat16_dtype = DType.float16
 """BFloat16 (BF16) dtype - Brain floating point (TEMPORARY ALIAS).
 
 ⚠️ WARNING: BFloat16 is not yet available in Mojo. This currently aliases to

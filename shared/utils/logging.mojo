@@ -31,11 +31,11 @@ struct LogLevel(Copyable, Movable):
     messages with level >= logger's configured level
     """
 
-    alias DEBUG = 10
-    alias INFO = 20
-    alias WARNING = 30
-    alias ERROR = 40
-    alias CRITICAL = 50
+    comptime DEBUG = 10
+    comptime INFO = 20
+    comptime WARNING = 30
+    comptime ERROR = 40
+    comptime CRITICAL = 50
 
 
 # ============================================================================
@@ -150,11 +150,11 @@ struct ColoredFormatter(Copyable, Formatter, ImplicitlyCopyable, Movable):
     """Colored formatter using ANSI escape codes."""
 
     # ANSI color codes
-    alias RED = "\033[91m"
-    alias YELLOW = "\033[93m"
-    alias GREEN = "\033[92m"
-    alias BLUE = "\033[94m"
-    alias RESET = "\033[0m"
+    comptime RED = "\033[91m"
+    comptime YELLOW = "\033[93m"
+    comptime GREEN = "\033[92m"
+    comptime BLUE = "\033[94m"
+    comptime RESET = "\033[0m"
 
     fn format(self, record: LogRecord) -> String:
         """Format log record with ANSI color codes."""
@@ -189,8 +189,8 @@ struct ColoredFormatter(Copyable, Formatter, ImplicitlyCopyable, Movable):
 struct HandlerType:
     """Enumeration of handler types."""
 
-    alias STREAM = 0
-    alias FILE = 1
+    comptime STREAM = 0
+    comptime FILE = 1
 
 
 struct HandlerWrapper(Copyable, Movable):

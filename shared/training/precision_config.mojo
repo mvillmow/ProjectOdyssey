@@ -55,10 +55,10 @@ struct PrecisionMode(Copyable, ImplicitlyCopyable, Movable, Stringable):
     var value: Int
     """Internal value representing the precision mode."""
 
-    alias FP32 = PrecisionMode(value=0)
-    alias FP16 = PrecisionMode(value=1)
-    alias BF16 = PrecisionMode(value=2)
-    alias FP8 = PrecisionMode(value=3)
+    comptime FP32 = PrecisionMode(value=0)
+    comptime FP16 = PrecisionMode(value=1)
+    comptime BF16 = PrecisionMode(value=2)
+    comptime FP8 = PrecisionMode(value=3)
 
     fn __eq__(self, other: Self) -> Bool:
         return self.value == other.value
@@ -214,7 +214,7 @@ struct PrecisionConfig(Copyable, Movable):
         Note:
             Currently uses FP16 as BF16 is not natively supported in Mojo v0.25.7.
             When Mojo adds native BF16 support, this will automatically use it
-            via the bfloat16_dtype alias in dtype_utils.mojo.
+            via the bfloat16_dtype comptime in dtype_utils.mojo.
 
         BF16 Characteristics (when natively supported):
             - 1 sign + 8 exponent + 7 mantissa = 16 bits.

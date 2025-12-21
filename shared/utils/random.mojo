@@ -70,7 +70,7 @@ struct RandomState(Copyable, Movable):
 
 from random import seed as random_seed, random_float64
 
-alias DEFAULT_SEED = 42
+comptime DEFAULT_SEED = 42
 
 
 fn set_seed(seed: Int):

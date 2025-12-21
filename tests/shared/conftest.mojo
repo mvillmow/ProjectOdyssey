@@ -144,8 +144,8 @@ struct BenchmarkResult(Copyable, Movable):
 
 
 # DEPRECATED: Use BenchmarkResult directly instead of BenchmarkStatistics
-# This alias is maintained for backward compatibility during type consolidation.
-alias BenchmarkStatistics = BenchmarkResult
+# This comptime is maintained for backward compatibility during type consolidation.
+comptime BenchmarkStatistics = BenchmarkResult
 
 
 fn print_benchmark_results(results: List[BenchmarkResult]):

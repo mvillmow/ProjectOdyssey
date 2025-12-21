@@ -50,7 +50,7 @@ from shared.training.evaluation import evaluate_model_simple
 from collections import List
 
 # Default number of classes for EMNIST Balanced dataset
-alias DEFAULT_NUM_CLASSES = 47
+comptime DEFAULT_NUM_CLASSES = 47
 
 
 struct TrainConfig:

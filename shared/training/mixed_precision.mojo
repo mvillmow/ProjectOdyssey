@@ -507,7 +507,7 @@ fn _convert_fp32_to_fp32_simd(src: ExTensor, mut dst: ExTensor) raises:
     Uses vectorized load/store for maximum throughput.
     Achieves ~4x speedup on modern CPUs.
     """
-    alias simd_width = simd_width_of[DType.float32]()
+    comptime simd_width = simd_width_of[DType.float32]()
     var size = src._numel
 
     var src_ptr = src._data.bitcast[Float32]()
@@ -528,7 +528,7 @@ fn _update_fp32_from_fp32_simd(src: ExTensor, mut dst: ExTensor) raises:
     Uses vectorized load/store for maximum throughput.
     Achieves ~4x speedup on modern CPUs.
     """
-    alias simd_width = simd_width_of[DType.float32]()
+    comptime simd_width = simd_width_of[DType.float32]()
     var size = src._numel
 
     var src_ptr = src._data.bitcast[Float32]()
@@ -551,7 +551,7 @@ fn _clip_by_value_simd_float32(
     Uses min(max(x, min_val), max_val) pattern.
     Achieves ~3x speedup on modern CPUs.
     """
-    alias simd_width = simd_width_of[DType.float32]()
+    comptime simd_width = simd_width_of[DType.float32]()
     var size = src._numel
 
     var src_ptr = src._data.bitcast[Float32]()
@@ -577,7 +577,7 @@ fn _clip_by_value_simd_float64(
     Uses min(max(x, min_val), max_val) pattern.
     Achieves ~1.5x speedup on modern CPUs (half SIMD width of FP32).
     """
-    alias simd_width = simd_width_of[DType.float64]()
+    comptime simd_width = simd_width_of[DType.float64]()
     var size = src._numel
 
     var src_ptr = src._data.bitcast[Float64]()

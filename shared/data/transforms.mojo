@@ -147,8 +147,8 @@ struct Compose[T: Transform & Copyable & Movable](Copyable, Movable, Transform):
         self.transforms.append(transform^)
 
 
-# Type alias for Pipeline as Compose
-alias Pipeline[T: Transform & Copyable & Movable] = Compose[T]
+# Type comptime for Pipeline as Compose
+comptime Pipeline[T: Transform & Copyable & Movable] = Compose[T]
 
 
 # ============================================================================

@@ -57,8 +57,8 @@ See Issue #49 for details
 # Package version
 from .version import VERSION
 
-alias AUTHOR = "ML Odyssey Team"
-alias LICENSE = "MIT"
+comptime AUTHOR = "ML Odyssey Team"
+comptime LICENSE = "MIT"
 
 # ============================================================================
 # Core Exports - Most commonly used components

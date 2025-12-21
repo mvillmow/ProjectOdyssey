@@ -15,7 +15,7 @@ from shared.core.types import Tensor
 
 fn relu_simd(mut tensor: Tensor):
     """ReLU activation using SIMD."""
-    alias simd_width = simdwidthof[DType.float32]()
+    comptime simd_width = simdwidthof[DType.float32]()
 
     @parameter
     fn vectorized_relu[width: Int](idx: Int):
@@ -29,7 +29,7 @@ fn matmul_simd(a: Tensor, b: Tensor) -> Tensor:
     """Matrix multiplication using SIMD."""
     var result = Tensor.zeros(a.shape()[0], b.shape()[1], DType.float32)
 
-    alias simd_width = simdwidthof[DType.float32]()
+    comptime simd_width = simdwidthof[DType.float32]()
 
     for i in range(a.shape()[0]):
         for j in range(b.shape()[1]):

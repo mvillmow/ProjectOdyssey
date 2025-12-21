@@ -74,7 +74,7 @@ fn relu_simd(tensor: ExTensor) raises -> ExTensor:
 @always_inline
 fn _relu_simd_float32(tensor: ExTensor, mut result: ExTensor):
     """SIMD ReLU for float32 tensors."""
-    alias simd_width = simd_width_of[DType.float32]()
+    comptime simd_width = simd_width_of[DType.float32]()
     var size = tensor._numel
 
     var in_ptr = tensor._data.bitcast[Float32]()
@@ -93,7 +93,7 @@ fn _relu_simd_float32(tensor: ExTensor, mut result: ExTensor):
 @always_inline
 fn _relu_simd_float64(tensor: ExTensor, mut result: ExTensor):
     """SIMD ReLU for float64 tensors."""
-    alias simd_width = simd_width_of[DType.float64]()
+    comptime simd_width = simd_width_of[DType.float64]()
     var size = tensor._numel
 
     var in_ptr = tensor._data.bitcast[Float64]()
@@ -156,7 +156,7 @@ fn _leaky_relu_simd_float32(
     tensor: ExTensor, mut result: ExTensor, alpha: Float32
 ):
     """SIMD Leaky ReLU for float32 tensors."""
-    alias simd_width = simd_width_of[DType.float32]()
+    comptime simd_width = simd_width_of[DType.float32]()
     var size = tensor._numel
 
     var in_ptr = tensor._data.bitcast[Float32]()
@@ -178,7 +178,7 @@ fn _leaky_relu_simd_float64(
     tensor: ExTensor, mut result: ExTensor, alpha: Float64
 ):
     """SIMD Leaky ReLU for float64 tensors."""
-    alias simd_width = simd_width_of[DType.float64]()
+    comptime simd_width = simd_width_of[DType.float64]()
     var size = tensor._numel
 
     var in_ptr = tensor._data.bitcast[Float64]()
@@ -238,7 +238,7 @@ fn relu6_simd(tensor: ExTensor) raises -> ExTensor:
 @always_inline
 fn _relu6_simd_float32(tensor: ExTensor, mut result: ExTensor):
     """SIMD ReLU6 for float32 tensors."""
-    alias simd_width = simd_width_of[DType.float32]()
+    comptime simd_width = simd_width_of[DType.float32]()
     var size = tensor._numel
 
     var in_ptr = tensor._data.bitcast[Float32]()
@@ -258,7 +258,7 @@ fn _relu6_simd_float32(tensor: ExTensor, mut result: ExTensor):
 @always_inline
 fn _relu6_simd_float64(tensor: ExTensor, mut result: ExTensor):
     """SIMD ReLU6 for float64 tensors."""
-    alias simd_width = simd_width_of[DType.float64]()
+    comptime simd_width = simd_width_of[DType.float64]()
     var size = tensor._numel
 
     var in_ptr = tensor._data.bitcast[Float64]()

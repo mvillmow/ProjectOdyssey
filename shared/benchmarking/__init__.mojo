@@ -13,7 +13,7 @@ Comprehensive performance measurement utilities with two APIs:
 Namespace Resolution (Issue #2457):
    - High-level API uses BenchmarkStatistics (renamed from BenchmarkResult)
    - Low-level API uses BenchmarkResult (unchanged)
-   - BenchmarkResult alias exists in runner.mojo for backward compatibility
+   - BenchmarkResult comptime exists in runner.mojo for backward compatibility
    - Uses Welford's algorithm for numerically stable mean/variance
    - Efficient memory usage for large iteration counts
 

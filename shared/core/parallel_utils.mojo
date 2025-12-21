@@ -8,10 +8,10 @@ for large batches.
 from algorithm import parallelize
 
 # Minimum batch size to warrant parallelization
-alias PARALLEL_BATCH_THRESHOLD: Int = 4
+comptime PARALLEL_BATCH_THRESHOLD: Int = 4
 
 # Default worker count (0 = system decides)
-alias DEFAULT_NUM_WORKERS: Int = 0
+comptime DEFAULT_NUM_WORKERS: Int = 0
 
 
 fn should_parallelize(

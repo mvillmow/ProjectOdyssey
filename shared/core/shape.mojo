@@ -379,7 +379,7 @@ fn flatten(tensor: ExTensor) raises -> ExTensor:
 
 @always_inline
 fn ravel(tensor: ExTensor) raises -> ExTensor:
-    """Flatten tensor to 1D (alias for flatten).
+    """Flatten tensor to 1D (comptime for flatten).
 
         Note: Our implementation now uses zero-copy views for contiguous tensors.
         If the tensor is contiguous, ravel() returns a view. Otherwise, it copies.

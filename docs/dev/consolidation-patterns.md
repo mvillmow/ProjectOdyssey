@@ -284,19 +284,19 @@ Contains mathematical constants used in activation functions, initializers, and 
 
 ```mojo
 # Pi and related constants
-alias PI: Float64 = 3.14159265358979323846
+comptime PI: Float64 = 3.14159265358979323846
 
 # Square roots
-alias SQRT_2: Float64 = 1.4142135623730951
-alias SQRT_2_OVER_PI: Float64 = 0.7978845608028654  # sqrt(2/pi) for GELU
-alias INV_SQRT_2PI: Float64 = 0.3989422804014327  # 1/sqrt(2*pi) for normal dist
+comptime SQRT_2: Float64 = 1.4142135623730951
+comptime SQRT_2_OVER_PI: Float64 = 0.7978845608028654  # sqrt(2/pi) for GELU
+comptime INV_SQRT_2PI: Float64 = 0.3989422804014327  # 1/sqrt(2*pi) for normal dist
 
 # GELU activation constants
-alias GELU_COEFF: Float64 = 0.044715
+comptime GELU_COEFF: Float64 = 0.044715
 
 # Logarithms
-alias LN2: Float64 = 0.6931471805599453
-alias LN10: Float64 = 2.302585092994046
+comptime LN2: Float64 = 0.6931471805599453
+comptime LN10: Float64 = 2.302585092994046
 ```
 
 #### Numerical Constants
@@ -307,17 +307,17 @@ Contains epsilon and threshold values for numerical stability.
 
 ```mojo
 # Division safety - prevents division by zero
-alias EPSILON_DIV: Float64 = 1e-10
+comptime EPSILON_DIV: Float64 = 1e-10
 
 # Loss function stability - for log operations in BCE, cross-entropy, etc.
-alias EPSILON_LOSS: Float64 = 1e-7
+comptime EPSILON_LOSS: Float64 = 1e-7
 
 # Normalization stability - for BatchNorm, LayerNorm, GroupNorm, InstanceNorm
-alias EPSILON_NORM: Float64 = 1e-5
+comptime EPSILON_NORM: Float64 = 1e-5
 
 # Gradient safety thresholds
-alias GRADIENT_MAX_NORM: Float64 = 1000.0  # Threshold for gradient explosion
-alias GRADIENT_MIN_NORM: Float64 = 1e-7   # Threshold for gradient vanishing
+comptime GRADIENT_MAX_NORM: Float64 = 1000.0  # Threshold for gradient explosion
+comptime GRADIENT_MIN_NORM: Float64 = 1e-7   # Threshold for gradient vanishing
 ```
 
 ### Usage Example: GELU Activation

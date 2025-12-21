@@ -269,7 +269,7 @@ struct Config(Copyable, ImplicitlyCopyable, Movable):
         return key in self.data
 
     fn has_key(self, key: String) -> Bool:
-        """Check if configuration key exists (alias for has).
+        """Check if configuration key exists (comptime for has).
 
         Args:
             key: Configuration key.

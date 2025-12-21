@@ -323,7 +323,7 @@ fn bench_simd_vectorization() raises -> BenchmarkResult:
         - SIMD version should be 4-8x faster than scalar.
     """
     # TODO(#1538): Implement when SIMD utilities are available
-    # alias simd_width = simdwidthof[DType.float32]()
+    # comptime simd_width = simdwidthof[DType.float32]()
     # varn = 10_000_000
     #
     # var params = Tensor.randn(n)

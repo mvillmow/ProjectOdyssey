@@ -48,20 +48,20 @@ from shared.core.extensor import ExTensor
 # ============================================================================
 
 # Default tolerance for exact comparisons
-alias TOLERANCE_DEFAULT: Float64 = 1e-6
+comptime TOLERANCE_DEFAULT: Float64 = 1e-6
 
 # Tolerances by dtype
-alias TOLERANCE_FLOAT32: Float64 = 1e-5
-alias TOLERANCE_FLOAT64: Float64 = 1e-10
+comptime TOLERANCE_FLOAT32: Float64 = 1e-5
+comptime TOLERANCE_FLOAT64: Float64 = 1e-10
 
 # Gradient checking tolerances (more relaxed due to numerical differences)
-alias TOLERANCE_GRADIENT_RTOL: Float64 = 1e-2
-alias TOLERANCE_GRADIENT_ATOL: Float64 = 1e-2
+comptime TOLERANCE_GRADIENT_RTOL: Float64 = 1e-2
+comptime TOLERANCE_GRADIENT_ATOL: Float64 = 1e-2
 
 # Operation-specific tolerances
-alias TOLERANCE_CONV: Float64 = 1e-3
-alias TOLERANCE_SOFTMAX: Float64 = 5e-4
-alias TOLERANCE_CROSS_ENTROPY: Float64 = 1e-3
+comptime TOLERANCE_CONV: Float64 = 1e-3
+comptime TOLERANCE_SOFTMAX: Float64 = 5e-4
+comptime TOLERANCE_CROSS_ENTROPY: Float64 = 1e-3
 
 
 # ============================================================================

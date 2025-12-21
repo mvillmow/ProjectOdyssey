@@ -108,8 +108,8 @@ fn test_shared_tensor_deallocation() raises:
 
 fn test_no_memory_leak_in_creation_loop() raises:
     """Verify no memory leaks in repeated tensor creation."""
-    alias NUM_ITERATIONS = 1000
-    alias TENSOR_SIZE = 100
+    comptime NUM_ITERATIONS = 1000
+    comptime TENSOR_SIZE = 100
     for _ in range(NUM_ITERATIONS):
         var tensor = zeros(List[Int]([TENSOR_SIZE, TENSOR_SIZE]), DType.float32)
     assert_true(True, "Created tensors without OOM")
@@ -117,7 +117,7 @@ fn test_no_memory_leak_in_creation_loop() raises:
 
 fn test_no_memory_leak_in_operation_loop() raises:
     """Verify no memory leaks in repeated tensor operations."""
-    alias NUM_ITERATIONS = 500
+    comptime NUM_ITERATIONS = 500
     for _ in range(NUM_ITERATIONS):
         var tensor = zeros(List[Int]([50, 50]), DType.float32)
         var result = tensor + tensor
@@ -127,7 +127,7 @@ fn test_no_memory_leak_in_operation_loop() raises:
 
 fn test_no_memory_leak_with_copies() raises:
     """Verify no memory leaks with shared copies."""
-    alias NUM_ITERATIONS = 500
+    comptime NUM_ITERATIONS = 500
     for _ in range(NUM_ITERATIONS):
         var tensor1 = ones(List[Int]([100, 100]), DType.float32)
         var tensor2 = tensor1
@@ -139,8 +139,8 @@ fn test_no_memory_leak_with_copies() raises:
 
 fn test_large_tensor_lifecycle() raises:
     """Test large tensor allocation and deallocation."""
-    alias NUM_ITERATIONS = 10
-    alias LARGE_SIZE = 500
+    comptime NUM_ITERATIONS = 10
+    comptime LARGE_SIZE = 500
     for _ in range(NUM_ITERATIONS):
         var tensor = zeros(List[Int]([LARGE_SIZE, LARGE_SIZE]), DType.float32)
         var _ = tensor._data.bitcast[Float32]()[0]

@@ -74,7 +74,7 @@ fn _fill_normal_boxmuller[
     """
     var ptr = result._data.bitcast[Scalar[dtype]]()
     var i = 0
-    alias PI = 3.14159265359
+    comptime PI = 3.14159265359
 
     while i < result._numel:
         # Box-Muller transform to generate normal distribution
@@ -681,7 +681,7 @@ fn he_uniform(
     """Alias for kaiming_uniform.
 
     He and Kaiming refer to the same initialization method (Kaiming He is the author).
-    This alias provides compatibility with code that uses 'he_uniform' naming.
+    This comptime provides compatibility with code that uses 'he_uniform' naming.
 
     See kaiming_uniform() for full documentation.
 
@@ -702,7 +702,7 @@ fn he_normal(
     """Alias for kaiming_normal.
 
     He and Kaiming refer to the same initialization method (Kaiming He is the author).
-    This alias provides compatibility with code that uses 'he_normal' naming.
+    This comptime provides compatibility with code that uses 'he_normal' naming.
 
     See kaiming_normal() for full documentation.
 

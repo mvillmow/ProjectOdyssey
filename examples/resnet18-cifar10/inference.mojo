@@ -38,7 +38,7 @@ from model import ResNet18
 
 
 # CIFAR-10 class names
-alias CLASS_NAMES = [
+comptime CLASS_NAMES = [
     "airplane",
     "automobile",
     "bird",

@@ -15,11 +15,11 @@ from shared.core.gradient_types import GradientPair, GradientTriple
 # DEPRECATED: Use GradientTriple directly instead of LinearBackwardResult
 # These aliases are maintained for backward compatibility during type consolidation.
 # See ADR-002 for the gradient struct return types design decision.
-alias LinearBackwardResult = GradientTriple
+comptime LinearBackwardResult = GradientTriple
 
 # DEPRECATED: Use GradientPair directly instead of LinearNoBiasBackwardResult
 # These aliases are maintained for backward compatibility during type consolidation.
-alias LinearNoBiasBackwardResult = GradientPair
+comptime LinearNoBiasBackwardResult = GradientPair
 
 
 fn linear(x: ExTensor, weights: ExTensor, bias: ExTensor) raises -> ExTensor:

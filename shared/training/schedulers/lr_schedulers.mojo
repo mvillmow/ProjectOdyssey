@@ -228,8 +228,8 @@ struct WarmupLR(LRScheduler):
 # ============================================================================
 
 # Mode constants for ReduceLROnPlateau
-alias MODE_MIN: Int = 0  # Minimize metric (for loss)
-alias MODE_MAX: Int = 1  # Maximize metric (for accuracy)
+comptime MODE_MIN: Int = 0  # Minimize metric (for loss)
+comptime MODE_MAX: Int = 1  # Maximize metric (for accuracy)
 
 
 @register_passable("trivial")

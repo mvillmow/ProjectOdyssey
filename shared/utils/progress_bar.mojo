@@ -35,9 +35,9 @@ from time import perf_counter_ns
 # ============================================================================
 
 
-alias CLEAR_LINE = "\033[2K"
-alias CURSOR_HOME = "\r"
-alias RESET = "\033[0m"
+comptime CLEAR_LINE = "\033[2K"
+comptime CURSOR_HOME = "\r"
+comptime RESET = "\033[0m"
 
 
 # ============================================================================

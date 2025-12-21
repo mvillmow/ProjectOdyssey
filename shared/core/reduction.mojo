@@ -791,7 +791,7 @@ fn std_backward(
     var mu = mean(x, axis)
     var sigma = std(x, axis, ddof)
 
-    alias EPSILON = 1e-8  # Prevent division by zero
+    comptime EPSILON = 1e-8  # Prevent division by zero
 
     if axis == -1:
         var mean_val = mu._get_float64(0)

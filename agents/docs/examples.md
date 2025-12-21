@@ -868,7 +868,7 @@ Performance Engineer:
 
 Added cache tiling (8x8 tiles) in forward method:
 
-alias tile_size = 8
+comptime tile_size = 8
 
 for h_tile in range(0, height, tile_size):
     for w_tile in range(0, width, tile_size):

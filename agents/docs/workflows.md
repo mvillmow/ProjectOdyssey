@@ -259,7 +259,7 @@ Senior Implementation Engineer (Level 4):
       var: Tensor[DType.float32]
   ) -> Tensor[DType.float32]:
       """SIMD-optimized batch normalization."""
-      alias simd_width = simdwidthof[DType.float32]()
+      comptime simd_width = simdwidthof[DType.float32]()
 
       var output = Tensor[DType.float32](input.shape)
 

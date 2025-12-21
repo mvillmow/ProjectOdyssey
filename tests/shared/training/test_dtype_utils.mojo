@@ -33,7 +33,7 @@ fn test_dtype_aliases() raises:
     assert_equal(
         bfloat16_dtype,
         DType.float16,
-        "bfloat16_dtype should currently alias to DType.float16",
+        "bfloat16_dtype should currently comptime to DType.float16",
     )
 
     print("✓ DType aliases test passed")
@@ -190,8 +190,8 @@ fn test_recommend_precision_dtype() raises:
 
 
 fn test_bfloat16_alias_behavior() raises:
-    """Test that bfloat16 alias works as expected."""
-    print("Testing bfloat16 alias behavior...")
+    """Test that bfloat16 comptime works as expected."""
+    print("Testing bfloat16 comptime behavior...")
 
     # Verify bfloat16_dtype can be used like DType.float16
     from shared.core import zeros
@@ -203,7 +203,7 @@ fn test_bfloat16_alias_behavior() raises:
         "BF16 tensor should have float16 dtype (aliased)",
     )
 
-    print("✓ BFloat16 alias behavior test passed")
+    print("✓ BFloat16 comptime behavior test passed")
     print("⚠ Note: bfloat16_dtype currently aliases to float16")
 
 

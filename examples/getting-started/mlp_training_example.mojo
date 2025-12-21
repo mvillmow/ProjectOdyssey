@@ -132,9 +132,9 @@ fn train_mlp() raises:
     print("=" * 60)
 
     # Hyperparameters
-    alias learning_rate = 0.1
-    alias num_epochs = 1000
-    alias print_every = 100
+    comptime learning_rate = 0.1
+    comptime num_epochs = 1000
+    comptime print_every = 100
 
     # Create synthetic data
     print("\nCreating synthetic XOR data...")
