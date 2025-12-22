@@ -159,7 +159,6 @@ comptime LICENSE = "MIT"
 # For implementation of component-level imports when core modules
 # are fully implemented, see test_packaging.mojo
 #
-# NOTE: These imports are now active as submodules are implemented
 from . import core
 from . import training
 from . import data

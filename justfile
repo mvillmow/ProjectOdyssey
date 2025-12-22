@@ -440,7 +440,6 @@ help:
     @echo "Test:      test, test-python, test-group, test-mojo,"
     @echo "Docker:    docker-up, docker-down, docker-logs"
     @echo "Dev:       dev, shell, docs, docs-serve, pre-commit, validate"
-    @echo "CI (GHA):  ci-build, ci-package, validate"
     @echo "Utility:   help, status, clean, clean-all"
     @echo ""
     @echo "Examples:"
