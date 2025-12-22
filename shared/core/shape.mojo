@@ -185,7 +185,7 @@ fn reshape(tensor: ExTensor, new_shape: List[Int]) raises -> ExTensor:
                     "reshape: can only specify one unknown dimension (-1)"
                 )
             inferred_dim = i
-        elif new_shape[i] <= 0:
+        elif new_shape[i] < 0:
             raise Error("reshape: shape dimensions must be positive or -1")
         else:
             known_product *= new_shape[i]

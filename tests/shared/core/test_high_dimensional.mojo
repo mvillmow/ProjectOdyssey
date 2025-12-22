@@ -233,7 +233,7 @@ fn test_5d_broadcasting_scalar() raises:
 fn test_6d_broadcasting_1d() raises:
     """Broadcasting 1D to 6D tensor."""
     var shape_1d = List[Int]()
-    shape_1d.append(3)
+    shape_1d.append(2)
     var shape_6d = List[Int]()
     shape_6d.append(2)
     shape_6d.append(3)
@@ -247,6 +247,7 @@ fn test_6d_broadcasting_1d() raises:
     var result = multiply(t1d, t6d)
 
     assert_dim(result, 6, "Result should be 6D")
+    assert_all_values(result, 2.0, 1e-5, "Broadcast 1D to 6D correctly")
 
 
 # ============================================================================
