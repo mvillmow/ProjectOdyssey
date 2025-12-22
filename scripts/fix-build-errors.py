@@ -3,11 +3,11 @@
 Autonomous Mojo repair with Claude Code.
 
 Key properties:
-- Parallel agents
-- Per-agent worktrees
-- Branch-per-agent isolation
-- Safe rebase + push-with-lease
-- Automatic merge into fix-mojo-build
+- Parallel agents (one per file)
+- Per-file worktrees
+- Per-file branch isolation
+- Individual PR for each file
+- Branches off main
 - KISS + DRY enforced
 """
 
@@ -17,7 +17,6 @@ import json
 import shutil
 import subprocess
 import threading
-import uuid
 from pathlib import Path
 from datetime import datetime, timezone
 
@@ -26,9 +25,8 @@ from datetime import datetime, timezone
 MAX_WORKERS_DEFAULT = 6
 BUILD_TIMEOUT = 120
 CLAUDE_TIMEOUT = 900
-MAX_REBASE_ATTEMPTS = 3
 
-BASE_BRANCH = "fix-mojo-build"
+BASE_BRANCH = "main"
 REMOTE = "origin"
 
 ROOT = Path.cwd()
@@ -100,6 +98,22 @@ def build_ok(cwd, root, file, log_path) -> bool:
 # ---------------- Git helpers ----------------
 
 
+def sanitize_branch_name(file_path: str) -> str:
+    """Convert file path to valid branch name."""
+    # Remove extension and leading ./
+    name = Path(file_path).with_suffix("").as_posix()
+    if name.startswith("./"):
+        name = name[2:]
+    # Replace slashes and special chars with hyphens
+    name = name.replace("/", "-").replace("_", "-")
+    # Remove any remaining invalid characters
+    name = "".join(c if c.isalnum() or c == "-" else "" for c in name)
+    # Ensure it starts with a letter (prepend 'fix-' if needed)
+    if not name[0].isalpha():
+        name = f"fix-{name}"
+    return f"fix-{name}"
+
+
 def ensure_base_branch():
     run(["git", "fetch", REMOTE])
     r = run(["git", "show-ref", "--verify", f"refs/remotes/{REMOTE}/{BASE_BRANCH}"])
@@ -108,9 +122,13 @@ def ensure_base_branch():
 
 
 def create_worktree(branch):
+    """Create worktree branching from latest main."""
     path = WORKTREE_BASE / branch
     if path.exists():
         shutil.rmtree(path, ignore_errors=True)
+
+    # Fetch latest main before creating worktree
+    run(["git", "fetch", REMOTE, BASE_BRANCH])
 
     run(
         [
@@ -145,38 +163,86 @@ def has_commit(cwd) -> bool:
     return r.returncode == 0
 
 
-def rebase_onto_base(cwd, log_path) -> bool:
-    run(["git", "fetch", REMOTE], cwd=cwd)
+def rebase_on_main(cwd, log_path) -> bool:
+    """Rebase current branch on latest main."""
+    # Fetch latest main
+    run(["git", "fetch", REMOTE, BASE_BRANCH], cwd=cwd)
+
+    # Rebase on main
     r = run(["git", "rebase", f"{REMOTE}/{BASE_BRANCH}"], cwd=cwd)
     if r.returncode == 0:
-        write_log(log_path, "REBASE OK")
+        write_log(log_path, "REBASE OK - rebased on latest main")
         return True
 
-    write_log(log_path, "REBASE FAILED — aborting")
-    write_log(log_path, r.stderr)
+    write_log(log_path, f"REBASE FAILED - {r.stderr}")
+    # Abort the rebase
     run(["git", "rebase", "--abort"], cwd=cwd)
     return False
 
 
-def push_with_lease(cwd, log_path) -> bool:
-    r = run(
-        [
-            "git",
-            "push",
-            "--force-with-lease",
-            REMOTE,
-            f"HEAD:{BASE_BRANCH}",
-        ],
-        cwd=cwd,
-    )
-
+def push_branch(branch, cwd, log_path) -> bool:
+    """Push branch to remote."""
+    r = run(["git", "push", "-u", REMOTE, branch], cwd=cwd)
     if r.returncode == 0:
-        write_log(log_path, "PUSH OK (merged into fix-mojo-build)")
+        write_log(log_path, f"PUSH OK - {branch} pushed to {REMOTE}")
+        return True
+    write_log(log_path, f"PUSH FAILED - {r.stderr}")
+    return False
+
+
+def create_pr(branch, file, cwd, log_path) -> bool:
+    """Create pull request for the branch and enable auto-merge."""
+    if dry_run:
+        write_log(log_path, f"DRY RUN - Would create PR for {branch} with auto-merge")
         return True
 
-    write_log(log_path, "PUSH REJECTED — will retry")
-    write_log(log_path, r.stderr)
-    return False
+    # Get commit message to use as PR title
+    r = run(["git", "log", "-1", "--format=%s"], cwd=cwd)
+    title = r.stdout.strip() if r.returncode == 0 else f"fix: {file}"
+
+    # Get commit body for PR description
+    r = run(["git", "log", "-1", "--format=%b"], cwd=cwd)
+    body = r.stdout.strip() if r.returncode == 0 else f"Automated fix for {file}"
+
+    # Create PR using gh CLI
+    cmd = [
+        "gh",
+        "pr",
+        "create",
+        "--title",
+        title,
+        "--body",
+        body,
+        "--base",
+        BASE_BRANCH,
+        "--head",
+        branch,
+    ]
+
+    r = run(cmd, cwd=cwd)
+    if r.returncode != 0:
+        write_log(log_path, f"PR CREATION FAILED - {r.stderr}")
+        return False
+
+    pr_url = r.stdout.strip()
+    write_log(log_path, f"PR CREATED - {pr_url}")
+    if verbose:
+        log(f"✓ PR created for {file}: {pr_url}")
+
+    # Enable auto-merge using rebase strategy
+    merge_cmd = ["gh", "pr", "merge", pr_url, "--auto", "--rebase"]
+    r = run(merge_cmd, cwd=cwd)
+    if r.returncode == 0:
+        write_log(log_path, "AUTO-MERGE ENABLED")
+        if verbose:
+            log(f"✓ Auto-merge enabled for {file}")
+        return True
+
+    write_log(log_path, f"AUTO-MERGE FAILED - {r.stderr}")
+    if verbose:
+        log(f"⚠️  Auto-merge failed for {file}: {r.stderr}")
+    # Return True anyway since PR was created
+    return True
 
 
 # ---------------- Claude ----------------
@@ -203,14 +269,14 @@ def build_prompt(file: str, root: str) -> str:
     return f"""<task_context>
 <role>
 You are an autonomous Mojo build repair agent working in parallel with other agents.
-Your changes will be automatically merged if they pass validation.
+Each agent creates a separate pull request for review.
 </role>
 
 <why_this_matters>
 - Failed builds block the entire CI/CD pipeline
 - Incorrect fixes introduce bugs that affect downstream code
-- Multiple agents work in parallel - your changes must not conflict
-- This is an automated workflow - no human review before merge
+- Multiple agents work in parallel - each creates a PR for one file
+- PRs will be reviewed before merging to main
 </why_this_matters>
 
 <file_to_fix>
@@ -275,14 +341,8 @@ Read ALL relevant documentation before attempting fixes.
 - NEVER delete files (they may be referenced elsewhere)
 - NEVER refactor or reorganize (outside scope of build fixes)
 - NEVER add features or enhancements (only fix what's broken)
+- Work only on the assigned file - don't modify other files
 </constraints>
-
-<conflict_resolution>
-When resolving git merge conflicts:
-1. Prefer the fix-mojo-build branch version (it's the validated baseline)
-2. Only override if you're certain your fix is correct
-3. Test thoroughly after resolving conflicts
-</conflict_resolution>
 </fix_principles>
 
 <workflow>
@@ -529,15 +589,15 @@ def worker_wrapper(file, root, agents_json, architect_prompt):
 
 def process_file(file, root, agents_json, architect_prompt):
     """Process a single file with isolated worktree and Claude agent."""
-    agent_id = uuid.uuid4().hex[:8]
-    branch = f"{BASE_BRANCH}-agent-{agent_id}"
+    # Create branch name from file path
+    branch = sanitize_branch_name(file)
     log_path = LOG_DIR / f"{branch}.log"
 
     write_log(log_path, f"FILE {file}")
     write_log(log_path, f"BRANCH {branch}")
 
     if verbose:
-        log(f"[{agent_id}] Processing {file}")
+        log(f"[{branch}] Processing {file}")
 
     wt = create_worktree(branch)
 
@@ -545,17 +605,17 @@ def process_file(file, root, agents_json, architect_prompt):
         # CRITICAL: Check if file already compiles
         write_log(log_path, "Checking if file compiles...")
         if verbose:
-            log(f"[{agent_id}] Checking build status...")
+            log(f"[{branch}] Checking build status...")
 
         if build_ok(wt, root, file, log_path):
             write_log(log_path, "File already compiles - skipping fixes")
             if verbose:
-                log(f"[{agent_id}] ✓ {file} already compiles")
+                log(f"[{branch}] ✓ {file} already compiles")
             return
 
         write_log(log_path, "File has compilation errors - running Claude")
         if verbose:
-            log(f"[{agent_id}] ✗ {file} has errors - fixing...")
+            log(f"[{branch}] ✗ {file} has errors - fixing...")
 
         # Build comprehensive prompt
         prompt = build_prompt(file, root)
@@ -566,35 +626,53 @@ def process_file(file, root, agents_json, architect_prompt):
         # Check if Claude made a commit
         if not has_commit(wt):
             write_log(log_path, "NO COMMIT — Claude did not fix the file")
+            if verbose:
+                log(f"[{branch}] ✗ No commit made")
             return
 
-        # Rebase and push loop
-        for attempt in range(MAX_REBASE_ATTEMPTS):
-            write_log(log_path, f"Rebase attempt {attempt + 1}/{MAX_REBASE_ATTEMPTS}")
+        # Verify build passes after fix
+        if not build_ok(wt, root, file, log_path):
+            write_log(log_path, "Build failed after Claude's fix - abandoning")
+            if verbose:
+                log(f"[{branch}] ✗ Build still fails after fix")
+            return
 
-            if not rebase_onto_base(wt, log_path):
-                write_log(log_path, "Rebase failed - running Claude to resolve conflicts")
-                run_claude(prompt, agents_json, architect_prompt, wt, log_path)
-                continue
+        # Verify git state is clean
+        if not ensure_clean_git(wt, log_path):
+            write_log(log_path, "Dirty worktree - abandoning")
+            return
 
-            # Verify build still passes after rebase
-            if not build_ok(wt, root, file, log_path):
-                write_log(log_path, "Build failed after rebase - abandoning")
-                return
+        # Rebase on latest main before pushing
+        if not rebase_on_main(wt, log_path):
+            write_log(log_path, "Failed to rebase on main - abandoning")
+            if verbose:
+                log(f"[{branch}] ✗ Rebase failed")
+            return
 
-            # Verify git state is clean
-            if not ensure_clean_git(wt, log_path):
-                write_log(log_path, "Dirty worktree - abandoning")
-                return
+        # Verify build still passes after rebase
+        if not build_ok(wt, root, file, log_path):
+            write_log(log_path, "Build failed after rebase - abandoning")
+            if verbose:
+                log(f"[{branch}] ✗ Build fails after rebase")
+            return
 
-            # Try to push
-            if push_with_lease(wt, log_path):
-                write_log(log_path, f"SUCCESS - {file} fixed and merged")
-                return
+        # Push branch to remote
+        if not push_branch(branch, wt, log_path):
+            write_log(log_path, "Failed to push branch")
+            if verbose:
+                log(f"[{branch}] ✗ Failed to push")
+            return
 
-            write_log(log_path, f"Push rejected - will retry (attempt {attempt + 1})")
+        # Create pull request
+        if not create_pr(branch, file, wt, log_path):
+            write_log(log_path, "Failed to create PR")
+            if verbose:
+                log(f"[{branch}] ✗ Failed to create PR")
+            return
 
-        write_log(log_path, f"GAVE UP after {MAX_REBASE_ATTEMPTS} attempts")
+        write_log(log_path, f"SUCCESS - {file} fixed, PR created")
+        if verbose:
+            log(f"[{branch}] ✓ {file} fixed and PR created")
 
     except Exception as e:
         write_log(log_path, f"EXCEPTION: {e}")
