@@ -87,10 +87,6 @@ docker-rebuild:
         --build-arg GROUP_ID={{GROUP_ID}} \
         --build-arg USER_NAME=dev
 
-# Open shell in Docker container
-docker-shell: docker-up
-    @docker compose exec -e USER_ID={{USER_ID}} -e GROUP_ID={{GROUP_ID}} {{docker_service}} bash
-
 # View Docker logs
 docker-logs:
     @docker compose logs -f {{docker_service}}
@@ -391,7 +387,7 @@ native prefix:
 
 # Open development shell
 shell:
-    @docker compose exec {{docker_service}} bash
+    @docker compose exec -e USER_ID={{USER_ID}} -e GROUP_ID={{GROUP_ID}} {{docker_service}} bash
 
 # Serve documentation
 docs-serve:
@@ -603,7 +599,7 @@ help:
     @echo "           package-asan [mode], package-tsan [mode]"
     @echo "Test:      test, test-python, test-coverage, test-integration"
     @echo "Lint:      lint, lint-python, lint-markdown, format"
-    @echo "Docker:    docker-up, docker-down, docker-shell, docker-logs"
+    @echo "Docker:    docker-up, docker-down, docker-logs"
     @echo "Dev:       dev, shell, docs, docs-serve"
     @echo "CI:        ci, ci-full, pre-commit, validate"
     @echo "CI (GHA):  ci-build, ci-package, ci-test-group, ci-test-mojo, ci-validate"

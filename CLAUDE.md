@@ -918,7 +918,7 @@ just infer lenet5 ./weights  # Run inference
 # Docker management
 just docker-up             # Start development environment
 just docker-down           # Stop environment
-just docker-shell          # Open shell in container
+just shell          # Open shell in container
 ```
 
 ### Why Use Justfile?
