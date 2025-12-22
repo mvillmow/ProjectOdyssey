@@ -305,11 +305,11 @@ struct BaseTrainer(Trainer):
         metadata["epoch"] = String(epoch)
         metadata["best_epoch"] = String(self.metrics.best_epoch)
         metadata["best_val_loss"] = String(self.metrics.best_val_loss)
-        metadata["total_loss"] = String(self.metrics.total_loss)
-        metadata["num_batches"] = String(self.metrics.num_batches)
+        metadata["train_loss"] = String(self.metrics.train_loss)
+        metadata["total_batches"] = String(self.metrics.total_batches)
 
         # Save checkpoint with metadata (no tensors for now, just state)
-        save_named_checkpoint(List[NamedTensor](), path, metadata)
+        save_named_checkpoint(List[NamedTensor](), path, metadata^)
 
         print(
             "Checkpoint saved: "
@@ -346,14 +346,16 @@ struct BaseTrainer(Trainer):
         from shared.utils.serialization import load_named_checkpoint
 
         # Load checkpoint
-        var (tensors, metadata) = load_named_checkpoint(path)
+        var result = load_named_checkpoint(path)
+        _ = result[0]  # Tensors not used yet
+        var metadata = result[1].copy()
 
         # Restore metrics from metadata
-        if metadata.contains("epoch"):
+        if "epoch" in metadata:
             # Epoch info is loaded but not automatically used
             print("Loaded checkpoint from: " + path)
 
-        if metadata.contains("best_val_loss"):
+        if "best_val_loss" in metadata:
             var best_loss_str = metadata["best_val_loss"]
             # In a full implementation, would parse and restore metrics
             print("Loaded checkpoint with best_val_loss: " + best_loss_str)
