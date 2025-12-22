@@ -244,16 +244,6 @@ build-all:
     @just build release
     @just build test
 
-# Native build variants
-native-build mode="debug":
-    @NATIVE=1 just build {{mode}}
-
-native-build-debug:
-    @NATIVE=1 just build-debug
-
-native-build-release:
-    @NATIVE=1 just build-release
-
 # ==============================================================================
 # Package Recipes (mojo package - create .mojopkg libraries)
 # ==============================================================================
@@ -311,16 +301,6 @@ package-all:
     @just package debug
     @just package release
 
-# Native package variants
-native-package mode="debug":
-    @NATIVE=1 just package {{mode}}
-
-native-package-debug:
-    @NATIVE=1 just package-debug
-
-native-package-release:
-    @NATIVE=1 just package-release
-
 # ==============================================================================
 # Testing
 # ==============================================================================
@@ -347,19 +327,6 @@ test-coverage:
 test-integration:
     @just _run "pixi run pytest tests/integration/ -v || echo 'No integration tests'"
 
-# Native test variants
-native-test:
-    @NATIVE=1 just test
-
-native-test-mojo:
-    @NATIVE=1 just test-mojo
-
-native-test-python:
-    @NATIVE=1 just test-python
-
-native-test-coverage:
-    @NATIVE=1 just test-coverage
-
 # ==============================================================================
 # Linting and Formatting
 # ==============================================================================
@@ -382,13 +349,6 @@ lint-markdown:
 format:
     @echo "Formatting files..."
     @just _run "pixi run black . || echo 'Format complete'"
-
-# Native lint/format variants
-native-lint:
-    @NATIVE=1 just lint
-
-native-format:
-    @NATIVE=1 just format
 
 # ==============================================================================
 # Model Training and Inference
@@ -422,12 +382,8 @@ list-models:
     @echo "Available models:"
     @ls -d examples/*/ 2>/dev/null | xargs -I{} basename {} | sed 's/-.*//g' | sort -u || echo "No models found"
 
-# Native training variants (no Docker)
-native-train model="lenet5" precision="fp32" epochs="10":
-    @NATIVE=1 just train {{model}} {{precision}} {{epochs}}
-
-native-infer model="lenet5" checkpoint="lenet5_weights":
-    @NATIVE=1 just infer {{model}} {{checkpoint}}
+native prefix:
+    @NATIVE=1 just {{prefix}}
 
 # ==============================================================================
 # Development
@@ -445,10 +401,6 @@ docs-serve:
 docs:
     @mkdocs build || echo "Install mkdocs for documentation"
 
-# Native variants
-native-shell:
-    @pixi shell
-
 # ==============================================================================
 # CI/CD
 # ==============================================================================
@@ -462,8 +414,7 @@ pre-commit-all:
 
 # Run CI pipeline
 ci:
-    @echo "Running CI pipeline..."
-    @just lint || true
+    @echo "Running CI pipeline..."    @just lint || true
     @just test || true
     @echo "CI complete"
 
@@ -479,13 +430,6 @@ validate:
     @echo "Validating configuration..."
     @test -f pixi.toml && echo "✅ pixi.toml exists"
     @test -f docker-compose.yml && echo "✅ docker-compose.yml exists"
-
-# Native CI variants
-native-ci:
-    @NATIVE=1 just ci
-
-native-ci-full:
-    @NATIVE=1 just ci-full
 
 # ==============================================================================
 # CI-Specific Recipes (Match GitHub Actions workflows)
@@ -649,7 +593,7 @@ help:
     @echo "======================="
     @echo ""
     @echo "Docker mode (default):  just <recipe>"
-    @echo "Native mode:            just native-<recipe>"
+    @echo "Native mode:            just native <recipe>"
     @echo ""
     @echo "Training:  train [model] [precision] [epochs], infer [model] [checkpoint]"
     @echo "           list-models, infer-image [model] [checkpoint] [image_path]"
