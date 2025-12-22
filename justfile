@@ -408,19 +408,6 @@ pre-commit:
 pre-commit-all:
     @pre-commit run --all-files
 
-# Run CI pipeline
-ci:
-    @echo "Running CI pipeline..."    @just lint || true
-    @just test || true
-    @echo "CI complete"
-
-# Run full CI with coverage
-ci-full:
-    @echo "Running full CI..."
-    @just lint || true
-    @just test-coverage || true
-    @echo "Full CI complete"
-
 # Validate configuration
 validate:
     @echo "Validating configuration..."
@@ -600,8 +587,7 @@ help:
     @echo "Test:      test, test-python, test-coverage, test-integration"
     @echo "Lint:      lint, lint-python, lint-markdown, format"
     @echo "Docker:    docker-up, docker-down, docker-logs"
-    @echo "Dev:       dev, shell, docs, docs-serve"
-    @echo "CI:        ci, ci-full, pre-commit, validate"
+    @echo "Dev:       dev, shell, docs, docs-serve, pre-commit, validate"
     @echo "CI (GHA):  ci-build, ci-package, test-group, test-mojo, validate"
     @echo "Utility:   help, status, clean, version"
     @echo ""
