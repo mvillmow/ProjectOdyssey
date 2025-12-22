@@ -902,7 +902,7 @@ just lint                  # Run all linters
 just format                # Format all files
 
 # CI-specific commands (match GitHub Actions)
-just ci-validate           # Full CI validation (build + test)
+just validate           # Full validation (build + test)
 just build              # Build shared package
 just ci-package           # Compile package (validation only)
 just ci-test-mojo          # Run all Mojo tests
@@ -942,7 +942,7 @@ GitHub Actions workflows use justfile recipes to ensure consistency:
   run: just build
 ```
 
-This ensures developers can run `just ci-validate` locally to reproduce CI results exactly.
+This ensures developers can run `just validate` locally to reproduce CI results exactly.
 
 **See**: `justfile` for complete recipe list and implementation details.
 

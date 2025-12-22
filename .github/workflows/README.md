@@ -433,7 +433,7 @@ All CI workflows use justfile recipes for consistent command execution between l
 
 **Benefits**:
 
-1. **Reproducibility**: Developers can run `just ci-validate` locally to reproduce CI results
+1. **Reproducibility**: Developers can run `just validate` locally to reproduce CI results
 2. **Maintainability**: Complex logic lives in justfile, not scattered across workflow YAML
 3. **Consistency**: Identical flags and commands between local and CI environments
 4. **Documentation**: Justfile is self-documenting with `just --list`
@@ -444,7 +444,7 @@ All CI workflows use justfile recipes for consistent command execution between l
 - `just ci-package` - Compile package (validation only, no output artifact)
 - `just test-group PATH PATTERN` - Run specific test group
 - `just ci-test-mojo` - Run all Mojo tests
-- `just ci-validate` - Full validation (build + test)
+- `just validate` - Full validation (build + test)
 - `just pre-commit` - Run pre-commit hooks
 
 **See**: `/justfile` for complete implementation and `CLAUDE.md` for developer documentation.

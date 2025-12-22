@@ -572,12 +572,12 @@ ci-test-mojo:
     echo "✅ All tests passed"
 
 # CI: Full validation (build + package + test)
-ci-validate:
+validate:
     @echo "Running full CI validation..."
     @just ci-build
     @just ci-package
     @just ci-test-mojo
-    @echo "✅ CI validation complete"
+    @echo "✅ Validation complete"
 
 # ==============================================================================
 # Utility
@@ -602,14 +602,14 @@ help:
     @echo "Docker:    docker-up, docker-down, docker-logs"
     @echo "Dev:       dev, shell, docs, docs-serve"
     @echo "CI:        ci, ci-full, pre-commit, validate"
-    @echo "CI (GHA):  ci-build, ci-package, ci-test-group, ci-test-mojo, ci-validate"
+    @echo "CI (GHA):  ci-build, ci-package, ci-test-group, ci-test-mojo, validate"
     @echo "Utility:   help, status, clean, version"
     @echo ""
     @echo "Examples:"
     @echo "  just train                          # Train LeNet-5 with defaults"
     @echo "  just train lenet5 fp16 20           # Train with FP16, 20 epochs"
     @echo "  just infer lenet5 ./weights         # Evaluate on test set"
-    @echo "  just ci-validate                    # Run CI validation locally"
+    @echo "  just cvalidate                      # Run validation locally"
     @echo ""
     @echo "For more: just --list"
 
