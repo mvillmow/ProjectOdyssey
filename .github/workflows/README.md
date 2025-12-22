@@ -428,7 +428,7 @@ All CI workflows use justfile recipes for consistent command execution between l
   run: just test-group "tests/shared/core" "test_*.mojo"
 
 - name: Run all tests
-  run: just ci-test-mojo
+  run: just test-mojo
 ```
 
 **Benefits**:
@@ -443,7 +443,7 @@ All CI workflows use justfile recipes for consistent command execution between l
 - `just build` - Build shared package with compilation validation
 - `just ci-package` - Compile package (validation only, no output artifact)
 - `just test-group PATH PATTERN` - Run specific test group
-- `just ci-test-mojo` - Run all Mojo tests
+- `just test-mojo` - Run all Mojo tests
 - `just validate` - Full validation (build + test)
 - `just pre-commit` - Run pre-commit hooks
 

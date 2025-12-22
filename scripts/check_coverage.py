@@ -154,7 +154,7 @@ def main():
         print()
         print("   WORKAROUND: Manual test discovery ensures all tests execute")
         print("   - Script `validate_test_coverage.py` verifies test files exist")
-        print("   - CI runs all tests via `just ci-test-mojo` (validation only, no metrics)")
+        print("   - CI runs all tests via `just test-mojo` (validation only, no metrics)")
         print()
         print("   IMPACT: Test execution is verified, but coverage metrics unavailable")
         print("   - CI passes without coverage enforcement until tooling exists")

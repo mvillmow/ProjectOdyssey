@@ -436,7 +436,7 @@ ci-test-file file:
     pixi run mojo -I . "{{file}}"
 
 # CI: Test group of Mojo files with -Werror enforcement
-ci-test-group path pattern:
+test-group path pattern:
     #!/usr/bin/env bash
     set -e
     REPO_ROOT="$(pwd)"
@@ -549,7 +549,7 @@ ci-package:
     pixi run mojo package $STRICT -I "$REPO_ROOT" shared -o build/ProjectOdyssey-shared.mojopkg
 
 # CI: Run all Mojo tests
-ci-test-mojo:
+test-mojo:
     #!/usr/bin/env bash
     set -e
     REPO_ROOT="$(pwd)"
@@ -576,7 +576,7 @@ validate:
     @echo "Running full CI validation..."
     @just ci-build
     @just ci-package
-    @just ci-test-mojo
+    @just test-mojo
     @echo "✅ Validation complete"
 
 # ==============================================================================
@@ -602,7 +602,7 @@ help:
     @echo "Docker:    docker-up, docker-down, docker-logs"
     @echo "Dev:       dev, shell, docs, docs-serve"
     @echo "CI:        ci, ci-full, pre-commit, validate"
-    @echo "CI (GHA):  ci-build, ci-package, ci-test-group, ci-test-mojo, validate"
+    @echo "CI (GHA):  ci-build, ci-package, test-group, test-mojo, validate"
     @echo "Utility:   help, status, clean, version"
     @echo ""
     @echo "Examples:"

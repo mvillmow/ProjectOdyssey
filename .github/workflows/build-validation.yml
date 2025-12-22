@@ -69,7 +69,7 @@ jobs:
           # Check if smoke tests exist
           if [ -d "tests/smoke" ]; then
             echo "Running smoke tests using justfile..."
-            just ci-test-group "tests/smoke" "test_*.mojo" || true
+            just test-group "tests/smoke" "test_*.mojo" || true
           else
             echo "⚠️  No smoke tests found yet (tests/smoke/)"
           fi

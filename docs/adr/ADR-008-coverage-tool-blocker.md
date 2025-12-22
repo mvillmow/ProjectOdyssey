@@ -109,7 +109,7 @@ While coverage metrics are unavailable, the project ensures all tests execute vi
 - Verifies test functions exist (validates test structure)
 - Does NOT measure line/branch coverage (cannot without instrumentation)
 
-**CI Integration**: `just ci-test-mojo` runs all discovered tests
+**CI Integration**: `just test-mojo` runs all discovered tests
 
 - Ensures tests execute successfully
 - Catches test failures (but not coverage gaps)
@@ -186,7 +186,7 @@ print("   - This is NOT a bug - waiting on Mojo team to release coverage support
 print()
 print("   WORKAROUND: Manual test discovery ensures all tests execute")
 print("   - Script `validate_test_coverage.py` verifies test files exist")
-print("   - CI runs all tests via `just ci-test-mojo` (validation only, no metrics)")
+print("   - CI runs all tests via `just test-mojo` (validation only, no metrics)")
 print()
 print("   IMPACT: Test execution is verified, but coverage metrics unavailable")
 print("   - CI passes without coverage enforcement until tooling exists")
@@ -199,7 +199,7 @@ print("   REFERENCE: See ADR-008 and Issue #2583 for detailed explanation")
 CI workflows will continue to:
 
 1. **Run `check_coverage.py`** - Script executes but exits 0 gracefully
-2. **Run all tests** - `just ci-test-mojo` validates test execution
+2. **Run all tests** - `just test-mojo` validates test execution
 3. **Pass without coverage metrics** - No false failures due to missing tooling
 4. **Log clear warnings** - Developers understand blocker status
 
@@ -716,7 +716,7 @@ print("This check will be enabled once Mojo coverage tools are available.")
 **NO functional changes** - CI behavior unchanged:
 
 - `check_coverage.py` still exits 0 when coverage file missing
-- All tests still run via `just ci-test-mojo`
+- All tests still run via `just test-mojo`
 - CI still passes without coverage metrics
 
 **Documentation improvements**:
@@ -785,7 +785,7 @@ This implementation is successful when:
 
 **Test Discovery Workaround**:
 - `scripts/validate_test_coverage.py` - Manual test discovery
-- `just ci-test-mojo` - CI test execution
+- `just test-mojo` - CI test execution
 - Agent guidelines - Test requirements enforcement
 
 ## Revision History

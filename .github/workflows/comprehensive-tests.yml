@@ -322,7 +322,7 @@ jobs:
 
           # Use justfile to run test group
           # The justfile handles all the complexity of test discovery and execution
-          if just ci-test-group "${{ matrix.test-group.path }}" "${{ matrix.test-group.pattern }}"; then
+          if just test-group "${{ matrix.test-group.path }}" "${{ matrix.test-group.pattern }}"; then
             test_result="passed"
             exit_code=0
           else
@@ -384,7 +384,7 @@ jobs:
         uses: extractions/setup-just@v3
 
       - name: Run Configs tests
-        run: just ci-test-group tests/configs "test_*.mojo"
+        run: just test-group tests/configs "test_*.mojo"
 
       - name: Upload test results
         if: always()
@@ -422,7 +422,7 @@ jobs:
         uses: extractions/setup-just@v3
 
       - name: Run Benchmarks tests
-        run: just ci-test-group tests/shared/benchmarks "bench_*.mojo"
+        run: just test-group tests/shared/benchmarks "bench_*.mojo"
 
       - name: Upload test results
         if: always()
@@ -456,7 +456,7 @@ jobs:
         uses: extractions/setup-just@v3
 
       - name: Run Core Layers tests
-        run: just ci-test-group tests/shared/core/layers "test_*.mojo"
+        run: just test-group tests/shared/core/layers "test_*.mojo"
 
       - name: Upload test results
         if: always()

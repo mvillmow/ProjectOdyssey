@@ -905,7 +905,7 @@ just format                # Format all files
 just validate           # Full validation (build + test)
 just build              # Build shared package
 just ci-package           # Compile package (validation only)
-just ci-test-mojo          # Run all Mojo tests
+just test-mojo          # Run all Mojo tests
 just test-group PATH PATTERN  # Run specific test group
 just pre-commit               # Run pre-commit hooks
 just pre-commit-all               # Run pre-commit hooks on all files
