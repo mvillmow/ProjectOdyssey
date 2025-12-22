@@ -77,14 +77,7 @@ from .datasets import (
     ExTensorDataset,  # In-memory tensor dataset wrapper
     FileDataset,  # File-based lazy-loading dataset
     CIFAR10Dataset,  # CIFAR-10 dataset with train/test splits
-    CIFAR100Dataset,  # CIFAR-100 dataset with fine and coarse labels
-    MNISTDataset,  # MNIST dataset for digit classification
-    FashionMNISTDataset,  # Fashion-MNIST dataset for clothing classification
     get_cifar10_classes,  # CIFAR-10 class names
-    get_cifar100_fine_classes,  # CIFAR-100 fine class names
-    get_cifar100_coarse_classes,  # CIFAR-100 coarse class names
-    get_mnist_classes,  # MNIST class names
-    get_fashion_mnist_classes,  # Fashion-MNIST class names
 )
 
 # Dataset wrappers and utilities
