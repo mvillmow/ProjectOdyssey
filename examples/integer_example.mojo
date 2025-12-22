@@ -1,18 +1,15 @@
-"""Example demonstrating the usage of integer type wrappers.
+"""Example demonstrating the usage of Mojo's built-in integer types.
 
-This example shows how to use the Int8, Int16, Int32, Int64, UInt8, UInt16,
-UInt32, and UInt64 type wrappers, including:
+This example shows how to use Int8, Int16, Int32, Int64, UInt8, UInt16,
+UInt32, and UInt64 built-in types, including:
 - Creating integer values
 - Converting between types
 - Performing arithmetic operations
 - Converting tensors to/from integer types
-- Handling clamping and overflow
+- Handling overflow and type casting
 """
 
-from shared.core.types.integer import Int8, Int16, Int32, Int64
-from shared.core.types.unsigned import UInt8, UInt16, UInt32, UInt64
 from shared.core.extensor import ExTensor, zeros
-from shared.core.dtype import DType
 
 
 fn example_basic_signed_integers() raises:
@@ -22,34 +19,17 @@ fn example_basic_signed_integers() raises:
     # Create Int8 values
     var i8_1 = Int8(42)
     var i8_2 = Int8(-100)
-    print("Int8 values:", String(i8_1), String(i8_2))
+    print("Int8 values:", i8_1, i8_2)
 
     # Arithmetic operations
     var sum = i8_1 + Int8(10)
     var diff = i8_1 - Int8(5)
     var prod = i8_1 * Int8(2)
-    print(
-        "Int8 arithmetic: 42+10=",
-        String(sum),
-        " 42-5=",
-        String(diff),
-        " 42*2=",
-        String(prod),
-    )
+    print("Int8 arithmetic: 42+10=", sum, " 42-5=", diff, " 42*2=", prod)
 
     # Comparisons
     if i8_1 > i8_2:
         print("42 > -100: True")
-
-    # Clamping demonstration
-    var clamped_high = Int8(200)  # Exceeds max (127)
-    var clamped_low = Int8(-200)  # Below min (-128)
-    print(
-        "Clamping: 200 ->",
-        String(clamped_high),
-        " -200 ->",
-        String(clamped_low),
-    )
 
 
 fn example_basic_unsigned_integers() raises:
@@ -59,53 +39,35 @@ fn example_basic_unsigned_integers() raises:
     # Create UInt8 values
     var u8_1 = UInt8(255)
     var u8_2 = UInt8(100)
-    print("UInt8 values:", String(u8_1), String(u8_2))
+    print("UInt8 values:", u8_1, u8_2)
 
     # Arithmetic operations
     var sum = u8_2 + UInt8(50)
     var diff = u8_1 - u8_2
-    print("UInt8 arithmetic: 100+50=", String(sum), " 255-100=", String(diff))
-
-    # Clamping demonstration
-    var clamped_high = UInt8(300)  # Exceeds max (255)
-    var clamped_low = UInt8(-50)  # Below min (0)
-    print(
-        "Clamping: 300 ->", String(clamped_high), " -50 ->", String(clamped_low)
-    )
+    print("UInt8 arithmetic: 100+50=", sum, " 255-100=", diff)
 
 
 fn example_type_conversions() raises:
     """Demonstrate conversions between integer types."""
     print("\n=== Type Conversions ===\n")
 
-    # Int8 to larger types (lossless)
+    # Int8 to larger types (lossless via cast)
     var i8 = Int8(42)
-    var i16 = i8.to_int16()
-    var i32 = i8.to_int32()
-    var i64 = i8.to_int64()
-    print(
-        "Int8(42) -> Int16:",
-        String(i16),
-        " Int32:",
-        String(i32),
-        " Int64:",
-        String(i64),
-    )
+    var i16 = Int16(i8)
+    var i32 = Int32(i8)
+    var i64 = Int64(i8)
+    print("Int8(42) -> Int16:", i16, " Int32:", i32, " Int64:", i64)
 
-    # Larger types to Int8 (with clamping)
+    # Larger types to Int8 (truncation may occur)
     var large_i32 = Int32(1000)
-    var back_to_i8 = large_i32.to_int8()
-    print("Int32(1000) -> Int8:", String(back_to_i8), " (clamped to 127)")
+    var back_to_i8 = Int8(large_i32)
+    print("Int32(1000) -> Int8:", back_to_i8, " (truncated)")
 
     # Float conversions
-    var from_float = Int8.from_float32(42.7)
-    var to_float = from_float.to_float32()
-    print(
-        "Float32(42.7) -> Int8:",
-        String(from_float),
-        " -> Float32:",
-        String(to_float),
-    )
+    var float_val = Float32(42.7)
+    var from_float = Int8(float_val)
+    var to_float = Float32(from_float)
+    print("Float32(42.7) -> Int8:", from_float, " -> Float32:", to_float)
 
 
 fn example_tensor_conversions() raises:
@@ -128,28 +90,28 @@ fn example_tensor_conversions() raises:
 
     # Convert to Int8
     var i8_tensor = t.to_int8()
-    print("\nAfter conversion to Int8 (truncated and clamped):")
+    print("\nAfter conversion to Int8 (truncated):")
     print(
         " ",
-        String(i8_tensor._data.bitcast[Int8]()[0]),
-        String(i8_tensor._data.bitcast[Int8]()[1]),
-        String(i8_tensor._data.bitcast[Int8]()[2]),
-        String(i8_tensor._data.bitcast[Int8]()[3]),
-        String(i8_tensor._data.bitcast[Int8]()[4]),
-        String(i8_tensor._data.bitcast[Int8]()[5]),
+        i8_tensor._data.bitcast[Int8]()[0],
+        i8_tensor._data.bitcast[Int8]()[1],
+        i8_tensor._data.bitcast[Int8]()[2],
+        i8_tensor._data.bitcast[Int8]()[3],
+        i8_tensor._data.bitcast[Int8]()[4],
+        i8_tensor._data.bitcast[Int8]()[5],
     )
 
     # Convert to UInt8
     var u8_tensor = t.to_uint8()
-    print("\nAfter conversion to UInt8 (truncated and clamped):")
+    print("\nAfter conversion to UInt8 (clamped to 0-255):")
     print(
         " ",
-        String(u8_tensor._data.bitcast[UInt8]()[0]),
-        String(u8_tensor._data.bitcast[UInt8]()[1]),
-        String(u8_tensor._data.bitcast[UInt8]()[2]),
-        String(u8_tensor._data.bitcast[UInt8]()[3]),
-        String(u8_tensor._data.bitcast[UInt8]()[4]),
-        String(u8_tensor._data.bitcast[UInt8]()[5]),
+        u8_tensor._data.bitcast[UInt8]()[0],
+        u8_tensor._data.bitcast[UInt8]()[1],
+        u8_tensor._data.bitcast[UInt8]()[2],
+        u8_tensor._data.bitcast[UInt8]()[3],
+        u8_tensor._data.bitcast[UInt8]()[4],
+        u8_tensor._data.bitcast[UInt8]()[5],
     )
 
 
@@ -160,23 +122,17 @@ fn example_16bit_integers() raises:
     # Int16
     var i16_1 = Int16(1000)
     var i16_2 = Int16(-500)
-    print("Int16 values:", String(i16_1), String(i16_2))
+    print("Int16 values:", i16_1, i16_2)
 
     # UInt16
     var u16_1 = UInt16(60000)
     var u16_2 = UInt16(5000)
-    print("UInt16 values:", String(u16_1), String(u16_2))
+    print("UInt16 values:", u16_1, u16_2)
 
     # Arithmetic
     var i16_sum = i16_1 + i16_2
     var u16_sum = u16_1 + u16_2
-    print("Int16 sum:", String(i16_sum), " UInt16 sum:", String(u16_sum))
-
-    # Clamping boundaries
-    var i16_max = Int16(40000)  # Exceeds 32767
-    var u16_max = UInt16(70000)  # Exceeds 65535
-    print("Int16 clamping: 40000 ->", String(i16_max))
-    print("UInt16 clamping: 70000 ->", String(u16_max))
+    print("Int16 sum:", i16_sum, " UInt16 sum:", u16_sum)
 
 
 fn example_32bit_integers() raises:
@@ -185,17 +141,17 @@ fn example_32bit_integers() raises:
 
     # Int32
     var i32 = Int32(1000000)
-    print("Int32 value:", String(i32))
+    print("Int32 value:", i32)
 
     # UInt32
     var u32 = UInt32(4000000000)
-    print("UInt32 value:", String(u32))
+    print("UInt32 value:", u32)
 
-    # Conversions
-    var i32_from_i8 = Int32.from_int8(Int8(42).value)
-    var u32_from_u16 = UInt32.from_uint16(UInt16(1000).value)
-    print("Int32 from Int8(42):", String(i32_from_i8))
-    print("UInt32 from UInt16(1000):", String(u32_from_u16))
+    # Conversions via cast
+    var i32_from_i8 = Int32(Int8(42))
+    var u32_from_u16 = UInt32(UInt16(1000))
+    print("Int32 from Int8(42):", i32_from_i8)
+    print("UInt32 from UInt16(1000):", u32_from_u16)
 
 
 fn example_64bit_integers() raises:
@@ -204,17 +160,17 @@ fn example_64bit_integers() raises:
 
     # Int64
     var i64 = Int64(9999999999)
-    print("Int64 value:", String(i64))
+    print("Int64 value:", i64)
 
     # UInt64
     var u64 = UInt64(18446744073709551615)
-    print("UInt64 large value:", String(u64))
+    print("UInt64 large value:", u64)
 
     # Lossless conversions from smaller types
-    var i64_from_i32 = Int64.from_int32(Int32(1000000).value)
-    var u64_from_u32 = UInt64.from_uint32(UInt32(4000000000).value)
-    print("Int64 from Int32:", String(i64_from_i32))
-    print("UInt64 from UInt32:", String(u64_from_u32))
+    var i64_from_i32 = Int64(Int32(1000000))
+    var u64_from_u32 = UInt64(UInt32(4000000000))
+    print("Int64 from Int32:", i64_from_i32)
+    print("UInt64 from UInt32:", u64_from_u32)
 
 
 fn example_practical_use_case() raises:
@@ -226,12 +182,7 @@ fn example_practical_use_case() raises:
     )
 
     # Create a float tensor with normalized values (0.0 to 1.0)
-    var normalized = zeros(
-        List[Int](
-            5,
-        ),
-        DType.float32,
-    )
+    var normalized = zeros([5], DType.float32)
     normalized._data.bitcast[Float32]()[0] = 0.0
     normalized._data.bitcast[Float32]()[1] = 0.25
     normalized._data.bitcast[Float32]()[2] = 0.5
@@ -242,12 +193,7 @@ fn example_practical_use_case() raises:
     print("  [0.0, 0.25, 0.5, 0.75, 1.0]")
 
     # Scale to 0-255 range
-    var scaled = zeros(
-        List[Int](
-            5,
-        ),
-        DType.float32,
-    )
+    var scaled = zeros([5], DType.float32)
     for i in range(5):
         scaled._data.bitcast[Float32]()[i] = (
             normalized._data.bitcast[Float32]()[i] * 255.0
@@ -262,20 +208,15 @@ fn example_practical_use_case() raises:
     print("\nQuantized to UInt8 (truncated):")
     print(
         " ",
-        String(quantized._data.bitcast[UInt8]()[0]),
-        String(quantized._data.bitcast[UInt8]()[1]),
-        String(quantized._data.bitcast[UInt8]()[2]),
-        String(quantized._data.bitcast[UInt8]()[3]),
-        String(quantized._data.bitcast[UInt8]()[4]),
+        quantized._data.bitcast[UInt8]()[0],
+        quantized._data.bitcast[UInt8]()[1],
+        quantized._data.bitcast[UInt8]()[2],
+        quantized._data.bitcast[UInt8]()[3],
+        quantized._data.bitcast[UInt8]()[4],
     )
 
     # Dequantize back to float
-    var dequantized = zeros(
-        List[Int](
-            5,
-        ),
-        DType.float32,
-    )
+    var dequantized = zeros([5], DType.float32)
     for i in range(5):
         dequantized._data.bitcast[Float32]()[i] = (
             Float32(quantized._data.bitcast[UInt8]()[i]) / 255.0
@@ -284,11 +225,11 @@ fn example_practical_use_case() raises:
     print("\nDequantized back to 0.0-1.0 range:")
     print(
         " ",
-        String(dequantized._data.bitcast[Float32]()[0]),
-        String(dequantized._data.bitcast[Float32]()[1]),
-        String(dequantized._data.bitcast[Float32]()[2]),
-        String(dequantized._data.bitcast[Float32]()[3]),
-        String(dequantized._data.bitcast[Float32]()[4]),
+        dequantized._data.bitcast[Float32]()[0],
+        dequantized._data.bitcast[Float32]()[1],
+        dequantized._data.bitcast[Float32]()[2],
+        dequantized._data.bitcast[Float32]()[3],
+        dequantized._data.bitcast[Float32]()[4],
     )
 
     print(
@@ -300,7 +241,7 @@ fn example_practical_use_case() raises:
 fn main() raises:
     """Run all integer type examples."""
     print("=" * 60)
-    print("Integer Type Wrappers - Usage Examples")
+    print("Mojo Built-in Integer Types - Usage Examples")
     print("=" * 60)
 
     example_basic_signed_integers()
