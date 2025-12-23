@@ -226,7 +226,7 @@ struct LeNet5(Model, Movable):
         """Forward pass through LeNet-5.
 
         Args:
-            input: Input tensor of shape (batch, INPUT_CHANNELS, INPUT_HEIGHT, INPUT_WIDTH)
+            input: Input tensor of shape (batch, INPUT_CHANNELS, INPUT_HEIGHT, INPUT_WIDTH).
 
         Returns:
             Output logits of shape (batch, num_classes).
@@ -288,7 +288,7 @@ struct LeNet5(Model, Movable):
         """Predict class for a single input.
 
         Args:
-            input: Input tensor of shape (1, 1, 28, 28)
+            input: Input tensor of shape (1, 1, 28, 28).
 
         Returns:
             Predicted class index (0 to num_classes-1).
@@ -311,7 +311,7 @@ struct LeNet5(Model, Movable):
         """Save model weights to directory.
 
         Args:
-            weights_dir: Directory to save weight files (one file per parameter)
+            weights_dir: Directory to save weight files (one file per parameter).
 
         Note:
             Creates directory if it doesn't exist. Each parameter saved as:
@@ -342,7 +342,7 @@ struct LeNet5(Model, Movable):
         """Load model weights from directory.
 
         Args:
-            weights_dir: Directory containing weight files
+            weights_dir: Directory containing weight files.
 
         Raises:
             Error: If weight files are missing or have incompatible shapes.
@@ -385,8 +385,17 @@ struct LeNet5(Model, Movable):
         """Update parameters using SGD.
 
         Args:
-            learning_rate: Learning rate for gradient descent
-            grad_*: Gradients for each parameter.
+            learning_rate: Learning rate for gradient descent.
+            grad_conv1_kernel: Gradient for first convolution kernel.
+            grad_conv1_bias: Gradient for first convolution bias.
+            grad_conv2_kernel: Gradient for second convolution kernel.
+            grad_conv2_bias: Gradient for second convolution bias.
+            grad_fc1_weights: Gradient for first fully connected layer weights.
+            grad_fc1_bias: Gradient for first fully connected layer bias.
+            grad_fc2_weights: Gradient for second fully connected layer weights.
+            grad_fc2_bias: Gradient for second fully connected layer bias.
+            grad_fc3_weights: Gradient for third fully connected layer weights.
+            grad_fc3_bias: Gradient for third fully connected layer bias.
         """
         # SGD update: param = param - lr * grad
         _sgd_update(self.conv1_kernel, grad_conv1_kernel, learning_rate)
