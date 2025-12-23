@@ -18,7 +18,7 @@ Usage:
     mojo examples/mixed_precision_training.mojo
 """
 
-from shared.core import ExTensor
+from shared.core import ExTensor, full
 from shared.training.mixed_precision import (
     GradientScaler,
     convert_to_fp32_master,
@@ -47,7 +47,7 @@ fn simple_optimizer_step(
     mut master_params: ExTensor, gradients: ExTensor, learning_rate: Float64
 ) raises:
     """Simple SGD update: params = params - lr * grads."""
-    var lr_tensor = ExTensor.full(
+    var lr_tensor = full(
         master_params.shape(), learning_rate, master_params.dtype()
     )
     var update = gradients * lr_tensor
@@ -87,7 +87,7 @@ fn main() raises:
     var param_shape = List[Int]()
 
     # Model parameters in FP16
-    var model_params = ExTensor.full(param_shape, 1.0, model_dtype)
+    var model_params = full(param_shape, 1.0, model_dtype)
     print("  Model params shape: [100]")
     print(
         "  Model params dtype: "
@@ -130,8 +130,8 @@ fn main() raises:
         print("Step " + String(step + 1) + "/" + String(num_steps))
 
         # Create dummy input and target
-        var input = ExTensor.full(param_shape, 0.5, model_dtype)
-        var target = ExTensor.full(param_shape, 0.6, model_dtype)
+        var input = full(param_shape, 0.5, model_dtype)
+        var target = full(param_shape, 0.6, model_dtype)
 
         # ----------------------------------------------------------------
         # Forward Pass
