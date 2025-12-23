@@ -84,3 +84,18 @@ struct RandomTransformBase(Copyable, Movable):
         """
         var rand_val = random_float()
         return rand_val < self.p
+
+
+# ============================================================================
+# Main function for standalone compilation validation
+# ============================================================================
+
+
+fn main():
+    """Main function for build validation.
+
+    This module is a library and should be imported, not run directly.
+    This main() function exists only to satisfy mojo build requirements
+    for compilation validation.
+    """
+    print("random_transform_base.mojo: Library module - import for use")
