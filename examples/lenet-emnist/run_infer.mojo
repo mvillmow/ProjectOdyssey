@@ -33,7 +33,7 @@ fn get_class_label(class_idx: Int) -> String:
     """Convert class index to human-readable label.
 
     Args:
-        class_idx: Class index (0-46 for EMNIST Balanced)
+        class_idx: Class index (0-46 for EMNIST Balanced).
 
     Returns:
         Character label.
@@ -73,7 +73,7 @@ struct InferConfig(Movable):
         self.data_dir = "datasets/emnist"
         self.top_k = 5
 
-    fn __moveinit__(out self, owned other: Self):
+    fn __moveinit__(out self, deinit other: Self):
         self.checkpoint_dir = other.checkpoint_dir^
         self.image_path = other.image_path^
         self.run_test_set = other.run_test_set
@@ -124,7 +124,7 @@ fn load_image(filepath: String) raises -> ExTensor:
         - Formula: normalized_pixel = raw_pixel / 255.0
 
     Args:
-        filepath: Path to image file (IDX or binary format)
+        filepath: Path to image file (IDX or binary format).
 
     Returns:
         Normalized image tensor of shape (1, 1, 28, 28) ready for model input
@@ -169,8 +169,8 @@ fn get_top_k_predictions(
     """Get top-k predictions from logits.
 
     Args:
-        logits: Model output logits (1, num_classes)
-        k: Number of top predictions to return
+        logits: Model output logits (1, num_classes).
+        k: Number of top predictions to return.
 
     Returns:
         List of (class_idx, score) tuples sorted by score descending.
@@ -208,9 +208,9 @@ fn evaluate_test_set(
     """Evaluate model on full test set.
 
     Args:
-        model: Loaded LeNet-5 model
-        test_images: Normalized test images (N, 1, 28, 28)
-        test_labels: Test labels (N,)
+        model: Loaded LeNet-5 model.
+        test_images: Normalized test images (N, 1, 28, 28).
+        test_labels: Test labels (N,).
 
     Returns:
         Test accuracy (0.0 to 1.0).
