@@ -14,8 +14,7 @@ Note:
 """
 
 from shared.autograd import Variable, GradientTape, SGD
-from shared.core.extensor import ExTensor
-from shared.core.creation import zeros, ones
+from shared.core.extensor import ExTensor, zeros, ones
 from shared.core.arithmetic import add, multiply, subtract
 from shared.core.reduction import sum as tensor_sum, mean
 from shared.core.loss import mean_squared_error, mean_squared_error_backward
@@ -36,14 +35,18 @@ fn simple_linear_regression() raises:
     var learning_rate: Float64 = 0.01
     var num_epochs: Int = 10
 
+    # Create gradient tape (needed for Variable creation)
+    var tape = GradientTape()
+    tape.enable()
+
     # Create parameters
     var w_data = zeros(List[Int](), DType.float32)
     w_data._set_float64(0, 0.5)  # Initialize w = 0.5
-    var w = Variable(w_data, requires_grad=True)
+    var w = Variable(w_data, requires_grad=True, tape=tape)
 
     var b_data = zeros(List[Int](), DType.float32)
     b_data._set_float64(0, 0.0)  # Initialize b = 0.0
-    var b = Variable(b_data, requires_grad=True)
+    var b = Variable(b_data, requires_grad=True, tape=tape)
 
     print("Initial parameters:")
     print("  w =", w.data._get_float64(0))
@@ -63,10 +66,6 @@ fn simple_linear_regression() raises:
 
     # Create optimizer
     var optimizer = SGD(learning_rate)
-
-    # Create gradient tape (will enable automatic recording in future)
-    var tape = GradientTape()
-    tape.enable()
 
     print("Training for", num_epochs, "epochs...")
     print()
@@ -114,18 +113,18 @@ fn simple_linear_regression() raises:
         # So: ∂loss/∂b = sum(∂loss/∂predictions)
         var grad_b_sum = tensor_sum(grad_predictions, axis=0, keepdims=False)
 
-        # Update Variable gradients
-        w.grad = grad_w_sum
-        b.grad = grad_b_sum
+        # Store gradients in tape
+        tape.registry.set_grad(w.id, grad_w_sum)
+        tape.registry.set_grad(b.id, grad_b_sum)
 
         # Update parameters using optimizer
         var params: List[Variable] = []
-        params.append(w)
-        params.append(b)
-        optimizer.step(params)
+        params.append(w.copy())
+        params.append(b.copy())
+        optimizer.step(params, tape)
 
         # Reset gradients
-        optimizer.zero_grad(params)
+        optimizer.zero_grad(tape)
 
         # Print progress
         var loss_value = loss._get_float64(0)
