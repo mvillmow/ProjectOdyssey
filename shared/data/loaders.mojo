@@ -5,8 +5,8 @@ for efficient batch loading during training.
 """
 
 from shared.core.extensor import ExTensor, zeros
-from .datasets import Dataset
-from .samplers import Sampler, SequentialSampler, RandomSampler
+from shared.data._datasets_core import Dataset
+from shared.data.samplers import Sampler, SequentialSampler, RandomSampler
 
 
 # ============================================================================
