@@ -1,6 +1,9 @@
 """Example: Custom Layers - Parametric ReLU
 
-This example implements a custom activation layer with learnable parameters.
+This example demonstrates implementing a custom PReLU activation.
+
+PReLU is similar to Leaky ReLU but uses learnable parameters for the
+negative slope. The formula is: PReLU(x) = max(alpha*x, x) = max(0, x) + alpha * min(0, x).
 
 Usage:
     pixi run mojo run examples/custom-layers/prelu_activation.mojo
@@ -8,63 +11,69 @@ Usage:
 See documentation: docs/advanced/custom-layers.md
 """
 
-from shared.core import Module, Tensor
+from shared.core import ExTensor, zeros, clip
 
 
-struct PReLU(Module):
-    """Parametric ReLU activation.
+fn prelu_simple(input: ExTensor, alpha: Float32) raises -> ExTensor:
+    """Apply PReLU activation element-wise.
 
-    Formula: PReLU(x) = max(0, x) + α * min(0, x).
+    Args:
+        input: Input tensor.
+        alpha: Negative slope parameter.
+
+    Returns:
+        PReLU(input) = max(0, x) + alpha * min(0, x).
     """
+    # Use clip to implement max(0, x) and min(0, x)
+    var positive = clip(input, 0.0, 1e9)  # max(0, x)
 
-    var alpha: Tensor  # Learnable slope for negative values
+    # For negative part: min(0, x) = -max(0, -x)
+    var result = zeros(input.shape(), input.dtype())
+    var input_ptr = input._data.bitcast[Float32]()
+    var result_ptr = result._data.bitcast[Float32]()
 
-    fn __init__(out self, num_features: Int = 1, init_value: Float64 = 0.25):
-        """Initialize PReLU.
-
-        Args:
-            num_features: Number of parameters (1 for shared, or per-channel).
-            init_value: Initial value for alpha.
-        """
-        self.alpha = Tensor.ones(num_features, DType.float32) * init_value
-
-    fn forward(mut self, input: Tensor) -> Tensor:
-        """Forward pass.
-
-        Returns:
-            PReLU(input) = max(0, input) + α * min(0, input).
-        """
-        var positive = max(input, 0.0)
-        var negative = min(input, 0.0)
-
-        # Broadcast alpha if needed
-        if self.alpha.size() == 1:
-            return positive + self.alpha[0] * negative
+    for i in range(input.numel()):
+        var x = input_ptr[i]
+        if x > 0:
+            result_ptr[i] = x
         else:
-            # Per-channel alpha
-            return positive + self.alpha.reshape(1, -1, 1, 1) * negative
+            result_ptr[i] = alpha * x
 
-    fn parameters(mut self) -> List[Tensor]:
-        """Return alpha for optimization."""
-        return [self.alpha]
+    return result^
 
 
 fn main() raises:
     """Demonstrate PReLU activation."""
 
-    # Create PReLU layer
-    var prelu = PReLU(num_features=1, init_value=0.25)
+    print("\n=== PReLU Activation Example ===\n")
 
-    # Test with sample input
-    var input = Tensor([-2.0, -1.0, 0.0, 1.0, 2.0])
-    print("Input:", input)
+    # Create sample input tensor with both positive and negative values
+    var input_data = List[Float32]()
+    input_data.append(-2.0)
+    input_data.append(-1.0)
+    input_data.append(0.0)
+    input_data.append(1.0)
+    input_data.append(2.0)
+    var input = ExTensor(input_data^)
 
-    var output = prelu.forward(input)
-    print("Output:", output)
-    print("Expected: [-0.5, -0.25, 0.0, 1.0, 2.0]")
+    print("Input values:")
+    var input_ptr = input._data.bitcast[Float32]()
+    for i in range(input.numel()):
+        print("  ", input_ptr[i])
 
-    # Show parameters
-    var params = prelu.parameters()
-    print("Alpha parameter:", params[0])
+    # Create learnable alpha parameter (slope for negative values)
+    # Using alpha = 0.25 for this demonstration
+    var alpha: Float32 = 0.25
+    print("\nAlpha (negative slope):", alpha)
 
-    print("\nPReLU example complete!")
+    # Apply PReLU activation
+    var output = prelu_simple(input, alpha)
+
+    print("\nOutput values:")
+    var output_ptr = output._data.bitcast[Float32]()
+    for i in range(output.numel()):
+        print("  ", output_ptr[i])
+
+    print("\nExpected: [-0.5, -0.25, 0.0, 1.0, 2.0]")
+    print("  (Positive values unchanged, negative values scaled by alpha)")
+    print("\nPReLU activation example complete!")
