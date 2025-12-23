@@ -233,7 +233,7 @@ struct VGG16:
         """Initialize VGG-16 model with random weights.
 
         Args:
-            num_classes: Number of output classes (default: 10 for CIFAR-10)
+            num_classes: Number of output classes (default: 10 for CIFAR-10).
             dropout_rate: Dropout probability for FC layers (default: 0.5).
         """
         self.num_classes = num_classes
@@ -244,161 +244,161 @@ struct VGG16:
 
         # Block 1: INPUT_CHANNELS -> BLOCK1_CHANNELS
         self.conv1_1_kernel = he_uniform(
-            List[Int](
+            [
                 BLOCK1_CHANNELS,
                 INPUT_CHANNELS,
                 CONV_KERNEL_SIZE,
                 CONV_KERNEL_SIZE,
-            ),
+            ],
             DType.float32,
         )
-        self.conv1_1_bias = zeros(List[Int](BLOCK1_CHANNELS), DType.float32)
+        self.conv1_1_bias = zeros([BLOCK1_CHANNELS], DType.float32)
         self.conv1_2_kernel = he_uniform(
-            List[Int](
+            [
                 BLOCK1_CHANNELS,
                 BLOCK1_CHANNELS,
                 CONV_KERNEL_SIZE,
                 CONV_KERNEL_SIZE,
-            ),
+            ],
             DType.float32,
         )
-        self.conv1_2_bias = zeros(List[Int](BLOCK1_CHANNELS), DType.float32)
+        self.conv1_2_bias = zeros([BLOCK1_CHANNELS], DType.float32)
 
         # Block 2: BLOCK1_CHANNELS -> BLOCK2_CHANNELS
         self.conv2_1_kernel = he_uniform(
-            List[Int](
+            [
                 BLOCK2_CHANNELS,
                 BLOCK1_CHANNELS,
                 CONV_KERNEL_SIZE,
                 CONV_KERNEL_SIZE,
-            ),
+            ],
             DType.float32,
         )
-        self.conv2_1_bias = zeros(List[Int](BLOCK2_CHANNELS), DType.float32)
+        self.conv2_1_bias = zeros([BLOCK2_CHANNELS], DType.float32)
         self.conv2_2_kernel = he_uniform(
-            List[Int](
+            [
                 BLOCK2_CHANNELS,
                 BLOCK2_CHANNELS,
                 CONV_KERNEL_SIZE,
                 CONV_KERNEL_SIZE,
-            ),
+            ],
             DType.float32,
         )
-        self.conv2_2_bias = zeros(List[Int](BLOCK2_CHANNELS), DType.float32)
+        self.conv2_2_bias = zeros([BLOCK2_CHANNELS], DType.float32)
 
         # Block 3: BLOCK2_CHANNELS -> BLOCK3_CHANNELS
         self.conv3_1_kernel = he_uniform(
-            List[Int](
+            [
                 BLOCK3_CHANNELS,
                 BLOCK2_CHANNELS,
                 CONV_KERNEL_SIZE,
                 CONV_KERNEL_SIZE,
-            ),
+            ],
             DType.float32,
         )
-        self.conv3_1_bias = zeros(List[Int](BLOCK3_CHANNELS), DType.float32)
+        self.conv3_1_bias = zeros([BLOCK3_CHANNELS], DType.float32)
         self.conv3_2_kernel = he_uniform(
-            List[Int](
+            [
                 BLOCK3_CHANNELS,
                 BLOCK3_CHANNELS,
                 CONV_KERNEL_SIZE,
                 CONV_KERNEL_SIZE,
-            ),
+            ],
             DType.float32,
         )
-        self.conv3_2_bias = zeros(List[Int](BLOCK3_CHANNELS), DType.float32)
+        self.conv3_2_bias = zeros([BLOCK3_CHANNELS], DType.float32)
         self.conv3_3_kernel = he_uniform(
-            List[Int](
+            [
                 BLOCK3_CHANNELS,
                 BLOCK3_CHANNELS,
                 CONV_KERNEL_SIZE,
                 CONV_KERNEL_SIZE,
-            ),
+            ],
             DType.float32,
         )
-        self.conv3_3_bias = zeros(List[Int](BLOCK3_CHANNELS), DType.float32)
+        self.conv3_3_bias = zeros([BLOCK3_CHANNELS], DType.float32)
 
         # Block 4: BLOCK3_CHANNELS -> BLOCK4_CHANNELS
         self.conv4_1_kernel = he_uniform(
-            List[Int](
+            [
                 BLOCK4_CHANNELS,
                 BLOCK3_CHANNELS,
                 CONV_KERNEL_SIZE,
                 CONV_KERNEL_SIZE,
-            ),
+            ],
             DType.float32,
         )
-        self.conv4_1_bias = zeros(List[Int](BLOCK4_CHANNELS), DType.float32)
+        self.conv4_1_bias = zeros([BLOCK4_CHANNELS], DType.float32)
         self.conv4_2_kernel = he_uniform(
-            List[Int](
+            [
                 BLOCK4_CHANNELS,
                 BLOCK4_CHANNELS,
                 CONV_KERNEL_SIZE,
                 CONV_KERNEL_SIZE,
-            ),
+            ],
             DType.float32,
         )
-        self.conv4_2_bias = zeros(List[Int](BLOCK4_CHANNELS), DType.float32)
+        self.conv4_2_bias = zeros([BLOCK4_CHANNELS], DType.float32)
         self.conv4_3_kernel = he_uniform(
-            List[Int](
+            [
                 BLOCK4_CHANNELS,
                 BLOCK4_CHANNELS,
                 CONV_KERNEL_SIZE,
                 CONV_KERNEL_SIZE,
-            ),
+            ],
             DType.float32,
         )
-        self.conv4_3_bias = zeros(List[Int](BLOCK4_CHANNELS), DType.float32)
+        self.conv4_3_bias = zeros([BLOCK4_CHANNELS], DType.float32)
 
         # Block 5: BLOCK4_CHANNELS -> BLOCK5_CHANNELS
         self.conv5_1_kernel = he_uniform(
-            List[Int](
+            [
                 BLOCK5_CHANNELS,
                 BLOCK4_CHANNELS,
                 CONV_KERNEL_SIZE,
                 CONV_KERNEL_SIZE,
-            ),
+            ],
             DType.float32,
         )
-        self.conv5_1_bias = zeros(List[Int](BLOCK5_CHANNELS), DType.float32)
+        self.conv5_1_bias = zeros([BLOCK5_CHANNELS], DType.float32)
         self.conv5_2_kernel = he_uniform(
-            List[Int](
+            [
                 BLOCK5_CHANNELS,
                 BLOCK5_CHANNELS,
                 CONV_KERNEL_SIZE,
                 CONV_KERNEL_SIZE,
-            ),
+            ],
             DType.float32,
         )
-        self.conv5_2_bias = zeros(List[Int](BLOCK5_CHANNELS), DType.float32)
+        self.conv5_2_bias = zeros([BLOCK5_CHANNELS], DType.float32)
         self.conv5_3_kernel = he_uniform(
-            List[Int](
+            [
                 BLOCK5_CHANNELS,
                 BLOCK5_CHANNELS,
                 CONV_KERNEL_SIZE,
                 CONV_KERNEL_SIZE,
-            ),
+            ],
             DType.float32,
         )
-        self.conv5_3_bias = zeros(List[Int](BLOCK5_CHANNELS), DType.float32)
+        self.conv5_3_bias = zeros([BLOCK5_CHANNELS], DType.float32)
 
         # FC1: flattened_size -> FC1_OUT_FEATURES (derived from conv/pool layers)
         self.fc1_weights = he_uniform(
-            List[Int](FC1_OUT_FEATURES, flattened_size), DType.float32
+            [FC1_OUT_FEATURES, flattened_size], DType.float32
         )
-        self.fc1_bias = zeros(List[Int](FC1_OUT_FEATURES), DType.float32)
+        self.fc1_bias = zeros([FC1_OUT_FEATURES], DType.float32)
 
         # FC2: FC1_OUT_FEATURES -> FC2_OUT_FEATURES
         self.fc2_weights = he_uniform(
-            List[Int](FC2_OUT_FEATURES, FC1_OUT_FEATURES), DType.float32
+            [FC2_OUT_FEATURES, FC1_OUT_FEATURES], DType.float32
         )
-        self.fc2_bias = zeros(List[Int](FC2_OUT_FEATURES), DType.float32)
+        self.fc2_bias = zeros([FC2_OUT_FEATURES], DType.float32)
 
         # FC3: FC2_OUT_FEATURES -> num_classes
         self.fc3_weights = he_uniform(
-            List[Int](num_classes, FC2_OUT_FEATURES), DType.float32
+            [num_classes, FC2_OUT_FEATURES], DType.float32
         )
-        self.fc3_bias = zeros(List[Int](num_classes), DType.float32)
+        self.fc3_bias = zeros([num_classes], DType.float32)
 
     fn forward(
         mut self, input: ExTensor, training: Bool = True
@@ -406,8 +406,8 @@ struct VGG16:
         """Forward pass through VGG-16.
 
         Args:
-            input: Input tensor of shape (batch, 3, 32, 32)
-            training: Whether in training mode (applies dropout if True)
+            input: Input tensor of shape (batch, 3, 32, 32).
+            training: Whether in training mode (applies dropout if True).
 
         Returns:
             Output logits of shape (batch, num_classes).
@@ -591,7 +591,7 @@ struct VGG16:
         """Predict class for a single input.
 
         Args:
-            input: Input tensor of shape (1, 3, 32, 32)
+            input: Input tensor of shape (1, 3, 32, 32).
 
         Returns:
             Predicted class index (0 to num_classes-1).
@@ -614,7 +614,7 @@ struct VGG16:
         """Save model weights to directory.
 
         Args:
-            weights_dir: Directory to save weight files (one file per parameter)
+            weights_dir: Directory to save weight files (one file per parameter).
 
         Note:
             Creates directory if it doesn't exist. Each parameter saved as:
@@ -712,3 +712,12 @@ struct VGG16:
         self.fc2_bias = loaded_params[29]
         self.fc3_weights = loaded_params[30]
         self.fc3_bias = loaded_params[31]
+
+
+fn main() raises:
+    """Entry point for build validation.
+
+    This function exists solely to allow `mojo build` to compile the module.
+    The actual model is used as a library by train.mojo and inference.mojo.
+    """
+    print("VGG-16 model module compiled successfully")
