@@ -24,8 +24,6 @@ from shared.core import (
     add,
     subtract,
     multiply,
-    # Matrix operations
-    matmul,
     # Activations
     relu,
     sigmoid,
@@ -34,7 +32,6 @@ from shared.core import (
     sigmoid_backward,
     # Backward passes
     add_backward,
-    matmul_backward,
     # Reduction
     mean,
     # Reduction backward
@@ -45,6 +42,9 @@ from shared.core import (
     # Initializers
     xavier_uniform,
 )
+
+# Import matrix operations directly to avoid name collision
+from shared.core.matrix import matmul, matmul_backward
 from shared.training.optimizers import sgd_step_simple
 
 
@@ -128,6 +128,11 @@ fn train_mlp() raises:
     # Initialize network parameters
     print("\nInitializing network parameters...")
 
+    # Network dimensions
+    comptime input_size = 2
+    comptime hidden_size = 4
+    comptime output_size = 1
+
     # Layer 1: (2, 4) - Input to Hidden
     var W1_shape = [hidden_size, input_size]
     var b1_shape = [hidden_size]
@@ -198,23 +203,32 @@ fn train_mlp() raises:
 
         # Backprop through layer 2
         # z2 = W2 @ h1 + b2
-        var (grad_h1_from_add, grad_b2) = add_backward(
-            grad_z2, matmul(W2, h1).shape(), b2.shape()
-        )
-        var (grad_W2, grad_h1_from_matmul) = matmul_backward(
-            grad_h1_from_add, W2, h1
-        )
-        var grad_h1 = grad_h1_from_matmul
+        # Need to recompute forward intermediate for backward pass
+        var W2h1 = matmul(W2, h1)
+        var add_grads_2 = add_backward(grad_z2, W2h1, b2)
+        var grad_h1_from_add = add_grads_2.grad_a
+        var grad_b2 = add_grads_2.grad_b
+
+        var matmul_grads_2 = matmul_backward(grad_h1_from_add, W2, h1)
+        var grad_W2 = matmul_grads_2.grad_a
+        var grad_h1 = matmul_grads_2.grad_b
 
         # Backprop through ReLU
         var grad_z1 = relu_backward(grad_h1, z1)
 
         # Backprop through layer 1
         # z1 = W1 @ x_sample + b1
-        var (grad_x_from_add, grad_b1) = add_backward(
-            grad_z1, matmul(W1, x_sample).shape(), b1.shape()
-        )
-        var (grad_W1, grad_x) = matmul_backward(grad_x_from_add, W1, x_sample)
+        # Need to recompute forward intermediate for backward pass
+        var W1x = matmul(W1, x_sample)
+        var add_grads_1 = add_backward(grad_z1, W1x, b1)
+        var grad_x_from_add = add_grads_1.grad_a
+        var grad_b1 = add_grads_1.grad_b
+
+        var matmul_grads_1 = matmul_backward(grad_x_from_add, W1, x_sample)
+        var grad_W1 = matmul_grads_1.grad_a
+        var _ = (
+            matmul_grads_1.grad_b
+        )  # grad_x not needed for this simple example
 
         # ========== OPTIMIZER STEP ==========
         # Update parameters using SGD
