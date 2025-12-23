@@ -14,24 +14,9 @@ Features:
 
 from shared.core import ExTensor, zeros
 from shared.data import extract_batch_pair, compute_num_batches, DatasetInfo
-from shared.data.datasets import load_cifar10_test
+from shared.data.datasets import CIFAR10Dataset, get_cifar10_classes
 from shared.training.metrics import evaluate_logits_batch
 from model import MobileNetV1
-
-
-# CIFAR-10 class names
-comptime CLASS_NAMES = [
-    "airplane",
-    "automobile",
-    "bird",
-    "cat",
-    "deer",
-    "dog",
-    "frog",
-    "horse",
-    "ship",
-    "truck",
-]
 
 
 fn evaluate_model(
@@ -40,7 +25,7 @@ fn evaluate_model(
     labels: ExTensor,
     batch_size: Int = 100,
     verbose: Bool = True,
-) raises -> (Float32, List[Int], List[Int]):
+) raises -> Tuple[Float32, List[Int], List[Int]]:
     """Evaluate model on a dataset."""
     var num_samples = images.shape()[0]
     var num_batches = compute_num_batches(num_samples, batch_size)
@@ -89,7 +74,7 @@ fn evaluate_model(
                     max_logit = logits_data[i * 10 + j]
                     pred_class = j
 
-            var true_class = int(batch_labels[i])
+            var true_class = Int(batch_labels[i])
             total_per_class[true_class] += 1
             if pred_class == true_class:
                 correct_per_class[true_class] += 1
@@ -115,13 +100,15 @@ fn evaluate_model(
         print("Evaluation complete!")
         print()
 
-    return (overall_accuracy, correct_per_class, total_per_class)
+    return Tuple(overall_accuracy, correct_per_class^, total_per_class^)
 
 
 fn print_detailed_results(
     accuracy: Float32, correct_per_class: List[Int], total_per_class: List[Int]
 ):
     """Print detailed evaluation results."""
+    var class_names = get_cifar10_classes()
+
     print("=" * 60)
     print("EVALUATION RESULTS")
     print("=" * 60)
@@ -142,7 +129,7 @@ fn print_detailed_results(
     print("-" * 60)
 
     for i in range(10):
-        var class_name = CLASS_NAMES[i]
+        var class_name = class_names[i]
         var correct = correct_per_class[i]
         var total = total_per_class[i]
         var class_acc = Float32(correct) / Float32(
@@ -179,7 +166,8 @@ fn main() raises:
     print()
 
     print("Loading CIFAR-10 test set...")
-    var test_data = load_cifar10_test("datasets/cifar10")
+    var cifar10_dataset = CIFAR10Dataset("datasets/cifar10")
+    var test_data = cifar10_dataset.get_test_data()
     var test_images = test_data[0]
     var test_labels = test_data[1]
     print("  Test samples: " + String(test_images.shape()[0]))
@@ -216,8 +204,8 @@ fn main() raises:
         model, test_images, test_labels, batch_size, verbose=True
     )
     var accuracy = results[0]
-    var correct_per_class = results[1]
-    var total_per_class = results[2]
+    var correct_per_class = results[1].copy()
+    var total_per_class = results[2].copy()
 
     print_detailed_results(accuracy, correct_per_class, total_per_class)
 
