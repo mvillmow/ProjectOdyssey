@@ -377,7 +377,7 @@ fn write_results_file(results: String, filepath: String) raises:
 
         # Create directory if it doesn't exist
         if directory and not os_path.exists(directory):
-            os_module.makedirs(directory, exist_ok=True)
+            os_module.makedirs(directory, 0o777, True)
 
         # Write file using Python
         var file = builtins.open(filepath, "w")
