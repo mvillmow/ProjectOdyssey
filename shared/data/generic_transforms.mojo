@@ -785,3 +785,18 @@ fn compose_transforms(
         ```
     """
     return SequentialTransform(transforms^)
+
+
+# ============================================================================
+# Main function for standalone compilation validation
+# ============================================================================
+
+
+fn main():
+    """Main function for build validation.
+
+    This module is a library and should be imported, not run directly.
+    This main() function exists only to satisfy mojo build requirements
+    for compilation validation.
+    """
+    print("generic_transforms.mojo: Library module - import for use")
