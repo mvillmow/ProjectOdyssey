@@ -15,7 +15,7 @@ Future versions may support arbitrary image dimensions.
 from shared.core.extensor import ExTensor, zeros
 from math import sqrt, floor, ceil, sin, cos
 from random import random_si64
-from .random_transform_base import RandomTransformBase, random_float
+from shared.data.random_transform_base import RandomTransformBase, random_float
 
 
 # ============================================================================
