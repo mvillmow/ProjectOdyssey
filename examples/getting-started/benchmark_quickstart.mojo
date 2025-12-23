@@ -49,8 +49,8 @@ fn forward_pass(network: SimpleNN, input_data: ExTensor) raises -> ExTensor:
     """Perform a forward pass through the network.
 
     Args:
-        network: Neural network
-        input_data: Input tensor (batch_size, input_size)
+        network: Neural network.
+        input_data: Input tensor (batch_size, input_size).
 
     Returns:
         Output tensor (batch_size, output_size).
@@ -71,9 +71,9 @@ fn training_step(
     """Perform a training step.
 
     Args:
-        network: Neural network
-        input_data: Input tensor
-        targets: Target labels
+        network: Neural network.
+        input_data: Input tensor.
+        targets: Target labels.
 
     Returns:
         Loss value.
@@ -83,10 +83,9 @@ fn training_step(
 
     # Placeholder loss computation
     var batch_size = logits.shape()[0]
-    var loss = Float32(0.0)
 
     # Simplified loss (in real code: cross-entropy, MSE, etc.)
-    loss = Float32(batch_size) / 100.0
+    var loss = Float32(batch_size) / 100.0
 
     # In real training:
     # - Backward pass computes gradients
@@ -162,9 +161,9 @@ fn analyze_batch_scaling(
     """Analyze how performance scales with batch size.
 
     Args:
-        batch32_result: Forward pass benchmark with batch size 32
-        batch64_result: Forward pass benchmark with batch size 64
-        batch128_result: Forward pass benchmark with batch size 128
+        batch32_result: Forward pass benchmark with batch size 32.
+        batch64_result: Forward pass benchmark with batch size 64.
+        batch128_result: Forward pass benchmark with batch size 128.
     """
     print("")
     print("=" * 70)
