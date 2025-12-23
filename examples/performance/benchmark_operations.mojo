@@ -121,9 +121,9 @@ fn print_operation_comparison(
     """Print comparison of operation across tensor sizes.
 
     Args:
-        operation_name: Name of the operation
-        small_result: Benchmark result for small tensor
-        medium_result: Benchmark result for medium tensor
+        operation_name: Name of the operation.
+        small_result: Benchmark result for small tensor.
+        medium_result: Benchmark result for medium tensor.
         large_result: Benchmark result for large tensor.
     """
     print("")
