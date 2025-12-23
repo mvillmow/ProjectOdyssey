@@ -54,16 +54,18 @@ struct ReLULayer(Differentiable):
     fn __init__(out self) raises:
         """Initialize ReLU layer."""
         # Start with empty tensor (will be filled during first forward)
-        self.last_input = zeros(List[Int].append(1))
+        var shape = List[Int]()
+        shape.append(1)
+        self.last_input = zeros(shape, DType.float32)
 
     fn forward(mut self, input: ExTensor) raises -> ExTensor:
-        """Forward pass: ReLU(x) = max(0, x)
+        """Forward pass: ReLU(x) = max(0, x).
 
         Args:
-            input: Input tensor
+            input: Input tensor.
 
         Returns:
-            Output tensor (same shape as input)
+            Output tensor (same shape as input).
 
         Note:
             Caches input for backward pass.
@@ -80,13 +82,13 @@ struct ReLULayer(Differentiable):
         return output^
 
     fn backward(self, grad_output: ExTensor) raises -> ExTensor:
-        """Backward pass: ∂ReLU/∂x = 1 if x > 0 else 0
+        """Backward pass: ∂ReLU/∂x = 1 if x > 0 else 0.
 
         Args:
-            grad_output: Gradient w.r.t. output (∂L/∂output)
+            grad_output: Gradient w.r.t. output (∂L/∂output).
 
         Returns:
-            Gradient w.r.t. input (∂L/∂input)
+            Gradient w.r.t. input (∂L/∂input).
 
         Note:
             Uses cached input from forward pass.
@@ -140,26 +142,26 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
         """Initialize fully connected layer.
 
         Args:
-            in_features: Input dimension
+            in_features: Input dimension.
             out_features: Output dimension.
         """
         # Initialize weights and gradients
         var w_shape = List[Int]()
         w_shape.append(out_features)
         w_shape.append(in_features)
-        self.weights = zeros(w_shape)
-        self.grad_weights = zeros(w_shape)
+        self.weights = zeros(w_shape, DType.float32)
+        self.grad_weights = zeros(w_shape, DType.float32)
 
         var b_shape = List[Int]()
         b_shape.append(out_features)
-        self.bias = zeros(b_shape)
-        self.grad_bias = zeros(b_shape)
+        self.bias = zeros(b_shape, DType.float32)
+        self.grad_bias = zeros(b_shape, DType.float32)
 
         # Initialize cache
         var cache_shape = List[Int]()
         cache_shape.append(1)
-        self.last_input = zeros(cache_shape)
-        self.last_output = zeros(cache_shape)
+        self.last_input = zeros(cache_shape, DType.float32)
+        self.last_output = zeros(cache_shape, DType.float32)
 
     fn init_xavier(mut self) raises:
         """Initialize weights using Xavier initialization."""
@@ -173,27 +175,32 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
         for i in range(self.weights.numel()):
             self.weights._set_float64(i, bound * 0.1)
 
-        self.bias.fill(0.0)
+        self.bias._fill_value_float(0.0)
 
     # Differentiable trait implementation
     fn forward(mut self, input: ExTensor) raises -> ExTensor:
-        """Forward pass: y = xW^T + b
+        """Forward pass: y = xW^T + b.
 
         Args:
-            input: Input tensor (batch_size, in_features)
+            input: Input tensor (batch_size, in_features).
 
         Returns:
             Output tensor (batch_size, out_features).
         """
         self.last_input = input.copy()
-        self.last_output = linear(input, self.weights, self.bias)
+        # TODO(#2725): Use linear operation when available
+        # For now, return zeros as placeholder
+        var output_shape = List[Int]()
+        output_shape.append(input.shape()[0])  # batch_size
+        output_shape.append(self.weights.shape()[0])  # out_features
+        self.last_output = zeros(output_shape, DType.float32)
         return self.last_output
 
     fn backward(self, grad_output: ExTensor) raises -> ExTensor:
         """Backward pass: Compute gradients w.r.t. input and parameters.
 
         Args:
-            grad_output: Gradient w.r.t. output
+            grad_output: Gradient w.r.t. output.
 
         Returns:
             Gradient w.r.t. input.
@@ -214,28 +221,28 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
         """Get all learnable parameters.
 
         Returns:
-            List of [weights, bias]
+            List of [weights, bias].
         """
         var params: List[ExTensor] = []
         params.append(self.weights)
         params.append(self.bias)
-        return params
+        return params^
 
     fn gradients(self) raises -> List[ExTensor]:
         """Get gradients for all parameters.
 
         Returns:
-            List of [grad_weights, grad_bias]
+            List of [grad_weights, grad_bias].
         """
         var grads: List[ExTensor] = []
         grads.append(self.grad_weights)
         grads.append(self.grad_bias)
-        return grads
+        return grads^
 
     fn zero_grad(mut self) raises:
         """Reset all gradients to zero."""
-        self.grad_weights.fill(0.0)
-        self.grad_bias.fill(0.0)
+        self.grad_weights._fill_value_float(0.0)
+        self.grad_bias._fill_value_float(0.0)
 
 
 # ============================================================================
@@ -299,24 +306,24 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
         shape.append(num_features)
 
         # Learnable parameters
-        self.gamma = zeros(shape)
-        self.gamma.fill(1.0)  # Initialize to 1
-        self.beta = zeros(shape)  # Initialize to 0
+        self.gamma = zeros(shape, DType.float32)
+        self.gamma._fill_value_float(1.0)  # Initialize to 1
+        self.beta = zeros(shape, DType.float32)  # Initialize to 0
 
         # Running statistics
-        self.running_mean = zeros(shape)
-        self.running_var = zeros(shape)
-        self.running_var.fill(1.0)
+        self.running_mean = zeros(shape, DType.float32)
+        self.running_var = zeros(shape, DType.float32)
+        self.running_var._fill_value_float(1.0)
 
         # Gradients
-        self.grad_gamma = zeros(shape)
-        self.grad_beta = zeros(shape)
+        self.grad_gamma = zeros(shape, DType.float32)
+        self.grad_beta = zeros(shape, DType.float32)
 
         # Cache
         var cache_shape = List[Int]()
         cache_shape.append(1)
-        self.last_input = zeros(cache_shape)
-        self.last_normalized = zeros(cache_shape)
+        self.last_input = zeros(cache_shape, DType.float32)
+        self.last_normalized = zeros(cache_shape, DType.float32)
 
         # Training config
         self.training_mode = True
@@ -343,19 +350,19 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
         var params: List[ExTensor] = []
         params.append(self.gamma)
         params.append(self.beta)
-        return params
+        return params^
 
     fn gradients(self) raises -> List[ExTensor]:
         """Get parameter gradients."""
         var grads: List[ExTensor] = []
         grads.append(self.grad_gamma)
         grads.append(self.grad_beta)
-        return grads
+        return grads^
 
     fn zero_grad(mut self) raises:
         """Reset gradients."""
-        self.grad_gamma.fill(0.0)
-        self.grad_beta.fill(0.0)
+        self.grad_gamma._fill_value_float(0.0)
+        self.grad_beta._fill_value_float(0.0)
 
     # Serializable trait
     fn save(self, path: String) raises:
@@ -452,7 +459,7 @@ fn demonstrate_trait_usage() raises:
     var input_shape = List[Int]()
     input_shape.append(2)
     input_shape.append(3)
-    var relu_input = zeros(input_shape)
+    var relu_input = zeros(input_shape, DType.float32)
     relu_input._set_float64(0, -1.0)
     relu_input._set_float64(1, 2.0)
     var relu_output = relu.forward(relu_input)
