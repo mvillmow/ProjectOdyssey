@@ -267,7 +267,7 @@ fn train_epoch(
     epoch: Int,
     total_epochs: Int,
 ) raises -> Float32:
-    """Train for one epoch using TrainingLoop.
+    """Train for one epoch using manual batch processing.
 
     Args:
         model: LeNet-5 model.
@@ -281,34 +281,95 @@ fn train_epoch(
     Returns:
         Average loss for the epoch.
     """
-    # Create training loop with progress logging every 100 batches
-    var loop = TrainingLoop(log_interval=100)
+    var num_samples = train_images.shape()[0]
+    var num_batches = (num_samples + batch_size - 1) // batch_size
+    var total_loss = Float32(0.0)
 
-    # Define compute_batch_loss closure that processes batches
-    fn compute_batch_loss(
-        batch_images: ExTensor, batch_labels_int: ExTensor
-    ) raises -> Float32:
-        # Convert batch labels to one-hot encoding (required for cross_entropy loss)
+    # Manual batch processing
+    for batch_idx in range(num_batches):
+        var start_idx = batch_idx * batch_size
+        var end_idx = min(start_idx + batch_size, num_samples)
+        var actual_batch_size = end_idx - start_idx
+
+        # Extract batch from training data
+        var batch_images_shape = List[Int]()
+        batch_images_shape.append(actual_batch_size)
+        batch_images_shape.append(train_images.shape()[1])
+        batch_images_shape.append(train_images.shape()[2])
+        batch_images_shape.append(train_images.shape()[3])
+        var batch_images = zeros(batch_images_shape, train_images.dtype())
+
+        var batch_labels_int_shape = List[Int]()
+        batch_labels_int_shape.append(actual_batch_size)
+        var batch_labels_int = zeros(
+            batch_labels_int_shape, train_labels.dtype()
+        )
+
+        # Copy data into batch tensors
+        for i in range(actual_batch_size):
+            var sample_idx = start_idx + i
+            # Copy image
+            for c in range(train_images.shape()[1]):
+                for h in range(train_images.shape()[2]):
+                    for w in range(train_images.shape()[3]):
+                        var src_idx = (
+                            sample_idx
+                            * train_images.shape()[1]
+                            * train_images.shape()[2]
+                            * train_images.shape()[3]
+                            + c
+                            * train_images.shape()[2]
+                            * train_images.shape()[3]
+                            + h * train_images.shape()[3]
+                            + w
+                        )
+                        var dst_idx = (
+                            i
+                            * train_images.shape()[1]
+                            * train_images.shape()[2]
+                            * train_images.shape()[3]
+                            + c
+                            * train_images.shape()[2]
+                            * train_images.shape()[3]
+                            + h * train_images.shape()[3]
+                            + w
+                        )
+                        batch_images._data.offset(dst_idx).store(
+                            train_images._data.offset(src_idx).load()
+                        )
+            # Copy label
+            batch_labels_int._data.offset(i).store(
+                train_labels._data.offset(sample_idx).load()
+            )
+
+        # Convert batch labels to one-hot encoding
         var batch_labels = one_hot_encode(
             batch_labels_int, num_classes=DEFAULT_NUM_CLASSES
         )
 
         # Compute gradients and update parameters
-        return compute_gradients(
+        var batch_loss = compute_gradients(
             model, batch_images, batch_labels, learning_rate
         )
+        total_loss += batch_loss
 
-    # Run one epoch using the consolidated training loop
-    var avg_loss = loop.run_epoch_manual(
-        train_images,
-        train_labels,
-        batch_size=batch_size,
-        compute_batch_loss=compute_batch_loss,
-        epoch=epoch,
-        total_epochs=total_epochs,
-    )
+        # Log progress every 100 batches
+        if (batch_idx + 1) % 100 == 0:
+            var avg_loss_so_far = total_loss / Float32(batch_idx + 1)
+            print(
+                "  Epoch [",
+                epoch,
+                "/",
+                total_epochs,
+                "] Batch [",
+                batch_idx + 1,
+                "/",
+                num_batches,
+                "] Loss:",
+                avg_loss_so_far,
+            )
 
-    return avg_loss
+    return total_loss / Float32(num_batches)
 
 
 fn main() raises:
