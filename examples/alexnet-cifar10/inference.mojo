@@ -16,7 +16,7 @@ References:
 """
 
 from model import AlexNet
-from shared.data.datasets import load_cifar10_test
+from shared.data.datasets import CIFAR10Dataset
 from shared.data import DatasetInfo
 from shared.core import ExTensor
 from shared.utils.arg_parser import ArgumentParser
@@ -47,9 +47,9 @@ fn evaluate_model(
     """Evaluate model on test set with Top-1 and Top-5 accuracy.
 
     Args:
-        model: AlexNet model with loaded weights
-        test_images: Test images (10000, 3, 32, 32)
-        test_labels: Test labels (10000,)
+        model: AlexNet model with loaded weights.
+        test_images: Test images (10000, 3, 32, 32).
+        test_labels: Test labels (10000,).
 
     Returns:
         Tuple of (top1_accuracy, top5_accuracy)
@@ -180,7 +180,7 @@ fn _top_k_indices(tensor: ExTensor, k: Int) raises -> List[Int]:
         indices.append(max_idx)
         values[max_idx] = Float32(-1e9)  # Set to very negative value
 
-    return indices
+    return indices^
 
 
 fn print_class_names():
@@ -235,16 +235,15 @@ fn main() raises:
 
     # Load test dataset
     print("Loading CIFAR-10 test set...")
-    var test_data = load_cifar10_test(data_dir)
+    var cifar_dataset = CIFAR10Dataset(data_dir)
+    var test_data = cifar_dataset.get_test_data()
     var test_images = test_data[0]
     var test_labels = test_data[1]
     print("  Test samples: ", test_images.shape()[0])
     print()
 
     # Evaluate model
-    var results = evaluate_model(model, test_images, test_labels)
-    var top1_acc = results[0]
-    var top5_acc = results[1]
+    _ = evaluate_model(model, test_images, test_labels)
 
     print()
     print("Inference complete!")
