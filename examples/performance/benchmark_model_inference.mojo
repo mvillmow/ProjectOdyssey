@@ -53,8 +53,8 @@ fn simple_forward(
     """Perform a simple forward pass.
 
     Args:
-        network: Neural network struct
-        input_data: Input tensor
+        network: Neural network struct.
+        input_data: Input tensor.
 
     Returns:
         Output tensor from forward pass.
