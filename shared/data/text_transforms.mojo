@@ -15,7 +15,7 @@ Limitations:
 """
 
 from random import random_si64
-from .random_transform_base import RandomTransformBase, random_float
+from shared.data.random_transform_base import RandomTransformBase, random_float
 
 
 # ============================================================================
