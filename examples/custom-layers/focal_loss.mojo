@@ -8,7 +8,10 @@ Usage:
 See documentation: docs/advanced/custom-layers.md
 """
 
-from shared.core.types import Tensor
+from shared.core.extensor import ExTensor, zeros, ones_like, full_like
+from shared.core.arithmetic import subtract, multiply, add, power
+from shared.core.elementwise import log, clip
+from shared.core.reduction import mean
 
 
 struct FocalLoss:
@@ -27,32 +30,60 @@ struct FocalLoss:
         self.alpha = alpha
         self.gamma = gamma
 
-    fn __call__(self, predictions: Tensor, targets: Tensor) -> Tensor:
-        """Compute focal loss.
+    fn __call__(
+        self, predictions: ExTensor, targets: ExTensor
+    ) raises -> ExTensor:
+        """Compute focal loss for binary classification.
 
         Args:
-            predictions: Model predictions (after softmax), shape [batch, num_classes].
-            targets: Ground truth labels, shape [batch].
+            predictions: Model predictions (probabilities after sigmoid), shape [batch].
+            targets: Ground truth labels (0 or 1), shape [batch].
 
         Returns:
             Scalar loss value.
         """
-        var batch_size = predictions.shape()[0]
-        var num_classes = predictions.shape()[1]
+        var epsilon = 1e-7
 
-        # Get predicted probabilities for true class
-        var p_t = Tensor.zeros(batch_size, DType.float32)
-        for i in range(batch_size):
-            var true_class = int(targets[i])
-            p_t[i] = predictions[i, true_class]
+        # Clip predictions to prevent log(0)
+        var clipped = clip(predictions, epsilon, 1.0 - epsilon)
 
-        # Focal loss: -α * (1 - p_t)^γ * log(p_t)
-        var alpha_t = self.alpha
-        var focal_weight = (1.0 - p_t) ** self.gamma
-        var ce_loss = -log(p_t + 1e-7)  # Add epsilon for stability
+        # Compute log(p) and log(1-p)
+        var log_pred = log(clipped)
+        var one = ones_like(clipped)
+        var one_minus_pred = subtract(one, clipped)
+        var log_one_minus_pred = log(one_minus_pred)
 
-        var loss = alpha_t * focal_weight * ce_loss
-        return loss.mean()
+        # Create alpha and gamma tensors
+        var alpha_tensor = full_like(clipped, self.alpha)
+        var gamma_tensor = full_like(clipped, self.gamma)
+        var one_minus_alpha = subtract(one, alpha_tensor)
+
+        # Compute (1-p)^gamma and p^gamma
+        var one_minus_p_pow = power(one_minus_pred, gamma_tensor)
+        var p_pow = power(clipped, gamma_tensor)
+
+        # Focal loss: -alpha * (1-p)^gamma * target * log(p) - (1-alpha) * p^gamma * (1-target) * log(1-p)
+        var one_minus_targets = subtract(one, targets)
+
+        # First term: -alpha * (1-p)^gamma * target * log(p)
+        var term1 = multiply(alpha_tensor, one_minus_p_pow)
+        term1 = multiply(term1, targets)
+        term1 = multiply(term1, log_pred)
+
+        # Second term: -(1-alpha) * p^gamma * (1-target) * log(1-p)
+        var term2 = multiply(one_minus_alpha, p_pow)
+        term2 = multiply(term2, one_minus_targets)
+        term2 = multiply(term2, log_one_minus_pred)
+
+        # Combine and negate
+        var sum_terms = add(term1, term2)
+        var zero = zeros([len(predictions.shape())], predictions.dtype())
+        for i in range(len(predictions.shape())):
+            zero._set_float64(i, 0.0)
+        var loss_per_sample = subtract(zero, sum_terms)
+
+        # Return mean loss
+        return mean(loss_per_sample, axis=-1, keepdims=False)
 
 
 fn main() raises:
@@ -61,20 +92,25 @@ fn main() raises:
     # Create focal loss
     var loss_fn = FocalLoss(alpha=0.25, gamma=2.0)
 
-    # Test with sample predictions and targets
-    var predictions = Tensor(
-        [
-            [0.1, 0.2, 0.7],  # Correct class: 2
-            [0.8, 0.1, 0.1],  # Correct class: 0
-            [0.3, 0.3, 0.4],  # Correct class: 1
-        ]
-    )
-    var targets = Tensor([2.0, 0.0, 1.0])
+    # Test with sample binary classification predictions and targets
+    var predictions = zeros([4], DType.float32)
+    predictions._set_float64(0, 0.9)  # High confidence, correct (target=1)
+    predictions._set_float64(1, 0.3)  # Low confidence, correct (target=0)
+    predictions._set_float64(2, 0.7)  # Medium confidence, correct (target=1)
+    predictions._set_float64(3, 0.1)  # High confidence, correct (target=0)
 
-    print("Predictions shape:", predictions.shape())
-    print("Targets shape:", targets.shape())
+    var targets = zeros([4], DType.float32)
+    targets._set_float64(0, 1.0)  # Positive class
+    targets._set_float64(1, 0.0)  # Negative class
+    targets._set_float64(2, 1.0)  # Positive class
+    targets._set_float64(3, 0.0)  # Negative class
+
+    print("Binary classification focal loss example")
+    print("Predictions: [0.9, 0.3, 0.7, 0.1]")
+    print("Targets: [1, 0, 1, 0]")
+    print()
 
     var loss = loss_fn(predictions, targets)
-    print("Focal loss:", loss)
+    print("Loss value:", loss._get_float64(0))
 
     print("\nFocal loss example complete!")
