@@ -8,7 +8,7 @@ Usage:
 
 from shared.core import ExTensor, zeros
 from shared.data.formats import load_cifar10_batch
-from shared.data.datasets import load_cifar10_test
+from shared.data.datasets import CIFAR10Dataset
 from shared.data import extract_batch_pair, DatasetInfo
 from shared.training.metrics import evaluate_with_predict
 from model import VGG16
@@ -43,9 +43,9 @@ fn compute_test_accuracy(
     evaluation logic across all examples.
 
     Args:
-        model: VGG-16 model with loaded weights
-        test_images: Test images of shape (num_samples, 3, 32, 32)
-        test_labels: Test labels of shape (num_samples,)
+        model: VGG-16 model with loaded weights.
+        test_images: Test images of shape (num_samples, 3, 32, 32).
+        test_labels: Test labels of shape (num_samples,).
 
     Returns:
         Accuracy as percentage (0-100).
@@ -91,7 +91,8 @@ fn main() raises:
 
     # Load test set using shared data loading utilities
     print("Loading CIFAR-10 test set...")
-    var test_data = load_cifar10_test(data_dir)
+    var dataset = CIFAR10Dataset(data_dir)
+    var test_data = dataset.get_test_data()
     var test_images = test_data[0]
     var test_labels = test_data[1]
 
