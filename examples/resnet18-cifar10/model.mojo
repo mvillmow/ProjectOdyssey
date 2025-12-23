@@ -72,7 +72,7 @@ from shared.training.model_utils import (
     load_model_weights,
     get_model_parameter_names,
 )
-from shared.utils.serialization import load_tensor
+from shared.utils.serialization import save_tensor, load_tensor
 from collections import List
 
 
@@ -530,8 +530,8 @@ struct ResNet18(Movable):
         """Forward pass through ResNet-18.
 
         Args:
-            input: Input tensor of shape (batch, 3, 32, 32)
-            training: Whether in training mode (updates BN running stats)
+            input: Input tensor of shape (batch, 3, 32, 32).
+            training: Whether in training mode (updates BN running stats).
 
         Returns:
             Output logits of shape (batch, num_classes)
@@ -988,7 +988,7 @@ struct ResNet18(Movable):
         """Predict class for a single input.
 
         Args:
-            input: Input tensor of shape (1, 3, 32, 32)
+            input: Input tensor of shape (1, 3, 32, 32).
 
         Returns:
             Predicted class index (0 to num_classes-1).
@@ -1011,7 +1011,7 @@ struct ResNet18(Movable):
         """Save model weights to directory.
 
         Args:
-            weights_dir: Directory to save weight files
+            weights_dir: Directory to save weight files.
 
         Note:
             Running stats (running_mean, running_var) are not saved as they
@@ -1435,7 +1435,7 @@ struct ResNet18(Movable):
         """Load model weights from directory.
 
         Args:
-            weights_dir: Directory containing weight files
+            weights_dir: Directory containing weight files.
 
         Note:
             Running stats (running_mean, running_var) are initialized to defaults
