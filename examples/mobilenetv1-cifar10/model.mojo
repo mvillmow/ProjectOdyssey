@@ -47,11 +47,11 @@ fn depthwise_conv2d(
     convolution applies a separate filter to each input channel independently.
 
     Args:
-        x: Input tensor (batch, channels, height, width)
-        weights: Depthwise filters (channels, 1, kernel_h, kernel_w)
-        bias: Bias per channel (channels,)
-        stride: Convolution stride
-        padding: Padding size
+        x: Input tensor (batch, channels, height, width).
+        weights: Depthwise filters (channels, 1, kernel_h, kernel_w).
+        bias: Bias per channel (channels,).
+        stride: Convolution stride.
+        padding: Padding size.
 
     Returns:
         Output tensor (batch, channels, out_h, out_w)
@@ -141,9 +141,9 @@ struct DepthwiseSeparableBlock:
         3. Pointwise conv (1×1, channel mixing)
         4. Batch norm + ReLU
 
-    Parameters:
-        - Depthwise: weights (in_channels, 1, 3, 3), bias (in_channels,), BN params
-        - Pointwise: weights (out_channels, in_channels, 1, 1), bias (out_channels,), BN params.
+    Note:
+        Depthwise: weights (in_channels, 1, 3, 3), bias (in_channels,), BN params.
+        Pointwise: weights (out_channels, in_channels, 1, 1), bias (out_channels,), BN params.
     """
 
     # Depthwise convolution (3×3, per-channel)
@@ -168,8 +168,8 @@ struct DepthwiseSeparableBlock:
         """Initialize depthwise separable block.
 
         Args:
-            in_channels: Number of input channels
-            out_channels: Number of output channels
+            in_channels: Number of input channels.
+            out_channels: Number of output channels.
             stride: Stride for depthwise convolution (1 or 2).
         """
         # Depthwise convolution weights (one 3×3 filter per channel)
@@ -204,9 +204,9 @@ struct DepthwiseSeparableBlock:
         """Forward pass through depthwise separable block.
 
         Args:
-            x: Input tensor (batch, in_channels, H, W)
-            stride: Stride for depthwise convolution
-            training: Training mode flag (affects batch norm)
+            x: Input tensor (batch, in_channels, H, W).
+            stride: Stride for depthwise convolution.
+            training: Training mode flag (affects batch norm).
 
         Returns:
             Output tensor (batch, out_channels, H/stride, W/stride).
@@ -331,8 +331,8 @@ struct MobileNetV1:
         """Forward pass through MobileNetV1.
 
         Args:
-            x: Input tensor (batch, 3, 32, 32)
-            training: Training mode flag (affects batch norm)
+            x: Input tensor (batch, 3, 32, 32).
+            training: Training mode flag (affects batch norm).
 
         Returns:
             Logits tensor (batch, num_classes).
@@ -416,7 +416,7 @@ struct MobileNetV1:
         """Load model weights from directory.
 
         Args:
-            weights_dir: Directory containing saved weight files
+            weights_dir: Directory containing saved weight files.
 
         Raises:
             Error: If weight files are missing or have incompatible shapes
@@ -471,64 +471,344 @@ struct MobileNetV1:
         # Depthwise separable blocks (13 blocks × 12 params per block)
         # Each block has: dw_weights, dw_bias, dw_bn_gamma, dw_bn_beta, dw_bn_running_mean, dw_bn_running_var
         #                pw_weights, pw_bias, pw_bn_gamma, pw_bn_beta, pw_bn_running_mean, pw_bn_running_var
-        var ds_blocks: List[DepthwiseSeparableBlock] = []
-        ds_blocks.append(self.ds_block_1)
-        ds_blocks.append(self.ds_block_2)
-        ds_blocks.append(self.ds_block_3)
-        ds_blocks.append(self.ds_block_4)
-        ds_blocks.append(self.ds_block_5)
-        ds_blocks.append(self.ds_block_6)
-        ds_blocks.append(self.ds_block_7)
-        ds_blocks.append(self.ds_block_8)
-        ds_blocks.append(self.ds_block_9)
-        ds_blocks.append(self.ds_block_10)
-        ds_blocks.append(self.ds_block_11)
-        ds_blocks.append(self.ds_block_12)
-        ds_blocks.append(self.ds_block_13)
 
-        for i in range(len(ds_blocks)):
-            # Depthwise convolution parameters
-            ds_blocks[i].dw_weights = loaded_params[idx]
-            idx += 1
-            ds_blocks[i].dw_bias = loaded_params[idx]
-            idx += 1
-            ds_blocks[i].dw_bn_gamma = loaded_params[idx]
-            idx += 1
-            ds_blocks[i].dw_bn_beta = loaded_params[idx]
-            idx += 1
-            ds_blocks[i].dw_bn_running_mean = loaded_params[idx]
-            idx += 1
-            ds_blocks[i].dw_bn_running_var = loaded_params[idx]
-            idx += 1
+        # Block 1
+        self.ds_block_1.dw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_1.dw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_1.dw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_1.dw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_1.dw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_1.dw_bn_running_var = loaded_params[idx]
+        idx += 1
+        self.ds_block_1.pw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_1.pw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_1.pw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_1.pw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_1.pw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_1.pw_bn_running_var = loaded_params[idx]
+        idx += 1
 
-            # Pointwise convolution parameters
-            ds_blocks[i].pw_weights = loaded_params[idx]
-            idx += 1
-            ds_blocks[i].pw_bias = loaded_params[idx]
-            idx += 1
-            ds_blocks[i].pw_bn_gamma = loaded_params[idx]
-            idx += 1
-            ds_blocks[i].pw_bn_beta = loaded_params[idx]
-            idx += 1
-            ds_blocks[i].pw_bn_running_mean = loaded_params[idx]
-            idx += 1
-            ds_blocks[i].pw_bn_running_var = loaded_params[idx]
-            idx += 1
+        # Block 2
+        self.ds_block_2.dw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_2.dw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_2.dw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_2.dw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_2.dw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_2.dw_bn_running_var = loaded_params[idx]
+        idx += 1
+        self.ds_block_2.pw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_2.pw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_2.pw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_2.pw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_2.pw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_2.pw_bn_running_var = loaded_params[idx]
+        idx += 1
 
-        # Reassign blocks back to model
-        self.ds_block_1 = ds_blocks[0]
-        self.ds_block_2 = ds_blocks[1]
-        self.ds_block_3 = ds_blocks[2]
-        self.ds_block_4 = ds_blocks[3]
-        self.ds_block_5 = ds_blocks[4]
-        self.ds_block_6 = ds_blocks[5]
-        self.ds_block_7 = ds_blocks[6]
-        self.ds_block_8 = ds_blocks[7]
-        self.ds_block_9 = ds_blocks[8]
-        self.ds_block_10 = ds_blocks[9]
-        self.ds_block_11 = ds_blocks[10]
-        self.ds_block_12 = ds_blocks[11]
-        self.ds_block_13 = ds_blocks[12]
+        # Block 3
+        self.ds_block_3.dw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_3.dw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_3.dw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_3.dw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_3.dw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_3.dw_bn_running_var = loaded_params[idx]
+        idx += 1
+        self.ds_block_3.pw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_3.pw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_3.pw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_3.pw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_3.pw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_3.pw_bn_running_var = loaded_params[idx]
+        idx += 1
+
+        # Block 4
+        self.ds_block_4.dw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_4.dw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_4.dw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_4.dw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_4.dw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_4.dw_bn_running_var = loaded_params[idx]
+        idx += 1
+        self.ds_block_4.pw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_4.pw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_4.pw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_4.pw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_4.pw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_4.pw_bn_running_var = loaded_params[idx]
+        idx += 1
+
+        # Block 5
+        self.ds_block_5.dw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_5.dw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_5.dw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_5.dw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_5.dw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_5.dw_bn_running_var = loaded_params[idx]
+        idx += 1
+        self.ds_block_5.pw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_5.pw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_5.pw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_5.pw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_5.pw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_5.pw_bn_running_var = loaded_params[idx]
+        idx += 1
+
+        # Block 6
+        self.ds_block_6.dw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_6.dw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_6.dw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_6.dw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_6.dw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_6.dw_bn_running_var = loaded_params[idx]
+        idx += 1
+        self.ds_block_6.pw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_6.pw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_6.pw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_6.pw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_6.pw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_6.pw_bn_running_var = loaded_params[idx]
+        idx += 1
+
+        # Block 7
+        self.ds_block_7.dw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_7.dw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_7.dw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_7.dw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_7.dw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_7.dw_bn_running_var = loaded_params[idx]
+        idx += 1
+        self.ds_block_7.pw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_7.pw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_7.pw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_7.pw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_7.pw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_7.pw_bn_running_var = loaded_params[idx]
+        idx += 1
+
+        # Block 8
+        self.ds_block_8.dw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_8.dw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_8.dw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_8.dw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_8.dw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_8.dw_bn_running_var = loaded_params[idx]
+        idx += 1
+        self.ds_block_8.pw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_8.pw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_8.pw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_8.pw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_8.pw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_8.pw_bn_running_var = loaded_params[idx]
+        idx += 1
+
+        # Block 9
+        self.ds_block_9.dw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_9.dw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_9.dw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_9.dw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_9.dw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_9.dw_bn_running_var = loaded_params[idx]
+        idx += 1
+        self.ds_block_9.pw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_9.pw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_9.pw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_9.pw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_9.pw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_9.pw_bn_running_var = loaded_params[idx]
+        idx += 1
+
+        # Block 10
+        self.ds_block_10.dw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_10.dw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_10.dw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_10.dw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_10.dw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_10.dw_bn_running_var = loaded_params[idx]
+        idx += 1
+        self.ds_block_10.pw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_10.pw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_10.pw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_10.pw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_10.pw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_10.pw_bn_running_var = loaded_params[idx]
+        idx += 1
+
+        # Block 11
+        self.ds_block_11.dw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_11.dw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_11.dw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_11.dw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_11.dw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_11.dw_bn_running_var = loaded_params[idx]
+        idx += 1
+        self.ds_block_11.pw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_11.pw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_11.pw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_11.pw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_11.pw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_11.pw_bn_running_var = loaded_params[idx]
+        idx += 1
+
+        # Block 12
+        self.ds_block_12.dw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_12.dw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_12.dw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_12.dw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_12.dw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_12.dw_bn_running_var = loaded_params[idx]
+        idx += 1
+        self.ds_block_12.pw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_12.pw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_12.pw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_12.pw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_12.pw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_12.pw_bn_running_var = loaded_params[idx]
+        idx += 1
+
+        # Block 13
+        self.ds_block_13.dw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_13.dw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_13.dw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_13.dw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_13.dw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_13.dw_bn_running_var = loaded_params[idx]
+        idx += 1
+        self.ds_block_13.pw_weights = loaded_params[idx]
+        idx += 1
+        self.ds_block_13.pw_bias = loaded_params[idx]
+        idx += 1
+        self.ds_block_13.pw_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.ds_block_13.pw_bn_beta = loaded_params[idx]
+        idx += 1
+        self.ds_block_13.pw_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.ds_block_13.pw_bn_running_var = loaded_params[idx]
+        idx += 1
 
         # Final fully connected layer
         self.fc_weights = loaded_params[idx]
@@ -540,7 +820,7 @@ struct MobileNetV1:
         """Save model weights to directory.
 
         Args:
-            weights_dir: Directory to save weight files
+            weights_dir: Directory to save weight files.
 
         Raises:
             Error: If directory creation or file write fails
@@ -568,37 +848,187 @@ struct MobileNetV1:
         parameters.append(self.initial_bn_running_var)
 
         # Depthwise separable blocks
-        var ds_blocks: List[DepthwiseSeparableBlock] = []
-        ds_blocks.append(self.ds_block_1)
-        ds_blocks.append(self.ds_block_2)
-        ds_blocks.append(self.ds_block_3)
-        ds_blocks.append(self.ds_block_4)
-        ds_blocks.append(self.ds_block_5)
-        ds_blocks.append(self.ds_block_6)
-        ds_blocks.append(self.ds_block_7)
-        ds_blocks.append(self.ds_block_8)
-        ds_blocks.append(self.ds_block_9)
-        ds_blocks.append(self.ds_block_10)
-        ds_blocks.append(self.ds_block_11)
-        ds_blocks.append(self.ds_block_12)
-        ds_blocks.append(self.ds_block_13)
+        # Block 1
+        parameters.append(self.ds_block_1.dw_weights)
+        parameters.append(self.ds_block_1.dw_bias)
+        parameters.append(self.ds_block_1.dw_bn_gamma)
+        parameters.append(self.ds_block_1.dw_bn_beta)
+        parameters.append(self.ds_block_1.dw_bn_running_mean)
+        parameters.append(self.ds_block_1.dw_bn_running_var)
+        parameters.append(self.ds_block_1.pw_weights)
+        parameters.append(self.ds_block_1.pw_bias)
+        parameters.append(self.ds_block_1.pw_bn_gamma)
+        parameters.append(self.ds_block_1.pw_bn_beta)
+        parameters.append(self.ds_block_1.pw_bn_running_mean)
+        parameters.append(self.ds_block_1.pw_bn_running_var)
 
-        for i in range(len(ds_blocks)):
-            # Depthwise convolution parameters
-            parameters.append(ds_blocks[i].dw_weights)
-            parameters.append(ds_blocks[i].dw_bias)
-            parameters.append(ds_blocks[i].dw_bn_gamma)
-            parameters.append(ds_blocks[i].dw_bn_beta)
-            parameters.append(ds_blocks[i].dw_bn_running_mean)
-            parameters.append(ds_blocks[i].dw_bn_running_var)
+        # Block 2
+        parameters.append(self.ds_block_2.dw_weights)
+        parameters.append(self.ds_block_2.dw_bias)
+        parameters.append(self.ds_block_2.dw_bn_gamma)
+        parameters.append(self.ds_block_2.dw_bn_beta)
+        parameters.append(self.ds_block_2.dw_bn_running_mean)
+        parameters.append(self.ds_block_2.dw_bn_running_var)
+        parameters.append(self.ds_block_2.pw_weights)
+        parameters.append(self.ds_block_2.pw_bias)
+        parameters.append(self.ds_block_2.pw_bn_gamma)
+        parameters.append(self.ds_block_2.pw_bn_beta)
+        parameters.append(self.ds_block_2.pw_bn_running_mean)
+        parameters.append(self.ds_block_2.pw_bn_running_var)
 
-            # Pointwise convolution parameters
-            parameters.append(ds_blocks[i].pw_weights)
-            parameters.append(ds_blocks[i].pw_bias)
-            parameters.append(ds_blocks[i].pw_bn_gamma)
-            parameters.append(ds_blocks[i].pw_bn_beta)
-            parameters.append(ds_blocks[i].pw_bn_running_mean)
-            parameters.append(ds_blocks[i].pw_bn_running_var)
+        # Block 3
+        parameters.append(self.ds_block_3.dw_weights)
+        parameters.append(self.ds_block_3.dw_bias)
+        parameters.append(self.ds_block_3.dw_bn_gamma)
+        parameters.append(self.ds_block_3.dw_bn_beta)
+        parameters.append(self.ds_block_3.dw_bn_running_mean)
+        parameters.append(self.ds_block_3.dw_bn_running_var)
+        parameters.append(self.ds_block_3.pw_weights)
+        parameters.append(self.ds_block_3.pw_bias)
+        parameters.append(self.ds_block_3.pw_bn_gamma)
+        parameters.append(self.ds_block_3.pw_bn_beta)
+        parameters.append(self.ds_block_3.pw_bn_running_mean)
+        parameters.append(self.ds_block_3.pw_bn_running_var)
+
+        # Block 4
+        parameters.append(self.ds_block_4.dw_weights)
+        parameters.append(self.ds_block_4.dw_bias)
+        parameters.append(self.ds_block_4.dw_bn_gamma)
+        parameters.append(self.ds_block_4.dw_bn_beta)
+        parameters.append(self.ds_block_4.dw_bn_running_mean)
+        parameters.append(self.ds_block_4.dw_bn_running_var)
+        parameters.append(self.ds_block_4.pw_weights)
+        parameters.append(self.ds_block_4.pw_bias)
+        parameters.append(self.ds_block_4.pw_bn_gamma)
+        parameters.append(self.ds_block_4.pw_bn_beta)
+        parameters.append(self.ds_block_4.pw_bn_running_mean)
+        parameters.append(self.ds_block_4.pw_bn_running_var)
+
+        # Block 5
+        parameters.append(self.ds_block_5.dw_weights)
+        parameters.append(self.ds_block_5.dw_bias)
+        parameters.append(self.ds_block_5.dw_bn_gamma)
+        parameters.append(self.ds_block_5.dw_bn_beta)
+        parameters.append(self.ds_block_5.dw_bn_running_mean)
+        parameters.append(self.ds_block_5.dw_bn_running_var)
+        parameters.append(self.ds_block_5.pw_weights)
+        parameters.append(self.ds_block_5.pw_bias)
+        parameters.append(self.ds_block_5.pw_bn_gamma)
+        parameters.append(self.ds_block_5.pw_bn_beta)
+        parameters.append(self.ds_block_5.pw_bn_running_mean)
+        parameters.append(self.ds_block_5.pw_bn_running_var)
+
+        # Block 6
+        parameters.append(self.ds_block_6.dw_weights)
+        parameters.append(self.ds_block_6.dw_bias)
+        parameters.append(self.ds_block_6.dw_bn_gamma)
+        parameters.append(self.ds_block_6.dw_bn_beta)
+        parameters.append(self.ds_block_6.dw_bn_running_mean)
+        parameters.append(self.ds_block_6.dw_bn_running_var)
+        parameters.append(self.ds_block_6.pw_weights)
+        parameters.append(self.ds_block_6.pw_bias)
+        parameters.append(self.ds_block_6.pw_bn_gamma)
+        parameters.append(self.ds_block_6.pw_bn_beta)
+        parameters.append(self.ds_block_6.pw_bn_running_mean)
+        parameters.append(self.ds_block_6.pw_bn_running_var)
+
+        # Block 7
+        parameters.append(self.ds_block_7.dw_weights)
+        parameters.append(self.ds_block_7.dw_bias)
+        parameters.append(self.ds_block_7.dw_bn_gamma)
+        parameters.append(self.ds_block_7.dw_bn_beta)
+        parameters.append(self.ds_block_7.dw_bn_running_mean)
+        parameters.append(self.ds_block_7.dw_bn_running_var)
+        parameters.append(self.ds_block_7.pw_weights)
+        parameters.append(self.ds_block_7.pw_bias)
+        parameters.append(self.ds_block_7.pw_bn_gamma)
+        parameters.append(self.ds_block_7.pw_bn_beta)
+        parameters.append(self.ds_block_7.pw_bn_running_mean)
+        parameters.append(self.ds_block_7.pw_bn_running_var)
+
+        # Block 8
+        parameters.append(self.ds_block_8.dw_weights)
+        parameters.append(self.ds_block_8.dw_bias)
+        parameters.append(self.ds_block_8.dw_bn_gamma)
+        parameters.append(self.ds_block_8.dw_bn_beta)
+        parameters.append(self.ds_block_8.dw_bn_running_mean)
+        parameters.append(self.ds_block_8.dw_bn_running_var)
+        parameters.append(self.ds_block_8.pw_weights)
+        parameters.append(self.ds_block_8.pw_bias)
+        parameters.append(self.ds_block_8.pw_bn_gamma)
+        parameters.append(self.ds_block_8.pw_bn_beta)
+        parameters.append(self.ds_block_8.pw_bn_running_mean)
+        parameters.append(self.ds_block_8.pw_bn_running_var)
+
+        # Block 9
+        parameters.append(self.ds_block_9.dw_weights)
+        parameters.append(self.ds_block_9.dw_bias)
+        parameters.append(self.ds_block_9.dw_bn_gamma)
+        parameters.append(self.ds_block_9.dw_bn_beta)
+        parameters.append(self.ds_block_9.dw_bn_running_mean)
+        parameters.append(self.ds_block_9.dw_bn_running_var)
+        parameters.append(self.ds_block_9.pw_weights)
+        parameters.append(self.ds_block_9.pw_bias)
+        parameters.append(self.ds_block_9.pw_bn_gamma)
+        parameters.append(self.ds_block_9.pw_bn_beta)
+        parameters.append(self.ds_block_9.pw_bn_running_mean)
+        parameters.append(self.ds_block_9.pw_bn_running_var)
+
+        # Block 10
+        parameters.append(self.ds_block_10.dw_weights)
+        parameters.append(self.ds_block_10.dw_bias)
+        parameters.append(self.ds_block_10.dw_bn_gamma)
+        parameters.append(self.ds_block_10.dw_bn_beta)
+        parameters.append(self.ds_block_10.dw_bn_running_mean)
+        parameters.append(self.ds_block_10.dw_bn_running_var)
+        parameters.append(self.ds_block_10.pw_weights)
+        parameters.append(self.ds_block_10.pw_bias)
+        parameters.append(self.ds_block_10.pw_bn_gamma)
+        parameters.append(self.ds_block_10.pw_bn_beta)
+        parameters.append(self.ds_block_10.pw_bn_running_mean)
+        parameters.append(self.ds_block_10.pw_bn_running_var)
+
+        # Block 11
+        parameters.append(self.ds_block_11.dw_weights)
+        parameters.append(self.ds_block_11.dw_bias)
+        parameters.append(self.ds_block_11.dw_bn_gamma)
+        parameters.append(self.ds_block_11.dw_bn_beta)
+        parameters.append(self.ds_block_11.dw_bn_running_mean)
+        parameters.append(self.ds_block_11.dw_bn_running_var)
+        parameters.append(self.ds_block_11.pw_weights)
+        parameters.append(self.ds_block_11.pw_bias)
+        parameters.append(self.ds_block_11.pw_bn_gamma)
+        parameters.append(self.ds_block_11.pw_bn_beta)
+        parameters.append(self.ds_block_11.pw_bn_running_mean)
+        parameters.append(self.ds_block_11.pw_bn_running_var)
+
+        # Block 12
+        parameters.append(self.ds_block_12.dw_weights)
+        parameters.append(self.ds_block_12.dw_bias)
+        parameters.append(self.ds_block_12.dw_bn_gamma)
+        parameters.append(self.ds_block_12.dw_bn_beta)
+        parameters.append(self.ds_block_12.dw_bn_running_mean)
+        parameters.append(self.ds_block_12.dw_bn_running_var)
+        parameters.append(self.ds_block_12.pw_weights)
+        parameters.append(self.ds_block_12.pw_bias)
+        parameters.append(self.ds_block_12.pw_bn_gamma)
+        parameters.append(self.ds_block_12.pw_bn_beta)
+        parameters.append(self.ds_block_12.pw_bn_running_mean)
+        parameters.append(self.ds_block_12.pw_bn_running_var)
+
+        # Block 13
+        parameters.append(self.ds_block_13.dw_weights)
+        parameters.append(self.ds_block_13.dw_bias)
+        parameters.append(self.ds_block_13.dw_bn_gamma)
+        parameters.append(self.ds_block_13.dw_bn_beta)
+        parameters.append(self.ds_block_13.dw_bn_running_mean)
+        parameters.append(self.ds_block_13.dw_bn_running_var)
+        parameters.append(self.ds_block_13.pw_weights)
+        parameters.append(self.ds_block_13.pw_bias)
+        parameters.append(self.ds_block_13.pw_bn_gamma)
+        parameters.append(self.ds_block_13.pw_bn_beta)
+        parameters.append(self.ds_block_13.pw_bn_running_mean)
+        parameters.append(self.ds_block_13.pw_bn_running_var)
 
         # Final fully connected layer
         parameters.append(self.fc_weights)
