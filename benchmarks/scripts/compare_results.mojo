@@ -103,37 +103,6 @@ fn parse_benchmark_name(line: String) raises -> String:
     return line[start:end]
 
 
-fn parse_float_value(line: String, field_name: String) raises -> Float64:
-    """Extract float value from JSON line.
-
-    Args:
-        line: JSON line containing field
-        field_name: Name of field to extract
-
-    Returns:
-        Extracted float value.
-    """
-    var search_str = field_name + '": '
-    var start = line.find(search_str)
-    if start == -1:
-        raise Error("Could not find " + field_name + " in line")
-
-    start = start + len(search_str)
-
-    # Find end of number (comma, newline, or closing brace)
-    var end = start
-    while (
-        end < len(line)
-        and line[end] != ","
-        and line[end] != "}"
-        and line[end] != "\n"
-    ):
-        end += 1
-
-    var value_str = line[start:end].strip()
-    return atof(value_str)
-
-
 fn atof(s: String) -> Float64:
     """Convert string to float64 with scientific notation support.
 
@@ -190,6 +159,37 @@ fn atof(s: String) -> Float64:
         result = result * (10.0**exp_value)
 
     return result * sign
+
+
+fn parse_float_value(line: String, field_name: String) raises -> Float64:
+    """Extract float value from JSON line.
+
+    Args:
+        line: JSON line containing field
+        field_name: Name of field to extract
+
+    Returns:
+        Extracted float value.
+    """
+    var search_str = field_name + '": '
+    var start = line.find(search_str)
+    if start == -1:
+        raise Error("Could not find " + field_name + " in line")
+
+    start = start + len(search_str)
+
+    # Find end of number (comma, newline, or closing brace)
+    var end = start
+    while (
+        end < len(line)
+        and line[end] != ","
+        and line[end] != "}"
+        and line[end] != "\n"
+    ):
+        end += 1
+
+    var value_str = line[start:end].strip()
+    return atof(value_str)
 
 
 fn parse_int_value(line: String, field_name: String) raises -> Int:
