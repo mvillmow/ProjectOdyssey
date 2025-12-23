@@ -136,6 +136,53 @@ if tensor.dtype == DType.float32:
 if tensor.dtype() == DType.float32:
 ```
 
+## v0.26.1 Compilation Anti-Patterns
+
+### Trying to compile library files standalone
+
+```bash
+# DON'T
+mojo build shared/core/__init__.mojo
+mojo build shared/core/activation.mojo
+```
+
+**Why it fails**: Library files use relative imports (`from ..version import VERSION`), which require being part of a package.
+
+**Correct approach**:
+
+```bash
+# DO
+mojo package shared                    # Build the package
+mojo build -I . examples/train.mojo   # Build executable that imports from shared
+```
+
+### Expecting all .mojo files to have main()
+
+```bash
+# This will fail for library modules
+mojo build shared/core/extensor.mojo
+# Error: module does not contain a 'main' function
+```
+
+**Why it's expected**: Library modules are meant to be imported, not executed.
+
+**Correct understanding**: Only executable files need `main()`.
+
+### Forgetting -I . flag
+
+```bash
+# DON'T
+mojo build examples/train.mojo
+# Error: unable to locate module 'shared'
+```
+
+**Correct approach**:
+
+```bash
+# DO
+mojo build -I . examples/train.mojo
+```
+
 ## Quick Detection Checklist
 
 Search codebase for these patterns:

@@ -20,14 +20,11 @@ Validate Mojo code against v0.25.7+ syntax standards.
 ## Quick Reference
 
 ```bash
-# Validate single file
+# Validate single executable file (with main())
 mojo build -I . file.mojo
 
-# Check all Mojo files
-find . -name "*.mojo" -o -name "*.🔥" | while read f; do
-  echo "Checking $f"
-  mojo build -I . "$f" 2>&1 | grep -i "error"
-done
+# Build entire package (for library files)
+mojo package shared
 
 # Format code (fixes many syntax issues)
 pixi run mojo format .
@@ -35,6 +32,8 @@ pixi run mojo format .
 # Check for deprecated patterns
 grep -r "inout self\|@value\|DynamicVector\|->" *.mojo | grep -v "result\|fn"
 ```
+
+**IMPORTANT**: Library files with relative imports CANNOT be validated using `mojo build` - use `mojo package` instead.
 
 ## Common Syntax Issues
 
@@ -65,13 +64,16 @@ grep -r "inout self\|@value\|DynamicVector\|->" *.mojo | grep -v "result\|fn"
 
 ## Validation Workflow
 
-1. **Check syntax**: Run mojo compiler on files
-2. **Fix format**: Run `pixi run mojo format` to auto-fix style
-3. **Verify patterns**: Check for deprecated patterns
-4. **Type check**: Ensure all types are correct
-5. **Ownership check**: Verify ownership semantics
-6. **Compile test**: Build to catch runtime issues
-7. **Report issues**: List all problems found
+1. **Identify file type**: Determine if file is library (has relative imports) or executable (has main())
+2. **Check syntax**: Run appropriate command:
+   - Executable files: `mojo build -I . file.mojo`
+   - Library files: Skip standalone compilation (part of package)
+3. **Fix format**: Run `pixi run mojo format` to auto-fix style
+4. **Verify patterns**: Check for deprecated patterns
+5. **Type check**: Ensure all types are correct
+6. **Ownership check**: Verify ownership semantics
+7. **Package validation**: Use `mojo package shared` for library files
+8. **Report issues**: List all problems found
 
 ## Output Format
 

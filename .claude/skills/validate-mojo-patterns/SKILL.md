@@ -34,6 +34,9 @@ grep -n "struct.*:" *.mojo | grep -v "Copyable\|Movable"
 
 # Check method signatures
 grep -n "fn.*self" *.mojo | grep -v "read\|mut\|var"
+
+# Build package (validates all library files together)
+mojo package shared
 ```
 
 ## Pattern Validation Rules
@@ -77,7 +80,19 @@ grep -n "fn.*self" *.mojo | grep -v "read\|mut\|var"
 4. **Identify violations**: Mark incorrect patterns
 5. **Suggest fixes**: Provide correction for each violation
 6. **Summarize**: Report all pattern issues
-7. **Verify**: Compile to catch additional errors
+7. **Verify**: Use `mojo package` to validate packages, not `mojo build` on individual library files
+
+## v0.26.1 Validation Patterns
+
+**Relative imports are valid in library files, invalid in executables**:
+
+- Library files (in `shared/`): Can use `from ..module import X` - part of package structure
+- Executable files (in `examples/`): Must use `from shared.module import X` with `-I .` flag
+
+**Use `mojo package` to validate packages**:
+
+- Build entire package: `mojo package shared`
+- DO NOT validate individual library files: `mojo build shared/core/__init__.mojo` will fail with expected errors
 
 ## Output Format
 

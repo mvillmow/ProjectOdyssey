@@ -104,6 +104,16 @@ See [notes/review/mojo-test-failure-learnings.md](../../notes/review/mojo-test-f
 4. Missing transfer operator (10%) - List/Dict/String returns need `^`
 5. Syntax errors (10%) - `vara` typos, deprecated syntax
 
+## v0.26.1 Compilation Patterns
+
+**Expected compilation "errors" for library files** - these are NOT bugs:
+
+- **"cannot import relative to a top-level package"**: Library files use relative imports, not meant to compile standalone
+- **"module does not contain a 'main' function"**: Library modules are meant to be imported, not executed
+
+**Reference**: See [mojo-anti-patterns.md](../shared/mojo-anti-patterns.md#v0261-compilation-anti-patterns)
+for complete v0.26.1 patterns.
+
 ## Coordinates With
 
 - [Code Review Orchestrator](./code-review-orchestrator.md) - Receives Mojo code assignments

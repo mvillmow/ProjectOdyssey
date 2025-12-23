@@ -51,6 +51,7 @@ and deprecated pattern detection.
 - [ ] Trait conformance explicit: `(Copyable, Movable, ...)`
 - [ ] No `inout` keyword anywhere
 - [ ] Parameter types: `read`, `mut`, `var`, or `ref` only
+- [ ] Don't validate library files by compiling them standalone (use `mojo package` instead)
 
 ## Feedback Format
 
@@ -149,6 +150,17 @@ mojo build /tmp/test_syntax.mojo
 # If compiles → syntax is correct
 # If fails → compiler shows correct syntax
 ```
+
+## v0.26.1 Compilation Patterns
+
+**Library files with relative imports CANNOT compile standalone** - this is expected behavior:
+
+- Files using `from ..module` or `from .submodule` will fail with "cannot import relative to a top-level package"
+- Use `mojo package shared` to build packages, not `mojo build shared/__init__.mojo`
+- Only validate executable files (those with `main()`) using standalone compilation
+
+**Reference**: See [mojo-guidelines.md](../shared/mojo-guidelines.md#mojo-v0261-package-compilation-patterns)
+for complete compilation patterns.
 
 ## Coordinates With
 

@@ -85,6 +85,56 @@ var empty = List[Int]()
 var shape = List[Int](3, 4, 5)  # Compiler error
 ```
 
+## Mojo v0.26.1 Package Compilation Patterns
+
+### Library Files vs. Executable Files
+
+**Library Files** (with relative imports):
+
+- ❌ CANNOT compile standalone with `mojo build file.mojo`
+- ✅ CAN be imported by executables using `-I` flag
+- Pattern: Files using `from ..module` or `from .submodule`
+- Error (expected): "cannot import relative to a top-level package"
+
+**Executable Files** (with main()):
+
+- ✅ CAN compile standalone with `mojo build -I . file.mojo`
+- Pattern: Files with `def main()` entry point
+- Uses absolute imports: `from shared.core import ExTensor`
+
+### Building Packages
+
+**DO**:
+
+```bash
+mojo package shared                          # Build entire package
+mojo build -I . examples/example.mojo       # Build executable
+```
+
+**DON'T**:
+
+```bash
+mojo build shared/__init__.mojo              # ❌ Fails with relative import error
+mojo build shared/core/activation.mojo       # ❌ Fails with relative import error
+```
+
+### Expected "Errors" That Are Not Bugs
+
+1. **"cannot import relative to a top-level package"**
+   - When: Compiling library files with `mojo build`
+   - Why: Library files use relative imports, not meant to compile standalone
+   - Fix: Don't try to compile them standalone; use `mojo package` instead
+
+2. **"module does not contain a 'main' function"**
+   - When: Compiling library modules with `mojo build`
+   - Why: Library modules aren't executables
+   - Fix: Only compile files meant to be executables
+
+3. **"unable to locate module 'shared'"**
+   - When: Missing `-I .` flag or wrong working directory
+   - Why: Mojo needs include path to find packages
+   - Fix: Use `-I .` flag: `mojo build -I . file.mojo`
+
 ## Pre-Commit Checklist
 
 - [ ] All `__init__` use `out self` (not `mut self`)

@@ -1,0 +1,21 @@
+[package]
+name = "ml-odyssey"
+version = "0.1.0"
+description = "Mojo-based AI research platform for reproducing classic research papers"
+authors = ["ML Odyssey Contributors"]
+license = "BSD-3-Clause"
+readme = "README.md"
+
+[dependencies]
+# Mojo standard library dependencies (implicit, no need to list)
+
+[build]
+# Build configuration
+src = "."
+
+# Package paths - register top-level packages
+[packages]
+shared = "shared"
+examples = "examples"
+tests = "tests"
+benchmarks = "benchmarks"
