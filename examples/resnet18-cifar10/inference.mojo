@@ -26,7 +26,7 @@ Features:
 
 from shared.core import ExTensor, zeros
 from shared.data import extract_batch_pair, compute_num_batches, DatasetInfo
-from shared.data.datasets import load_cifar10_test
+from shared.data.datasets import CIFAR10Dataset
 from shared.training.metrics import (
     evaluate_with_predict,
     top1_accuracy,
@@ -34,6 +34,7 @@ from shared.training.metrics import (
     evaluate_logits_batch,
 )
 from shared.utils.arg_parser import ArgumentParser, ArgumentSpec
+from shared.utils.serialization import load_tensor
 from model import ResNet18
 
 
@@ -82,7 +83,7 @@ fn evaluate_model(
     var total_per_class = List[Int](capacity=10)
 
     # Initialize counters
-    for i in range(10):
+    for _ in range(10):
         correct_per_class.append(0)
         total_per_class.append(0)
 
@@ -129,7 +130,7 @@ fn evaluate_model(
                     pred_class = j
 
             # Get true label
-            var true_class = int(batch_labels[i])
+            var true_class = Int(batch_labels[i])
 
             # Update counters
             total_per_class[true_class] += 1
@@ -157,7 +158,7 @@ fn evaluate_model(
         print("Evaluation complete!")
         print()
 
-    return (overall_accuracy, correct_per_class, total_per_class)
+    return (overall_accuracy, correct_per_class^, total_per_class^)
 
 
 fn print_detailed_results(
@@ -192,7 +193,29 @@ fn print_detailed_results(
     print("-" * 60)
 
     for i in range(10):
-        var class_name = CLASS_NAMES[i]
+        # Get class name at runtime
+        var class_name: String
+        if i == 0:
+            class_name = "airplane"
+        elif i == 1:
+            class_name = "automobile"
+        elif i == 2:
+            class_name = "bird"
+        elif i == 3:
+            class_name = "cat"
+        elif i == 4:
+            class_name = "deer"
+        elif i == 5:
+            class_name = "dog"
+        elif i == 6:
+            class_name = "frog"
+        elif i == 7:
+            class_name = "horse"
+        elif i == 8:
+            class_name = "ship"
+        else:
+            class_name = "truck"
+
         var correct = correct_per_class[i]
         var total = total_per_class[i]
         var class_acc = Float32(correct) / Float32(
@@ -225,34 +248,12 @@ fn main() raises:
     print()
 
     # Parse command-line arguments using shared.utils.arg_parser
-    var parser = ArgumentParser(
-        prog="resnet18-cifar10-inference",
-        description="ResNet-18 inference on CIFAR-10 test set",
-    )
+    var parser = ArgumentParser()
 
     # Add inference arguments with defaults
-    var weights_dir_spec = ArgumentSpec(
-        name="weights-dir",
-        short_name="w",
-        description="Directory containing model weights",
-        default="resnet18_weights",
-    )
-    var batch_size_spec = ArgumentSpec(
-        name="batch-size",
-        short_name="b",
-        description="Batch size for evaluation",
-        default="100",
-    )
-    var data_dir_spec = ArgumentSpec(
-        name="data-dir",
-        short_name="d",
-        description="Directory containing CIFAR-10 dataset",
-        default="datasets/cifar10",
-    )
-
-    parser.add_argument(weights_dir_spec)
-    parser.add_argument(batch_size_spec)
-    parser.add_argument(data_dir_spec)
+    parser.add_argument("weights-dir", "string", "resnet18_weights")
+    parser.add_argument("batch-size", "int", "100")
+    parser.add_argument("data-dir", "string", "datasets/cifar10")
 
     # Parse provided arguments (simplified - using defaults for this demo)
     var weights_dir = "resnet18_weights"  # Default weights directory
@@ -269,7 +270,8 @@ fn main() raises:
 
     # Load CIFAR-10 test set
     print("Loading CIFAR-10 test set...")
-    var test_data = load_cifar10_test("datasets/cifar10")
+    var cifar10_dataset = CIFAR10Dataset(data_dir)
+    var test_data = cifar10_dataset.get_test_data()
     var test_images = test_data[0]
     var test_labels = test_data[1]
 
@@ -311,15 +313,15 @@ fn main() raises:
     print("Running inference on test set...")
     print()
 
-    var results = evaluate_model(
+    var eval_result = evaluate_model(
         model, test_images, test_labels, batch_size, verbose=True
     )
-    var accuracy = results[0]
-    var correct_per_class = results[1]
-    var total_per_class = results[2]
+    var accuracy = eval_result[0]
+    var correct_per_class = eval_result[1].copy()
+    var total_per_class = eval_result[2].copy()
 
     # Print detailed results
-    print_detailed_results(accuracy, correct_per_class, total_per_class)
+    print_detailed_results(accuracy, correct_per_class^, total_per_class^)
 
     # Performance context
     print("Performance Context:")

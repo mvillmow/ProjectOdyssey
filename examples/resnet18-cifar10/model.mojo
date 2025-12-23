@@ -72,6 +72,7 @@ from shared.training.model_utils import (
     load_model_weights,
     get_model_parameter_names,
 )
+from shared.utils.serialization import load_tensor
 from collections import List
 
 
