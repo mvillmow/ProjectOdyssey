@@ -18,7 +18,7 @@ References:
 """
 
 from model import VGG16
-from shared.data.datasets import load_cifar10_train, load_cifar10_test
+from shared.data.datasets import CIFAR10Dataset
 from shared.core import ExTensor, zeros
 from shared.core.conv import conv2d, conv2d_backward
 from shared.core.pooling import maxpool2d, maxpool2d_backward
@@ -27,7 +27,6 @@ from shared.core.activation import relu, relu_backward
 from shared.core.dropout import dropout, dropout_backward
 from shared.core.loss import cross_entropy, cross_entropy_backward
 from shared.training.schedulers import step_lr
-from shared.training.loops import TrainingLoop
 from shared.data import (
     extract_batch_pair,
     compute_num_batches,
@@ -51,12 +50,12 @@ fn compute_gradients(
     This implements the full forward and backward pass manually through all 16 layers.
 
     Args:
-        model: VGG16 model
-        input: Batch of images (batch, 3, 32, 32)
-        labels: Batch of labels (batch,)
-        learning_rate: Learning rate for SGD
-        momentum: Momentum factor for SGD
-        velocities: Momentum velocities for each parameter (32 tensors)
+        model: VGG16 model.
+        input: Batch of images (batch, 3, 32, 32).
+        labels: Batch of labels (batch,).
+        learning_rate: Learning rate for SGD.
+        momentum: Momentum factor for SGD.
+        velocities: Momentum velocities for each parameter (32 tensors).
 
     Returns:
         Loss value for this batch.
@@ -174,14 +173,18 @@ fn compute_gradients(
     # FC1 + ReLU + Dropout
     var fc1_out = linear(flattened, model.fc1_weights, model.fc1_bias)
     var relu_fc1_out = relu(fc1_out)
-    var drop1_result = dropout(relu_fc1_out, model.dropout_rate)
+    var drop1_result = dropout(
+        relu_fc1_out, Float64(model.dropout_rate), training=True
+    )
     var drop1_out = drop1_result[0]  # Dropout output
     var drop1_mask = drop1_result[1]  # Dropout mask for backward
 
     # FC2 + ReLU + Dropout
     var fc2_out = linear(drop1_out, model.fc2_weights, model.fc2_bias)
     var relu_fc2_out = relu(fc2_out)
-    var drop2_result = dropout(relu_fc2_out, model.dropout_rate)
+    var drop2_result = dropout(
+        relu_fc2_out, Float64(model.dropout_rate), training=True
+    )
     var drop2_out = drop2_result[0]  # Dropout output
     var drop2_mask = drop2_result[1]  # Dropout mask for backward
 
@@ -204,13 +207,13 @@ fn compute_gradients(
 
     # FC3 backward
     var fc3_grads = linear_backward(grad_logits, drop2_out, model.fc3_weights)
-    var grad_drop2_out = fc3_grads[0]
-    var grad_fc3_weights = fc3_grads[1]
-    var grad_fc3_bias = fc3_grads[2]
+    var grad_drop2_out = fc3_grads.grad_input
+    var grad_fc3_weights = fc3_grads.grad_weights
+    var grad_fc3_bias = fc3_grads.grad_bias
 
     # Dropout2 backward
     var grad_relu_fc2_out = dropout_backward(
-        grad_drop2_out, drop2_mask, model.dropout_rate
+        grad_drop2_out, drop2_mask, Float64(model.dropout_rate)
     )
 
     # ReLU FC2 backward
@@ -218,13 +221,13 @@ fn compute_gradients(
 
     # FC2 backward
     var fc2_grads = linear_backward(grad_fc2_out, drop1_out, model.fc2_weights)
-    var grad_drop1_out = fc2_grads[0]
-    var grad_fc2_weights = fc2_grads[1]
-    var grad_fc2_bias = fc2_grads[2]
+    var grad_drop1_out = fc2_grads.grad_input
+    var grad_fc2_weights = fc2_grads.grad_weights
+    var grad_fc2_bias = fc2_grads.grad_bias
 
     # Dropout1 backward
     var grad_relu_fc1_out = dropout_backward(
-        grad_drop1_out, drop1_mask, model.dropout_rate
+        grad_drop1_out, drop1_mask, Float64(model.dropout_rate)
     )
 
     # ReLU FC1 backward
@@ -232,9 +235,9 @@ fn compute_gradients(
 
     # FC1 backward
     var fc1_grads = linear_backward(grad_fc1_out, flattened, model.fc1_weights)
-    var grad_flattened = fc1_grads[0]
-    var grad_fc1_weights = fc1_grads[1]
-    var grad_fc1_bias = fc1_grads[2]
+    var grad_flattened = fc1_grads.grad_input
+    var grad_fc1_weights = fc1_grads.grad_weights
+    var grad_fc1_bias = fc1_grads.grad_bias
 
     # Unflatten gradient
     var grad_pool5_out = grad_flattened.reshape(pool5_shape)
@@ -245,8 +248,7 @@ fn compute_gradients(
     var grad_relu5_3_out = maxpool2d_backward(
         grad_pool5_out,
         relu5_3_out,
-        pool5_out,
-        kernel_size=2,
+        2,  # kernel_size
         stride=2,
         padding=0,
     )
@@ -258,9 +260,9 @@ fn compute_gradients(
     var conv5_3_grads = conv2d_backward(
         grad_conv5_3_out, relu5_2_out, model.conv5_3_kernel, stride=1, padding=1
     )
-    var grad_relu5_2_out = conv5_3_grads[0]
-    var grad_conv5_3_kernel = conv5_3_grads[1]
-    var grad_conv5_3_bias = conv5_3_grads[2]
+    var grad_relu5_2_out = conv5_3_grads.grad_input
+    var grad_conv5_3_kernel = conv5_3_grads.grad_weights
+    var grad_conv5_3_bias = conv5_3_grads.grad_bias
 
     # ReLU5_2 backward
     var grad_conv5_2_out = relu_backward(grad_relu5_2_out, conv5_2_out)
@@ -269,9 +271,9 @@ fn compute_gradients(
     var conv5_2_grads = conv2d_backward(
         grad_conv5_2_out, relu5_1_out, model.conv5_2_kernel, stride=1, padding=1
     )
-    var grad_relu5_1_out = conv5_2_grads[0]
-    var grad_conv5_2_kernel = conv5_2_grads[1]
-    var grad_conv5_2_bias = conv5_2_grads[2]
+    var grad_relu5_1_out = conv5_2_grads.grad_input
+    var grad_conv5_2_kernel = conv5_2_grads.grad_weights
+    var grad_conv5_2_bias = conv5_2_grads.grad_bias
 
     # ReLU5_1 backward
     var grad_conv5_1_out = relu_backward(grad_relu5_1_out, conv5_1_out)
@@ -280,9 +282,9 @@ fn compute_gradients(
     var conv5_1_grads = conv2d_backward(
         grad_conv5_1_out, pool4_out, model.conv5_1_kernel, stride=1, padding=1
     )
-    var grad_pool4_out = conv5_1_grads[0]
-    var grad_conv5_1_kernel = conv5_1_grads[1]
-    var grad_conv5_1_bias = conv5_1_grads[2]
+    var grad_pool4_out = conv5_1_grads.grad_input
+    var grad_conv5_1_kernel = conv5_1_grads.grad_weights
+    var grad_conv5_1_bias = conv5_1_grads.grad_bias
 
     # ===== Block 4 Backward =====
 
@@ -290,8 +292,7 @@ fn compute_gradients(
     var grad_relu4_3_out = maxpool2d_backward(
         grad_pool4_out,
         relu4_3_out,
-        pool4_out,
-        kernel_size=2,
+        2,  # kernel_size
         stride=2,
         padding=0,
     )
@@ -303,9 +304,9 @@ fn compute_gradients(
     var conv4_3_grads = conv2d_backward(
         grad_conv4_3_out, relu4_2_out, model.conv4_3_kernel, stride=1, padding=1
     )
-    var grad_relu4_2_out = conv4_3_grads[0]
-    var grad_conv4_3_kernel = conv4_3_grads[1]
-    var grad_conv4_3_bias = conv4_3_grads[2]
+    var grad_relu4_2_out = conv4_3_grads.grad_input
+    var grad_conv4_3_kernel = conv4_3_grads.grad_weights
+    var grad_conv4_3_bias = conv4_3_grads.grad_bias
 
     # ReLU4_2 backward
     var grad_conv4_2_out = relu_backward(grad_relu4_2_out, conv4_2_out)
@@ -314,9 +315,9 @@ fn compute_gradients(
     var conv4_2_grads = conv2d_backward(
         grad_conv4_2_out, relu4_1_out, model.conv4_2_kernel, stride=1, padding=1
     )
-    var grad_relu4_1_out = conv4_2_grads[0]
-    var grad_conv4_2_kernel = conv4_2_grads[1]
-    var grad_conv4_2_bias = conv4_2_grads[2]
+    var grad_relu4_1_out = conv4_2_grads.grad_input
+    var grad_conv4_2_kernel = conv4_2_grads.grad_weights
+    var grad_conv4_2_bias = conv4_2_grads.grad_bias
 
     # ReLU4_1 backward
     var grad_conv4_1_out = relu_backward(grad_relu4_1_out, conv4_1_out)
@@ -325,9 +326,9 @@ fn compute_gradients(
     var conv4_1_grads = conv2d_backward(
         grad_conv4_1_out, pool3_out, model.conv4_1_kernel, stride=1, padding=1
     )
-    var grad_pool3_out = conv4_1_grads[0]
-    var grad_conv4_1_kernel = conv4_1_grads[1]
-    var grad_conv4_1_bias = conv4_1_grads[2]
+    var grad_pool3_out = conv4_1_grads.grad_input
+    var grad_conv4_1_kernel = conv4_1_grads.grad_weights
+    var grad_conv4_1_bias = conv4_1_grads.grad_bias
 
     # ===== Block 3 Backward =====
 
@@ -335,8 +336,7 @@ fn compute_gradients(
     var grad_relu3_3_out = maxpool2d_backward(
         grad_pool3_out,
         relu3_3_out,
-        pool3_out,
-        kernel_size=2,
+        2,  # kernel_size
         stride=2,
         padding=0,
     )
@@ -348,9 +348,9 @@ fn compute_gradients(
     var conv3_3_grads = conv2d_backward(
         grad_conv3_3_out, relu3_2_out, model.conv3_3_kernel, stride=1, padding=1
     )
-    var grad_relu3_2_out = conv3_3_grads[0]
-    var grad_conv3_3_kernel = conv3_3_grads[1]
-    var grad_conv3_3_bias = conv3_3_grads[2]
+    var grad_relu3_2_out = conv3_3_grads.grad_input
+    var grad_conv3_3_kernel = conv3_3_grads.grad_weights
+    var grad_conv3_3_bias = conv3_3_grads.grad_bias
 
     # ReLU3_2 backward
     var grad_conv3_2_out = relu_backward(grad_relu3_2_out, conv3_2_out)
@@ -359,9 +359,9 @@ fn compute_gradients(
     var conv3_2_grads = conv2d_backward(
         grad_conv3_2_out, relu3_1_out, model.conv3_2_kernel, stride=1, padding=1
     )
-    var grad_relu3_1_out = conv3_2_grads[0]
-    var grad_conv3_2_kernel = conv3_2_grads[1]
-    var grad_conv3_2_bias = conv3_2_grads[2]
+    var grad_relu3_1_out = conv3_2_grads.grad_input
+    var grad_conv3_2_kernel = conv3_2_grads.grad_weights
+    var grad_conv3_2_bias = conv3_2_grads.grad_bias
 
     # ReLU3_1 backward
     var grad_conv3_1_out = relu_backward(grad_relu3_1_out, conv3_1_out)
@@ -370,9 +370,9 @@ fn compute_gradients(
     var conv3_1_grads = conv2d_backward(
         grad_conv3_1_out, pool2_out, model.conv3_1_kernel, stride=1, padding=1
     )
-    var grad_pool2_out = conv3_1_grads[0]
-    var grad_conv3_1_kernel = conv3_1_grads[1]
-    var grad_conv3_1_bias = conv3_1_grads[2]
+    var grad_pool2_out = conv3_1_grads.grad_input
+    var grad_conv3_1_kernel = conv3_1_grads.grad_weights
+    var grad_conv3_1_bias = conv3_1_grads.grad_bias
 
     # ===== Block 2 Backward =====
 
@@ -380,8 +380,7 @@ fn compute_gradients(
     var grad_relu2_2_out = maxpool2d_backward(
         grad_pool2_out,
         relu2_2_out,
-        pool2_out,
-        kernel_size=2,
+        2,  # kernel_size
         stride=2,
         padding=0,
     )
@@ -393,9 +392,9 @@ fn compute_gradients(
     var conv2_2_grads = conv2d_backward(
         grad_conv2_2_out, relu2_1_out, model.conv2_2_kernel, stride=1, padding=1
     )
-    var grad_relu2_1_out = conv2_2_grads[0]
-    var grad_conv2_2_kernel = conv2_2_grads[1]
-    var grad_conv2_2_bias = conv2_2_grads[2]
+    var grad_relu2_1_out = conv2_2_grads.grad_input
+    var grad_conv2_2_kernel = conv2_2_grads.grad_weights
+    var grad_conv2_2_bias = conv2_2_grads.grad_bias
 
     # ReLU2_1 backward
     var grad_conv2_1_out = relu_backward(grad_relu2_1_out, conv2_1_out)
@@ -404,9 +403,9 @@ fn compute_gradients(
     var conv2_1_grads = conv2d_backward(
         grad_conv2_1_out, pool1_out, model.conv2_1_kernel, stride=1, padding=1
     )
-    var grad_pool1_out = conv2_1_grads[0]
-    var grad_conv2_1_kernel = conv2_1_grads[1]
-    var grad_conv2_1_bias = conv2_1_grads[2]
+    var grad_pool1_out = conv2_1_grads.grad_input
+    var grad_conv2_1_kernel = conv2_1_grads.grad_weights
+    var grad_conv2_1_bias = conv2_1_grads.grad_bias
 
     # ===== Block 1 Backward =====
 
@@ -414,8 +413,7 @@ fn compute_gradients(
     var grad_relu1_2_out = maxpool2d_backward(
         grad_pool1_out,
         relu1_2_out,
-        pool1_out,
-        kernel_size=2,
+        2,  # kernel_size
         stride=2,
         padding=0,
     )
@@ -427,9 +425,9 @@ fn compute_gradients(
     var conv1_2_grads = conv2d_backward(
         grad_conv1_2_out, relu1_1_out, model.conv1_2_kernel, stride=1, padding=1
     )
-    var grad_relu1_1_out = conv1_2_grads[0]
-    var grad_conv1_2_kernel = conv1_2_grads[1]
-    var grad_conv1_2_bias = conv1_2_grads[2]
+    var grad_relu1_1_out = conv1_2_grads.grad_input
+    var grad_conv1_2_kernel = conv1_2_grads.grad_weights
+    var grad_conv1_2_bias = conv1_2_grads.grad_bias
 
     # ReLU1_1 backward
     var grad_conv1_1_out = relu_backward(grad_relu1_1_out, conv1_1_out)
@@ -438,9 +436,9 @@ fn compute_gradients(
     var conv1_1_grads = conv2d_backward(
         grad_conv1_1_out, input, model.conv1_1_kernel, stride=1, padding=1
     )
-    var grad_input = conv1_1_grads[0]  # Not used (no input gradient needed)
-    var grad_conv1_1_kernel = conv1_1_grads[1]
-    var grad_conv1_1_bias = conv1_1_grads[2]
+    var _ = conv1_1_grads.grad_input  # Not used (no input gradient needed)
+    var grad_conv1_1_kernel = conv1_1_grads.grad_weights
+    var grad_conv1_1_bias = conv1_1_grads.grad_bias
 
     # ========== Parameter Update (SGD with Momentum) ==========
     # Update all 32 parameters (16 layers × 2 params per layer)
@@ -452,29 +450,29 @@ fn compute_gradients(
         model.conv1_1_kernel,
         grad_conv1_1_kernel,
         velocities[0],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv1_1_bias,
         grad_conv1_1_bias,
         velocities[1],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv1_2_kernel,
         grad_conv1_2_kernel,
         velocities[2],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv1_2_bias,
         grad_conv1_2_bias,
         velocities[3],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
 
     # Block 2 updates
@@ -482,29 +480,29 @@ fn compute_gradients(
         model.conv2_1_kernel,
         grad_conv2_1_kernel,
         velocities[4],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv2_1_bias,
         grad_conv2_1_bias,
         velocities[5],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv2_2_kernel,
         grad_conv2_2_kernel,
         velocities[6],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv2_2_bias,
         grad_conv2_2_bias,
         velocities[7],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
 
     # Block 3 updates
@@ -512,43 +510,43 @@ fn compute_gradients(
         model.conv3_1_kernel,
         grad_conv3_1_kernel,
         velocities[8],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv3_1_bias,
         grad_conv3_1_bias,
         velocities[9],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv3_2_kernel,
         grad_conv3_2_kernel,
         velocities[10],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv3_2_bias,
         grad_conv3_2_bias,
         velocities[11],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv3_3_kernel,
         grad_conv3_3_kernel,
         velocities[12],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv3_3_bias,
         grad_conv3_3_bias,
         velocities[13],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
 
     # Block 4 updates
@@ -556,43 +554,43 @@ fn compute_gradients(
         model.conv4_1_kernel,
         grad_conv4_1_kernel,
         velocities[14],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv4_1_bias,
         grad_conv4_1_bias,
         velocities[15],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv4_2_kernel,
         grad_conv4_2_kernel,
         velocities[16],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv4_2_bias,
         grad_conv4_2_bias,
         velocities[17],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv4_3_kernel,
         grad_conv4_3_kernel,
         velocities[18],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv4_3_bias,
         grad_conv4_3_bias,
         velocities[19],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
 
     # Block 5 updates
@@ -600,43 +598,43 @@ fn compute_gradients(
         model.conv5_1_kernel,
         grad_conv5_1_kernel,
         velocities[20],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv5_1_bias,
         grad_conv5_1_bias,
         velocities[21],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv5_2_kernel,
         grad_conv5_2_kernel,
         velocities[22],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv5_2_bias,
         grad_conv5_2_bias,
         velocities[23],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv5_3_kernel,
         grad_conv5_3_kernel,
         velocities[24],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.conv5_3_bias,
         grad_conv5_3_bias,
         velocities[25],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
 
     # FC layer updates
@@ -644,31 +642,43 @@ fn compute_gradients(
         model.fc1_weights,
         grad_fc1_weights,
         velocities[26],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
-        model.fc1_bias, grad_fc1_bias, velocities[27], learning_rate, momentum
+        model.fc1_bias,
+        grad_fc1_bias,
+        velocities[27],
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.fc2_weights,
         grad_fc2_weights,
         velocities[28],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
-        model.fc2_bias, grad_fc2_bias, velocities[29], learning_rate, momentum
+        model.fc2_bias,
+        grad_fc2_bias,
+        velocities[29],
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
         model.fc3_weights,
         grad_fc3_weights,
         velocities[30],
-        learning_rate,
-        momentum,
+        Float64(learning_rate),
+        Float64(momentum),
     )
     sgd_momentum_update_inplace(
-        model.fc3_bias, grad_fc3_bias, velocities[31], learning_rate, momentum
+        model.fc3_bias,
+        grad_fc3_bias,
+        velocities[31],
+        Float64(learning_rate),
+        Float64(momentum),
     )
 
     return loss
@@ -683,9 +693,9 @@ fn evaluate(
     evaluation logic across all examples.
 
     Args:
-        model: VGG16 model
-        test_images: Test images (10000, 3, 32, 32)
-        test_labels: Test labels (10000,)
+        model: VGG16 model.
+        test_images: Test images (10000, 3, 32, 32).
+        test_labels: Test labels (10000,).
 
     Returns:
         Test accuracy (0.0 to 1.0).
@@ -728,7 +738,7 @@ fn initialize_velocities(model: VGG16) raises -> List[ExTensor]:
     """Initialize momentum velocities for all parameters (32 tensors).
 
     Args:
-        model: VGG16 model
+        model: VGG16 model.
 
     Returns:
         DynamicVector of zero-initialized velocity tensors matching parameter shapes.
@@ -780,7 +790,7 @@ fn initialize_velocities(model: VGG16) raises -> List[ExTensor]:
     velocities.append(zeros(model.fc3_weights.shape(), DType.float32))
     velocities.append(zeros(model.fc3_bias.shape(), DType.float32))
 
-    return velocities
+    return velocities^
 
 
 fn main() raises:
@@ -837,20 +847,18 @@ fn main() raises:
 
     # Load dataset
     print("Loading CIFAR-10 dataset...")
-    var train_data = load_cifar10_train(data_dir)
+    var cifar_dataset = CIFAR10Dataset(data_dir)
+    var train_data = cifar_dataset.get_train_data()
     var train_images = train_data[0]
     var train_labels = train_data[1]
 
-    var test_data = load_cifar10_test(data_dir)
+    var test_data = cifar_dataset.get_test_data()
     var test_images = test_data[0]
     var test_labels = test_data[1]
 
     print("  Training samples: ", train_images.shape()[0])
     print("  Test samples: ", test_images.shape()[0])
     print()
-
-    # Initialize TrainingLoop with logging interval
-    var training_loop = TrainingLoop(log_interval=100)
 
     # Training loop with learning rate decay
     print("Starting training...")
@@ -871,24 +879,53 @@ fn main() raises:
         if epoch == 1 or epoch % 60 == 1:
             print("Epoch", epoch, "- Learning rate:", current_lr)
 
-        # Run one epoch using TrainingLoop
-        # Pass compute_gradients as the batch loss computation function
-        # This computes gradients, performs backward pass, and updates parameters
-        var train_loss = training_loop.run_epoch_manual(
-            train_images,
-            train_labels,
-            batch_size,
-            compute_gradients(
+        # Manual epoch loop (VGG16 needs custom backward pass)
+        var num_samples = train_images.shape()[0]
+        var num_batches = compute_num_batches(num_samples, batch_size)
+        var total_loss = Float32(0.0)
+
+        print("Epoch [", epoch, "/", epochs, "]")
+
+        for batch_idx in range(num_batches):
+            # Get batch indices
+            var batch_indices = get_batch_indices(
+                batch_idx, batch_size, num_samples
+            )
+            var start_idx = batch_indices[0]
+            var end_idx = batch_indices[1]
+
+            # Extract batch
+            var batch_pair = extract_batch_pair(
+                train_images, train_labels, start_idx, end_idx - start_idx
+            )
+            var batch_images = batch_pair[0]
+            var batch_labels = batch_pair[1]
+
+            # Compute gradients and update (forward + backward + update)
+            var batch_loss = compute_gradients(
                 model,
                 batch_images,
                 batch_labels,
                 current_lr,
                 momentum,
                 velocities,
-            ),
-            epoch,
-            epochs,
-        )
+            )
+
+            total_loss += batch_loss
+
+            # Log progress every 100 batches
+            if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == num_batches:
+                var avg_loss = total_loss / Float32(batch_idx + 1)
+                print(
+                    "  Batch [",
+                    batch_idx + 1,
+                    "/",
+                    num_batches,
+                    "] - Loss:",
+                    avg_loss,
+                )
+
+        var _ = total_loss / Float32(num_batches)
 
         # Evaluate every epoch
         var test_acc = evaluate(model, test_images, test_labels)
