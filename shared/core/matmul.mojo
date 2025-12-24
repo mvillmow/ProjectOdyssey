@@ -36,6 +36,7 @@ from algorithm import vectorize
 from sys.info import simd_width_of
 from memory import memset_zero
 from .extensor import ExTensor, zeros
+from .error_utils import format_dtype, format_matmul_error
 
 
 # ============================================================================
@@ -80,25 +81,24 @@ fn matmul_typed(a: ExTensor, b: ExTensor, mut c: ExTensor) raises:
         - Expected speedup: 3-5x over Stage 0.
     """
     if a.dtype() != b.dtype() or a.dtype() != c.dtype():
-        raise Error("matmul_typed: all tensors must have the same dtype")
+        var msg = "matmul_typed: all tensors must have the same dtype. Got A: "
+        msg += format_dtype(a.dtype()) + ", B: " + format_dtype(b.dtype())
+        msg += ", C: " + format_dtype(c.dtype())
+        msg += ". Hint: Use tensor.cast() to convert"
+        raise Error(msg)
 
     var a_shape = a.shape()
     var b_shape = b.shape()
 
     if len(a_shape) != 2 or len(b_shape) != 2:
-        raise Error("matmul_typed: requires 2D tensors")
+        raise Error(format_matmul_error(a_shape, b_shape))
 
     var M = a_shape[0]
     var K = a_shape[1]
     var N = b_shape[1]
 
     if K != b_shape[0]:
-        raise Error(
-            "matmul_typed: incompatible dimensions for matmul: "
-            + String(K)
-            + " != "
-            + String(b_shape[0])
-        )
+        raise Error(format_matmul_error(a_shape, b_shape))
 
     # Dispatch to dtype-specific implementation
     if a.dtype() == DType.float32:
@@ -106,7 +106,13 @@ fn matmul_typed(a: ExTensor, b: ExTensor, mut c: ExTensor) raises:
     elif a.dtype() == DType.float64:
         _matmul_typed_float64(a, b, c, M, K, N)
     else:
-        raise Error("matmul_typed: only float32 and float64 are supported")
+        var msg = (
+            "matmul_typed: only float32 and float64 dtypes supported, got "
+        )
+        msg += (
+            format_dtype(a.dtype()) + ". Hint: Use tensor.cast(DType.float32)"
+        )
+        raise Error(msg)
 
 
 @always_inline
