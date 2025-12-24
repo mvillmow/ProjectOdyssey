@@ -75,7 +75,7 @@ from shared.training.model_utils import (
 from collections import List
 
 
-struct ResNet18:
+struct ResNet18(Movable):
     """ResNet-18 model for CIFAR-10 classification.
 
     Adapted for 32×32 input (vs 224×224 in original paper):
