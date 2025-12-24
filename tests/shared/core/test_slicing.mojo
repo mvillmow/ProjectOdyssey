@@ -228,7 +228,7 @@ fn test_slice_out_of_bounds_start() raises:
     try:
         var bad_slice = tensor.slice(10, 15, axis=0)
         raise Error("Expected error for out-of-bounds start")
-    except Error as e:
+    except:
         # Expected
         print("PASS: test_slice_out_of_bounds_start")
 
@@ -240,7 +240,7 @@ fn test_slice_out_of_bounds_end() raises:
     try:
         var bad_slice = tensor.slice(0, 100, axis=0)
         raise Error("Expected error for out-of-bounds end")
-    except Error as e:
+    except:
         # Expected
         print("PASS: test_slice_out_of_bounds_end")
 
@@ -252,7 +252,7 @@ fn test_slice_invalid_axis() raises:
     try:
         var bad_slice = tensor.slice(0, 2, axis=5)
         raise Error("Expected error for invalid axis")
-    except Error as e:
+    except:
         # Expected
         print("PASS: test_slice_invalid_axis")
 
