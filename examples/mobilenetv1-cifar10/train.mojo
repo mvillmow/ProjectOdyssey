@@ -110,7 +110,7 @@ fn train_epoch(
 
         # Compute loss
         var loss = cross_entropy(logits, batch_labels)
-        total_loss += loss
+        total_loss = total_loss + loss
 
         # Backward pass (see structure documentation above)
         # ... (would be ~1400 lines of gradient computation)
