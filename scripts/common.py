@@ -3,6 +3,17 @@
 Shared utilities and constants for ML Odyssey scripts
 
 This module provides common functionality used across multiple scripts to avoid duplication.
+
+Centralized Utilities:
+- LABEL_COLORS: GitHub label colors for 5-phase workflow
+- get_repo_root(): Repository root finder (used by 20+ scripts)
+- get_agents_dir(): .claude/agents path helper
+- Colors: ANSI terminal colors with disable() method
+
+Related Issues:
+- #2601: Colors class centralization
+- #2603: get_repo_root() audit
+- #2634: Script utilities consolidation
 """
 
 from pathlib import Path
