@@ -397,7 +397,7 @@ fn test_add_contiguous_int32() raises:
 
     var result_ptr = result._data.bitcast[Int32]()
     for i in range(result.numel()):
-        assert_equal_int(result_ptr[i], 8)
+        assert_equal_int(Int(result_ptr[i]), 8)
 
 
 fn test_multiply_contiguous_int64() raises:
@@ -409,7 +409,7 @@ fn test_multiply_contiguous_int64() raises:
 
     var result_ptr = result._data.bitcast[Int64]()
     for i in range(result.numel()):
-        assert_equal_int(result_ptr[i], 12)
+        assert_equal_int(Int(result_ptr[i]), 12)
 
 
 # ============================================================================
