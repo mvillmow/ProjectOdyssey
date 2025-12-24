@@ -229,18 +229,18 @@ fn reshape(tensor: ExTensor, new_shape: List[Int]) raises -> ExTensor:
     return result^
 
 
-fn squeeze(tensor: ExTensor, dim: Int = -999) raises -> ExTensor:
+fn squeeze(tensor: ExTensor, axis: Int = -999) raises -> ExTensor:
     """Remove size-1 dimensions.
 
     Args:
             tensor: Input tensor.
-            dim: Specific dimension to squeeze (optional, default squeezes all size-1 dims).
+            axis: Specific dimension to squeeze (optional, default squeezes all size-1 dims).
 
     Returns:
             Tensor with size-1 dimensions removed.
 
     Raises:
-            Error: If specified dim is not size 1.
+            Error: If specified axis is not size 1.
 
     Examples:
     ```
@@ -248,27 +248,27 @@ fn squeeze(tensor: ExTensor, dim: Int = -999) raises -> ExTensor:
             var a = ones([1, 3, 1, 4], DType.float32)  # Shape (1, 3, 1, 4)
             var b = squeeze(a)  # Shape (3, 4)
 
-            # Squeeze specific dim
-            var c = squeeze(a, 0)  # Shape (3, 1, 4)
+            # Squeeze specific axis
+            var c = squeeze(a, axis=0)  # Shape (3, 1, 4)
     ```
     """
     var old_shape = tensor.shape()
     var ndim = len(old_shape)
 
-    if dim != -999:
+    if axis != -999:
         # Squeeze specific dimension
-        var actual_dim = dim if dim >= 0 else ndim + dim
+        var actual_axis = axis if axis >= 0 else ndim + axis
 
-        if actual_dim < 0 or actual_dim >= ndim:
+        if actual_axis < 0 or actual_axis >= ndim:
             raise Error("squeeze: dimension out of range")
 
-        if old_shape[actual_dim] != 1:
+        if old_shape[actual_axis] != 1:
             raise Error("squeeze: cannot squeeze dimension that is not size 1")
 
         # Create new shape without this dimension
         var new_shape = List[Int]()
         for i in range(ndim):
-            if i != actual_dim:
+            if i != actual_axis:
                 new_shape.append(old_shape[i])
 
         return reshape(tensor, new_shape)
@@ -292,12 +292,12 @@ fn squeeze(tensor: ExTensor, dim: Int = -999) raises -> ExTensor:
         return reshape(tensor, new_shape)
 
 
-fn unsqueeze(tensor: ExTensor, dim: Int) raises -> ExTensor:
+fn unsqueeze(tensor: ExTensor, axis: Int) raises -> ExTensor:
     """Add a size-1 dimension at specified position.
 
     Args:
             tensor: Input tensor.
-            dim: Position to insert new dimension (supports negative indexing).
+            axis: Position to insert new dimension (supports negative indexing).
 
     Returns:
             Tensor with additional size-1 dimension.
@@ -308,25 +308,25 @@ fn unsqueeze(tensor: ExTensor, dim: Int) raises -> ExTensor:
     Examples:
     ```
             var a = ones([3, 4], DType.float32)  # Shape (3, 4)
-            var b = unsqueeze(a, 0)  # Shape (1, 3, 4)
-            var c = unsqueeze(a, -1)  # Shape (3, 4, 1)
+            var b = unsqueeze(a, axis=0)  # Shape (1, 3, 4)
+            var c = unsqueeze(a, axis=-1)  # Shape (3, 4, 1)
     ```
     """
     var old_shape = tensor.shape()
     var ndim = len(old_shape)
     var new_ndim = ndim + 1
 
-    # Handle negative indexing (allow dim in range [-ndim-1, ndim])
-    var actual_dim = dim if dim >= 0 else new_ndim + dim
+    # Handle negative indexing (allow axis in range [-ndim-1, ndim])
+    var actual_axis = axis if axis >= 0 else new_ndim + axis
 
-    if actual_dim < 0 or actual_dim > ndim:
+    if actual_axis < 0 or actual_axis > ndim:
         raise Error("unsqueeze: dimension out of range")
 
     # Create new shape with size-1 dimension inserted
     var new_shape = List[Int]()
     var j = 0
     for i in range(new_ndim):
-        if i == actual_dim:
+        if i == actual_axis:
             new_shape.append(1)
         else:
             new_shape.append(old_shape[j])
@@ -336,12 +336,12 @@ fn unsqueeze(tensor: ExTensor, dim: Int) raises -> ExTensor:
 
 
 @always_inline
-fn expand_dims(tensor: ExTensor, dim: Int) raises -> ExTensor:
+fn expand_dims(tensor: ExTensor, axis: Int) raises -> ExTensor:
     """Alias for unsqueeze(). Add a size-1 dimension at specified position.
 
     Args:
             tensor: Input tensor.
-            dim: Position to insert new dimension.
+            axis: Position to insert new dimension.
 
     Returns:
             Tensor with additional size-1 dimension.
@@ -349,7 +349,7 @@ fn expand_dims(tensor: ExTensor, dim: Int) raises -> ExTensor:
     Raises:
             Error: If operation fails.
     """
-    return unsqueeze(tensor, dim)
+    return unsqueeze(tensor, axis)
 
 
 fn flatten(tensor: ExTensor) raises -> ExTensor:

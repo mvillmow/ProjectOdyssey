@@ -470,3 +470,17 @@ struct CrossEntropyLoss(Loss, Movable):
 # ============================================================================
 # Public API
 # ============================================================================
+
+# Export training script utilities (Issue #2597)
+from .script_runner import (
+    TrainingCallbacks,
+    run_epoch_with_batches,
+    print_training_header,
+    print_dataset_info,
+)
+from .dataset_loaders import (
+    DatasetSplit,
+    load_emnist_dataset,
+    load_cifar10_dataset,
+    print_dataset_summary,
+)
