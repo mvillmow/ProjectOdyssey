@@ -43,6 +43,8 @@ from shared.core.extensor import ExTensor, zeros
 from memory import UnsafePointer
 from collections import List, Dict
 from collections.optional import Optional
+from shared.utils.io import create_directory
+from python import Python
 
 
 # ============================================================================
@@ -269,8 +271,6 @@ fn save_named_tensors(tensors: List[NamedTensor], dirpath: String) raises:
             ```
     """
     # Create directory if needed
-    from shared.utils.io import create_directory
-
     if not create_directory(dirpath):
         raise Error("Failed to create directory: " + dirpath)
 
@@ -304,8 +304,6 @@ fn load_named_tensors(dirpath: String) raises -> List[NamedTensor]:
                 print(tensors[i].name)
             ```
     """
-    from python import Python
-
     var result: List[NamedTensor] = []
 
     try:
@@ -362,8 +360,6 @@ fn save_named_checkpoint(
             ```
     """
     # Create checkpoint directory
-    from shared.utils.io import create_directory
-
     if not create_directory(path):
         raise Error("Failed to create checkpoint directory: " + path)
 
