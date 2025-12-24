@@ -14,11 +14,13 @@ Note:
 """
 
 from shared.autograd import Variable, GradientTape, SGD
+from shared.autograd.variable import (
+    variable_add,
+    variable_multiply,
+    variable_subtract,
+    variable_mean,
+)
 from shared.core.extensor import ExTensor, zeros, ones
-from shared.core.arithmetic import add, multiply, subtract
-from shared.core.reduction import sum as tensor_sum, mean
-from shared.core.loss import mean_squared_error, mean_squared_error_backward
-from shared.core.reduction import mean_backward
 
 
 fn simple_linear_regression() raises:
@@ -72,62 +74,70 @@ fn simple_linear_regression() raises:
 
     # Training loop
     for epoch in range(num_epochs):
+        # Clear tape for new forward pass
+        tape.clear()
+        tape.enable()
+
         # Forward pass: predictions = w * X + b
-        var w_expanded = ExTensor(List[Int](), DType.float32)
+        # Expand scalar parameters to match X shape for broadcasting
+        var w_expanded_data = ExTensor(List[Int](), DType.float32)
         for i in range(5):
-            w_expanded._set_float64(i, w.data._get_float64(0))
+            w_expanded_data._set_float64(i, w.data._get_float64(0))
+        var w_expanded = Variable(w_expanded_data, True, tape)
 
-        var b_expanded = ExTensor(List[Int](), DType.float32)
+        var b_expanded_data = ExTensor(List[Int](), DType.float32)
         for i in range(5):
-            b_expanded._set_float64(i, b.data._get_float64(0))
+            b_expanded_data._set_float64(i, b.data._get_float64(0))
+        var b_expanded = Variable(b_expanded_data, True, tape)
 
-        var wx = multiply(w_expanded, X)
-        var predictions = add(wx, b_expanded)
+        # Wrap X and Y as Variables
+        var X_var = Variable(X, False, tape)
+        var Y_var = Variable(Y, False, tape)
+
+        # Use Variable operations (these are recorded in tape)
+        var wx = variable_multiply(w_expanded, X_var, tape)
+        var predictions = variable_add(wx, b_expanded, tape)
 
         # Compute loss: MSE = mean((predictions - targets)^2)
-        var squared_errors = mean_squared_error(predictions, Y)
-        var loss = mean(squared_errors, axis=0, keepdims=False)
+        var diff = variable_subtract(predictions, Y_var, tape)
+        var squared = variable_multiply(diff, diff, tape)
+        var loss = variable_mean(squared, tape, axis=-1)
 
-        # Backward pass (manual gradients for now)
-        # TODO(#2725): Replace with tape.backward() when fully implemented
+        # Backward pass using autograd tape
+        loss.backward(tape)
 
-        # Gradient of loss (scalar): ∂loss/∂loss = 1
-        var grad_loss = ones(loss.shape(), loss.dtype())
+        # Extract gradients for w and b from expanded versions
+        var grad_w_expanded = tape.get_grad(w_expanded.id)
+        var grad_b_expanded = tape.get_grad(b_expanded.id)
 
-        # Gradient of mean: ∂loss/∂squared_errors
-        var grad_squared_errors = mean_backward(
-            grad_loss, squared_errors, axis=-1
-        )
+        # Sum gradients across batch dimension to get parameter gradients
+        var grad_w_sum_data = ExTensor(List[Int](), DType.float32)
+        var grad_w_val = 0.0
+        for i in range(5):
+            grad_w_val += grad_w_expanded._get_float64(i)
+        grad_w_sum_data._set_float64(0, grad_w_val)
 
-        # Gradient of MSE: ∂squared_errors/∂predictions
-        var grad_predictions = mean_squared_error_backward(
-            grad_squared_errors, predictions, Y
-        )
+        var grad_b_sum_data = ExTensor(List[Int](), DType.float32)
+        var grad_b_val = 0.0
+        for i in range(5):
+            grad_b_val += grad_b_expanded._get_float64(i)
+        grad_b_sum_data._set_float64(0, grad_b_val)
 
-        # Gradient of w: ∂predictions/∂w = X (since predictions = w*X + b)
-        # So: ∂loss/∂w = sum(∂loss/∂predictions * X)
-        var grad_w_expanded = multiply(grad_predictions, X)
-        var grad_w_sum = tensor_sum(grad_w_expanded, axis=0, keepdims=False)
-
-        # Gradient of b: ∂predictions/∂b = 1 (since predictions = w*X + b)
-        # So: ∂loss/∂b = sum(∂loss/∂predictions)
-        var grad_b_sum = tensor_sum(grad_predictions, axis=0, keepdims=False)
-
-        # Store gradients in tape
-        tape.registry.set_grad(w.id, grad_w_sum)
-        tape.registry.set_grad(b.id, grad_b_sum)
+        # Set gradients in tape for actual parameters
+        tape.registry.set_grad(w.id, grad_w_sum_data)
+        tape.registry.set_grad(b.id, grad_b_sum_data)
 
         # Update parameters using optimizer
         var params: List[Variable] = []
-        params.append(w.copy())
-        params.append(b.copy())
+        params.append(w)
+        params.append(b)
         optimizer.step(params, tape)
 
         # Reset gradients
         optimizer.zero_grad(tape)
 
         # Print progress
-        var loss_value = loss._get_float64(0)
+        var loss_value = loss.data._get_float64(0)
         var w_value = w.data._get_float64(0)
         var b_value = b.data._get_float64(0)
 

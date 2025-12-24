@@ -319,7 +319,7 @@ struct TrainingLoop[
         # Convert parameters to Variables for optimizer
         var var_params: List[Variable] = []
         for i in range(len(params)):
-            var p = Variable(params[i], True, i)
+            var p = Variable(params[i], True, self.tape)
             var_params.append(p^)
 
         # Update parameters using autograd optimizer
