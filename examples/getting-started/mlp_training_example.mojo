@@ -48,7 +48,7 @@ from shared.core import (
 from shared.training.optimizers import sgd_step_simple
 
 
-fn create_synthetic_data() raises -> Tuple[ExTensor, ExTensor]:
+fn create_synthetic_data() raises -> tuple[ExTensor, ExTensor]:
     """Create synthetic XOR-like binary classification data.
 
     Returns:
@@ -57,8 +57,8 @@ fn create_synthetic_data() raises -> Tuple[ExTensor, ExTensor]:
             targets: (4, 1) - Binary labels (0 or 1).
     """
     # Create 4 samples with 2 features each
-    var input_shape = List[Int]()
-    var target_shape = List[Int]()
+    var input_shape = [4, 2]
+    var target_shape = [4, 1]
 
     var inputs = ExTensor(input_shape, DType.float32)
     var targets = ExTensor(target_shape, DType.float32)
@@ -129,18 +129,14 @@ fn train_mlp() raises:
     print("\nInitializing network parameters...")
 
     # Layer 1: (2, 4) - Input to Hidden
-    var W1_shape = List[Int]()
-    W1_shape.append(hidden_size)
-    W1_shape.append(input_size)
-    var b1_shape = List[Int]()
+    var W1_shape = [hidden_size, input_size]
+    var b1_shape = [hidden_size]
     var W1 = xavier_uniform(input_size, hidden_size, W1_shape, DType.float32)
     var b1 = zeros(b1_shape, DType.float32)
 
     # Layer 2: (4, 1) - Hidden to Output
-    var W2_shape = List[Int]()
-    W2_shape.append(output_size)
-    W2_shape.append(hidden_size)
-    var b2_shape = List[Int]()
+    var W2_shape = [output_size, hidden_size]
+    var b2_shape = [output_size]
     var W2 = xavier_uniform(hidden_size, output_size, W2_shape, DType.float32)
     var b2 = zeros(b2_shape, DType.float32)
 
@@ -160,7 +156,7 @@ fn train_mlp() raises:
         # For batch processing, we'll process each sample separately
 
         # For simplicity, process first sample
-        var x_sample_shape = List[Int]()
+        var x_sample_shape = [input_size]
         var x_sample = ExTensor(x_sample_shape, DType.float32)
         x_sample._set_float64(0, X._get_float64(0))  # First feature
         x_sample._set_float64(1, X._get_float64(1))  # Second feature
@@ -174,7 +170,7 @@ fn train_mlp() raises:
         var pred = sigmoid(z2)  # (1, 1)
 
         # Get target for this sample
-        var y_sample_shape = List[Int]()
+        var y_sample_shape = [output_size]
         var y_sample = ExTensor(y_sample_shape, DType.float32)
         y_sample._set_float64(0, y_true._get_float64(0))
 
@@ -185,7 +181,9 @@ fn train_mlp() raises:
         # ========== BACKWARD PASS ==========
         # Initialize gradient
         var grad_loss_shape = List[Int]()
-        var grad_loss = ones(grad_loss_shape, DType.float32)  # scalar 1.0
+        var grad_loss = ones(
+            grad_loss_shape, DType.float32
+        )  # scalar 1.0 (empty shape)
 
         # Backprop through mean
         var grad_loss_val = mean_backward(grad_loss, loss_val)
@@ -251,7 +249,7 @@ fn train_mlp() raises:
 
     for i in range(4):
         # Get sample
-        var x_test_shape = List[Int]()
+        var x_test_shape = [input_size]
         var x_test = ExTensor(x_test_shape, DType.float32)
         x_test._set_float64(0, X._get_float64(i * 2))
         x_test._set_float64(1, X._get_float64(i * 2 + 1))
