@@ -1,16 +1,18 @@
 # Development dependencies
+# Pin exact versions for reproducibility
+# Update via Dependabot PRs
 -r requirements.txt
 
 # Pre-commit hooks
-pre-commit>=3.0.0
+pre-commit==4.0.1
 
 # Security scanning
-safety>=2.0.0
-bandit>=1.7.0
+safety==3.2.13
+bandit==1.8.0
 
 # Documentation
-mkdocs>=1.5.0
-mkdocs-material>=9.0.0
+mkdocs==1.6.1
+mkdocs-material==9.5.50
 
 # Benchmarking
-pytest-benchmark>=4.0.0
+pytest-benchmark==5.1.0

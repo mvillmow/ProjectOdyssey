@@ -355,6 +355,51 @@ The CI/CD strategy uses GitHub Actions with the following principles:
 
 ---
 
+#### dependency-audit
+
+**File**: `dependency-audit.yml`
+
+**Triggers**: Weekly Monday 8 AM UTC, push to main when dependency files change, manual dispatch
+
+**Purpose**: Comprehensive dependency audit including Python, Pixi, and license compliance.
+
+**Audit Jobs**:
+
+1. **python-audit** - Safety and pip-audit for vulnerability scanning
+2. **pixi-audit** - Pixi/Conda package listing and version tracking
+3. **license-audit** - License compliance checking (blocks GPL-3.0, AGPL-3.0)
+4. **audit-report** - Aggregates results and creates issues for vulnerabilities
+
+**Artifacts**:
+
+- `python-audit-results/` (30 days)
+- `pixi-audit-results/` (30 days)
+- `license-audit-results/` (30 days)
+- `dependency-audit-report` (90 days)
+
+**Issue Creation**: Automatically creates issue if vulnerabilities found
+
+---
+
+#### mojo-version-check
+
+**File**: `mojo-version-check.yml`
+
+**Triggers**: Weekly Sunday 3 AM UTC, manual dispatch
+
+**Purpose**: Check for new Mojo releases and create update issues.
+
+**Key Features**:
+
+- Compares pinned version in `pixi.toml` against latest available
+- Creates GitHub issue with upgrade checklist when update available
+- Updates existing issue comment if one already exists
+- Uses `.mojo-version` file as additional version tracking
+
+**Artifacts**: None (creates issues instead)
+
+---
+
 #### link-check
 
 **File**: `link-check.yml`
