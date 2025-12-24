@@ -243,15 +243,15 @@ fn compute_gradients(
     # ========== Parameter Update (SGD) ==========
     model.update_parameters(
         learning_rate,
-        conv1_grads.grad_kernel^,
+        conv1_grads.grad_weights^,
         conv1_grads.grad_bias^,
-        conv2_grads.grad_kernel^,
+        conv2_grads.grad_weights^,
         conv2_grads.grad_bias^,
-        fc1_grads.grad_kernel^,
+        fc1_grads.grad_weights^,
         fc1_grads.grad_bias^,
-        fc2_grads.grad_kernel^,
+        fc2_grads.grad_weights^,
         fc2_grads.grad_bias^,
-        fc3_grads.grad_kernel^,
+        fc3_grads.grad_weights^,
         fc3_grads.grad_bias^,
     )
 
