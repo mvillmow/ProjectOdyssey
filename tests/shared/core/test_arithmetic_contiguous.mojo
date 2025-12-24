@@ -432,3 +432,63 @@ fn test_add_mixed_contiguous_noncontiguous() raises:
     var result_ptr = result._data.bitcast[Float32]()
     for i in range(result.numel()):
         assert_almost_equal(result_ptr[i], 5.0, tolerance=1e-6)
+
+
+fn main() raises:
+    """Run all contiguous fast path tests."""
+    print("Running contiguous fast path tests...")
+
+    # Helper tests
+    print("  Testing helper functions...")
+    test_shapes_match_identical_1d()
+    test_shapes_match_identical_2d()
+    test_shapes_match_different_shapes()
+    test_shapes_match_different_dims()
+    test_can_use_fast_path_contiguous_same_shape()
+    test_can_use_fast_path_different_shapes()
+    test_can_use_fast_path_different_dtypes()
+
+    # Addition tests
+    print("  Testing addition...")
+    test_add_contiguous_same_shape_float32()
+    test_add_contiguous_same_shape_float64()
+    test_add_contiguous_large_tensor()
+    test_add_contiguous_small_tensor()
+
+    # Subtraction tests
+    print("  Testing subtraction...")
+    test_subtract_contiguous_same_shape_float32()
+    test_subtract_contiguous_same_shape_float64()
+
+    # Multiplication tests
+    print("  Testing multiplication...")
+    test_multiply_contiguous_same_shape_float32()
+    test_multiply_contiguous_same_shape_float64()
+
+    # Division tests
+    print("  Testing division...")
+    test_divide_contiguous_same_shape_float32()
+    test_divide_contiguous_same_shape_float64()
+
+    # Fallback tests
+    print("  Testing fallback paths...")
+    test_add_noncontiguous_fallback()
+    test_multiply_noncontiguous_fallback()
+
+    # Correctness tests
+    print("  Testing correctness...")
+    test_add_contiguous_matches_slow_path()
+    test_subtract_contiguous_matches_slow_path()
+    test_multiply_contiguous_matches_slow_path()
+    test_divide_contiguous_matches_slow_path()
+
+    # Integer type tests
+    print("  Testing integer types...")
+    test_add_contiguous_int32()
+    test_multiply_contiguous_int64()
+
+    # Mixed tests
+    print("  Testing mixed contiguity...")
+    test_add_mixed_contiguous_noncontiguous()
+
+    print("All contiguous fast path tests passed!")
