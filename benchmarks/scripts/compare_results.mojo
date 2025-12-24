@@ -86,7 +86,7 @@ fn parse_benchmark_name(line: String) raises -> String:
     """Extract benchmark name from JSON line.
 
     Args:
-        line: JSON line containing "name": "value"
+        line: JSON line containing "name": "value".
 
     Returns:
         Extracted name value.
@@ -176,8 +176,8 @@ fn parse_float_value(line: String, field_name: String) raises -> Float64:
     """Extract float value from JSON line.
 
     Args:
-        line: JSON line containing field
-        field_name: Name of field to extract
+        line: JSON line containing field.
+        field_name: Name of field to extract.
 
     Returns:
         Extracted float value.
@@ -207,8 +207,8 @@ fn parse_int_value(line: String, field_name: String) raises -> Int:
     """Extract int value from JSON line.
 
     Args:
-        line: JSON line containing field
-        field_name: Name of field to extract
+        line: JSON line containing field.
+        field_name: Name of field to extract.
 
     Returns:
         Extracted int value.
