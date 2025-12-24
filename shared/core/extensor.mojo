@@ -399,7 +399,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
         self._original_numel_quantized = existing._original_numel_quantized
 
         # Increment reference count (shared ownership)
-        if not self._is_view and self._refcount:
+        # All copies (views or not) participate in refcount management
+        if self._refcount:
             self._refcount[] += 1
 
     fn __del__(deinit self):
@@ -409,7 +410,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
         Only frees memory when the last reference is destroyed.
 
         """
-        if not self._is_view and self._refcount:
+        # All copies (views or not) participate in refcount management
+        if self._refcount:
             self._refcount[] -= 1
 
             # If last reference, free everything
