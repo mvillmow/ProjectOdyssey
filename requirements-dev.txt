@@ -4,15 +4,15 @@
 -r requirements.txt
 
 # Pre-commit hooks
-pre-commit==4.0.1
+pre-commit==4.5.1
 
 # Security scanning
-safety==3.2.13
-bandit==1.8.0
+safety==3.7.0
+bandit==1.9.2
 
 # Documentation
 mkdocs==1.6.1
-mkdocs-material==9.5.50
+mkdocs-material==9.7.1
 
 # Benchmarking
-pytest-benchmark==5.1.0
+pytest-benchmark==5.2.3
