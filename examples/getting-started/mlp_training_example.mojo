@@ -11,30 +11,8 @@ Architecture:
 
 This example trains on synthetic XOR-like data to demonstrate that the training
 pipeline is fully functional.
-
-FIXME(#2706): This example has multiple compilation issues:
-1. Import error: `from collections.vector import DynamicVector` uses outdated
-   import path. Mojo stdlib changed - need to verify correct path.
-
-2. Missing exports: `mean` and `mean_backward` functions are not exported
-   from shared.core/__init__.mojo even though they're referenced in imports.
-   Check if they exist in shared.core.reduction or similar module.
-
-3. Syntax errors: Uses `let` keyword for variable declaration (lines 106-108, 222-224, 257-260).
-   Mojo requires `var` for variables. Also uses `let` in parameter positions
-   which is incorrect syntax.
-
-4. Type system issue: ExTensor assignment on line 40 fails because ExTensor
-   cannot be implicitly copied (needs explicit move or borrowing).
-
-5. Return type syntax: Function returns `(ExTensor, ExTensor)` on line 44
-   which may need proper tuple syntax handling.
-
-This example is closest to working - syntax fixes and export verification
-should allow it to compile and run.
 """
 
-# FIXME(#2706): Check correct import path for DynamicVector
 from shared.core import (
     ExTensor,
     # Creation
@@ -132,9 +110,14 @@ fn train_mlp() raises:
     print("=" * 60)
 
     # Hyperparameters
-    comptime learning_rate = 0.1
-    comptime num_epochs = 1000
-    comptime print_every = 100
+    var learning_rate = 0.1
+    var num_epochs = 1000
+    var print_every = 100
+
+    # Network architecture
+    var input_size = 2
+    var hidden_size = 4
+    var output_size = 1
 
     # Create synthetic data
     print("\nCreating synthetic XOR data...")
@@ -146,15 +129,19 @@ fn train_mlp() raises:
     print("\nInitializing network parameters...")
 
     # Layer 1: (2, 4) - Input to Hidden
-    var W1_shape: List[Int] = [hidden_size, input_size]
+    var W1_shape = List[Int]()
+    W1_shape.append(hidden_size)
+    W1_shape.append(input_size)
     var b1_shape = List[Int]()
-    var W1 = xavier_uniform(2, 4, W1_shape, DType.float32)
+    var W1 = xavier_uniform(input_size, hidden_size, W1_shape, DType.float32)
     var b1 = zeros(b1_shape, DType.float32)
 
     # Layer 2: (4, 1) - Hidden to Output
-    var W2_shape: List[Int] = [output_size, hidden_size]
+    var W2_shape = List[Int]()
+    W2_shape.append(output_size)
+    W2_shape.append(hidden_size)
     var b2_shape = List[Int]()
-    var W2 = xavier_uniform(4, 1, W2_shape, DType.float32)
+    var W2 = xavier_uniform(hidden_size, output_size, W2_shape, DType.float32)
     var b2 = zeros(b2_shape, DType.float32)
 
     print("W1 shape:", W1.shape()[0], "x", W1.shape()[1])
