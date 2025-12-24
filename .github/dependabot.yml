@@ -33,11 +33,14 @@ updates:
     # PR Metadata
     # - Labels for automation and filtering
     # - Assignees for review responsibility
+    # - Reviewers for explicit review requests
     labels:
       - "dependencies"
       - "python"
       - "automated"
     assignees:
+      - "mvillmow"
+    reviewers:
       - "mvillmow"
 
     # Commit Message Format
@@ -93,6 +96,8 @@ updates:
       - "ci-cd"
       - "automated"
     assignees:
+      - "mvillmow"
+    reviewers:
       - "mvillmow"
 
     # Commit Message Format

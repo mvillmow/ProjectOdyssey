@@ -1,0 +1,179 @@
+name: Check Mojo Updates
+
+# Check for new Mojo versions weekly
+# Creates an issue if a newer version is available
+
+on:
+  schedule:
+    # Weekly on Sunday at 3 AM UTC (before weekly E2E tests)
+    - cron: '0 3 * * 0'
+  workflow_dispatch:
+    inputs:
+      force_check:
+        description: 'Force check even if version matches'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-mojo-version:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Pixi
+        uses: prefix-dev/setup-pixi@v0.9.3
+        with:
+          pixi-version: latest
+          cache: true
+
+      - name: Get current pinned version
+        id: current
+        run: |
+          # Extract version from pixi.toml
+          PINNED=$(grep 'mojo = ' pixi.toml | sed -E 's/.*">=([^,]+).*/\1/')
+          echo "version=$PINNED" >> "$GITHUB_OUTPUT"
+          echo "Current pinned version: $PINNED"
+
+      - name: Get installed Mojo version
+        id: installed
+        run: |
+          INSTALLED=$(pixi run mojo --version 2>/dev/null | head -1 | awk '{print $2}')
+          echo "version=$INSTALLED" >> "$GITHUB_OUTPUT"
+          echo "Installed version: $INSTALLED"
+
+      - name: Check for latest version from conda
+        id: latest
+        run: |
+          # Query conda for latest mojo version from max-nightly channel
+          LATEST=$(pixi search mojo --channel https://conda.modular.com/max-nightly 2>/dev/null | grep -E '^mojo\s+' | head -1 | awk '{print $2}' || echo "")
+
+          if [ -z "$LATEST" ]; then
+            echo "Could not fetch latest version from conda"
+            LATEST="${{ steps.installed.outputs.version }}"
+          fi
+
+          echo "version=$LATEST" >> "$GITHUB_OUTPUT"
+          echo "Latest available version: $LATEST"
+
+      - name: Compare versions
+        id: compare
+        run: |
+          CURRENT="${{ steps.current.outputs.version }}"
+          LATEST="${{ steps.latest.outputs.version }}"
+          FORCE="${{ inputs.force_check }}"
+
+          echo "Current: $CURRENT"
+          echo "Latest: $LATEST"
+
+          # Simple string comparison (works for semantic versioning)
+          if [ "$CURRENT" != "$LATEST" ] || [ "$FORCE" = "true" ]; then
+            echo "update_available=true" >> "$GITHUB_OUTPUT"
+            echo "✅ Update available: $CURRENT → $LATEST"
+          else
+            echo "update_available=false" >> "$GITHUB_OUTPUT"
+            echo "✅ Already on latest version: $CURRENT"
+          fi
+
+      - name: Check for existing update issue
+        if: steps.compare.outputs.update_available == 'true'
+        id: existing_issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Search for open issues with mojo update title
+          EXISTING=$(gh issue list --search "Update Mojo to" --state open --json number --jq '.[0].number // ""')
+
+          if [ -n "$EXISTING" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "number=$EXISTING" >> "$GITHUB_OUTPUT"
+            echo "⚠️ Existing update issue found: #$EXISTING"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "No existing update issue found"
+          fi
+
+      - name: Create update issue
+        if: steps.compare.outputs.update_available == 'true' && steps.existing_issue.outputs.exists != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          CURRENT="${{ steps.current.outputs.version }}"
+          LATEST="${{ steps.latest.outputs.version }}"
+
+          cat > /tmp/mojo-update.md << 'ISSUE_EOF'
+          ## Summary
+
+          A new Mojo version is available and should be evaluated for upgrade.
+
+          ## Version Information
+
+          | | Version |
+          |---|---------|
+          | Current | CURRENT_VERSION_PLACEHOLDER |
+          | Latest | LATEST_VERSION_PLACEHOLDER |
+
+          ## Upgrade Checklist
+
+          - [ ] Review Mojo changelog for breaking changes at https://docs.modular.com/mojo/changelog
+          - [ ] Update pixi.toml with new version constraint
+          - [ ] Update .mojo-version file
+          - [ ] Run full test suite locally
+          - [ ] Verify all CI workflows pass
+          - [ ] Update any deprecated syntax patterns
+
+          ## Files to Update
+
+          1. pixi.toml (line 24): Update mojo version constraint
+          2. .mojo-version: Update version string
+
+          ## Testing Steps
+
+          ```bash
+          # Update pixi.toml manually, then:
+          pixi install
+          pixi run mojo --version
+          just ci-validate
+          ```
+
+          ---
+
+          This issue was automatically created by the Mojo version check workflow.
+          ISSUE_EOF
+
+          sed -i "s|CURRENT_VERSION_PLACEHOLDER|$CURRENT|g" /tmp/mojo-update.md
+          sed -i "s|LATEST_VERSION_PLACEHOLDER|$LATEST|g" /tmp/mojo-update.md
+
+          gh issue create \
+            --title "Update Mojo to $LATEST" \
+            --body-file /tmp/mojo-update.md \
+            --label "dependencies" \
+            --label "mojo" \
+            --label "automated"
+
+      - name: Update existing issue
+        if: steps.compare.outputs.update_available == 'true' && steps.existing_issue.outputs.exists == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ISSUE="${{ steps.existing_issue.outputs.number }}"
+          LATEST="${{ steps.latest.outputs.version }}"
+
+          gh issue comment "$ISSUE" --body "🔄 Latest version check: **$LATEST** is still newer than pinned version. (Checked on $(date -u +%Y-%m-%d))"
+
+      - name: Summary
+        run: |
+          echo "## Mojo Version Check Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Metric | Value |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|--------|-------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Current Pinned | ${{ steps.current.outputs.version }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Installed | ${{ steps.installed.outputs.version }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Latest Available | ${{ steps.latest.outputs.version }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Update Available | ${{ steps.compare.outputs.update_available }} |" >> "$GITHUB_STEP_SUMMARY"

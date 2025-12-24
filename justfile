@@ -473,3 +473,22 @@ clean:
 
 # Clean everything including Docker
 clean-all: clean docker-clean
+
+# ==============================================================================
+# Dependency Audit
+# ==============================================================================
+
+# Run dependency audit locally
+audit:
+    @echo "Running dependency audit..."
+    @pip install safety pip-audit pip-licenses 2>/dev/null || true
+    @echo ""
+    @echo "=== Safety Scan ==="
+    -@safety check --file requirements.txt
+    -@safety check --file requirements-dev.txt
+    @echo ""
+    @echo "=== pip-audit Scan ==="
+    -@pip-audit
+    @echo ""
+    @echo "=== License Check ==="
+    @pip-licenses --format=markdown
