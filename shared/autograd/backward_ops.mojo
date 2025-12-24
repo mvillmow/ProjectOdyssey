@@ -71,9 +71,6 @@ fn backward_add(
         registry: Variable registry to store computed gradients.
         idx: Index of the addition node in the tape.
         grad_output: Gradient flowing back from downstream operations.
-
-    Raises:
-        Error: If saved tensors are insufficient or gradient computation fails.
     """
     if len(nodes[idx].saved.tensors) < 2:
         return
@@ -103,9 +100,6 @@ fn backward_subtract(
         registry: Variable registry to store computed gradients.
         idx: Index of the subtraction node in the tape.
         grad_output: Gradient flowing back from downstream operations.
-
-    Raises:
-        Error: If saved tensors are insufficient or gradient computation fails.
     """
     if len(nodes[idx].saved.tensors) < 2:
         return
@@ -135,9 +129,6 @@ fn backward_multiply(
         registry: Variable registry to store computed gradients.
         idx: Index of the multiplication node in the tape.
         grad_output: Gradient flowing back from downstream operations.
-
-    Raises:
-        Error: If saved tensors are insufficient or gradient computation fails.
     """
     if len(nodes[idx].saved.tensors) < 2:
         return
@@ -167,9 +158,6 @@ fn backward_divide(
         registry: Variable registry to store computed gradients.
         idx: Index of the division node in the tape.
         grad_output: Gradient flowing back from downstream operations.
-
-    Raises:
-        Error: If saved tensors are insufficient or gradient computation fails.
     """
     if len(nodes[idx].saved.tensors) < 2:
         return
@@ -204,9 +192,6 @@ fn backward_sum(
         registry: Variable registry to store computed gradients.
         idx: Index of the sum node in the tape.
         grad_output: Gradient flowing back from downstream operations.
-
-    Raises:
-        Error: If saved tensors are insufficient or gradient computation fails.
     """
     if len(nodes[idx].saved.tensors) < 1:
         return
@@ -236,9 +221,6 @@ fn backward_mean(
         registry: Variable registry to store computed gradients.
         idx: Index of the mean node in the tape.
         grad_output: Gradient flowing back from downstream operations.
-
-    Raises:
-        Error: If saved tensors are insufficient or gradient computation fails.
     """
     if len(nodes[idx].saved.tensors) < 1:
         return
@@ -273,9 +255,6 @@ fn backward_matmul(
         registry: Variable registry to store computed gradients.
         idx: Index of the matmul node in the tape.
         grad_output: Gradient flowing back from downstream operations.
-
-    Raises:
-        Error: If saved tensors are insufficient or gradient computation fails.
     """
     if len(nodes[idx].saved.tensors) < 2:
         return
@@ -310,9 +289,6 @@ fn backward_relu(
         registry: Variable registry to store computed gradients.
         idx: Index of the ReLU node in the tape.
         grad_output: Gradient flowing back from downstream operations.
-
-    Raises:
-        Error: If saved tensors are insufficient or gradient computation fails.
     """
     if len(nodes[idx].saved.tensors) < 1:
         return
@@ -342,9 +318,6 @@ fn backward_sigmoid(
         registry: Variable registry to store computed gradients.
         idx: Index of the sigmoid node in the tape.
         grad_output: Gradient flowing back from downstream operations.
-
-    Raises:
-        Error: If saved tensors are insufficient or gradient computation fails.
     """
     if len(nodes[idx].saved.tensors) < 1:
         return
@@ -374,9 +347,6 @@ fn backward_tanh(
         registry: Variable registry to store computed gradients.
         idx: Index of the tanh node in the tape.
         grad_output: Gradient flowing back from downstream operations.
-
-    Raises:
-        Error: If saved tensors are insufficient or gradient computation fails.
     """
     if len(nodes[idx].saved.tensors) < 1:
         return
