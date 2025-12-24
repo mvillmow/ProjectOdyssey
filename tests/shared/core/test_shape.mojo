@@ -106,7 +106,7 @@ fn test_squeeze_specific_dim() raises:
     shape.append(3)
     shape.append(4)
     var a = ones(shape, DType.float32)  # Shape (1, 3, 4)
-    var b = squeeze(a, dim=0)
+    var b = squeeze(a, axis=0)
 
     # Result should be (3, 4)
     assert_dim(b, 2, "Should remove dim 0")
@@ -123,7 +123,7 @@ fn test_unsqueeze_add_dim() raises:
     shape.append(3)
     shape.append(4)
     var a = ones(shape, DType.float32)  # Shape (3, 4)
-    var b = unsqueeze(a, dim=0)
+    var b = unsqueeze(a, axis=0)
 
     # Result should be (1, 3, 4)
     assert_dim(b, 3, "Should add dimension")
@@ -136,7 +136,7 @@ fn test_expand_dims_at_end() raises:
     shape.append(3)
     shape.append(4)
     var a = ones(shape, DType.float32)
-    var b = expand_dims(a, dim=-1)
+    var b = expand_dims(a, axis=-1)
 
     # Result should be (3, 4, 1)
     assert_dim(b, 3, "Should add trailing dimension")
