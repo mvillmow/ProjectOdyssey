@@ -651,17 +651,31 @@ fn batch_norm2d_backward(
                 grad_beta_ptr.bitcast[Float32]()[c] = sum_grad_output
                 grad_gamma_ptr.bitcast[Float32]()[c] = sum_grad_output_x_norm
 
-            # Step 3: Compute grad_input using optimized batch norm backward formula
+            # Step 3: Compute grad_input using Kratzert's three-term formula
             # Follows: https://kratzert.github.io/2016/02/12/understanding-the-gradient-flow-through-the-batch-normalization-layer.html
             for c in range(channels):
                 var mean_val = batch_mean_ptr.bitcast[Float32]()[c]
                 var var_val = batch_var_ptr.bitcast[Float32]()[c]
                 var std = sqrt_scalar_f32(var_val + Float32(epsilon))
+                var invstd = Float32(1.0) / std
                 var gamma_val = gamma_ptr.bitcast[Float32]()[c]
 
-                # Accumulate gradient through variance and mean
-                var grad_var = Float32(0.0)
-                var grad_mean = Float32(0.0)
+                # TRAINING MODE: Three-term formula from Kratzert's blog
+                # grad_input = gamma * invstd * (grad_output - grad_mean - grad_var * (x - mean))
+                # where:
+                #   grad_mean = (1/N) * sum(grad_output * (-1/std)) + grad_var * (-2/N) * sum(x - mean)
+                #   grad_var = (1/2) * sum(grad_output * (x - mean)) * (-1/2) * (var + eps)^(-3/2)
+
+                # PyTorch consolidated formula (training mode):
+                # grad_input = (grad_output - k/N - x_norm * dotp/N) * gamma / std
+                # where:
+                #   k = sum(grad_output)
+                #   dotp = sum(grad_output * x_norm)
+                #   x_norm = (x - mean) / std
+
+                # First pass: compute k and dotp
+                var k = Float32(0.0)
+                var dotp = Float32(0.0)
 
                 for b in range(batch):
                     for h in range(height):
@@ -676,24 +690,12 @@ fn batch_norm2d_backward(
                                 idx
                             ]
                             var x_val = x_ptr.bitcast[Float32]()[idx]
-                            var x_minus_mean = x_val - mean_val
+                            var x_norm = (x_val - mean_val) * invstd
 
-                            var grad_x_norm = grad_out * gamma_val
+                            k += grad_out
+                            dotp += grad_out * x_norm
 
-                            # Accumulate for grad_var
-                            grad_var += (
-                                grad_x_norm
-                                * x_minus_mean
-                                * Float32(-0.5)
-                                * pow_scalar_f32(
-                                    var_val + Float32(epsilon), Float32(-1.5)
-                                )
-                            )
-
-                            # Accumulate for grad_mean (direct contribution)
-                            grad_mean += grad_x_norm * Float32(-1.0) / std
-
-                # Now compute grad_input for each element
+                # Second pass: compute grad_input
                 for b in range(batch):
                     for h in range(height):
                         for w in range(width):
@@ -707,23 +709,12 @@ fn batch_norm2d_backward(
                                 idx
                             ]
                             var x_val = x_ptr.bitcast[Float32]()[idx]
-                            var x_minus_mean = x_val - mean_val
-
-                            # Three terms in batch norm backward:
-                            # 1) Direct effect through normalized value
-                            var grad_x_norm = grad_out * gamma_val
-                            var term1 = grad_x_norm / std
-
-                            # 2) Effect through variance term: grad_var * d(var)/d(x_i) / (var+eps)^(3/2)
-                            var term2 = (
-                                grad_var * Float32(2.0) * x_minus_mean / N
-                            )
-
-                            # 3) Effect through mean term
-                            var term3 = grad_mean / N
+                            var x_norm = (x_val - mean_val) * invstd
 
                             grad_input_ptr.bitcast[Float32]()[idx] = (
-                                term1 + term2 + term3
+                                (grad_out - k / N - x_norm * dotp / N)
+                                * gamma_val
+                                * invstd
                             )
 
         elif x.dtype() == DType.float64:
@@ -791,17 +782,25 @@ fn batch_norm2d_backward(
                 grad_beta_ptr.bitcast[Float64]()[c] = sum_grad_output
                 grad_gamma_ptr.bitcast[Float64]()[c] = sum_grad_output_x_norm
 
-            # Step 3: Compute grad_input using optimized batch norm backward formula
+            # Step 3: Compute grad_input using Kratzert's three-term formula
             # Follows: https://kratzert.github.io/2016/02/12/understanding-the-gradient-flow-through-the-batch-normalization-layer.html
             for c in range(channels):
                 var mean_val = batch_mean_ptr.bitcast[Float64]()[c]
                 var var_val = batch_var_ptr.bitcast[Float64]()[c]
                 var std = sqrt_scalar_f64(var_val + epsilon)
+                var invstd = Float64(1.0) / std
                 var gamma_val = gamma_ptr.bitcast[Float64]()[c]
 
-                # Accumulate gradient through variance and mean
-                var grad_var = Float64(0.0)
-                var grad_mean = Float64(0.0)
+                # PyTorch consolidated formula (training mode):
+                # grad_input = (grad_output - k/N - x_norm * dotp/N) * gamma / std
+                # where:
+                #   k = sum(grad_output)
+                #   dotp = sum(grad_output * x_norm)
+                #   x_norm = (x - mean) / std
+
+                # First pass: compute k and dotp
+                var k = Float64(0.0)
+                var dotp = Float64(0.0)
 
                 for b in range(batch):
                     for h in range(height):
@@ -816,24 +815,12 @@ fn batch_norm2d_backward(
                                 idx
                             ]
                             var x_val = x_ptr.bitcast[Float64]()[idx]
-                            var x_minus_mean = x_val - mean_val
+                            var x_norm = (x_val - mean_val) * invstd
 
-                            var grad_x_norm = grad_out * gamma_val
+                            k += grad_out
+                            dotp += grad_out * x_norm
 
-                            # Accumulate for grad_var
-                            grad_var += (
-                                grad_x_norm
-                                * x_minus_mean
-                                * Float64(-0.5)
-                                * pow_scalar_f64(
-                                    var_val + epsilon, Float64(-1.5)
-                                )
-                            )
-
-                            # Accumulate for grad_mean (direct contribution)
-                            grad_mean += grad_x_norm * Float64(-1.0) / std
-
-                # Now compute grad_input for each element
+                # Second pass: compute grad_input
                 for b in range(batch):
                     for h in range(height):
                         for w in range(width):
@@ -847,23 +834,12 @@ fn batch_norm2d_backward(
                                 idx
                             ]
                             var x_val = x_ptr.bitcast[Float64]()[idx]
-                            var x_minus_mean = x_val - mean_val
-
-                            # Three terms in batch norm backward:
-                            # 1) Direct effect through normalized value
-                            var grad_x_norm = grad_out * gamma_val
-                            var term1 = grad_x_norm / std
-
-                            # 2) Effect through variance term: grad_var * d(var)/d(x_i) / (var+eps)^(3/2)
-                            var term2 = (
-                                grad_var * Float64(2.0) * x_minus_mean / N
-                            )
-
-                            # 3) Effect through mean term
-                            var term3 = grad_mean / N
+                            var x_norm = (x_val - mean_val) * invstd
 
                             grad_input_ptr.bitcast[Float64]()[idx] = (
-                                term1 + term2 + term3
+                                (grad_out - k / N - x_norm * dotp / N)
+                                * gamma_val
+                                * invstd
                             )
 
         else:
