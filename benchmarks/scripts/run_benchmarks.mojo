@@ -37,9 +37,9 @@ fn tensor_add_small_impl() raises:
             row_a.append(1.0)
             row_b.append(2.0)
             row_c.append(0.0)
-        a.append(row_a)
-        b.append(row_b)
-        c.append(row_c)
+        a.append(row_a^)
+        b.append(row_b^)
+        c.append(row_c^)
 
     # Perform addition
     for i in range(100):
@@ -62,9 +62,9 @@ fn tensor_add_large_impl() raises:
             row_a.append(1.0)
             row_b.append(2.0)
             row_c.append(0.0)
-        a.append(row_a)
-        b.append(row_b)
-        c.append(row_c)
+        a.append(row_a^)
+        b.append(row_b^)
+        c.append(row_c^)
 
     # Perform addition
     for i in range(1000):
@@ -87,9 +87,9 @@ fn matmul_small_impl() raises:
             row_a.append(1.0)
             row_b.append(1.0)
             row_c.append(0.0)
-        a.append(row_a)
-        b.append(row_b)
-        c.append(row_c)
+        a.append(row_a^)
+        b.append(row_b^)
+        c.append(row_c^)
 
     # Perform matrix multiplication
     for i in range(100):
@@ -115,9 +115,9 @@ fn matmul_large_impl() raises:
             row_a.append(1.0)
             row_b.append(1.0)
             row_c.append(0.0)
-        a.append(row_a)
-        b.append(row_b)
-        c.append(row_c)
+        a.append(row_a^)
+        b.append(row_b^)
+        c.append(row_c^)
 
     # Perform matrix multiplication (simplified: only 10 iterations needed)
     for i in range(1000):
@@ -367,8 +367,7 @@ fn write_results_file(results: String, filepath: String) raises:
     print("Writing results to:", filepath)
 
     try:
-        # Use Python for file I/O since Mojo v0.25.7 lacks native file writing
-        var builtins = Python.import_module("builtins")
+        # Use Python only for directory creation (no Mojo os.makedirs alternative yet)
         var os_path = Python.import_module("os.path")
         var os_module = Python.import_module("os")
 
@@ -379,10 +378,9 @@ fn write_results_file(results: String, filepath: String) raises:
         if directory and not os_path.exists(directory):
             os_module.makedirs(directory, 0o777, True)
 
-        # Write file using Python
-        var file = builtins.open(filepath, "w")
-        file.write(results)
-        file.close()
+        # Write file using Mojo native file I/O
+        with open(filepath, "w") as f:
+            _ = f.write(results)
 
         print("✓ Results successfully written to:", filepath)
     except e:

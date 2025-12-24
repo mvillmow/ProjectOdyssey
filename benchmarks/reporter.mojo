@@ -5,7 +5,6 @@ exporting to JSON format for CI/CD tracking and historical analysis.
 """
 
 from shared.benchmarking import LegacyBenchmarkResult
-from python import Python
 
 
 fn format_throughput(value: Float64) -> String:
@@ -146,11 +145,9 @@ fn export_json_simple(
         json += "  ]\n"
         json += "}\n"
 
-        # Use Python to write file
-        var builtins = Python.import_module("builtins")
-        var file_obj = builtins.open(filename, "w")
-        file_obj.write(json)
-        file_obj.close()
+        # Write file using Mojo native file I/O
+        with open(filename, "w") as f:
+            _ = f.write(json)
 
         print("✓ Results exported to:", filename)
 
