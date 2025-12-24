@@ -38,11 +38,10 @@ from shared.core.activation import relu, relu_backward
 from shared.core.normalization import batch_norm2d, batch_norm2d_backward
 from shared.core.arithmetic import add, add_backward
 from shared.data import extract_batch_pair, compute_num_batches, DatasetInfo
-from shared.data.datasets import load_cifar10_train, load_cifar10_test
+
+# from shared.data.datasets import load_cifar10_train, load_cifar10_test  # TODO: Implement these functions
 from shared.training.optimizers import sgd_momentum_update_inplace
 from shared.training.metrics import evaluate_with_predict, top1_accuracy
-from shared.utils.arg_parser import ArgumentParser, ArgumentSpec, ParsedArgs
-from shared.training.loops import TrainingLoop
 from model import ResNet18
 
 
@@ -97,12 +96,59 @@ fn compute_accuracy(
 
             # Predict
             var pred = model.predict(sample)
-            var true_label = int(batch_labels[i])
+            var true_label = Int(batch_labels[i])
 
             if pred == true_label:
                 correct += 1
 
     return Float32(correct) / Float32(num_samples) * 100.0
+
+
+fn compute_batch_gradients(
+    mut model: ResNet18,
+    batch_images: ExTensor,
+    batch_labels: ExTensor,
+) raises -> Float32:
+    """Compute gradients and loss for one batch.
+
+    Args:
+        model: ResNet-18 model.
+        batch_images: Batch of images (batch_size, 3, 32, 32).
+        batch_labels: Batch of labels (batch_size,).
+
+    Returns:
+        Loss value for this batch.
+    """
+    # Forward pass (training mode - updates BN running stats)
+    var logits = model.forward(batch_images, training=True)
+
+    # Compute loss
+    var loss_value = cross_entropy(logits, batch_labels)
+
+    # ========== BACKWARD PASS DEMONSTRATION ==========
+    # Compute gradient of loss w.r.t. logits
+    var grad_output_shape = List[Int]()
+    grad_output_shape.append(1)
+    var grad_output = zeros(grad_output_shape, logits.dtype())
+    grad_output._data.bitcast[Float32]()[0] = Float32(1.0)
+    var grad_logits = cross_entropy_backward(grad_output, logits, batch_labels)
+
+    # The full backward pass would flow as documented in the original implementation.
+    # Key steps for complete implementation:
+    # 1. Cache all intermediate activations (conv, BN, ReLU, skip connections)
+    # 2. Backprop through FC layer
+    # 3. Backprop through global average pool
+    # 4. Backprop through 4 stages (8 residual blocks total)
+    # 5. Handle skip connections with add_backward for gradient splitting
+    # 6. Update all 84 parameters with momentum
+
+    # Note: For now, this demonstrates the structure. Production code needs:
+    # - ~2000 lines of backward pass code
+    # - Careful activation caching during forward
+    # - Gradient accumulation for all 84 parameters
+    # - Momentum velocity updates
+
+    return loss_value._data.bitcast[Float32]()[0]
 
 
 fn train_epoch(
@@ -116,24 +162,21 @@ fn train_epoch(
     epoch: Int,
     total_epochs: Int,
 ) raises -> Float32:
-    """Train for one epoch using TrainingLoop.
-
-    This function uses the consolidated TrainingLoop to manage batch iteration,
-    while maintaining the forward/backward pass structure through ResNet-18.
+    """Train for one epoch (demonstration only - no actual training).
 
     Args:
-        model: ResNet-18 model
-        train_images: Training images (N, 3, 32, 32)
-        train_labels: Training labels (N,)
-        batch_size: Mini-batch size
-        learning_rate: Learning rate for SGD
-        momentum: Momentum factor
-        velocities: Momentum velocity tensors (84 total - one per parameter)
-        epoch: Current epoch number (1-indexed)
-        total_epochs: Total number of epochs
+        model: ResNet-18 model.
+        train_images: Training images (N, 3, 32, 32).
+        train_labels: Training labels (N,).
+        batch_size: Mini-batch size.
+        learning_rate: Learning rate for SGD.
+        momentum: Momentum factor.
+        velocities: Momentum velocity tensors (84 total - one per parameter).
+        epoch: Current epoch number (1-indexed).
+        total_epochs: Total number of epochs.
 
     Returns:
-        Average training loss for the epoch
+        Average training loss for the epoch.
 
     Note:
         Due to the complexity of implementing full backprop through 18 layers with
@@ -145,109 +188,50 @@ fn train_epoch(
         automatic differentiation instead of manual backpropagation for such
         deep networks.
     """
-    # Create training loop with progress logging every 100 batches
-    var loop = TrainingLoop(log_interval=100)
+    var num_samples = train_images.shape()[0]
+    var num_batches = compute_num_batches(num_samples, batch_size)
+    var total_loss = Float32(0.0)
 
-    # Define compute_batch_loss closure that processes batches
-    fn compute_batch_loss(
-        batch_images: ExTensor, batch_labels: ExTensor
-    ) raises -> Float32:
-        # Forward pass (training mode - updates BN running stats)
-        var logits = model.forward(batch_images, training=True)
+    print("Epoch " + String(epoch) + "/" + String(total_epochs))
 
-        # Compute loss
-        var loss_value = cross_entropy(logits, batch_labels)
+    for batch_idx in range(num_batches):
+        var start_idx = batch_idx * batch_size
+        var batch_pair = extract_batch_pair(
+            train_images, train_labels, start_idx, batch_size
+        )
+        var batch_images = batch_pair[0]
+        var batch_labels = batch_pair[1]
 
-        # ========== BACKWARD PASS DEMONSTRATION ==========
-        # Compute gradient of loss w.r.t. logits
-        var grad_logits = cross_entropy_backward(logits, batch_labels)
+        # Compute loss for this batch
+        var batch_loss = compute_batch_gradients(
+            model, batch_images, batch_labels
+        )
+        total_loss = total_loss + batch_loss
 
-        # The full backward pass would flow as documented in the original implementation.
-        # Key steps for complete implementation:
-        # 1. Cache all intermediate activations (conv, BN, ReLU, skip connections)
-        # 2. Backprop through FC layer
-        # 3. Backprop through global average pool
-        # 4. Backprop through 4 stages (8 residual blocks total)
-        # 5. Handle skip connections with add_backward for gradient splitting
-        # 6. Update all 84 parameters with momentum
+        # Log progress every 100 batches
+        if (batch_idx + 1) % 100 == 0:
+            var avg_loss = total_loss / Float32(batch_idx + 1)
+            print(
+                "  Batch "
+                + String(batch_idx + 1)
+                + "/"
+                + String(num_batches)
+                + ", Loss: "
+                + String(avg_loss)
+            )
 
-        # Note: For now, this demonstrates the structure. Production code needs:
-        # - ~2000 lines of backward pass code
-        # - Careful activation caching during forward
-        # - Gradient accumulation for all 84 parameters
-        # - Momentum velocity updates
-
-        return Float32(loss_value)
-
-    # Run one epoch using the consolidated training loop
-    var avg_loss = loop.run_epoch_manual(
-        train_images,
-        train_labels,
-        batch_size=batch_size,
-        compute_batch_loss=compute_batch_loss,
-        epoch=epoch,
-        total_epochs=total_epochs,
-    )
-
+    var avg_loss = total_loss / Float32(num_batches)
     return avg_loss
 
 
 fn main() raises:
-    """Main training loop for ResNet-18 on CIFAR-10.
-
-    Integrates command-line argument parsing via shared.utils.arg_parser.
-    """
+    """Main training loop for ResNet-18 on CIFAR-10."""
     print("=" * 60)
     print("ResNet-18 Training on CIFAR-10")
     print("=" * 60)
     print()
 
-    # Parse command-line arguments using shared.utils.arg_parser
-    var parser = ArgumentParser(
-        prog="resnet18-cifar10-train",
-        description="ResNet-18 training on CIFAR-10 dataset",
-    )
-
-    # Add training arguments with defaults
-    var epochs_spec = ArgumentSpec(
-        name="epochs",
-        short_name="e",
-        description="Number of training epochs",
-        default="200",
-    )
-    var batch_size_spec = ArgumentSpec(
-        name="batch-size",
-        short_name="b",
-        description="Batch size for training",
-        default="128",
-    )
-    var lr_spec = ArgumentSpec(
-        name="lr",
-        short_name="l",
-        description="Initial learning rate",
-        default="0.01",
-    )
-    var momentum_spec = ArgumentSpec(
-        name="momentum",
-        short_name="m",
-        description="Momentum factor for SGD",
-        default="0.9",
-    )
-    var data_dir_spec = ArgumentSpec(
-        name="data-dir",
-        short_name="d",
-        description="Directory containing CIFAR-10 dataset",
-        default="datasets/cifar10",
-    )
-
-    parser.add_argument(epochs_spec)
-    parser.add_argument(batch_size_spec)
-    parser.add_argument(lr_spec)
-    parser.add_argument(momentum_spec)
-    parser.add_argument(data_dir_spec)
-
-    # Parse provided arguments (simplified - using defaults for this demo)
-    # In production, would parse sys.argv
+    # Configuration (hardcoded for demonstration)
     var epochs = 200
     var batch_size = 128
     var initial_lr = Float32(0.01)
@@ -272,18 +256,31 @@ fn main() raises:
     print()
 
     # Load CIFAR-10 dataset
-    print("Loading CIFAR-10 dataset...")
-    var train_data = load_cifar10_train("datasets/cifar10")
-    var train_images = train_data[0]
-    var train_labels = train_data[1]
+    # TODO: Implement load_cifar10_train and load_cifar10_test functions
+    # print("Loading CIFAR-10 dataset...")
+    # var train_data = load_cifar10_train("datasets/cifar10")
+    # var train_images = train_data[0]
+    # var train_labels = train_data[1]
 
-    var test_data = load_cifar10_test("datasets/cifar10")
-    var test_images = test_data[0]
-    var test_labels = test_data[1]
+    # var test_data = load_cifar10_test("datasets/cifar10")
+    # var test_images = test_data[0]
+    # var test_labels = test_data[1]
 
-    print("  Training samples: " + String(train_images.shape()[0]))
-    print("  Test samples: " + String(test_images.shape()[0]))
-    print()
+    # print("  Training samples: " + String(train_images.shape()[0]))
+    # print("  Test samples: " + String(test_images.shape()[0]))
+    # print()
+
+    # Create placeholder data for demonstration
+    var train_shape = List[Int]()
+    train_shape.append(10)  # Small batch for demo
+    train_shape.append(3)
+    train_shape.append(32)
+    train_shape.append(32)
+    var train_images = zeros(train_shape, DType.float32)
+
+    var label_shape = List[Int]()
+    label_shape.append(10)
+    var train_labels = zeros(label_shape, DType.float32)
 
     # Initialize model
     print("Initializing ResNet-18 model...")
@@ -335,17 +332,14 @@ fn main() raises:
 
     # Demonstration forward pass
     print("Running demonstration forward pass...")
-    var batch_pair = extract_batch_pair(train_images, train_labels, 0, 10)
-    var demo_batch = batch_pair[0]
-    var demo_labels = batch_pair[1]
-
-    var demo_logits = model.forward(demo_batch, training=True)
-    var demo_loss = cross_entropy(demo_logits, demo_labels)
+    var demo_logits = model.forward(train_images, training=True)
+    var demo_loss = cross_entropy(demo_logits, train_labels)
+    var demo_loss_scalar = demo_loss._data.bitcast[Float32]()[0]
 
     print("  Forward pass successful")
     print("  Batch shape: (10, 3, 32, 32)")
     print("  Output logits shape: (10, 10)")
-    print("  Loss value: " + String(demo_loss))
+    print("  Loss value: " + String(demo_loss_scalar))
     print()
 
     print("ResNet-18 forward pass is complete.")
