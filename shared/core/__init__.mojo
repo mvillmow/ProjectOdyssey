@@ -546,6 +546,16 @@ from .validation import (
     validate_matching_tensors,
     validate_2d_input,
     validate_4d_input,
+    validate_1d_input,
+    validate_3d_input,
+    validate_axis,
+    validate_slice_range,
+    validate_float_dtype,
+    validate_positive_shape,
+    validate_matmul_dims,
+    validate_broadcast_compatible,
+    validate_non_empty,
+    validate_matching_dtype,
 )
 
 # ============================================================================
