@@ -10,37 +10,46 @@ from ..core import ExTensor, zeros
 fn extract_batch(
     data: ExTensor, start_idx: Int, batch_size: Int
 ) raises -> ExTensor:
-    """Extract a mini-batch from a dataset tensor.
+    """Extract a mini-batch from a dataset tensor using zero-copy slicing.
 
-        Extracts a contiguous slice of samples from the dataset starting at
-        start_idx and containing up to batch_size samples
+    Extracts a contiguous slice of samples from the dataset starting at
+    start_idx and containing up to batch_size samples. Uses ExTensor's
+    slice() method for efficient memory views instead of copying data.
 
     Args:
-            data: Full dataset tensor of shape (N, ...) where N is number of samples.
-            start_idx: Starting index for batch extraction (0-indexed).
-            batch_size: Number of samples to extract.
+        data: Full dataset tensor of shape (N, ...) where N is number of samples.
+        start_idx: Starting index for batch extraction (0-indexed).
+        batch_size: Number of samples to extract.
 
     Returns:
-            Batch tensor of shape (actual_batch_size, ...) where actual_batch_size
-            is min(batch_size, N - start_idx).
+        Batch tensor of shape (actual_batch_size, ...) where actual_batch_size
+        is min(batch_size, N - start_idx). Returns a view that shares memory
+        with the original tensor (no copy).
 
     Raises:
-            Error: If start_idx is out of bounds.
+        Error: If start_idx is out of bounds.
 
-        Example:
-            ```mojo
-            from shared.data import extract_batch
+    Example:
+        ```mojo
+        from shared.data import extract_batch
 
-            # Extract batch of 128 images from dataset
-            var images = load_dataset()  # Shape: (50000, 3, 32, 32)
-            var batch = extract_batch(images, start_idx=0, batch_size=128)
-            # batch shape: (128, 3, 32, 32)
-            ```
+        # Extract batch of 128 images from dataset (zero-copy view)
+        var images = load_dataset()  # Shape: (50000, 3, 32, 32)
+        var batch = extract_batch(images, start_idx=0, batch_size=128)
+        # batch shape: (128, 3, 32, 32) - memory shared with images
+        ```
+
+    Performance:
+        - O(1) time complexity (no data copying)
+        - Zero memory allocation for batch extraction
+        - Ideal for training loops processing hundreds/thousands of batches
+        - Memory is shared until a batch is modified or freed
 
     Note:
-            - Handles edge cases where remaining samples < batch_size.
-            - Works with any tensor dimensionality (2D, 3D, 4D, etc.).
-            - Efficient memory copying with proper bounds checking.
+        - Handles edge cases where remaining samples < batch_size
+        - Works with any tensor dimensionality (2D, 3D, 4D, etc.)
+        - Uses memory-efficient slicing with reference counting
+        - Original tensor must remain valid while batch is in use
     """
     var data_shape = data.shape()
     var num_samples = data_shape[0]
@@ -56,60 +65,34 @@ fn extract_batch(
         )
 
     # Compute actual batch size (handle partial batches at end)
-    var actual_batch_size = min(batch_size, num_samples - start_idx)
+    var end_idx = min(start_idx + batch_size, num_samples)
 
-    # Build output shape: (actual_batch_size, ...)
-    var batch_shape = List[Int]()
-    batch_shape.append(actual_batch_size)
-    for i in range(1, len(data_shape)):
-        batch_shape.append(data_shape[i])
-
-    # Create output tensor
-    var batch = zeros(batch_shape, data.dtype())
-
-    # Compute stride for each sample (product of all dimensions except first)
-    var sample_stride = 1
-    for i in range(1, len(data_shape)):
-        sample_stride *= data_shape[i]
-
-    # Copy samples
-    var src_ptr = data._data
-    var dst_ptr = batch._data
-
-    # Get element size in bytes for proper copying
-    var element_size = ExTensor._get_dtype_size_static(data.dtype())
-
-    for i in range(actual_batch_size):
-        var src_sample_idx = start_idx + i
-        var src_offset = src_sample_idx * sample_stride * element_size
-        var dst_offset = i * sample_stride * element_size
-
-        # Copy all bytes of this sample
-        for j in range(sample_stride * element_size):
-            dst_ptr[dst_offset + j] = src_ptr[src_offset + j]
-
-    return batch
+    # Use zero-copy slice() instead of allocating and copying
+    # This creates a view that shares memory with the original tensor
+    return data.slice(start_idx, end_idx, axis=0)
 
 
 fn extract_batch_pair(
     data: ExTensor, labels: ExTensor, start_idx: Int, batch_size: Int
 ) raises -> Tuple[ExTensor, ExTensor]:
-    """Extract a mini-batch of both data and labels.
+    """Extract matching mini-batches of data and labels using zero-copy slicing.
 
-        Convenience function that extracts matching batches from both
-        data and label tensors
+    Convenience function that extracts matching slices from both data and
+    label tensors with a single call. Uses ExTensor's slice() method for
+    efficient memory views.
 
     Args:
-            data: Full dataset tensor of shape (N, ...).
-            labels: Full labels tensor of shape (N,) or (N, ...).
-            start_idx: Starting index for batch extraction.
-            batch_size: Number of samples to extract.
+        data: Full dataset tensor of shape (N, ...).
+        labels: Full labels tensor of shape (N,) or (N, ...).
+        start_idx: Starting index for batch extraction (0-indexed).
+        batch_size: Number of samples to extract.
 
     Returns:
-            Tuple of (batch_data, batch_labels) with matching first dimension.
+        Tuple of (batch_data, batch_labels) with matching first dimension.
+        Both are views that share memory with the original tensors.
 
     Raises:
-            Error: If data and label sizes don't match.
+        Error: If data and label sizes don't match.
 
     Example:
         ```mojo
@@ -121,14 +104,20 @@ fn extract_batch_pair(
         var (batch_images, batch_labels) = extract_batch_pair(
             images, labels, start_idx=0, batch_size=128
         )
-        # batch_images shape: (128, 3, 32, 32)
-        # batch_labels shape: (128,)
+        # batch_images shape: (128, 3, 32, 32) - zero-copy view
+        # batch_labels shape: (128,) - zero-copy view
         ```
 
+    Performance:
+        - O(1) time complexity (no data copying)
+        - Two slice operations instead of two allocations
+        - Ideal for training loops with paired data/label batches
+
     Note:
-            - Ensures data and labels have matching number of samples.
-            - Both tensors extracted with same start_idx and batch_size.
-            - Efficient for training loops.
+        - Ensures data and labels have matching number of samples
+        - Both tensors extracted with same start_idx and batch_size
+        - Uses efficient memory views with reference counting
+        - Original tensors must remain valid while batches are in use
     """
     # Verify matching sizes
     var data_samples = data.shape()[0]
@@ -143,7 +132,8 @@ fn extract_batch_pair(
             + ")"
         )
 
-    # Extract both batches
+    # Extract both batches using zero-copy slicing
+    # Both call extract_batch which now uses slice() instead of copying
     var batch_data = extract_batch(data, start_idx, batch_size)
     var batch_labels = extract_batch(labels, start_idx, batch_size)
 
