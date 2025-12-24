@@ -409,11 +409,11 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
         Only frees memory when the last reference is destroyed.
 
         """
-        if self._refcount:
+        if not self._is_view and self._refcount:
             self._refcount[] -= 1
 
-            # If last reference, free everything (only for non-views)
-            if self._refcount[] == 0 and not self._is_view:
+            # If last reference, free everything
+            if self._refcount[] == 0:
                 self._data.free()
                 self._refcount.free()
 
