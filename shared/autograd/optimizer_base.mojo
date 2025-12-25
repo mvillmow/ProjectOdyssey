@@ -205,6 +205,9 @@ fn clip_gradients_by_global_norm(
                 var val = grad._get_float64(j)
                 scaled_grad._set_float64(j, val * scale_factor)
 
+            # Clear the has_grad flag so set_grad replaces instead of accumulates
+            tape.registry.has_grad[param_id] = False
+
             # Update gradient in tape
             tape.registry.set_grad(param_id, scaled_grad^)
 
