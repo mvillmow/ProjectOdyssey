@@ -125,6 +125,298 @@ def check_dependencies() -> None:
         raise RuntimeError("GitHub CLI (gh) is not authenticated.\nRun 'gh auth login' to authenticate.")
 
 
+def health_check() -> int:
+    """Check and display status of all required dependencies.
+
+    Displays version information and availability status for:
+    - gh (GitHub CLI)
+    - git (Version control)
+    - claude (Claude Code CLI)
+    - python3 (Python interpreter)
+
+    Exit codes:
+        0: All dependencies available and working
+        1: One or more dependencies missing or non-functional
+    """
+    required = {
+        "gh": ["gh", "--version"],
+        "git": ["git", "--version"],
+        "claude": ["claude", "--version"],
+        "python3": ["python3", "--version"],
+    }
+
+    log("INFO", "=" * 80)
+    log("INFO", "DEPENDENCY HEALTH CHECK")
+    log("INFO", "=" * 80)
+    log("INFO", "")
+
+    all_ok = True
+    for cmd, version_cmd in required.items():
+        # Check if command exists
+        cmd_path = shutil.which(cmd)
+
+        if not cmd_path:
+            log("INFO", f"✗ {cmd:12} NOT FOUND")
+            all_ok = False
+            continue
+
+        # Get version information
+        try:
+            result = subprocess.run(version_cmd, capture_output=True, text=True, timeout=5)
+            if result.returncode == 0:
+                # Extract first line of version output
+                version = result.stdout.strip().split("\n")[0]
+                log("INFO", f"✓ {cmd:12} {version}")
+            else:
+                log("INFO", f"⚠ {cmd:12} FOUND but version check failed")
+                all_ok = False
+        except Exception as e:
+            log("INFO", f"⚠ {cmd:12} FOUND but error getting version: {e}")
+            all_ok = False
+
+    log("INFO", "")
+    log("INFO", "-" * 80)
+    log("INFO", "GitHub CLI Authentication")
+    log("INFO", "-" * 80)
+
+    # Check gh auth status
+    try:
+        result = subprocess.run(["gh", "auth", "status"], capture_output=True, text=True, timeout=5)
+        if result.returncode == 0:
+            # Parse auth status output
+            auth_lines = result.stderr.strip().split("\n")  # gh outputs to stderr
+            log("INFO", "✓ GitHub CLI authenticated")
+            for line in auth_lines[:3]:  # Show first 3 lines
+                log("INFO", f"  {line}")
+        else:
+            log("INFO", "✗ GitHub CLI NOT authenticated")
+            log("INFO", "  Run 'gh auth login' to authenticate")
+            all_ok = False
+    except Exception as e:
+        log("INFO", f"⚠ Error checking gh auth: {e}")
+        all_ok = False
+
+    log("INFO", "")
+    log("INFO", "=" * 80)
+    if all_ok:
+        log("INFO", "✓ ALL DEPENDENCIES OK")
+        log("INFO", "=" * 80)
+        return 0
+    else:
+        log("INFO", "✗ SOME DEPENDENCIES MISSING OR NON-FUNCTIONAL")
+        log("INFO", "=" * 80)
+        return 1
+
+
+def export_dependency_graph(issues: dict[int, IssueInfo], output_path: str) -> int:
+    """Export dependency graph to Graphviz DOT format.
+
+    Args:
+        issues: Dictionary of issue number to IssueInfo
+        output_path: Path to output DOT file
+
+    Returns:
+        0 on success, 1 on failure
+    """
+    try:
+        with open(output_path, "w") as f:
+            f.write("digraph Dependencies {\n")
+            f.write("  rankdir=LR;\n")
+            f.write("  node [shape=box];\n")
+            f.write("\n")
+
+            # Write nodes
+            for issue_num, info in sorted(issues.items()):
+                # Escape quotes in title
+                title = info.title.replace('"', '\\"')
+                # Truncate long titles
+                if len(title) > 40:
+                    title = title[:37] + "..."
+
+                # Color by priority
+                color = {
+                    "P0": "red",
+                    "P1": "orange",
+                    "P2": "yellow",
+                }.get(info.priority, "gray")
+
+                # Style by status
+                style = "solid"
+                if info.status == "completed":
+                    style = "filled"
+                    color = "lightgreen"
+
+                f.write(f'  {issue_num} [label="#{issue_num}: {title}\\n({info.priority})", ')
+                f.write(f'color="{color}", style="{style}"];\n')
+
+            f.write("\n")
+
+            # Write edges
+            for issue_num, info in sorted(issues.items()):
+                for dep in sorted(info.depends_on):
+                    # Only draw edge if dependency is in the issue set
+                    if dep in issues:
+                        f.write(f"  {dep} -> {issue_num};\n")
+                    else:
+                        # External dependency - show as dashed line
+                        f.write(f'  ext{dep} [label="#{dep} (external)", shape=ellipse, color=blue];\n')
+                        f.write(f"  ext{dep} -> {issue_num} [style=dashed, color=blue];\n")
+
+            f.write("}\n")
+
+        log("INFO", f"✓ Exported dependency graph to {output_path}")
+        log("INFO", f"  Visualize with: dot -Tpng {output_path} -o graph.png")
+        return 0
+
+    except Exception as e:
+        log("ERROR", f"Failed to export graph: {e}")
+        return 1
+
+
+def rollback_issue(issue_number: int, state_dir: pathlib.Path, repo_root: pathlib.Path) -> int:
+    """Rollback implementation of a specific issue.
+
+    Actions:
+    - Remove worktree
+    - Delete local and remote branch
+    - Remove issue from state
+    - Post rollback comment to issue
+
+    Args:
+        issue_number: Issue number to rollback
+        state_dir: Directory containing state file
+        repo_root: Repository root directory
+
+    Returns:
+        0 on success, 1 on failure
+    """
+    log("INFO", "=" * 80)
+    log("INFO", f"ROLLBACK ISSUE #{issue_number}")
+    log("INFO", "=" * 80)
+    log("INFO", "")
+
+    # Load state to check if issue was implemented
+    from ._state import State
+
+    state_file = state_dir / "implement_state.json"
+    state = State.load(state_file) if state_file.exists() else State()
+
+    # Check if issue is in state
+    if (
+        issue_number not in state.completed
+        and issue_number not in state.failed
+        and issue_number not in state.in_progress
+    ):
+        log("ERROR", f"Issue #{issue_number} not found in state (not yet processed or already rolled back)")
+        return 1
+
+    # Get issue status
+    if issue_number in state.completed:
+        status = "completed"
+    elif issue_number in state.failed:
+        status = "failed"
+    else:
+        status = "in_progress"
+
+    log("INFO", f"Issue #{issue_number} status: {status}")
+    log("INFO", "")
+
+    # Confirm rollback
+    log("INFO", "⚠️  WARNING: This will DELETE:")
+    log("INFO", f"  - Local worktree (worktrees/{issue_number}-*)")
+    log("INFO", f"  - Local branch ({issue_number}-*)")
+    log("INFO", f"  - Remote branch (origin/{issue_number}-*)")
+    log("INFO", "  - Issue from state file")
+    log("INFO", "")
+
+    response = input("Continue with rollback? (yes/no): ")
+    if response.lower() != "yes":
+        log("INFO", "Rollback cancelled")
+        return 0
+
+    log("INFO", "")
+    log("INFO", "Starting rollback...")
+    log("INFO", "")
+
+    # 1. Remove worktree
+    worktree_mgr = WorktreeManager(repo_root)
+    if worktree_mgr.remove(issue_number):
+        log("INFO", f"✓ Removed worktree for issue #{issue_number}")
+    else:
+        log("WARN", f"No worktree found for issue #{issue_number}")
+
+    # 2. Delete remote branch
+    # Find branch name matching issue
+    branch_name = None
+    result = subprocess.run(
+        ["git", "branch", "-r"],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode == 0:
+        for line in result.stdout.splitlines():
+            if f"origin/{issue_number}-" in line:
+                branch_name = line.strip().replace("origin/", "")
+                break
+
+    if branch_name:
+        result = subprocess.run(
+            ["git", "push", "origin", "--delete", branch_name],
+            cwd=repo_root,
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode == 0:
+            log("INFO", f"✓ Deleted remote branch: origin/{branch_name}")
+        else:
+            log("WARN", f"Failed to delete remote branch: {result.stderr}")
+    else:
+        log("WARN", f"No remote branch found for issue #{issue_number}")
+
+    # 3. Remove from state
+    if issue_number in state.completed:
+        del state.completed[issue_number]
+    if issue_number in state.failed:
+        del state.failed[issue_number]
+    if issue_number in state.in_progress:
+        del state.in_progress[issue_number]
+
+    state.save(state_file)
+    log("INFO", f"✓ Removed issue #{issue_number} from state")
+
+    # 4. Post comment to issue
+    comment = """## Implementation Rolled Back
+
+This issue's implementation has been rolled back.
+
+**Actions taken:**
+- Deleted worktree
+- Deleted branch
+- Removed from state
+
+The issue is now ready for re-implementation.
+"""
+
+    result = subprocess.run(
+        ["gh", "issue", "comment", str(issue_number), "--body", comment],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode == 0:
+        log("INFO", f"✓ Posted rollback comment to issue #{issue_number}")
+    else:
+        log("WARN", f"Failed to post comment: {result.stderr}")
+
+    log("INFO", "")
+    log("INFO", "=" * 80)
+    log("INFO", f"✓ ROLLBACK COMPLETE FOR ISSUE #{issue_number}")
+    log("INFO", "=" * 80)
+
+    return 0
+
+
 # ---------------------------------------------------------------------
 # Log Buffer for Curses UI
 # ---------------------------------------------------------------------
@@ -2313,6 +2605,7 @@ Examples:
     )
     p.add_argument("--dry-run", action="store_true", help="Preview actions without making changes")
     p.add_argument("--analyze", action="store_true", help="Just show dependency graph")
+    p.add_argument("--export-graph", metavar="OUTPUT.dot", help="Export dependency graph to Graphviz DOT file")
     p.add_argument("--resume", action="store_true", help="Resume from previous run")
     p.add_argument(
         "--timeout",
@@ -2322,6 +2615,12 @@ Examples:
         help=f"Timeout per issue (default: {ISSUE_TIMEOUT})",
     )
     p.add_argument("--cleanup", action="store_true", help="Cleanup stale worktrees and exit")
+    p.add_argument(
+        "--rollback",
+        type=int,
+        metavar="ISSUE",
+        help="Rollback implementation of specific issue (delete branch, remove from state)",
+    )
     p.add_argument("--state-dir", type=pathlib.Path, help="Directory to persist state")
     p.add_argument(
         "--api-delay",
@@ -2341,11 +2640,25 @@ Examples:
         action="store_true",
         help="Enable DEBUG output (requires --verbose)",
     )
+    p.add_argument("--health-check", action="store_true", help="Check dependency status and exit")
 
     args = p.parse_args()
 
     # Set verbose/debug mode
     set_verbose(args.verbose, args.debug)
+
+    # Health check mode - run and exit
+    if args.health_check:
+        exit_code = health_check()
+        return exit_code
+
+    # Rollback mode - run and exit
+    if args.rollback:
+        # Get repo root and state dir
+        repo_root = pathlib.Path.cwd()
+        state_dir = args.state_dir or (repo_root / ".state")
+        exit_code = rollback_issue(args.rollback, state_dir, repo_root)
+        return exit_code
 
     # Verify all required dependencies are available
     check_dependencies()
@@ -2457,6 +2770,11 @@ Examples:
     if opts.analyze:
         print_analysis(resolver, state)
         return 0
+
+    # Handle export-graph mode
+    if opts.export_graph:
+        exit_code = export_dependency_graph(state.issues, opts.export_graph)
+        return exit_code
 
     # Calculate actual worker count (don't spawn more threads than issues)
     pending_count = len(state.issues) - len(state.completed_issues) - len(state.paused_issues)
