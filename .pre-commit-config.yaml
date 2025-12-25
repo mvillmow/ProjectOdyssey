@@ -2,27 +2,17 @@
 # See https://pre-commit.com for more information
 
 repos:
-  # Mojo formatting (BUGGY)
-  #
-  # BUGGY REASON: The mojo format tool incorrectly removes spaces in method signatures,
-  # specifically converting "fn method(mut self" to "fn method(mutself" which breaks the code.
-  # This causes all Mojo files formatted by this hook to become syntactically invalid.
-  #
-  # TRACKING ISSUE: https://github.com/modular/modular/issues/5573
-  # Bug description: mojo format removes the space after 'mut' keyword in parameter lists, and other issues
-  #
+  # Mojo formatting - requires Mojo v0.26.1+
+  # See: https://docs.modular.com/mojo/manual/
   - repo: local
     hooks:
       - id: mojo-format
-        name: Mojo Format (DISABLED - upstream bug #5573)
+        name: Mojo Format
         description: Format Mojo source files using mojo format
         entry: pixi run mojo format
         language: system
         files: ^(benchmarks|examples|papers|scripts|shared|tests)/.*\.(mojo|🔥)$
         pass_filenames: true
-        # TEMPORARILY DISABLED: upstream bug removes spaces in method signatures
-        # See: https://github.com/modular/modular/issues/5573
-        exclude: '.*'  # Disable by excluding all files
       - id: check-list-constructor
         name: Check for deprecated List[Type](args) syntax
         description: Prevent use of invalid List variadic constructor (use list literals instead)
