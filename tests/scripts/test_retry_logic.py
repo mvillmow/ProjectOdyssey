@@ -14,7 +14,7 @@ import pathlib
 import sys
 import time
 import unittest
-from unittest.mock import Mock, call
+from unittest.mock import Mock
 
 # Add scripts directory to path
 sys.path.insert(0, str(pathlib.Path(__file__).parent.parent.parent / "scripts"))
@@ -103,9 +103,7 @@ class TestRetryWithBackoff(unittest.TestCase):
             call_times.append(time.time())
             raise ConnectionError("fail")
 
-        decorated = retry_with_backoff(
-            max_retries=3, initial_delay=0.1, backoff_factor=2
-        )(failing_func)
+        decorated = retry_with_backoff(max_retries=3, initial_delay=0.1, backoff_factor=2)(failing_func)
 
         with self.assertRaises(ConnectionError):
             decorated()
@@ -127,9 +125,7 @@ class TestRetryWithBackoff(unittest.TestCase):
         mock_logger = Mock()
         mock_func = Mock(side_effect=[ConnectionError("network error"), "success"])
 
-        decorated = retry_with_backoff(
-            max_retries=3, initial_delay=0.01, logger=mock_logger
-        )(mock_func)
+        decorated = retry_with_backoff(max_retries=3, initial_delay=0.01, logger=mock_logger)(mock_func)
 
         result = decorated()
 
@@ -145,9 +141,7 @@ class TestRetryWithBackoff(unittest.TestCase):
     def test_retry_on_specific_exceptions(self):
         """Verify retry_on parameter filters exceptions."""
 
-        @retry_with_backoff(
-            max_retries=2, initial_delay=0.01, retry_on=(ConnectionError,)
-        )
+        @retry_with_backoff(max_retries=2, initial_delay=0.01, retry_on=(ConnectionError,))
         def func():
             raise ValueError("not retryable")
 

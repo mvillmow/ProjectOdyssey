@@ -10,7 +10,6 @@ Tests:
 
 import os
 import pathlib
-import stat
 import sys
 import tempfile
 import threading
@@ -41,7 +40,6 @@ class TestWriteSecure(unittest.TestCase):
 
             # Verify permissions (0o600 = owner read/write only)
             file_stat = os.stat(test_file)
-            permissions = stat.filemode(file_stat.st_mode)
 
             # Should be -rw------- (owner read/write only)
             self.assertEqual(file_stat.st_mode & 0o777, 0o600)
@@ -190,18 +188,8 @@ class TestToolRestrictions(unittest.TestCase):
         # We can't easily test the actual claude invocation, but we can
         # document the expected behavior
 
-        # Expected safe tools
-        expected_tools = [
-            "Read",
-            "Write",
-            "Edit",
-            "Glob",
-            "Grep",
-            "Bash",  # Should be restricted to specific commands
-        ]
-
         # This is a documentation test - the actual enforcement
-        # happens in the claude CLI invocation at line 1460
+        # happens in the claude CLI invocation
         # We're verifying the pattern exists in the code
 
         import_path = pathlib.Path(__file__).parent.parent.parent / "scripts" / "implement_issues.py"
