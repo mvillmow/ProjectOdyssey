@@ -54,12 +54,11 @@ from shared.core import (
     cross_entropy_backward,
 )
 from shared.data import (
-    load_cifar10_train_batches,
     extract_batch_pair,
     compute_num_batches,
     DatasetInfo,
 )
-from shared.data.datasets import load_cifar10_train
+from shared.data.datasets import CIFAR10Dataset
 from shared.training.schedulers import step_lr
 from shared.utils.training_args import parse_training_args_with_defaults
 from model import GoogLeNet, InceptionModule
@@ -77,13 +76,13 @@ fn train_epoch(
     """Train for one epoch.
 
     Args:
-        model: GoogLeNet model
-        train_images: Training images (N, 3, 32, 32)
-        train_labels: Training labels (N,)
-        batch_size: Mini-batch size
-        learning_rate: Learning rate for SGD
-        momentum: Momentum factor for SGD
-        epoch: Current epoch number
+        model: GoogLeNet model.
+        train_images: Training images (N, 3, 32, 32).
+        train_labels: Training labels (N,).
+        batch_size: Mini-batch size.
+        learning_rate: Learning rate for SGD.
+        momentum: Momentum factor for SGD.
+        epoch: Current epoch number.
 
     Returns:
         Average training loss for the epoch.
@@ -298,7 +297,8 @@ fn train_epoch(
 
         # Compute loss
         var loss = cross_entropy(logits, batch_labels)
-        total_loss = total_loss + loss
+        var loss_value = loss._data.bitcast[Float32]()[0]
+        total_loss = total_loss + loss_value
 
         # Backward pass (see structure above)
         # ... (would be ~2500 lines of gradient computation)
@@ -330,10 +330,10 @@ fn validate(
     """Validate model on validation set.
 
     Args:
-        model: GoogLeNet model
-        val_images: Validation images (N, 3, 32, 32)
-        val_labels: Validation labels (N,)
-        batch_size: Mini-batch size
+        model: GoogLeNet model.
+        val_images: Validation images (N, 3, 32, 32).
+        val_labels: Validation labels (N,).
+        batch_size: Mini-batch size.
 
     Returns:
         Validation accuracy (percentage).
@@ -364,7 +364,8 @@ fn validate(
                     max_logit = logits_data[i * 10 + j]
                     pred_class = j
 
-            var true_class = int(batch_labels[i])
+            var labels_data = batch_labels._data.bitcast[UInt8]()
+            var true_class = Int(labels_data[i])
             if pred_class == true_class:
                 total_correct += 1
 
@@ -413,9 +414,10 @@ fn main() raises:
 
     # Load CIFAR-10 dataset
     print("Loading CIFAR-10 training set...")
-    var train_data = load_cifar10_train(data_dir)
-    var train_images = train_data[0]
-    var train_labels = train_data[1]
+    var cifar10_dataset = CIFAR10Dataset(data_dir)
+    var train_data_tuple = cifar10_dataset.get_train_data()
+    var train_images = train_data_tuple[0]
+    var train_labels = train_data_tuple[1]
 
     var num_train = train_images.shape()[0]
     print("  Training samples: " + String(num_train))
