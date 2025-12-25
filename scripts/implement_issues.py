@@ -21,6 +21,7 @@ import curses
 import dataclasses
 import datetime as dt
 import json
+import os
 import pathlib
 import re
 import shutil
@@ -78,9 +79,50 @@ MIDNIGHT_HOUR = 0
 
 
 def write_secure(path: pathlib.Path, content: str) -> None:
-    """Write content to file with secure permissions (owner-only read/write)."""
-    path.write_text(content)
-    path.chmod(0o600)
+    """Write content to file with secure permissions (owner-only read/write).
+
+    Uses os.open() with mode flags to avoid TOCTOU race condition.
+    File is created with 0o600 permissions atomically.
+    """
+    # Create parent directory if it doesn't exist
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Open with secure permissions from the start (no TOCTOU window)
+    fd = os.open(str(path), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    try:
+        os.write(fd, content.encode("utf-8"))
+    finally:
+        os.close(fd)
+
+
+# ---------------------------------------------------------------------
+# Dependency Validation
+# ---------------------------------------------------------------------
+
+
+def check_dependencies() -> None:
+    """Verify required external dependencies are available.
+
+    Raises:
+        RuntimeError: If any required command is missing.
+    """
+    required = ["gh", "git", "claude", "python3"]
+    missing = []
+
+    for cmd in required:
+        if not shutil.which(cmd):
+            missing.append(cmd)
+
+    if missing:
+        raise RuntimeError(
+            f"Required command(s) not found: {', '.join(missing)}\n"
+            f"Please install missing dependencies before running this script."
+        )
+
+    # Verify gh CLI is authenticated
+    result = subprocess.run(["gh", "auth", "status"], capture_output=True, text=True)
+    if result.returncode != 0:
+        raise RuntimeError("GitHub CLI (gh) is not authenticated.\nRun 'gh auth login' to authenticate.")
 
 
 # ---------------------------------------------------------------------
@@ -1455,7 +1497,7 @@ class IssueImplementer:
             "--model",
             "haiku",
             "--permission-mode",
-            "bypassPermissions",
+            "dontAsk",
             "--allowedTools",
             "Read,Write,Edit,Glob,Grep,Bash",
             "--add-dir",
@@ -2302,6 +2344,9 @@ Examples:
 
     # Set verbose/debug mode
     set_verbose(args.verbose, args.debug)
+
+    # Verify all required dependencies are available
+    check_dependencies()
 
     # Parse issue numbers if provided
     issues: list[int] | None = None
