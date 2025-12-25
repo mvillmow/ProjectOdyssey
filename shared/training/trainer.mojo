@@ -120,9 +120,7 @@ struct BaseTrainer(Trainer):
         zero_gradients: fn () raises -> None,
         mut train_loader: DataLoader,
         mut val_loader: DataLoader,
-        early_stopping: UnsafePointer[EarlyStopping] = UnsafePointer[
-            EarlyStopping
-        ](),
+        early_stopping: Optional[UnsafePointer[EarlyStopping]] = None,
     ) raises:
         """Train model with periodic validation and optional early stopping.
 
@@ -192,8 +190,8 @@ struct BaseTrainer(Trainer):
         )
 
         # Call on_train_begin callback
-        if int(early_stopping) != 0:
-            var signal = early_stopping[].on_train_begin(state)
+        if early_stopping:
+            var signal = early_stopping.value()[].on_train_begin(state)
             if signal.value == 1:  # STOP signal
                 print("Training stopped by callback at start")
                 self.is_training = False
@@ -218,8 +216,8 @@ struct BaseTrainer(Trainer):
             print("=" * 70)
 
             # Call on_epoch_begin callback
-            if int(early_stopping) != 0:
-                var signal = early_stopping[].on_epoch_begin(state)
+            if early_stopping:
+                var signal = early_stopping.value()[].on_epoch_begin(state)
                 if signal.value == 1:  # STOP signal
                     print("Training stopped by callback at epoch begin")
                     break
@@ -254,8 +252,8 @@ struct BaseTrainer(Trainer):
             state.metrics["val_loss"] = self.metrics.val_loss
 
             # Call on_epoch_end callback (after validation)
-            if int(early_stopping) != 0:
-                var signal = early_stopping[].on_epoch_end(state)
+            if early_stopping:
+                var signal = early_stopping.value()[].on_epoch_end(state)
                 if signal.value == 1:  # STOP signal
                     print("Training stopped by early stopping")
                     break
@@ -285,8 +283,8 @@ struct BaseTrainer(Trainer):
         self.is_training = False
 
         # Call on_train_end callback
-        if int(early_stopping) != 0:
-            _ = early_stopping[].on_train_end(state)
+        if early_stopping:
+            _ = early_stopping.value()[].on_train_end(state)
 
         # Final summary
         print("\n" + "=" * 70)
