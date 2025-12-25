@@ -42,7 +42,7 @@ comptime MAX_TENSOR_BYTES: Int = 2_000_000_000  # 2 GB max per tensor
 comptime WARN_TENSOR_BYTES: Int = 500_000_000  # 500 MB warning threshold
 
 
-struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
+struct ExTensor(Copyable, Movable, Sized):
     """Dynamic tensor with runtime-determined shape and data type.
 
         ExTensor provides a flexible tensor implementation for machine learning workloads,

@@ -8,13 +8,13 @@ Shared Mojo language guidelines for all agents. Reference this file instead of d
 |----------|----------|--------|
 | ML/AI implementations | Mojo (required) | Performance, type safety |
 | Performance-critical code | Mojo (required) | SIMD, optimization |
-| Subprocess output capture | Python (allowed) | Mojo v0.25.7 limitation |
+| Subprocess output capture | Python (allowed) | Mojo v0.26.1 limitation |
 | Regex processing | Python (allowed) | No Mojo stdlib support |
 | GitHub API interaction | Python (allowed) | Library availability |
 
 **Default**: Mojo unless technical limitation documented.
 
-## Current Syntax (v0.25.7+)
+## Current Syntax (v0.26.1+)
 
 ### Parameter Conventions
 
