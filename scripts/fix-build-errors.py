@@ -19,6 +19,7 @@ Path Dependencies:
 
 import argparse
 import concurrent.futures
+import hashlib
 import json
 import shutil
 import subprocess
@@ -359,19 +360,35 @@ def build_ok(cwd, root, file, log_path) -> bool:
 
 
 def sanitize_branch_name(file_path: str) -> str:
-    """Convert file path to valid branch name."""
+    """Convert file path to valid branch name with uniqueness guarantee.
+
+    Args:
+        file_path: File path to convert
+
+    Returns:
+        Unique branch name (e.g., "fix-shared-core-tensor-a3b2c1")
+    """
     # Remove extension and leading ./
     name = Path(file_path).with_suffix("").as_posix()
     if name.startswith("./"):
         name = name[2:]
+
     # Replace slashes and special chars with hyphens
     name = name.replace("/", "-").replace("_", "-")
     # Remove any remaining invalid characters
     name = "".join(c if c.isalnum() or c == "-" else "" for c in name)
-    # Ensure it starts with a letter (prepend 'fix-' if needed)
-    if not name[0].isalpha():
+
+    # Add uniqueness suffix (short hash of full path)
+    path_hash = hashlib.sha256(file_path.encode()).hexdigest()[:6]
+
+    # Ensure starts with letter
+    if not name or not name[0].isalpha():
+        name = f"fix-{name}" if name else "fix"
+    else:
         name = f"fix-{name}"
-    return f"fix-{name}"
+
+    # Add hash suffix for uniqueness
+    return f"{name}-{path_hash}"
 
 
 def ensure_base_branch():
@@ -441,10 +458,23 @@ def cleanup_worktree(path, branch=None):
 
 
 def ensure_clean_git(cwd, log_path) -> bool:
+    """Ensure git working directory is clean (no uncommitted changes).
+
+    Returns:
+        True if clean, False if dirty or error
+    """
     r = run(["git", "status", "--porcelain"], cwd=cwd)
-    if r.stdout.strip():
-        write_log(log_path, "DIRTY WORKTREE — aborting")
+    if r.returncode != 0:
+        write_log(log_path, f"GIT STATUS FAILED (exit code {r.returncode}) - {r.stderr}")
         return False
+
+    if r.stdout.strip():
+        # Log the actual dirty files for debugging
+        dirty_files = r.stdout.strip().split("\n")
+        write_log(log_path, f"DIRTY WORKTREE — aborting ({len(dirty_files)} files modified)")
+        write_log(log_path, f"Modified files: {r.stdout.strip()}")
+        return False
+
     return True
 
 
@@ -536,18 +566,44 @@ def create_pr(branch, file, cwd, log_path) -> bool:
     try:
         r = run_with_retry(merge_cmd, cwd=cwd)
         if r.returncode == 0:
-            write_log(log_path, "AUTO-MERGE ENABLED")
-            if verbose:
-                log(f"✓ Auto-merge enabled for {file}")
-            return True
+            # Verify auto-merge actually enabled
+            # gh pr merge --auto returns output like "Pull request #123 will be automatically merged..."
+            if "automatically" in r.stdout.lower() or "auto" in r.stdout.lower():
+                write_log(log_path, "AUTO-MERGE ENABLED")
+                if verbose:
+                    log(f"✓ Auto-merge enabled for {file}")
+                return True
+            else:
+                write_log(log_path, f"AUTO-MERGE STATUS UNCLEAR - {r.stdout}")
+                # Check auto-merge status via API
+                verify_cmd = ["gh", "pr", "view", pr_url, "--json", "autoMergeRequest"]
+                verify_result = run(verify_cmd, cwd=cwd)
+                if verify_result.returncode == 0:
+                    import json
+
+                    try:
+                        data = json.loads(verify_result.stdout)
+                        if data.get("autoMergeRequest"):
+                            write_log(log_path, "AUTO-MERGE VERIFIED VIA API")
+                            return True
+                    except json.JSONDecodeError:
+                        pass
+
+                write_log(log_path, "AUTO-MERGE NOT VERIFIED")
+                if verbose:
+                    log(f"⚠️  Auto-merge not verified for {file}: {pr_url}")
+                return False  # Changed from True
 
         write_log(log_path, f"AUTO-MERGE FAILED - {r.stderr}")
+        if verbose:
+            log(f"⚠️  Auto-merge failed for {file}: {r.stderr}")
+        return False  # Changed from True
+
     except Exception as e:
         write_log(log_path, f"AUTO-MERGE FAILED after retries - {e}")
-    if verbose:
-        log(f"⚠️  Auto-merge failed for {file}: {r.stderr}")
-    # Return True anyway since PR was created
-    return True
+        if verbose:
+            log(f"⚠️  Auto-merge failed for {file}: {e}")
+        return False  # Changed from True
 
 
 # ---------------- Claude ----------------

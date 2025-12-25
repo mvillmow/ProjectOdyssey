@@ -32,7 +32,7 @@ import tempfile
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Callable, NamedTuple
 
 if TYPE_CHECKING:
     pass
@@ -529,8 +529,17 @@ def run(
     )
 
 
+class CachedIssueState(NamedTuple):
+    """Cached issue state with timestamp for TTL support."""
+
+    is_closed: bool
+    cached_at: float  # epoch seconds
+
+
 # Cache for external issue states (avoid repeated API calls)
-_external_issue_cache: dict[int, bool] = {}  # issue_num -> is_closed
+# Now includes timestamps for TTL support (5-minute expiration)
+_external_issue_cache: dict[int, CachedIssueState] = {}
+_CACHE_TTL_SECONDS = 300  # 5 minutes
 
 # Cache for repo owner/name
 _repo_info_cache: tuple[str, str] | None = None
@@ -580,10 +589,21 @@ def prefetch_issue_states(issue_nums: list[int]) -> None:
     """Batch fetch issue states using GraphQL to populate cache.
 
     This reduces API calls when checking multiple external dependencies.
+    Cache entries are timestamped for TTL support.
     """
-    # Filter to issues not already cached
-    to_fetch = [n for n in issue_nums if n not in _external_issue_cache]
+    # Filter to issues not already cached or expired
+    now = time.time()
+    to_fetch = []
+    for n in issue_nums:
+        if n not in _external_issue_cache:
+            to_fetch.append(n)
+        else:
+            cached = _external_issue_cache[n]
+            if now - cached.cached_at >= _CACHE_TTL_SECONDS:
+                to_fetch.append(n)
+
     if not to_fetch:
+        log("DEBUG", "All issues cached and fresh, skipping prefetch")
         return
 
     log("DEBUG", f"Prefetching states for {len(to_fetch)} external issues...")
@@ -617,42 +637,66 @@ def prefetch_issue_states(issue_nums: list[int]) -> None:
                     issue_data = repo_data.get(f"issue{j}")
                     if issue_data:
                         is_closed = issue_data.get("state", "OPEN").upper() == "CLOSED"
-                        _external_issue_cache[num] = is_closed
+                        _external_issue_cache[num] = CachedIssueState(is_closed=is_closed, cached_at=now)
                     else:
-                        _external_issue_cache[num] = False
+                        _external_issue_cache[num] = CachedIssueState(is_closed=False, cached_at=now)
             except (json.JSONDecodeError, KeyError):
                 # Mark all as not closed on parse error
                 for num in batch:
                     if num not in _external_issue_cache:
-                        _external_issue_cache[num] = False
+                        _external_issue_cache[num] = CachedIssueState(is_closed=False, cached_at=now)
         else:
             # Mark all as not closed on API error
             for num in batch:
                 if num not in _external_issue_cache:
-                    _external_issue_cache[num] = False
+                    _external_issue_cache[num] = CachedIssueState(is_closed=False, cached_at=now)
 
 
-def is_issue_closed(issue_num: int) -> bool:
+def is_issue_closed(issue_num: int, force_refresh: bool = False) -> bool:
     """Check if an external issue is closed via GitHub API.
 
-    Results are cached to avoid repeated API calls.
+    Results are cached for 5 minutes to avoid repeated API calls.
     Use prefetch_issue_states() first for batch operations.
-    """
-    if issue_num in _external_issue_cache:
-        return _external_issue_cache[issue_num]
 
+    Args:
+        issue_num: Issue number to check
+        force_refresh: Bypass cache and fetch fresh data
+
+    Returns:
+        True if issue is closed
+    """
+    now = time.time()
+
+    # Check cache if not forcing refresh
+    if not force_refresh and issue_num in _external_issue_cache:
+        cached = _external_issue_cache[issue_num]
+        age = now - cached.cached_at
+
+        if age < _CACHE_TTL_SECONDS:
+            log("DEBUG", f"Cache hit for issue #{issue_num} (age: {age:.0f}s)")
+            return cached.is_closed
+        else:
+            log("DEBUG", f"Cache expired for issue #{issue_num} (age: {age:.0f}s)")
+
+    # Fetch from API
+    log("DEBUG", f"Fetching state for issue #{issue_num}")
     cp = run(["gh", "issue", "view", str(issue_num), "--json", "state"])
+
     if cp.returncode == 0:
         try:
             data = json.loads(cp.stdout)
             is_closed = data.get("state", "OPEN").upper() == "CLOSED"
-            _external_issue_cache[issue_num] = is_closed
-            return is_closed
-        except json.JSONDecodeError:
-            pass
 
-    # If we can't fetch, assume not closed (conservative)
-    _external_issue_cache[issue_num] = False
+            # Update cache with timestamp
+            _external_issue_cache[issue_num] = CachedIssueState(is_closed=is_closed, cached_at=now)
+            return is_closed
+        except json.JSONDecodeError as e:
+            log("WARN", f"Failed to parse issue #{issue_num} state: {e}")
+    else:
+        log("WARN", f"Failed to fetch issue #{issue_num}: {cp.stderr[:100]}")
+
+    # Conservative fallback: assume not closed
+    _external_issue_cache[issue_num] = CachedIssueState(is_closed=False, cached_at=now)
     return False
 
 
@@ -662,8 +706,37 @@ def is_issue_closed(issue_num: int) -> bool:
 
 
 def parse_reset_epoch(time_str: str, tz: str) -> int:
-    """Parse a rate limit reset time string and return epoch seconds."""
+    """Parse a rate limit reset time string and return epoch seconds.
+
+    Supports multiple formats:
+    - ISO 8601 timestamps (GitHub API format)
+    - Unix epoch seconds (integer)
+    - Human-readable time (e.g., "3:45pm")
+
+    Args:
+        time_str: Time string to parse
+        tz: Timezone identifier (e.g., "America/Los_Angeles")
+
+    Returns:
+        Epoch seconds for reset time
+    """
+    # Strategy 1: Try ISO 8601 timestamp (GitHub API format)
+    try:
+        parsed = dt.datetime.fromisoformat(time_str.replace("Z", "+00:00"))
+        return int(parsed.timestamp())
+    except (ValueError, AttributeError):
+        pass
+
+    # Strategy 2: Try unix epoch (integer seconds)
+    try:
+        return int(time_str)
+    except ValueError:
+        pass
+
+    # Strategy 3: Human-readable time (e.g., "3:45pm")
+    # Validate timezone
     if tz not in ALLOWED_TIMEZONES:
+        log("WARN", f"Unknown timezone '{tz}', falling back to America/Los_Angeles")
         tz = "America/Los_Angeles"
 
     now_utc = dt.datetime.now(dt.UTC)
@@ -671,11 +744,20 @@ def parse_reset_epoch(time_str: str, tz: str) -> int:
 
     m = re.match(r"^(\d{1,2})(?::(\d{2}))?(am|pm)?$", time_str, re.IGNORECASE)
     if not m:
-        return int(time.time()) + 3600
+        log("WARN", f"Could not parse rate limit reset time '{time_str}', using 12-hour fallback")
+        return int(time.time()) + 43200  # 12 hours - conservative fallback
 
     hour, minute, ampm = m.groups()
     hour = int(hour)
     minute = int(minute or 0)
+
+    # Validate ranges BEFORE conversion
+    if hour < 1 or hour > 12:
+        log("WARN", f"Invalid hour {hour} in time '{time_str}', using 12-hour fallback")
+        return int(time.time()) + 43200
+    if minute < 0 or minute > 59:
+        log("WARN", f"Invalid minute {minute} in time '{time_str}', using 12-hour fallback")
+        return int(time.time()) + 43200
 
     if ampm:
         ampm = ampm.lower()
@@ -684,11 +766,15 @@ def parse_reset_epoch(time_str: str, tz: str) -> int:
         if ampm == "am" and hour == NOON_HOUR:
             hour = MIDNIGHT_HOUR
 
-    local = dt.datetime.combine(
-        today,
-        dt.time(hour, minute),
-        tzinfo=dt.ZoneInfo(tz),
-    )
+    try:
+        local = dt.datetime.combine(
+            today,
+            dt.time(hour, minute),
+            tzinfo=dt.ZoneInfo(tz),
+        )
+    except (ValueError, KeyError) as e:
+        log("ERROR", f"Failed to construct datetime for '{time_str}' in {tz}: {e}")
+        return int(time.time()) + 43200
 
     if local < now_utc.astimezone(dt.ZoneInfo(tz)):
         local += dt.timedelta(days=1)
@@ -752,6 +838,8 @@ class StatusTracker:
         self._lock = threading.Lock()
         self._max_workers = max_workers
         self._slots: dict[int, tuple[int, str, str, float]] = {}
+        self._slot_to_item: dict[int, int] = {}  # Track which item owns which slot
+        self._slot_available = threading.Condition(self._lock)  # For waiting on slots
         self._update_event = threading.Event()
         self._completed_count = 0
         self._total_count = 0
@@ -773,35 +861,85 @@ class StatusTracker:
             self._slots[self.MAIN_THREAD] = (0, stage, info, time.time())
             self._update_event.set()
 
-    def acquire_slot(self, item_id: int) -> int:
-        """Acquire a display slot for an item. Returns slot number."""
-        with self._lock:
-            for slot in range(self._max_workers):
-                if slot not in self._slots:
-                    self._slots[slot] = (item_id, "Starting", "", time.time())
-                    self._update_event.set()
-                    return slot
-            slot = item_id % self._max_workers
-            self._slots[slot] = (item_id, "Starting", "", time.time())
-            self._update_event.set()
-            return slot
+    def acquire_slot(self, item_id: int, timeout: float = 60.0) -> int:
+        """Acquire a display slot for an item. Returns slot number.
+
+        Args:
+            item_id: ID of item needing a slot
+            timeout: Max seconds to wait for slot (default 60s)
+
+        Returns:
+            Slot number (0 to max_workers-1)
+
+        Raises:
+            RuntimeError: If no slot becomes available within timeout
+        """
+        deadline = time.time() + timeout
+
+        with self._slot_available:  # Uses condition variable
+            while True:
+                # Try to find an available slot
+                for slot in range(self._max_workers):
+                    if slot not in self._slot_to_item:
+                        # Slot is available - claim it
+                        self._slots[slot] = (item_id, "Starting", "", time.time())
+                        self._slot_to_item[slot] = item_id
+                        self._update_event.set()
+                        log("DEBUG", f"Item #{item_id} acquired slot {slot}")
+                        return slot
+
+                # No slots available - wait for one to be released
+                remaining = deadline - time.time()
+                if remaining <= 0:
+                    raise RuntimeError(
+                        f"Timeout waiting for slot (item #{item_id}). All {self._max_workers} slots occupied."
+                    )
+
+                log("DEBUG", f"Item #{item_id} waiting for slot (timeout in {remaining:.0f}s)")
+                self._slot_available.wait(timeout=min(remaining, 5.0))
 
     def update(self, slot: int, item_id: int, stage: str, info: str = "") -> None:
-        """Update the status for a slot."""
+        """Update the status for a slot.
+
+        Validates that the slot is owned by the item before updating.
+        """
         with self._lock:
+            # Verify slot ownership
+            if slot not in self._slot_to_item:
+                log("WARN", f"Update to unoccupied slot {slot} by item #{item_id}")
+                return
+            if self._slot_to_item[slot] != item_id:
+                log(
+                    "ERROR",
+                    f"Slot ownership mismatch! Slot {slot} owned by item #{self._slot_to_item[slot]}, not #{item_id}",
+                )
+                return
+
             self._slots[slot] = (item_id, stage, info, time.time())
             self._update_event.set()
 
     def release_slot(self, slot: int) -> None:
         """Release a slot when done."""
-        with self._lock:
+        with self._slot_available:  # Uses condition variable
             if slot in self._slots:
+                item_id = self._slot_to_item.get(slot, -1)
+                log("DEBUG", f"Item #{item_id} released slot {slot}")
                 del self._slots[slot]
-            self._update_event.set()
+                if slot in self._slot_to_item:
+                    del self._slot_to_item[slot]
+                self._update_event.set()
+                self._slot_available.notify()  # Wake up waiters
+            else:
+                log("WARN", f"Attempted to release unoccupied slot {slot}")
 
     def get_status_data(self) -> dict:
         """Return current state snapshot for external rendering."""
         with self._lock:
+            # Detect slot leaks
+            leaked_slots = set(self._slots.keys()) - set(self._slot_to_item.keys())
+            if leaked_slots:
+                log("ERROR", f"Slot leak detected! Slots without owners: {leaked_slots}")
+
             return {
                 "completed": self._completed_count,
                 "total": self._total_count,
@@ -1067,20 +1205,57 @@ class ImplementationState:
     pr_numbers: dict[int, int] = dataclasses.field(default_factory=dict)  # issue -> PR number
     started_at: str = ""
     last_updated: str = ""
+    _save_lock: threading.Lock = dataclasses.field(default_factory=threading.Lock, init=False, repr=False)
 
     def save(self, path: pathlib.Path) -> None:
-        """Save state to JSON file."""
-        data = {
-            "epic_number": self.epic_number,
-            "issues": {str(k): v.to_dict() for k, v in self.issues.items()},
-            "completed_issues": list(self.completed_issues),
-            "paused_issues": {str(k): v.to_dict() for k, v in self.paused_issues.items()},
-            "in_progress": {str(k): v for k, v in self.in_progress.items()},
-            "pr_numbers": {str(k): v for k, v in self.pr_numbers.items()},
-            "started_at": self.started_at,
-            "last_updated": dt.datetime.now().isoformat(),
-        }
-        write_secure(path, json.dumps(data, indent=2))
+        """Save state to JSON file with atomic write.
+
+        Uses thread lock + file lock + atomic rename for safety.
+        """
+        with self._save_lock:  # Thread safety
+            data = {
+                "epic_number": self.epic_number,
+                "issues": {str(k): v.to_dict() for k, v in self.issues.items()},
+                "completed_issues": list(self.completed_issues),
+                "paused_issues": {str(k): v.to_dict() for k, v in self.paused_issues.items()},
+                "in_progress": {str(k): v for k, v in self.in_progress.items()},
+                "pr_numbers": {str(k): v for k, v in self.pr_numbers.items()},
+                "started_at": self.started_at,
+                "last_updated": dt.datetime.now().isoformat(),
+            }
+
+            json_content = json.dumps(data, indent=2)
+
+            # Atomic write: write to temp file, then rename
+            path.parent.mkdir(parents=True, exist_ok=True)
+            temp_fd, temp_path = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
+
+            try:
+                # Write to temp file with exclusive lock
+                with os.fdopen(temp_fd, "w") as f:
+                    # Acquire exclusive lock (blocks other processes)
+                    import fcntl
+
+                    fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                    f.write(json_content)
+                    f.flush()
+                    os.fsync(f.fileno())  # Force write to disk
+                    fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+
+                # Set permissions before rename
+                os.chmod(temp_path, 0o600)
+
+                # Atomic rename
+                os.replace(temp_path, str(path))
+                log("DEBUG", f"Saved state to {path}")
+
+            except Exception as e:
+                # Cleanup temp file on error
+                try:
+                    os.unlink(temp_path)
+                except OSError:
+                    pass
+                raise RuntimeError(f"Failed to save state: {e}")
 
     @classmethod
     def load(cls, path: pathlib.Path) -> "ImplementationState":
@@ -1170,6 +1345,17 @@ class DependencyResolver:
         4. Return issues sorted by priority (P0 first) then by number
         """
         all_issues = self.get_all_issue_numbers()
+
+        # Collect all external dependencies across ALL issues and prefetch their states
+        all_external_deps = set()
+        for info in self.issues.values():
+            external_deps = info.depends_on - all_issues
+            all_external_deps.update(external_deps)
+
+        # Prefetch all external dependencies at once (batch API call)
+        if all_external_deps:
+            prefetch_issue_states(list(all_external_deps))
+
         priority_order = {"P0": 0, "P1": 1, "P2": 2}
 
         with self._lock:
@@ -1182,7 +1368,7 @@ class DependencyResolver:
                 # Check for external dependencies (not in epic)
                 external_deps = info.depends_on - all_issues
                 if external_deps:
-                    # Check if ALL external deps are closed
+                    # Check if ALL external deps are closed (uses cached data from prefetch)
                     open_external = {d for d in external_deps if not is_issue_closed(d)}
                     if open_external:
                         info.status = "blocked_external"
@@ -1598,7 +1784,15 @@ class IssueImplementer:
         """Fetch title for a single issue (fallback, rate-limited)."""
         cp = self._gh_call(["gh", "issue", "view", str(issue_num), "--json", "title"])
         if cp.returncode == 0:
-            return json.loads(cp.stdout).get("title", f"Issue #{issue_num}")
+            try:
+                data = json.loads(cp.stdout)
+                # Validate data is a dict
+                if not isinstance(data, dict):
+                    log("WARN", f"Expected dict from gh issue view, got {type(data)}")
+                    return f"Issue #{issue_num}"
+                return data.get("title", f"Issue #{issue_num}")
+            except json.JSONDecodeError as e:
+                log("WARN", f"Failed to parse issue #{issue_num} title: {e}")
         return f"Issue #{issue_num}"
 
     def fetch_titles_for_issues(self, issue_nums: list[int]) -> None:
@@ -1804,6 +1998,10 @@ class IssueImplementer:
         log("DEBUG", f"  Claude command: {' '.join(cmd[:6])}...")
         log("DEBUG", f"  Claude log file: {log_file}")
 
+        # Output limits to prevent memory exhaustion
+        MAX_OUTPUT_LINES = 10000
+        MAX_OUTPUT_SIZE = 10 * 1024 * 1024  # 10MB
+
         try:
             proc = subprocess.Popen(
                 cmd,
@@ -1811,63 +2009,118 @@ class IssueImplementer:
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
+                bufsize=1,  # Line-buffered
             )
 
-            output_lines = []
             deadline = time.time() + self.opts.timeout
             line_count = 0
+            total_bytes = 0
+            last_meaningful_line = ""
+            last_update_time = time.time()
+            update_interval = 0.5  # Update at most every 0.5 seconds
 
             with log_file.open("w") as log_handle:
-                last_meaningful_line = ""
-                last_update_time = time.time()
-                update_interval = 0.5  # Update at most every 0.5 seconds
-
-                for line in proc.stdout:
-                    if time.time() > deadline:
+                # Read output line-by-line, streaming to file (not memory)
+                while True:
+                    # Check timeout
+                    remaining = deadline - time.time()
+                    if remaining <= 0:
                         proc.kill()
+                        proc.wait(timeout=5)  # Give it time to die
                         log("DEBUG", "  Claude timed out")
                         return False, "Timeout exceeded"
 
-                    log_handle.write(line)
-                    output_lines.append(line)
-                    line_count += 1
+                    # Non-blocking read with timeout using select
+                    import select
 
-                    # Extract meaningful output lines for status display
-                    stripped = line.strip()
-                    if stripped and not stripped.startswith("{") and len(stripped) < 200:
-                        # Clean up the line for display
-                        display_line = stripped[:60]
-                        last_meaningful_line = display_line
+                    readable, _, _ = select.select([proc.stdout], [], [], 0.5)
 
-                        # In verbose mode, print Claude output
-                        if self.opts.verbose:
-                            print(f"    [Claude] {stripped[:100]}", flush=True)
+                    if readable:
+                        line = proc.stdout.readline()
+                        if not line:  # EOF
+                            break
 
-                    # Update status with throttling (at most every update_interval seconds)
-                    now = time.time()
-                    if last_meaningful_line and (now - last_update_time >= update_interval):
-                        self._update_status(slot, issue, "Claude", last_meaningful_line)
-                        last_update_time = now
+                        # Write to file (not memory)
+                        log_handle.write(line)
+                        log_handle.flush()
 
-            proc.wait()
-            log(
-                "DEBUG",
-                f"  Claude finished with {line_count} lines, exit code {proc.returncode}",
-            )
-            combined = "".join(output_lines)
+                        # Track size limits
+                        line_count += 1
+                        total_bytes += len(line.encode("utf-8"))
+
+                        if line_count > MAX_OUTPUT_LINES:
+                            proc.kill()
+                            proc.wait(timeout=5)
+                            return False, f"Output exceeded {MAX_OUTPUT_LINES} lines"
+
+                        if total_bytes > MAX_OUTPUT_SIZE:
+                            proc.kill()
+                            proc.wait(timeout=5)
+                            return False, f"Output exceeded {MAX_OUTPUT_SIZE / 1024 / 1024:.0f}MB"
+
+                        # Extract meaningful output for status
+                        stripped = line.strip()
+                        if stripped and not stripped.startswith("{") and len(stripped) < 200:
+                            display_line = stripped[:60]
+                            last_meaningful_line = display_line
+
+                            if self.opts.verbose:
+                                print(f"    [Claude] {stripped[:100]}", flush=True)
+
+                        # Update status with throttling
+                        now = time.time()
+                        if last_meaningful_line and (now - last_update_time >= update_interval):
+                            self._update_status(slot, issue, "Claude", last_meaningful_line)
+                            last_update_time = now
+                    else:
+                        # Check if process exited
+                        if proc.poll() is not None:
+                            break
+
+            # Process finished - get exit code
+            returncode = proc.wait(timeout=5)
+            log("DEBUG", f"  Claude finished with {line_count} lines, exit code {returncode}")
+
+            # Read last 500 lines from log file for error checking
+            with log_file.open("r") as f:
+                lines = f.readlines()
+                tail = "".join(lines[-500:])  # Last 500 lines only
 
             # Check for rate limit
-            reset = detect_rate_limit(combined)
+            reset = detect_rate_limit(tail)
             if reset:
                 wait_until(reset)
                 return False, "Rate limited - retry needed"
 
-            if proc.returncode == 0:
-                return True, combined
+            if returncode == 0:
+                return True, tail
             else:
-                return False, f"Exit code {proc.returncode}: {combined[-500:]}"
+                return False, f"Exit code {returncode}: {tail[-500:]}"
 
+        except (KeyboardInterrupt, SystemExit):
+            # Clean shutdown - kill process and re-raise
+            try:
+                proc.kill()
+                proc.wait(timeout=5)
+            except (OSError, subprocess.SubprocessError):
+                pass
+            raise
+        except subprocess.TimeoutExpired as e:
+            log("ERROR", f"  Claude timed out: {e}")
+            return False, "Timeout exceeded"
+        except OSError as e:
+            log("ERROR", f"  Claude process error: {e}")
+            return False, f"Process error: {e}"
         except Exception as e:
+            import traceback
+
+            log("ERROR", f"  Claude execution failed: {e}\n{traceback.format_exc()}")
+            # Ensure process is dead
+            try:
+                proc.kill()
+                proc.wait(timeout=5)
+            except (OSError, subprocess.SubprocessError):
+                pass
             return False, str(e)
 
     def _get_summary(self, worktree: pathlib.Path, slot: int, issue: int) -> str:
@@ -1897,7 +2150,11 @@ Focus on what functionality was added or fixed. Do not include implementation de
             )
             if cp.returncode == 0:
                 return cp.stdout.strip()
-        except Exception as e:
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except subprocess.TimeoutExpired:
+            log("WARN", "  Summary generation timed out")
+        except (OSError, subprocess.SubprocessError) as e:
             log("WARN", f"  Failed to get summary: {e}")
 
         return "Implementation completed."
@@ -1922,17 +2179,33 @@ Focus on what functionality was added or fixed. Do not include implementation de
         )
         if cp.returncode == 0:
             try:
-                prs = json.loads(cp.stdout)
+                data = json.loads(cp.stdout)
+                # Validate data is a list
+                if not isinstance(data, list):
+                    log("WARN", f"Expected list from gh pr list, got {type(data)}")
+                    prs = []
+                else:
+                    prs = data
+
                 # Find open PR for this issue
                 for pr in prs:
+                    # Validate pr is a dict
+                    if not isinstance(pr, dict):
+                        log("WARN", f"Skipping non-dict PR entry: {type(pr)}")
+                        continue
                     if pr.get("state") == "OPEN":
                         return pr
+
                 # Check for merged PRs too
                 for pr in prs:
+                    if not isinstance(pr, dict):
+                        continue
                     if pr.get("state") == "MERGED":
                         return pr
-            except json.JSONDecodeError:
-                pass
+            except json.JSONDecodeError as e:
+                log("WARN", f"Failed to parse PR list: {e}")
+            except TypeError as e:
+                log("ERROR", f"Type error iterating PRs: {e}")
 
         # Also check by branch name pattern (issue number prefix)
         cp = self._gh_call(
@@ -1948,8 +2221,20 @@ Focus on what functionality was added or fixed. Do not include implementation de
         )
         if cp.returncode == 0:
             try:
-                prs = json.loads(cp.stdout)
+                data = json.loads(cp.stdout)
+                # Validate data is a list
+                if not isinstance(data, list):
+                    log("WARN", f"Expected list from gh pr list, got {type(data)}")
+                    prs = []
+                else:
+                    prs = data
+
                 for pr in prs:
+                    # Validate pr is a dict
+                    if not isinstance(pr, dict):
+                        log("WARN", f"Skipping non-dict PR entry: {type(pr)}")
+                        continue
+
                     branch = pr.get("headRefName", "")
                     # Check if branch starts with issue number
                     if branch.startswith(f"{issue}-") or branch.startswith(f"{issue}_"):
@@ -1966,8 +2251,10 @@ Focus on what functionality was added or fixed. Do not include implementation de
                                 f"  Found merged PR by branch: #{pr['number']} ({branch})",
                             )
                             return pr
-            except json.JSONDecodeError:
-                pass
+            except json.JSONDecodeError as e:
+                log("WARN", f"Failed to parse PR list: {e}")
+            except TypeError as e:
+                log("ERROR", f"Type error iterating PRs: {e}")
 
         return None
 
@@ -2205,10 +2492,12 @@ DO NOT describe what you're doing - just run the commands to commit.
     def _poll_pr_status(self, pr_number: int, slot: int, issue: int) -> str:
         """Poll PR status until merged, failed, or timeout.
 
-        Returns: "merged", "failed", "timeout"
+        Returns: "merged", "failed", "timeout", "stalled"
         """
         max_wait = PR_MAX_WAIT
         start = time.time()
+        passed_but_not_merged_count = 0
+        MAX_PASSED_POLLS = 5  # If passed 5 times but not merged, give up
 
         while time.time() - start < max_wait:
             self._update_status(slot, issue, "PR", "checking")
@@ -2220,18 +2509,26 @@ DO NOT describe what you're doing - just run the commands to commit.
                     "view",
                     str(pr_number),
                     "--json",
-                    "state,mergeStateStatus,statusCheckRollup",
+                    "state,mergeStateStatus,statusCheckRollup,autoMergeRequest",
                 ]
             )
 
             if cp.returncode != 0:
+                log("WARN", f"  Failed to check PR #{pr_number}: {cp.stderr[:100]}")
                 self._update_status(slot, issue, "PR", "error")
                 time.sleep(PR_POLL_INTERVAL)
                 continue
 
-            data = json.loads(cp.stdout)
+            try:
+                data = json.loads(cp.stdout)
+            except json.JSONDecodeError as e:
+                log("ERROR", f"  Failed to parse PR status: {e}")
+                time.sleep(PR_POLL_INTERVAL)
+                continue
+
             state = data.get("state", "").upper()
             checks = data.get("statusCheckRollup", []) or []
+            auto_merge = data.get("autoMergeRequest")  # Check auto-merge status
 
             if state == "MERGED":
                 return "merged"
@@ -2240,7 +2537,7 @@ DO NOT describe what you're doing - just run the commands to commit.
                 return "failed"
 
             # Count check statuses
-            pending = sum(1 for c in checks if c.get("status") == "PENDING" or c.get("status") == "QUEUED")
+            pending = sum(1 for c in checks if c.get("status") in ("PENDING", "QUEUED"))
             failing = sum(1 for c in checks if c.get("conclusion") == "FAILURE")
 
             if failing > 0:
@@ -2248,8 +2545,28 @@ DO NOT describe what you're doing - just run the commands to commit.
                 return "failed"
             elif pending > 0:
                 self._update_status(slot, issue, "PR", f"CI running ({pending})")
+                passed_but_not_merged_count = 0  # Reset counter
             else:
-                self._update_status(slot, issue, "PR", "waiting for merge")
+                # All checks passed
+                if auto_merge is None:
+                    # Auto-merge not enabled - will never merge automatically
+                    log("WARN", f"  PR #{pr_number} has passed CI but auto-merge not enabled")
+                    return "stalled"
+
+                # Auto-merge enabled but not merged yet
+                passed_but_not_merged_count += 1
+                if passed_but_not_merged_count >= MAX_PASSED_POLLS:
+                    # Passed CI multiple times but still not merged - something wrong
+                    log(
+                        "WARN",
+                        f"  PR #{pr_number} passed CI {MAX_PASSED_POLLS} times but not merged. "
+                        f"Possible merge conflicts or approval needed.",
+                    )
+                    return "stalled"
+
+                self._update_status(
+                    slot, issue, "PR", f"waiting for auto-merge ({passed_but_not_merged_count}/{MAX_PASSED_POLLS})"
+                )
 
             time.sleep(PR_POLL_INTERVAL)
 
@@ -2466,19 +2783,47 @@ DO NOT describe what you're doing - just run the commands to commit.
             self._post_issue_update(issue, f"✅ Committed changes to branch: {branch}")
             return WorkerResult(issue, "completed", None, None, duration)
 
-        except Exception as e:
+        except (KeyboardInterrupt, SystemExit):
+            # Clean shutdown - preserve state and re-raise
+            if issue in self.state.in_progress:
+                self.state.paused_issues[issue] = PausedIssue(
+                    worktree=self.state.in_progress[issue],
+                    pr=None,
+                    reason="Interrupted by user",
+                )
+                del self.state.in_progress[issue]
+                self.state.save(self.state_file)
+            raise
+        except RuntimeError as e:
+            # Expected failures (git push failed, etc.)
             log("ERROR", f"  Issue #{issue} failed: {e}")
-
-            # Post failure to GitHub issue
             error_msg = str(e)[:200]
             self._post_issue_update(issue, f"❌ Implementation failed:\n\n```\n{error_msg}\n```")
 
-            # Cleanup on failure if worktree was created
             if issue in self.state.in_progress:
-                # Keep worktree for debugging, just update state
                 self.state.paused_issues[issue] = PausedIssue(
                     worktree=self.state.in_progress[issue],
-                    pr=None,  # PR creation removed
+                    pr=None,
+                    reason=str(e)[:100],
+                )
+                del self.state.in_progress[issue]
+                self.state.save(self.state_file)
+
+            duration = time.time() - start_time
+            return WorkerResult(issue, "paused", None, str(e), duration)
+        except Exception as e:
+            # Unexpected failures - log with traceback
+            import traceback
+
+            log("ERROR", f"  Issue #{issue} failed unexpectedly: {e}\n{traceback.format_exc()}")
+
+            error_msg = str(e)[:200]
+            self._post_issue_update(issue, f"❌ Implementation failed:\n\n```\n{error_msg}\n```")
+
+            if issue in self.state.in_progress:
+                self.state.paused_issues[issue] = PausedIssue(
+                    worktree=self.state.in_progress[issue],
+                    pr=None,
                     reason=str(e)[:100],
                 )
                 del self.state.in_progress[issue]
