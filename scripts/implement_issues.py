@@ -1254,10 +1254,12 @@ class IssueImplementer:
             break
         return cp
 
-    def _fetch_issues_batch(self, issue_nums: list[int]) -> dict[int, dict]:
+    def _fetch_issues_batch(self, issue_nums: list[int]) -> dict[int, dict] | None:
         """Fetch multiple issues in one GraphQL query.
 
-        Returns dict mapping issue number to {title, state} or empty dict on error.
+        Returns:
+            dict mapping issue number to {title, state} if successful
+            None if fetch failed (allows caller to distinguish error from empty result)
         """
         if not issue_nums:
             return {}
@@ -1281,8 +1283,8 @@ class IssueImplementer:
 
         cp = self._gh_call(["gh", "api", "graphql", "-f", f"query={query}"])
         if cp.returncode != 0:
-            log("DEBUG", f"GraphQL batch fetch failed: {cp.stderr}")
-            return {}
+            log("WARN", f"GraphQL batch fetch failed: {cp.stderr}")
+            return None  # Explicit error signal
 
         try:
             data = json.loads(cp.stdout)
@@ -1297,8 +1299,8 @@ class IssueImplementer:
                     }
             return result
         except (json.JSONDecodeError, KeyError) as e:
-            log("DEBUG", f"Failed to parse GraphQL response: {e}")
-            return {}
+            log("WARN", f"Failed to parse GraphQL response: {e}")
+            return None  # Explicit error signal
 
     def _fetch_issue_title(self, issue_num: int) -> str:
         """Fetch title for a single issue (fallback, rate-limited)."""
