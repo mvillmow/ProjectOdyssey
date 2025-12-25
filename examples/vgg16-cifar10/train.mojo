@@ -34,31 +34,8 @@ from shared.data import (
     get_batch_indices,
     DatasetInfo,
 )
-from shared.utils.arg_parser import create_training_parser
+from shared.utils.training_args import parse_training_args_with_defaults
 from shared.training.metrics.evaluate import evaluate_with_predict
-
-
-fn parse_args() raises -> Tuple[Int, Int, Float32, Float32, String, String]:
-    """Parse command line arguments using enhanced argument parser.
-
-    Returns:
-        Tuple of (epochs, batch_size, learning_rate, momentum, data_dir, weights_dir).
-    """
-    var parser = create_training_parser()
-    parser.add_argument("weights-dir", "string", "vgg16_weights")
-
-    var args = parser.parse()
-
-    var epochs = args.get_int("epochs", 200)
-    var batch_size = args.get_int("batch-size", 128)
-    var learning_rate = Float32(args.get_float("lr", 0.01))
-    var momentum = Float32(args.get_float("momentum", 0.9))
-    var data_dir = args.get_string("data-dir", "datasets/cifar10")
-    var weights_dir = args.get_string("weights-dir", "vgg16_weights")
-
-    return Tuple[Int, Int, Float32, Float32, String, String](
-        epochs, batch_size, learning_rate, momentum, data_dir, weights_dir
-    )
 
 
 fn compute_gradients(
@@ -812,14 +789,26 @@ fn main() raises:
     print("VGG-16 Training on CIFAR-10 Dataset")
     print("=" * 60)
 
-    # Parse arguments
-    var config = parse_args()
-    var epochs = config[0]
-    var batch_size = config[1]
-    var learning_rate = config[2]
-    var momentum = config[3]
-    var data_dir = config[4]
-    var weights_dir = config[5]
+    # Parse arguments using standardized TrainingArgs
+    var args = parse_training_args_with_defaults(
+        default_epochs=200,
+        default_batch_size=128,
+        default_lr=0.01,
+        default_momentum=0.9,
+        default_data_dir="datasets/cifar10",
+        default_weights_dir="vgg16_weights",
+        default_lr_decay_epochs=60,
+        default_lr_decay_factor=0.2,
+    )
+
+    var epochs = args.epochs
+    var batch_size = args.batch_size
+    var learning_rate = Float32(args.learning_rate)
+    var momentum = Float32(args.momentum)
+    var data_dir = args.data_dir
+    var weights_dir = args.weights_dir
+    var lr_decay_epochs = args.lr_decay_epochs
+    var lr_decay_factor = Float32(args.lr_decay_factor)
 
     print("\nConfiguration:")
     print("  Epochs: ", epochs)
@@ -828,6 +817,8 @@ fn main() raises:
     print("  Momentum: ", momentum)
     print("  Data Directory: ", data_dir)
     print("  Weights Directory: ", weights_dir)
+    print("  LR Decay Epochs: ", lr_decay_epochs)
+    print("  LR Decay Factor: ", lr_decay_factor)
     print()
 
     # Initialize model
@@ -867,10 +858,15 @@ fn main() raises:
     print()
 
     for epoch in range(1, epochs + 1):
-        # Apply learning rate decay (step every 60 epochs, gamma=0.2)
-        var current_lr = step_lr(
-            learning_rate, epoch - 1, step_size=60, gamma=Float32(0.2)
-        )
+        # Apply learning rate decay
+        var current_lr = learning_rate
+        if lr_decay_epochs > 0:
+            current_lr = step_lr(
+                learning_rate,
+                epoch - 1,
+                step_size=lr_decay_epochs,
+                gamma=lr_decay_factor,
+            )
 
         if epoch == 1 or epoch % 60 == 1:
             print("Epoch", epoch, "- Learning rate:", current_lr)

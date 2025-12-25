@@ -47,6 +47,8 @@ struct TrainingArgs(Copyable, Movable):
         data_dir: Path to dataset directory.
         weights_dir: Path to save/load model weights.
         verbose: Whether to print verbose output.
+        lr_decay_epochs: Decay LR every N epochs (0 = no decay).
+        lr_decay_factor: Multiply LR by this factor when decaying.
     """
 
     var epochs: Int
@@ -56,6 +58,8 @@ struct TrainingArgs(Copyable, Movable):
     var data_dir: String
     var weights_dir: String
     var verbose: Bool
+    var lr_decay_epochs: Int
+    var lr_decay_factor: Float64
 
     fn __init__(out self):
         """Initialize with default training arguments."""
@@ -66,6 +70,8 @@ struct TrainingArgs(Copyable, Movable):
         self.data_dir = "datasets"
         self.weights_dir = "weights"
         self.verbose = False
+        self.lr_decay_epochs = 0
+        self.lr_decay_factor = 0.1
 
 
 # ============================================================================
@@ -83,6 +89,8 @@ fn parse_training_args() raises -> TrainingArgs:
             --momentum <float>: Momentum for SGD (default: 0.9)
             --data-dir <str>: Dataset directory (default: "datasets")
             --weights-dir <str>: Weights directory (default: "weights")
+            --lr-decay-epochs <int>: Decay LR every N epochs (default: 0, disabled)
+            --lr-decay-factor <float>: LR decay multiplier (default: 0.1)
             --verbose: Enable verbose output
 
     Returns:
@@ -105,6 +113,8 @@ fn parse_training_args() raises -> TrainingArgs:
         default_momentum=0.9,
         default_data_dir="datasets",
         default_weights_dir="weights",
+        default_lr_decay_epochs=0,
+        default_lr_decay_factor=0.1,
     )
 
 
@@ -115,6 +125,8 @@ fn parse_training_args_with_defaults(
     default_momentum: Float64 = 0.9,
     default_data_dir: String = "datasets",
     default_weights_dir: String = "weights",
+    default_lr_decay_epochs: Int = 0,
+    default_lr_decay_factor: Float64 = 0.1,
 ) raises -> TrainingArgs:
     """Parse training arguments with custom defaults and validation.
 
@@ -128,6 +140,8 @@ fn parse_training_args_with_defaults(
             default_momentum: Default momentum (must be in [0.0, 1.0]).
             default_data_dir: Default dataset directory.
             default_weights_dir: Default weights directory.
+            default_lr_decay_epochs: Default LR decay interval (0 = disabled).
+            default_lr_decay_factor: Default LR decay multiplier (must be in (0.0, 1.0]).
 
     Returns:
             TrainingArgs struct with parsed and validated values.
@@ -143,7 +157,9 @@ fn parse_training_args_with_defaults(
                 default_batch_size=128,
                 default_lr=0.01,
                 default_data_dir="datasets/cifar10",
-                default_weights_dir="alexnet_weights"
+                default_weights_dir="alexnet_weights",
+                default_lr_decay_epochs=30,
+                default_lr_decay_factor=0.1,
             )
             ```
     """
@@ -157,6 +173,12 @@ fn parse_training_args_with_defaults(
     var momentum = parsed.get_float("momentum", default_momentum)
     var data_dir = parsed.get_string("data-dir", default_data_dir)
     var weights_dir = parsed.get_string("weights-dir", default_weights_dir)
+    var lr_decay_epochs = parsed.get_int(
+        "lr-decay-epochs", default_lr_decay_epochs
+    )
+    var lr_decay_factor = parsed.get_float(
+        "lr-decay-factor", default_lr_decay_factor
+    )
     var verbose = parsed.get_bool("verbose")
 
     # Validate numeric arguments
@@ -164,6 +186,18 @@ fn parse_training_args_with_defaults(
     validate_positive_int(batch_size, "batch-size")
     validate_positive_float(learning_rate, "learning-rate")
     validate_range_float(momentum, 0.0, 1.0, "momentum")
+
+    # Validate LR decay parameters
+    if lr_decay_epochs < 0:
+        raise Error(
+            "lr-decay-epochs must be non-negative, got: "
+            + String(lr_decay_epochs)
+        )
+    if lr_decay_factor <= 0.0 or lr_decay_factor > 1.0:
+        raise Error(
+            "lr-decay-factor must be in (0.0, 1.0], got: "
+            + String(lr_decay_factor)
+        )
 
     return TrainingArgs(
         epochs=epochs,
@@ -173,4 +207,6 @@ fn parse_training_args_with_defaults(
         data_dir=data_dir,
         weights_dir=weights_dir,
         verbose=verbose,
+        lr_decay_epochs=lr_decay_epochs,
+        lr_decay_factor=lr_decay_factor,
     )
