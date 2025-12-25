@@ -129,8 +129,8 @@ fn simple_linear_regression() raises:
 
         # Update parameters using optimizer
         var params: List[Variable] = []
-        params.append(w)
-        params.append(b)
+        params.append(w.copy())
+        params.append(b.copy())
         optimizer.step(params, tape)
 
         # Reset gradients
