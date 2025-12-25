@@ -455,7 +455,7 @@ def cleanup_worktree(path, branch=None):
     Raises:
         RuntimeError: If worktree removal fails
     """
-    with git_lock:  # Protect git operations from concurrent access
+    with git_lock:  # Protect ALL operations from concurrent access (git + filesystem)
         # Remove git worktree
         r = run(["git", "worktree", "remove", "--force", path])
         if r.returncode != 0:
@@ -463,7 +463,7 @@ def cleanup_worktree(path, branch=None):
             if verbose:
                 log(f"⚠ git worktree remove failed: {r.stderr}")
 
-        # Ensure directory is actually removed
+        # Ensure directory is actually removed (inside lock to prevent race condition)
         if path.exists():
             try:
                 shutil.rmtree(path)
@@ -1006,11 +1006,28 @@ def worker_wrapper(file, root):
     try:
         process_file(file, root)
     except Exception as e:
-        log(f"ERROR processing {file}: {e}")
-        if "rate limit" in str(e).lower() or "quota" in str(e).lower():
+        error_msg = str(e).lower()
+
+        # Check for fatal errors that should stop all processing
+        if "rate limit" in error_msg or "quota" in error_msg:
             log("Claude Code limit hit - stopping all processing")
             stop_processing.set()
             raise
+        elif "authentication" in error_msg or "unauthorized" in error_msg:
+            log("Authentication failure - stopping all processing")
+            stop_processing.set()
+            raise
+        elif "disk" in error_msg and ("full" in error_msg or "space" in error_msg):
+            log("Disk space exhausted - stopping all processing")
+            stop_processing.set()
+            raise
+        else:
+            # Non-fatal error - log and continue with other files
+            log(f"ERROR processing {file}: {e}")
+            if verbose:
+                import traceback
+
+                log(f"Traceback: {traceback.format_exc()}")
 
 
 def process_file(file, root):
@@ -1203,48 +1220,72 @@ def main():
 
     ensure_base_branch()
 
+    # Register cleanup handler to save metrics on any exit (Ctrl+C, errors, etc.)
+    import atexit
+
+    atexit.register(save_metrics)
+
     # Initialize metrics tracking
     metrics["start_time"] = ts()
 
-    files = Path(args.input).read_text().splitlines()
+    # Validate input file exists
+    input_path = Path(args.input)
+    if not input_path.exists():
+        log(f"ERROR: Input file not found: {input_path}")
+        sys.exit(1)
+
+    # Read and validate file list
+    try:
+        files = input_path.read_text().splitlines()
+    except Exception as e:
+        log(f"ERROR: Failed to read input file: {e}")
+        sys.exit(1)
+
+    # Filter to valid, existing files
+    files = [f.strip() for f in files if f.strip()]
+    if not files:
+        log("ERROR: No files found in input file")
+        sys.exit(1)
+
     WORKTREE_BASE.mkdir(parents=True, exist_ok=True)
     LOG_DIR.mkdir(parents=True, exist_ok=True)
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as pool:
-        # Filter out empty lines
-        files_to_process = [f for f in files if f.strip()]
+    try:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as pool:
+            # Filter out empty lines
+            files_to_process = [f for f in files if f.strip()]
 
-        # Apply limit if specified
-        if args.limit:
-            files_to_process = files_to_process[: args.limit]
-            log(f"⚠️  LIMIT MODE - Processing only first {args.limit} files")
+            # Apply limit if specified
+            if args.limit:
+                files_to_process = files_to_process[: args.limit]
+                log(f"⚠️  LIMIT MODE - Processing only first {args.limit} files")
 
-        log(f"Processing {len(files_to_process)} files with {args.workers} workers")
+            log(f"Processing {len(files_to_process)} files with {args.workers} workers")
 
-        # Submit jobs incrementally with stop-processing check
-        futures = []
-        for file in files_to_process:
+            # Submit jobs incrementally with stop-processing check
+            futures = []
+            for file in files_to_process:
+                if stop_processing.is_set():
+                    log("Stopping - Claude Code limit reached")
+                    break
+                future = pool.submit(worker_wrapper, file, args.root)
+                futures.append(future)
+
+            # Wait for completion
+            for future in concurrent.futures.as_completed(futures):
+                try:
+                    future.result()
+                except Exception as e:
+                    log(f"Worker failed: {e}")
+
             if stop_processing.is_set():
-                log("Stopping - Claude Code limit reached")
-                break
-            future = pool.submit(worker_wrapper, file, args.root)
-            futures.append(future)
-
-        # Wait for completion
-        for future in concurrent.futures.as_completed(futures):
-            try:
-                future.result()
-            except Exception as e:
-                log(f"Worker failed: {e}")
-
-        if stop_processing.is_set():
-            log("⚠️  Processing stopped due to Claude Code limit")
-        else:
-            log(f"✓ Completed processing {len(files_to_process)} files")
-
-    # Finalize and save metrics
-    metrics["end_time"] = ts()
-    save_metrics()
+                log("⚠️  Processing stopped due to Claude Code limit")
+            else:
+                log(f"✓ Completed processing {len(files_to_process)} files")
+    finally:
+        # Ensure metrics are saved even on early exit or exception
+        metrics["end_time"] = ts()
+        save_metrics()
 
 
 if __name__ == "__main__":
