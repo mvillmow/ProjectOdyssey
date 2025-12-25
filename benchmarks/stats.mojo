@@ -11,10 +11,10 @@ fn compute_mean(values: List[Float64]) -> Float64:
     """Compute arithmetic mean of values.
 
     Args:
-        values: List of Float64 values
+        values: List of Float64 values.
 
     Returns:
-        Arithmetic mean of input values
+        Arithmetic mean of input values.
     """
     if len(values) == 0:
         return 0.0
@@ -32,11 +32,11 @@ fn compute_std_dev(values: List[Float64], mean: Float64) -> Float64:
     Computes sample standard deviation (n-1 divisor for unbiased estimate).
 
     Args:
-        values: List of Float64 values
-        mean: Pre-computed mean (avoids recomputation)
+        values: List of Float64 values.
+        mean: Pre-computed mean (avoids recomputation).
 
     Returns:
-        Sample standard deviation
+        Sample standard deviation.
     """
     if len(values) <= 1:
         return 0.0
@@ -53,10 +53,10 @@ fn compute_min(values: List[Float64]) -> Float64:
     """Compute minimum value.
 
     Args:
-        values: List of Float64 values
+        values: List of Float64 values.
 
     Returns:
-        Minimum value from input
+        Minimum value from input.
     """
     if len(values) == 0:
         return 0.0
@@ -73,10 +73,10 @@ fn compute_max(values: List[Float64]) -> Float64:
     """Compute maximum value.
 
     Args:
-        values: List of Float64 values
+        values: List of Float64 values.
 
     Returns:
-        Maximum value from input
+        Maximum value from input.
     """
     if len(values) == 0:
         return 0.0
@@ -111,11 +111,11 @@ fn compute_percentile(values: List[Float64], percentile: Int) -> Float64:
     align exactly with data points.
 
     Args:
-        values: List of Float64 values
-        percentile: Percentile to compute (0-100)
+        values: List of Float64 values.
+        percentile: Percentile to compute (0-100).
 
     Returns:
-        Percentile value
+        Percentile value.
     """
     if len(values) == 0:
         return 0.0
