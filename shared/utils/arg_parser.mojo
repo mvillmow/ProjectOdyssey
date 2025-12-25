@@ -331,7 +331,10 @@ fn create_training_parser() raises -> ArgumentParser:
             - weight-decay (float, default 0.0)
             - model-path (string, default "model.weights")
             - data-dir (string, default "datasets")
+            - weights-dir (string, default "weights")
             - seed (int, default 42)
+            - lr-decay-epochs (int, default 0)
+            - lr-decay-factor (float, default 0.1)
             - verbose (flag)
 
     Returns:
@@ -350,7 +353,10 @@ fn create_training_parser() raises -> ArgumentParser:
     parser.add_argument("weight-decay", "float", "0.0")
     parser.add_argument("model-path", "string", "model.weights")
     parser.add_argument("data-dir", "string", "datasets")
+    parser.add_argument("weights-dir", "string", "weights")
     parser.add_argument("seed", "int", "42")
+    parser.add_argument("lr-decay-epochs", "int", "0")
+    parser.add_argument("lr-decay-factor", "float", "0.1")
     parser.add_flag("verbose")
 
     return parser^

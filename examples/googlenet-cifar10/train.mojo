@@ -60,28 +60,9 @@ from shared.data import (
     DatasetInfo,
 )
 from shared.data.datasets import load_cifar10_train
+from shared.training.schedulers import step_lr
+from shared.utils.training_args import parse_training_args_with_defaults
 from model import GoogLeNet, InceptionModule
-
-
-fn compute_learning_rate(initial_lr: Float32, epoch: Int) -> Float32:
-    """Compute learning rate with step decay schedule.
-
-    Schedule: Multiply by 0.2 every 60 epochs.
-
-    Args:
-        initial_lr: Initial learning rate
-        epoch: Current epoch number
-
-    Returns:
-        Adjusted learning rate.
-    """
-    var decay_factor = Float32(0.2)
-    var decay_epochs = 60
-    var num_decays = epoch // decay_epochs
-    var lr = initial_lr
-    for i in range(num_decays):
-        lr = lr * decay_factor
-    return lr
 
 
 fn train_epoch(
@@ -398,13 +379,26 @@ fn main() raises:
     print("=" * 60)
     print()
 
-    # Configuration
-    var epochs = 200
-    var batch_size = 128
-    var initial_lr = Float32(0.01)
-    var momentum = Float32(0.9)
-    var data_dir = "datasets/cifar10"
-    var weights_dir = "googlenet_weights"
+    # Parse arguments using standardized TrainingArgs
+    var args = parse_training_args_with_defaults(
+        default_epochs=200,
+        default_batch_size=128,
+        default_lr=0.01,
+        default_momentum=0.9,
+        default_data_dir="datasets/cifar10",
+        default_weights_dir="googlenet_weights",
+        default_lr_decay_epochs=60,
+        default_lr_decay_factor=0.2,
+    )
+
+    var epochs = args.epochs
+    var batch_size = args.batch_size
+    var initial_lr = Float32(args.learning_rate)
+    var momentum = Float32(args.momentum)
+    var data_dir = args.data_dir
+    var weights_dir = args.weights_dir
+    var lr_decay_epochs = args.lr_decay_epochs
+    var lr_decay_factor = Float32(args.lr_decay_factor)
 
     print("Configuration:")
     print("  Epochs: " + String(epochs))
@@ -413,6 +407,8 @@ fn main() raises:
     print("  Momentum: " + String(momentum))
     print("  Data directory: " + String(data_dir))
     print("  Weights directory: " + String(weights_dir))
+    print("  LR Decay Epochs: " + String(lr_decay_epochs))
+    print("  LR Decay Factor: " + String(lr_decay_factor))
     print()
 
     # Load CIFAR-10 dataset
@@ -447,7 +443,14 @@ fn main() raises:
     print()
 
     for epoch in range(epochs):
-        var lr = compute_learning_rate(initial_lr, epoch)
+        var lr = initial_lr
+        if lr_decay_epochs > 0:
+            lr = step_lr(
+                initial_lr,
+                epoch,
+                step_size=lr_decay_epochs,
+                gamma=lr_decay_factor,
+            )
 
         # Train for one epoch
         var train_loss = train_epoch(
@@ -494,9 +497,14 @@ fn main() raises:
     print("Training Summary")
     print("=" * 60)
     print("Total epochs: " + String(epochs))
-    print(
-        "Final learning rate: "
-        + String(compute_learning_rate(initial_lr, epochs - 1))
-    )
+    var final_lr = initial_lr
+    if lr_decay_epochs > 0:
+        final_lr = step_lr(
+            initial_lr,
+            epochs - 1,
+            step_size=lr_decay_epochs,
+            gamma=lr_decay_factor,
+        )
+    print("Final learning rate: " + String(final_lr))
     print("Model saved to: " + String(weights_dir) + "/")
     print("=" * 60)

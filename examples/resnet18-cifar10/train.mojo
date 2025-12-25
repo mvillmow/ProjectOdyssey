@@ -231,14 +231,25 @@ fn main() raises:
     print("=" * 60)
     print()
 
-    # Configuration (hardcoded for demonstration)
-    var epochs = 200
-    var batch_size = 128
-    var initial_lr = Float32(0.01)
-    var momentum = Float32(0.9)
-    var data_dir = "datasets/cifar10"
-    var lr_decay_epochs = 60  # Decay every 60 epochs
-    var lr_decay_factor = Float32(0.2)  # Multiply by 0.2
+    # Parse arguments using standardized TrainingArgs
+    var args = parse_training_args_with_defaults(
+        default_epochs=200,
+        default_batch_size=128,
+        default_lr=0.01,
+        default_momentum=0.9,
+        default_data_dir="datasets/cifar10",
+        default_weights_dir="resnet18_weights",
+        default_lr_decay_epochs=60,
+        default_lr_decay_factor=0.2,
+    )
+
+    var epochs = args.epochs
+    var batch_size = args.batch_size
+    var initial_lr = Float32(args.learning_rate)
+    var momentum = Float32(args.momentum)
+    var data_dir = args.data_dir
+    var lr_decay_epochs = args.lr_decay_epochs
+    var lr_decay_factor = Float32(args.lr_decay_factor)
 
     print("Configuration:")
     print("  Epochs: " + String(epochs))
