@@ -13,7 +13,6 @@ Key properties:
 
 import argparse
 import concurrent.futures
-import json
 import shutil
 import subprocess
 import threading
@@ -35,7 +34,6 @@ LOG_DIR = ROOT / "build" / "logs"
 
 print_lock = threading.Lock()
 stop_processing = threading.Event()
-active_workers = threading.Semaphore(MAX_WORKERS_DEFAULT)
 dry_run = False  # Set via --dry-run flag
 verbose = False  # Set via --verbose flag
 
@@ -63,6 +61,31 @@ def run(cmd, cwd=None, timeout=None):
         capture_output=True,
         timeout=timeout,
     )
+
+
+def check_dependencies():
+    """Verify required external dependencies are available.
+
+    Raises:
+        RuntimeError: If any required command is missing.
+    """
+    required = ["mojo", "pixi", "gh", "git", "claude"]
+    missing = []
+
+    for cmd in required:
+        if not shutil.which(cmd):
+            missing.append(cmd)
+
+    if missing:
+        raise RuntimeError(
+            f"Required command(s) not found: {', '.join(missing)}\n"
+            f"Please install missing dependencies before running this script."
+        )
+
+    # Verify gh CLI is authenticated
+    result = subprocess.run(["gh", "auth", "status"], capture_output=True, text=True)
+    if result.returncode != 0:
+        raise RuntimeError("GitHub CLI (gh) is not authenticated.\nRun 'gh auth login' to authenticate.")
 
 
 # ---------------- Build ----------------
@@ -296,22 +319,6 @@ def create_pr(branch, file, cwd, log_path) -> bool:
 
 
 # ---------------- Claude ----------------
-
-
-def load_text(path: Path) -> str:
-    return path.read_text(encoding="utf-8").strip()
-
-
-def build_agents_json(agent_dir: Path) -> str:
-    agents = {}
-    for p in agent_dir.glob("*.md"):
-        if p.name == "chief-architect.md":
-            continue
-        agents[p.stem] = {
-            "description": p.stem.replace("-", " "),
-            "prompt": load_text(p),
-        }
-    return json.dumps(agents, ensure_ascii=False)
 
 
 def build_prompt(file: str, root: str) -> str:
@@ -558,7 +565,7 @@ fix(layers): update constructor to use out self parameter
 </task_context>"""
 
 
-def run_claude(prompt, agents_json, architect_prompt, cwd, log_path):
+def run_claude(prompt, cwd, log_path):
     """Run Claude with the given prompt in the specified working directory."""
     if dry_run:
         write_log(log_path, "DRY RUN - Would run Claude here")
@@ -570,6 +577,8 @@ def run_claude(prompt, agents_json, architect_prompt, cwd, log_path):
     allow_tools = [
         "Read",
         "Edit",
+        "Glob",
+        "Grep",
         "Web",
         "Bash(gh:*)",
         "Bash(pixi:*)",
@@ -660,7 +669,7 @@ def run_claude(prompt, agents_json, architect_prompt, cwd, log_path):
 # ---------------- Worker ----------------
 
 
-def worker_wrapper(file, root, agents_json, architect_prompt):
+def worker_wrapper(file, root):
     """Wrapper that respects semaphore and stop event."""
     if stop_processing.is_set():
         log(f"Skipping {file} - processing stopped")
@@ -668,7 +677,7 @@ def worker_wrapper(file, root, agents_json, architect_prompt):
 
     # Don't acquire semaphore in wrapper - let ThreadPoolExecutor handle it
     try:
-        process_file(file, root, agents_json, architect_prompt)
+        process_file(file, root)
     except Exception as e:
         log(f"ERROR processing {file}: {e}")
         if "rate limit" in str(e).lower() or "quota" in str(e).lower():
@@ -677,7 +686,7 @@ def worker_wrapper(file, root, agents_json, architect_prompt):
             raise
 
 
-def process_file(file, root, agents_json, architect_prompt):
+def process_file(file, root):
     """Process a single file with isolated worktree and Claude agent."""
     # Create branch name from file path
     branch = sanitize_branch_name(file)
@@ -718,7 +727,7 @@ def process_file(file, root, agents_json, architect_prompt):
         prompt = build_prompt(file, root)
 
         # Run Claude with enhanced prompt
-        run_claude(prompt, agents_json, architect_prompt, wt, log_path)
+        run_claude(prompt, wt, log_path)
 
         # Check if Claude made a commit
         if not has_commit(wt):
@@ -810,19 +819,14 @@ def main():
     if verbose:
         log("📢 VERBOSE MODE - Detailed logging enabled")
 
+    # Verify all required dependencies are available
+    check_dependencies()
+
     ensure_base_branch()
 
     files = Path(args.input).read_text().splitlines()
     WORKTREE_BASE.mkdir(parents=True, exist_ok=True)
     LOG_DIR.mkdir(parents=True, exist_ok=True)
-
-    agent_dir = Path(".claude/agents")
-    architect_prompt = load_text(agent_dir / "chief-architect.md")
-    agents_json = build_agents_json(agent_dir)
-
-    # Update the global semaphore with the actual worker count
-    global active_workers
-    active_workers = threading.Semaphore(args.workers)
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as pool:
         # Filter out empty lines
@@ -841,7 +845,7 @@ def main():
             if stop_processing.is_set():
                 log("Stopping - Claude Code limit reached")
                 break
-            future = pool.submit(worker_wrapper, file, args.root, agents_json, architect_prompt)
+            future = pool.submit(worker_wrapper, file, args.root)
             futures.append(future)
 
         # Wait for completion
