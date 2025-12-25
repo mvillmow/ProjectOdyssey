@@ -30,9 +30,19 @@ Usage Pattern:
         # Reset gradients
         optimizer.zero_grad(tape)
 
+        # Optional: Adjust learning rate
+        optimizer.set_lr(new_learning_rate)
+        current_lr = optimizer.get_lr()
+
 Design Note:
     This module operates on Variables (from autograd), not raw ExTensors.
     The optimizer updates Variable.data based on Variable.grad.
+
+    All optimizers implement the Optimizer trait from optimizer_base.mojo,
+    which provides common functionality like:
+    - Learning rate get/set methods
+    - Gradient zeroing implementation
+    - Gradient clipping by global norm
 """
 
 from shared.core.extensor import ExTensor
@@ -45,9 +55,15 @@ from shared.autograd.functional import (
     subtract_scalar,
     add_scalar,
 )
+from shared.autograd.optimizer_base import (
+    Optimizer,
+    zero_grad_impl,
+    validate_learning_rate,
+)
 
 
-struct SGD:
+@value
+struct SGD(Optimizer):
     """Stochastic Gradient Descent optimizer.
 
         Implements basic gradient descent with optional momentum:
@@ -60,7 +76,7 @@ struct SGD:
         Attributes:
             learning_rate: Step size for parameter updates.
             momentum: Momentum factor for accelerated gradient descent (default: 0.0).
-            velocity: Momentum accumulation for each parameter (maintained internally).
+            velocities: Velocity buffers for each parameter (initialized on first step).
 
     Examples:
             # Basic SGD
@@ -69,9 +85,14 @@ struct SGD:
             # SGD with momentum
             var optimizer = SGD(learning_rate=0.01, momentum=0.9)
 
-            # Training step
-            optimizer.step(parameters)
-            optimizer.zero_grad(parameters)
+            # Training step with gradient clipping
+            from shared.autograd.optimizer_base import clip_gradients_by_global_norm
+            clip_gradients_by_global_norm(parameters, tape, max_norm=5.0)
+            optimizer.step(parameters, tape)
+            optimizer.zero_grad(tape)
+
+            # Adjust learning rate
+            optimizer.set_lr(0.001)
     """
 
     var learning_rate: Float64
@@ -99,7 +120,7 @@ struct SGD:
         """
         self.learning_rate = learning_rate
         self.momentum = momentum
-        self.velocities: List[ExTensor] = []
+        self.velocities = List[ExTensor]()
         self._initialized = False
 
     fn step(
@@ -137,7 +158,7 @@ struct SGD:
         """
         # Initialize velocity buffers on first call if using momentum
         if self.momentum > 0.0 and not self._initialized:
-            self.velocities: List[ExTensor] = []
+            self.velocities = List[ExTensor]()
             for i in range(len(parameters)):
                 # Create zero-initialized velocity tensor matching parameter shape
                 var vel_shape = parameters[i].data.shape()
@@ -194,93 +215,40 @@ struct SGD:
             # Clear gradients before next iteration
             optimizer.zero_grad(tape)
         """
-        # Clear the gradient registry
-        tape.registry.clear()
+        zero_grad_impl(tape)
 
-    fn save_state(self, path: String) raises:
-        """Save optimizer state to checkpoint directory.
+    fn get_lr(self) -> Float64:
+        """Get the current learning rate.
 
-        Saves SGD hyperparameters and internal state (velocity buffers if momentum > 0).
-
-        State saved:
-            - learning_rate: Current learning rate
-            - momentum: Momentum coefficient
-            - velocities: Velocity buffers for each parameter (if momentum > 0)
-
-        Args:
-            path: Directory path for checkpoint.
-
-        Raises:
-            Error: If directory creation or file write fails.
+        Returns:
+            Current learning rate value.
 
         Examples:
-            ```mojo
-            # Save optimizer state
-            optimizer.save_state("checkpoints/epoch_10/optimizer")
-            ```
+            var current_lr = optimizer.get_lr()
+            print("Current learning rate:", current_lr)
         """
-        from shared.utils.serialization import (
-            save_named_checkpoint,
-            NamedTensor,
-        )
-        from collections.optional import Optional
+        return self.learning_rate
 
-        var tensors = List[NamedTensor]()
-        var metadata = Dict[String, String]()
-
-        # Save hyperparameters
-        metadata["learning_rate"] = String(self.learning_rate)
-        metadata["momentum"] = String(self.momentum)
-        metadata["_initialized"] = String(self._initialized)
-
-        # Save velocity buffers if using momentum
-        if self.momentum > 0.0 and self._initialized:
-            for i in range(len(self.velocities)):
-                var name = "velocity_" + String(i)
-                tensors.append(NamedTensor(name, self.velocities[i]))
-
-        save_named_checkpoint(tensors, path, metadata^)
-
-    fn load_state(mut self, path: String) raises:
-        """Load optimizer state from checkpoint.
-
-        Restores SGD hyperparameters and internal state (velocity buffers).
+    fn set_lr(mut self, lr: Float64) raises:
+        """Set the learning rate.
 
         Args:
-            path: Directory path to checkpoint.
+            lr: New learning rate value (must be positive).
 
         Raises:
-            Error: If checkpoint doesn't exist or format is invalid.
+            Error: If lr is non-positive.
 
         Examples:
-            ```mojo
-            # Load optimizer state
-            optimizer.load_state("checkpoints/epoch_10/optimizer")
-            ```
+            # Decay learning rate by 0.1
+            var current_lr = optimizer.get_lr()
+            optimizer.set_lr(current_lr * 0.1)
         """
-        from shared.utils.serialization import load_named_checkpoint
-
-        var checkpoint = load_named_checkpoint(path)
-        var tensors = checkpoint[0].copy()
-        var metadata = checkpoint[1].copy()
-
-        # Restore hyperparameters
-        if "learning_rate" in metadata:
-            self.learning_rate = Float64(metadata["learning_rate"])
-        if "momentum" in metadata:
-            self.momentum = Float64(metadata["momentum"])
-
-        # Restore velocity buffers
-        self.velocities: List[ExTensor] = []
-        if "momentum" in metadata and Float64(metadata["momentum"]) > 0.0:
-            for i in range(len(tensors)):
-                self.velocities.append(tensors[i].tensor)
-            self._initialized = True
-        else:
-            self._initialized = False
+        validate_learning_rate(lr)
+        self.learning_rate = lr
 
 
-struct Adam:
+@value
+struct Adam(Optimizer):
     """Adam (Adaptive Moment Estimation) optimizer.
 
         Combines momentum and RMSprop to achieve adaptive learning rates for each parameter:
@@ -320,6 +288,11 @@ struct Adam:
             loss.backward(tape)
             optimizer.step(parameters, tape)
             optimizer.zero_grad(tape)
+
+            # Learning rate scheduling
+            if epoch % 10 == 0:
+                var current_lr = optimizer.get_lr()
+                optimizer.set_lr(current_lr * 0.9)
     """
 
     var learning_rate: Float64
@@ -374,9 +347,9 @@ struct Adam:
         self.epsilon = epsilon
         self.weight_decay = weight_decay
         self.t = 0
-        self.m_buffers: List[ExTensor] = []
-        self.v_buffers: List[ExTensor] = []
-        self.has_buffer: List[Bool] = []
+        self.m_buffers = List[ExTensor]()
+        self.v_buffers = List[ExTensor]()
+        self.has_buffer = List[Bool]()
 
     fn step(
         mut self, mut parameters: List[Variable], mut tape: GradientTape
@@ -550,139 +523,44 @@ struct Adam:
             # Clear gradients before next iteration
             optimizer.zero_grad(tape)
         """
-        # Clear the gradient registry
-        tape.registry.clear()
+        zero_grad_impl(tape)
 
-    fn save_state(self, path: String) raises:
-        """Save optimizer state to checkpoint directory.
+    fn get_lr(self) -> Float64:
+        """Get the current learning rate.
 
-        Saves Adam hyperparameters and internal state (moment estimates and step count).
-
-        State saved:
-            - learning_rate: Current learning rate
-            - beta1: First moment decay rate
-            - beta2: Second moment decay rate
-            - epsilon: Numerical stability constant
-            - weight_decay: L2 regularization coefficient
-            - t: Step counter
-            - m_buffers: First moment estimates for each parameter
-            - v_buffers: Second moment estimates for each parameter
-
-        Args:
-            path: Directory path for checkpoint.
-
-        Raises:
-            Error: If directory creation or file write fails.
+        Returns:
+            Current learning rate value.
 
         Examples:
-            ```mojo
-            # Save optimizer state
-            optimizer.save_state("checkpoints/epoch_10/optimizer")
-            ```
+            var current_lr = optimizer.get_lr()
+            print("Current learning rate:", current_lr)
         """
-        from shared.utils.serialization import (
-            save_named_checkpoint,
-            NamedTensor,
-        )
-        from collections.optional import Optional
+        return self.learning_rate
 
-        var tensors = List[NamedTensor]()
-        var metadata = Dict[String, String]()
-
-        # Save hyperparameters
-        metadata["learning_rate"] = String(self.learning_rate)
-        metadata["beta1"] = String(self.beta1)
-        metadata["beta2"] = String(self.beta2)
-        metadata["epsilon"] = String(self.epsilon)
-        metadata["weight_decay"] = String(self.weight_decay)
-        metadata["t"] = String(self.t)
-
-        # Save moment buffers for each parameter
-        for i in range(len(self.m_buffers)):
-            if i < len(self.has_buffer) and self.has_buffer[i]:
-                var m_name = "m_" + String(i)
-                var v_name = "v_" + String(i)
-                tensors.append(NamedTensor(m_name, self.m_buffers[i]))
-                tensors.append(NamedTensor(v_name, self.v_buffers[i]))
-
-        save_named_checkpoint(tensors, path, metadata^)
-
-    fn load_state(mut self, path: String) raises:
-        """Load optimizer state from checkpoint.
-
-        Restores Adam hyperparameters and internal state (moment estimates and step count).
+    fn set_lr(mut self, lr: Float64) raises:
+        """Set the learning rate.
 
         Args:
-            path: Directory path to checkpoint.
+            lr: New learning rate value (must be positive).
 
         Raises:
-            Error: If checkpoint doesn't exist or format is invalid.
+            Error: If lr is non-positive.
 
         Examples:
-            ```mojo
-            # Load optimizer state
-            optimizer.load_state("checkpoints/epoch_10/optimizer")
-            ```
+            # Learning rate warmup
+            for epoch in range(5):
+                optimizer.set_lr((epoch + 1) * 0.0002)
+
+            # Learning rate decay
+            if epoch == 30:
+                optimizer.set_lr(optimizer.get_lr() * 0.1)
         """
-        from shared.utils.serialization import load_named_checkpoint
-
-        var checkpoint = load_named_checkpoint(path)
-        var tensors = checkpoint[0].copy()
-        var metadata = checkpoint[1].copy()
-
-        # Restore hyperparameters
-        if "learning_rate" in metadata:
-            self.learning_rate = Float64(metadata["learning_rate"])
-        if "beta1" in metadata:
-            self.beta1 = Float64(metadata["beta1"])
-        if "beta2" in metadata:
-            self.beta2 = Float64(metadata["beta2"])
-        if "epsilon" in metadata:
-            self.epsilon = Float64(metadata["epsilon"])
-        if "weight_decay" in metadata:
-            self.weight_decay = Float64(metadata["weight_decay"])
-        if "t" in metadata:
-            self.t = Int(metadata["t"])
-
-        # Restore moment buffers
-        # Tensors are named m_0, v_0, m_1, v_1, etc.
-        self.m_buffers: List[ExTensor] = []
-        self.v_buffers: List[ExTensor] = []
-        self.has_buffer: List[Bool] = []
-
-        # Find the maximum parameter ID from loaded tensors
-        var max_param_id = 0
-        for i in range(len(tensors)):
-            var name = tensors[i].name
-            if name.startswith("m_") or name.startswith("v_"):
-                var id_str = name[2:]  # Skip "m_" or "v_"
-                var param_id = Int(id_str)
-                if param_id > max_param_id:
-                    max_param_id = param_id
-
-        # Initialize buffer lists to accommodate all parameter IDs
-        for _ in range(max_param_id + 1):
-            var placeholder_shape = List[Int]()
-            placeholder_shape.append(1)
-            self.m_buffers.append(ExTensor(placeholder_shape, DType.float32))
-            self.v_buffers.append(ExTensor(placeholder_shape, DType.float32))
-            self.has_buffer.append(False)
-
-        # Populate buffers from loaded tensors
-        for i in range(len(tensors)):
-            var name = tensors[i].name
-            if name.startswith("m_"):
-                var id_str = name[2:]
-                var param_id = Int(id_str)
-                self.m_buffers[param_id] = tensors[i].tensor
-                self.has_buffer[param_id] = True
-            elif name.startswith("v_"):
-                var id_str = name[2:]
-                var param_id = Int(id_str)
-                self.v_buffers[param_id] = tensors[i].tensor
+        validate_learning_rate(lr)
+        self.learning_rate = lr
 
 
-struct AdaGrad:
+@value
+struct AdaGrad(Optimizer):
     """AdaGrad (Adaptive Gradient) optimizer.
 
         Implements adaptive learning rate optimization based on accumulated squared
@@ -707,6 +585,9 @@ struct AdaGrad:
             # Training step
             optimizer.step(parameters, tape)
             optimizer.zero_grad(tape)
+
+            # Learning rate adjustment
+            optimizer.set_lr(0.001)
     ```
     """
 
@@ -852,8 +733,35 @@ struct AdaGrad:
             # Clear gradients before next iteration
             optimizer.zero_grad(tape)
         """
-        # Clear the gradient registry
-        tape.registry.clear()
+        zero_grad_impl(tape)
+
+    fn get_lr(self) -> Float64:
+        """Get the current learning rate.
+
+        Returns:
+            Current learning rate value.
+
+        Examples:
+            var current_lr = optimizer.get_lr()
+            print("Current learning rate:", current_lr)
+        """
+        return self.learning_rate
+
+    fn set_lr(mut self, lr: Float64) raises:
+        """Set the learning rate.
+
+        Args:
+            lr: New learning rate value (must be positive).
+
+        Raises:
+            Error: If lr is non-positive.
+
+        Examples:
+            # Decay learning rate
+            optimizer.set_lr(optimizer.get_lr() * 0.95)
+        """
+        validate_learning_rate(lr)
+        self.learning_rate = lr
 
     fn reset_accumulators(mut self):
         """Reset accumulated squared gradient buffers.
@@ -867,93 +775,9 @@ struct AdaGrad:
         """
         self.G_buffers.clear()
 
-    fn save_state(self, path: String) raises:
-        """Save optimizer state to checkpoint directory.
 
-        Saves AdaGrad hyperparameters and internal state (accumulated squared gradients).
-
-        State saved:
-            - learning_rate: Current learning rate
-            - epsilon: Numerical stability constant
-            - weight_decay: L2 regularization coefficient
-            - G_buffers: Accumulated squared gradients for each parameter
-
-        Args:
-            path: Directory path for checkpoint.
-
-        Raises:
-            Error: If directory creation or file write fails.
-
-        Examples:
-            ```mojo
-            # Save optimizer state
-            optimizer.save_state("checkpoints/epoch_10/optimizer")
-            ```
-        """
-        from shared.utils.serialization import (
-            save_named_checkpoint,
-            NamedTensor,
-        )
-        from collections.optional import Optional
-
-        var tensors = List[NamedTensor]()
-        var metadata = Dict[String, String]()
-
-        # Save hyperparameters
-        metadata["learning_rate"] = String(self.learning_rate)
-        metadata["epsilon"] = String(self.epsilon)
-        metadata["weight_decay"] = String(self.weight_decay)
-
-        # Save accumulated gradient buffers
-        for key_ref in self.G_buffers.keys():
-            var param_id = Int(key_ref)
-            var name = "G_" + String(param_id)
-            tensors.append(NamedTensor(name, self.G_buffers[param_id]))
-
-        save_named_checkpoint(tensors, path, metadata^)
-
-    fn load_state(mut self, path: String) raises:
-        """Load optimizer state from checkpoint.
-
-        Restores AdaGrad hyperparameters and internal state (accumulated squared gradients).
-
-        Args:
-            path: Directory path to checkpoint.
-
-        Raises:
-            Error: If checkpoint doesn't exist or format is invalid.
-
-        Examples:
-            ```mojo
-            # Load optimizer state
-            optimizer.load_state("checkpoints/epoch_10/optimizer")
-            ```
-        """
-        from shared.utils.serialization import load_named_checkpoint
-
-        var checkpoint = load_named_checkpoint(path)
-        var tensors = checkpoint[0].copy()
-        var metadata = checkpoint[1].copy()
-
-        # Restore hyperparameters
-        if "learning_rate" in metadata:
-            self.learning_rate = Float64(metadata["learning_rate"])
-        if "epsilon" in metadata:
-            self.epsilon = Float64(metadata["epsilon"])
-        if "weight_decay" in metadata:
-            self.weight_decay = Float64(metadata["weight_decay"])
-
-        # Restore accumulated gradient buffers
-        self.G_buffers = Dict[Int, ExTensor]()
-        for i in range(len(tensors)):
-            var name = tensors[i].name
-            if name.startswith("G_"):
-                var id_str = name[2:]  # Skip "G_"
-                var param_id = Int(id_str)
-                self.G_buffers[param_id] = tensors[i].tensor
-
-
-struct RMSprop:
+@value
+struct RMSprop(Optimizer):
     """Root Mean Square Propagation (RMSprop) optimizer.
 
         Adapts learning rate per parameter based on running average of squared gradients:
@@ -987,6 +811,9 @@ struct RMSprop:
             # Training step
             optimizer.step(parameters, tape)
             optimizer.zero_grad(tape)
+
+            # Learning rate scheduling
+            optimizer.set_lr(optimizer.get_lr() * 0.9)
     """
 
     var learning_rate: Float64
@@ -1035,9 +862,9 @@ struct RMSprop:
         self.epsilon = epsilon
         self.weight_decay = weight_decay
         self.momentum = momentum
-        self.v_buffers: List[ExTensor] = []
-        self.m_buffers: List[ExTensor] = []
-        self.has_buffer: List[Bool] = []
+        self.v_buffers = List[ExTensor]()
+        self.m_buffers = List[ExTensor]()
+        self.has_buffer = List[Bool]()
 
     fn step(
         mut self, mut parameters: List[Variable], mut tape: GradientTape
@@ -1164,131 +991,39 @@ struct RMSprop:
             This does NOT clear the v_buffers and m_buffers. RMSprop maintains
             these accumulators across optimization steps.
         """
-        tape.registry.clear()
+        zero_grad_impl(tape)
 
-    fn save_state(self, path: String) raises:
-        """Save optimizer state to checkpoint directory.
+    fn get_lr(self) -> Float64:
+        """Get the current learning rate.
 
-        Saves RMSprop hyperparameters and internal state (running averages and momentum buffers).
-
-        State saved:
-            - learning_rate: Current learning rate
-            - alpha: Smoothing constant for running average
-            - epsilon: Numerical stability constant
-            - weight_decay: L2 regularization coefficient
-            - momentum: Momentum factor
-            - v_buffers: Running average of squared gradients for each parameter
-            - m_buffers: Momentum buffers for each parameter (if momentum > 0)
-
-        Args:
-            path: Directory path for checkpoint.
-
-        Raises:
-            Error: If directory creation or file write fails.
+        Returns:
+            Current learning rate value.
 
         Examples:
-            ```mojo
-            # Save optimizer state
-            optimizer.save_state("checkpoints/epoch_10/optimizer")
-            ```
+            var current_lr = optimizer.get_lr()
+            print("Current learning rate:", current_lr)
         """
-        from shared.utils.serialization import (
-            save_named_checkpoint,
-            NamedTensor,
-        )
-        from collections.optional import Optional
+        return self.learning_rate
 
-        var tensors = List[NamedTensor]()
-        var metadata = Dict[String, String]()
-
-        # Save hyperparameters
-        metadata["learning_rate"] = String(self.learning_rate)
-        metadata["alpha"] = String(self.alpha)
-        metadata["epsilon"] = String(self.epsilon)
-        metadata["weight_decay"] = String(self.weight_decay)
-        metadata["momentum"] = String(self.momentum)
-
-        # Save buffers for each parameter
-        for i in range(len(self.v_buffers)):
-            if i < len(self.has_buffer) and self.has_buffer[i]:
-                var v_name = "v_" + String(i)
-                tensors.append(NamedTensor(v_name, self.v_buffers[i]))
-
-                # Save momentum buffer if momentum > 0
-                if self.momentum > 0.0:
-                    var m_name = "m_" + String(i)
-                    tensors.append(NamedTensor(m_name, self.m_buffers[i]))
-
-        save_named_checkpoint(tensors, path, metadata^)
-
-    fn load_state(mut self, path: String) raises:
-        """Load optimizer state from checkpoint.
-
-        Restores RMSprop hyperparameters and internal state (running averages and momentum buffers).
+    fn set_lr(mut self, lr: Float64) raises:
+        """Set the learning rate.
 
         Args:
-            path: Directory path to checkpoint.
+            lr: New learning rate value (must be positive).
 
         Raises:
-            Error: If checkpoint doesn't exist or format is invalid.
+            Error: If lr is non-positive.
 
         Examples:
-            ```mojo
-            # Load optimizer state
-            optimizer.load_state("checkpoints/epoch_10/optimizer")
-            ```
+            # Cosine annealing learning rate schedule
+            import math
+            var min_lr = 0.0001
+            var max_lr = 0.01
+            var T_max = 100
+            var new_lr = min_lr + 0.5 * (max_lr - min_lr) * (
+                1 + math.cos(math.pi * epoch / T_max)
+            )
+            optimizer.set_lr(new_lr)
         """
-        from shared.utils.serialization import load_named_checkpoint
-
-        var checkpoint = load_named_checkpoint(path)
-        var tensors = checkpoint[0].copy()
-        var metadata = checkpoint[1].copy()
-
-        # Restore hyperparameters
-        if "learning_rate" in metadata:
-            self.learning_rate = Float64(metadata["learning_rate"])
-        if "alpha" in metadata:
-            self.alpha = Float64(metadata["alpha"])
-        if "epsilon" in metadata:
-            self.epsilon = Float64(metadata["epsilon"])
-        if "weight_decay" in metadata:
-            self.weight_decay = Float64(metadata["weight_decay"])
-        if "momentum" in metadata:
-            self.momentum = Float64(metadata["momentum"])
-
-        # Restore buffers
-        # Tensors are named v_0, m_0, v_1, m_1, etc.
-        self.v_buffers: List[ExTensor] = []
-        self.m_buffers: List[ExTensor] = []
-        self.has_buffer: List[Bool] = []
-
-        # Find the maximum parameter ID from loaded tensors
-        var max_param_id = 0
-        for i in range(len(tensors)):
-            var name = tensors[i].name
-            if name.startswith("v_") or name.startswith("m_"):
-                var id_str = name[2:]  # Skip "v_" or "m_"
-                var param_id = Int(id_str)
-                if param_id > max_param_id:
-                    max_param_id = param_id
-
-        # Initialize buffer lists to accommodate all parameter IDs
-        for _ in range(max_param_id + 1):
-            var placeholder_shape = List[Int]()
-            placeholder_shape.append(1)
-            self.v_buffers.append(ExTensor(placeholder_shape, DType.float32))
-            self.m_buffers.append(ExTensor(placeholder_shape, DType.float32))
-            self.has_buffer.append(False)
-
-        # Populate buffers from loaded tensors
-        for i in range(len(tensors)):
-            var name = tensors[i].name
-            if name.startswith("v_"):
-                var id_str = name[2:]
-                var param_id = Int(id_str)
-                self.v_buffers[param_id] = tensors[i].tensor
-                self.has_buffer[param_id] = True
-            elif name.startswith("m_"):
-                var id_str = name[2:]
-                var param_id = Int(id_str)
-                self.m_buffers[param_id] = tensors[i].tensor
+        validate_learning_rate(lr)
+        self.learning_rate = lr
