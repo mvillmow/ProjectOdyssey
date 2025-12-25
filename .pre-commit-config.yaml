@@ -14,12 +14,15 @@ repos:
   - repo: local
     hooks:
       - id: mojo-format
-        name: Mojo Format
+        name: Mojo Format (DISABLED - upstream bug #5573)
         description: Format Mojo source files using mojo format
         entry: pixi run mojo format
         language: system
         files: ^(benchmarks|examples|papers|scripts|shared|tests)/.*\.(mojo|🔥)$
         pass_filenames: true
+        # TEMPORARILY DISABLED: upstream bug removes spaces in method signatures
+        # See: https://github.com/modular/modular/issues/5573
+        exclude: '.*'  # Disable by excluding all files
       - id: check-list-constructor
         name: Check for deprecated List[Type](args) syntax
         description: Prevent use of invalid List variadic constructor (use list literals instead)
