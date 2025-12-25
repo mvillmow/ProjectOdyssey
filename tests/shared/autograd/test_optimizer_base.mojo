@@ -131,23 +131,29 @@ fn test_zero_grad_implementation() raises:
     """Test that zero_grad clears the gradient tape."""
     var tape = GradientTape()
 
-    # Add a gradient to the tape
+    # Create a variable to register with the tape (gets auto-assigned ID)
     var shape: List[Int] = [1]
+    var data = ExTensor(shape, DType.float32)
+    var param = Variable(data^, True, tape)
+    var var_id = param.id
+
+    # Add a gradient for this variable
     var grad = ExTensor(shape, DType.float32)
     grad._set_float64(0, 1.0)
-
-    tape.registry.set_grad(0, grad^)
+    tape.registry.set_grad(var_id, grad^)
 
     # Verify gradient exists
     assert_true(
-        tape.registry.has_gradient(0), "Gradient should exist before clear"
+        tape.registry.has_gradient(var_id), "Gradient should exist before clear"
     )
 
     # Clear gradients using implementation
     zero_grad_impl(tape)
 
     # Verify gradient was cleared
-    assert_true(not tape.registry.has_gradient(0), "Gradient should be cleared")
+    assert_true(
+        not tape.registry.has_gradient(var_id), "Gradient should be cleared"
+    )
 
 
 fn test_sgd_zero_grad() raises:
@@ -155,17 +161,23 @@ fn test_sgd_zero_grad() raises:
     var optimizer = SGD(learning_rate=0.01)
     var tape = GradientTape()
 
-    # Add gradient
+    # Create a variable to register with tape
     var shape: List[Int] = [1]
+    var data = ExTensor(shape, DType.float32)
+    var param = Variable(data^, True, tape)
+    var var_id = param.id
+
+    # Add gradient
     var grad = ExTensor(shape, DType.float32)
-    tape.registry.set_grad(0, grad^)
+    tape.registry.set_grad(var_id, grad^)
 
     # Clear gradients
     optimizer.zero_grad(tape)
 
     # Verify cleared
     assert_true(
-        not tape.registry.has_gradient(0), "SGD zero_grad should clear tape"
+        not tape.registry.has_gradient(var_id),
+        "SGD zero_grad should clear tape",
     )
 
 
@@ -174,17 +186,23 @@ fn test_adam_zero_grad() raises:
     var optimizer = Adam()
     var tape = GradientTape()
 
-    # Add gradient
+    # Create a variable to register with tape
     var shape: List[Int] = [1]
+    var data = ExTensor(shape, DType.float32)
+    var param = Variable(data^, True, tape)
+    var var_id = param.id
+
+    # Add gradient
     var grad = ExTensor(shape, DType.float32)
-    tape.registry.set_grad(0, grad^)
+    tape.registry.set_grad(var_id, grad^)
 
     # Clear gradients
     optimizer.zero_grad(tape)
 
     # Verify cleared
     assert_true(
-        not tape.registry.has_gradient(0), "Adam zero_grad should clear tape"
+        not tape.registry.has_gradient(var_id),
+        "Adam zero_grad should clear tape",
     )
 
 
@@ -200,7 +218,8 @@ fn test_zero_grad_preserves_optimizer_state() raises:
     data._set_float64(0, 1.0)
     data._set_float64(1, 2.0)
 
-    var param = Variable(data^, True, tape, 0)
+    var param = Variable(data^, True, tape)
+    var var_id = param.id
     var parameters: List[Variable] = []
     parameters.append(param.copy())
 
@@ -208,7 +227,7 @@ fn test_zero_grad_preserves_optimizer_state() raises:
     var grad = ExTensor(shape, DType.float32)
     grad._set_float64(0, 0.1)
     grad._set_float64(1, 0.2)
-    tape.registry.set_grad(0, grad^)
+    tape.registry.set_grad(var_id, grad^)
 
     # Take a step (initializes moment buffers)
     optimizer.step(parameters, tape)
@@ -238,7 +257,8 @@ fn test_clip_gradients_no_clipping_needed() raises:
     # Create parameter
     var shape: List[Int] = [3]
     var data = ExTensor(shape, DType.float32)
-    var param = Variable(data^, True, tape, 0)
+    var param = Variable(data^, True, tape)
+    var var_id = param.id
     var parameters: List[Variable] = []
     parameters.append(param.copy())
 
@@ -247,7 +267,7 @@ fn test_clip_gradients_no_clipping_needed() raises:
     grad._set_float64(0, 0.1)
     grad._set_float64(1, 0.1)
     grad._set_float64(2, 0.1)
-    tape.registry.set_grad(0, grad^)
+    tape.registry.set_grad(var_id, grad^)
 
     # Clip with max_norm=5.0 (should not clip)
     var original_norm = clip_gradients_by_global_norm(
@@ -259,10 +279,10 @@ fn test_clip_gradients_no_clipping_needed() raises:
     assert_almost_equal(original_norm, expected_norm, tolerance=1e-6)
 
     # Verify gradients unchanged
-    var clipped_grad = tape.registry.get_grad(0)
-    assert_almost_equal(clipped_grad._get_float64(0), 0.1, tolerance=1e-10)
-    assert_almost_equal(clipped_grad._get_float64(1), 0.1, tolerance=1e-10)
-    assert_almost_equal(clipped_grad._get_float64(2), 0.1, tolerance=1e-10)
+    var clipped_grad = tape.registry.get_grad(var_id)
+    assert_almost_equal(clipped_grad._get_float64(0), 0.1, tolerance=1e-6)
+    assert_almost_equal(clipped_grad._get_float64(1), 0.1, tolerance=1e-6)
+    assert_almost_equal(clipped_grad._get_float64(2), 0.1, tolerance=1e-6)
 
 
 fn test_clip_gradients_with_clipping() raises:
@@ -273,7 +293,8 @@ fn test_clip_gradients_with_clipping() raises:
     # Create parameter
     var shape: List[Int] = [3]
     var data = ExTensor(shape, DType.float32)
-    var param = Variable(data^, True, tape, 0)
+    var param = Variable(data^, True, tape)
+    var var_id = param.id
     var parameters: List[Variable] = []
     parameters.append(param.copy())
 
@@ -282,7 +303,7 @@ fn test_clip_gradients_with_clipping() raises:
     grad._set_float64(0, 3.0)
     grad._set_float64(1, 4.0)
     grad._set_float64(2, 0.0)
-    tape.registry.set_grad(0, grad^)
+    tape.registry.set_grad(var_id, grad^)
 
     # Original norm = sqrt(9 + 16) = 5.0
     # Clip to max_norm=1.0
@@ -294,7 +315,7 @@ fn test_clip_gradients_with_clipping() raises:
     assert_almost_equal(original_norm, 5.0, tolerance=1e-6)
 
     # Verify gradients were scaled down by factor of 1.0/5.0 = 0.2
-    var clipped_grad = tape.registry.get_grad(0)
+    var clipped_grad = tape.registry.get_grad(var_id)
     assert_almost_equal(
         clipped_grad._get_float64(0), 0.6, tolerance=1e-6
     )  # 3.0 * 0.2
@@ -321,10 +342,12 @@ fn test_clip_gradients_multiple_parameters() raises:
     # Create two parameters
     var shape: List[Int] = [2]
     var data1 = ExTensor(shape, DType.float32)
-    var param1 = Variable(data1^, True, tape, 0)
+    var param1 = Variable(data1^, True, tape)
+    var var_id1 = param1.id
 
     var data2 = ExTensor(shape, DType.float32)
-    var param2 = Variable(data2^, True, tape, 1)
+    var param2 = Variable(data2^, True, tape)
+    var var_id2 = param2.id
 
     var parameters: List[Variable] = []
     parameters.append(param1.copy())
@@ -334,12 +357,12 @@ fn test_clip_gradients_multiple_parameters() raises:
     var grad1 = ExTensor(shape, DType.float32)
     grad1._set_float64(0, 3.0)
     grad1._set_float64(1, 0.0)
-    tape.registry.set_grad(0, grad1^)
+    tape.registry.set_grad(var_id1, grad1^)
 
     var grad2 = ExTensor(shape, DType.float32)
     grad2._set_float64(0, 0.0)
     grad2._set_float64(1, 4.0)
-    tape.registry.set_grad(1, grad2^)
+    tape.registry.set_grad(var_id2, grad2^)
 
     # Global norm = sqrt(3^2 + 4^2) = 5.0
     # Clip to max_norm=1.0
@@ -351,12 +374,12 @@ fn test_clip_gradients_multiple_parameters() raises:
     assert_almost_equal(original_norm, 5.0, tolerance=1e-6)
 
     # Both gradients should be scaled by 1.0/5.0 = 0.2
-    var clipped_grad1 = tape.registry.get_grad(0)
+    var clipped_grad1 = tape.registry.get_grad(var_id1)
     assert_almost_equal(
         clipped_grad1._get_float64(0), 0.6, tolerance=1e-6
     )  # 3.0 * 0.2
 
-    var clipped_grad2 = tape.registry.get_grad(1)
+    var clipped_grad2 = tape.registry.get_grad(var_id2)
     assert_almost_equal(
         clipped_grad2._get_float64(1), 0.8, tolerance=1e-6
     )  # 4.0 * 0.2
@@ -388,13 +411,15 @@ fn test_count_parameters_with_gradients() raises:
     # Create 3 parameters
     var shape: List[Int] = [1]
     var data1 = ExTensor(shape, DType.float32)
-    var param1 = Variable(data1^, True, tape, 0)
+    var param1 = Variable(data1^, True, tape)
+    var var_id1 = param1.id
 
     var data2 = ExTensor(shape, DType.float32)
-    var param2 = Variable(data2^, True, tape, 1)
+    var param2 = Variable(data2^, True, tape)
+    var var_id2 = param2.id
 
     var data3 = ExTensor(shape, DType.float32)
-    var param3 = Variable(data3^, False, tape, 2)  # Doesn't require grad
+    var param3 = Variable(data3^, False, tape)  # Doesn't require grad
 
     var parameters: List[Variable] = []
     parameters.append(param1.copy())
@@ -403,10 +428,10 @@ fn test_count_parameters_with_gradients() raises:
 
     # Add gradients for param1 and param2 only
     var grad1 = ExTensor(shape, DType.float32)
-    tape.registry.set_grad(0, grad1^)
+    tape.registry.set_grad(var_id1, grad1^)
 
     var grad2 = ExTensor(shape, DType.float32)
-    tape.registry.set_grad(1, grad2^)
+    tape.registry.set_grad(var_id2, grad2^)
 
     # Count should be 2 (param3 doesn't require grad)
     var count = count_parameters_with_gradients(parameters, tape)
@@ -421,7 +446,7 @@ fn test_count_parameters_with_no_gradients() raises:
     # Create parameter without gradient
     var shape: List[Int] = [1]
     var data = ExTensor(shape, DType.float32)
-    var param = Variable(data^, True, tape, 0)
+    var param = Variable(data^, True, tape)
     var parameters: List[Variable] = []
     parameters.append(param.copy())
 
@@ -447,7 +472,8 @@ fn test_optimizer_integration_with_gradient_clipping() raises:
     data._set_float64(0, 1.0)
     data._set_float64(1, 2.0)
 
-    var param = Variable(data^, True, tape, 0)
+    var param = Variable(data^, True, tape)
+    var var_id = param.id
     var parameters: List[Variable] = []
     parameters.append(param.copy())
 
@@ -455,7 +481,7 @@ fn test_optimizer_integration_with_gradient_clipping() raises:
     var grad = ExTensor(shape, DType.float32)
     grad._set_float64(0, 10.0)
     grad._set_float64(1, 0.0)
-    tape.registry.set_grad(0, grad^)
+    tape.registry.set_grad(var_id, grad^)
 
     # Clip gradients before optimizer step
     _ = clip_gradients_by_global_norm(parameters, tape, max_norm=1.0)
