@@ -430,6 +430,14 @@ from .precision_config import PrecisionConfig, PrecisionMode
 # Export training configuration (Issue #2602)
 from .config import TrainingConfig
 
+# Export gradient accumulation utilities (Issue #2630)
+from .gradient_accumulation import (
+    GradientAccumulator,
+    scale_gradients_by_factor,
+    scale_gradients_by_accumulation_steps,
+    AccumulationWrapper,
+)
+
 
 # Export CrossEntropyLoss wrapper (wraps core.loss.cross_entropy)
 struct CrossEntropyLoss(Loss, Movable):
