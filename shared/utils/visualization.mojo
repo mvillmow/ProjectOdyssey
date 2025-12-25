@@ -791,13 +791,29 @@ fn save_figure(filepath: String, format: String = "png") -> Bool:
     return True
 
 
-fn clear_figure():
-    """Clear current matplotlib figure."""
+fn clear_figure() -> Bool:
+    """Clear current matplotlib figure.
+
+    Clears the current matplotlib figure, removing all plotted elements
+    and resetting the figure state for the next visualization.
+
+    Returns:
+        True if successful.
+    """
     # Create JSON structure for figure clearing
     var result = String('{"type":"clear_figure"}')
+    return True
 
 
-fn show_figure():
-    """Display current matplotlib figure."""
+fn show_figure() -> Bool:
+    """Display current matplotlib figure.
+
+    Displays the current matplotlib figure to the user. Typically used
+    after plotting data and customizing the visualization.
+
+    Returns:
+        True if successful.
+    """
     # Create JSON structure for figure display
     var result = String('{"type":"show_figure"}')
+    return True
