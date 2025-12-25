@@ -24,7 +24,7 @@ from shared.core.arithmetic_simd import (
     multiply_simd,
     divide_simd,
 )
-from time import now
+from time import perf_counter_ns
 
 
 fn benchmark_operation(
@@ -58,19 +58,19 @@ fn benchmark_operation(
     _ = simd_fn(a, b)
 
     # Benchmark scalar implementation
-    var scalar_start = now()
+    var scalar_start = perf_counter_ns()
     for _ in range(iterations):
         _ = scalar_fn(a, b)
-    var scalar_end = now()
+    var scalar_end = perf_counter_ns()
     var scalar_time = (
         Float64(scalar_end - scalar_start) / 1e9
     )  # Convert to seconds
 
     # Benchmark SIMD implementation
-    var simd_start = now()
+    var simd_start = perf_counter_ns()
     for _ in range(iterations):
         _ = simd_fn(a, b)
-    var simd_end = now()
+    var simd_end = perf_counter_ns()
     var simd_time = Float64(simd_end - simd_start) / 1e9  # Convert to seconds
 
     # Calculate speedup
@@ -104,7 +104,6 @@ fn verify_correctness() raises -> Bool:
     var b = ones(shape, DType.float32)
 
     # Test each operation
-    var ops = ["add", "subtract", "multiply", "divide"]
     var tolerance = 1e-6
 
     # Add
