@@ -88,7 +88,7 @@ References:
 """
 
 # Core autograd components
-from .variable import (
+from shared.autograd.variable import (
     Variable,
     variable_add,
     variable_subtract,
@@ -103,13 +103,13 @@ from .variable import (
     variable_neg,
 )
 
-from .tape_types import (
+from shared.autograd.tape_types import (
     TapeNode,
     SavedTensors,
     VariableRegistry,
 )
 
-from .tape import (
+from shared.autograd.tape import (
     GradientTape,
     NoGradContext,
     # Operation type aliases
@@ -131,20 +131,20 @@ from .tape import (
     OP_SQRT,
 )
 
-from .optimizers import SGD, Adam, AdaGrad, RMSprop
+from shared.autograd.optimizers import SGD, Adam, AdaGrad, RMSprop
 
-from .schedulers import (
+from shared.autograd.schedulers import (
     StepLR,
     ExponentialLR,
 )
 
-from .grad_utils import (
+from shared.autograd.grad_utils import (
     clip_grad_value_,
     clip_grad_norm_,
     clip_grad_global_norm_,
 )
 
-from .functional import (
+from shared.autograd.functional import (
     LossAndGrad,
     mse_loss_and_grad,
     bce_loss_and_grad,
@@ -164,17 +164,27 @@ from .functional import (
 # These are the underlying backward implementations used by the tape.
 
 # Pooling backward passes
-from ..core.pooling import (
+from shared.core.pooling import (
     maxpool2d_backward,
     avgpool2d_backward,
     global_avgpool2d_backward,
 )
 
 # Dropout backward passes
-from ..core.dropout import (
+from shared.core.dropout import (
     dropout_backward,
     dropout2d_backward,
 )
 
 # Note: In Mojo, all imported symbols are automatically available
 # to package consumers. No __all__ equivalent is needed.
+
+
+def main():
+    """Build validation stub.
+
+    This main() function exists only to allow standalone compilation for
+    build validation purposes. In normal usage, this module is imported
+    as part of the `shared` package, not executed directly.
+    """
+    print("autograd module loaded successfully")
