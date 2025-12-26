@@ -25,7 +25,7 @@ Related:
 
 from algorithm import vectorize
 from sys.info import simd_width_of
-from .extensor import ExTensor
+from shared.core.extensor import ExTensor
 
 
 # ============================================================================
@@ -64,7 +64,7 @@ fn relu_simd(tensor: ExTensor) raises -> ExTensor:
         _relu_simd_float64(tensor, result)
     else:
         # Fall back to scalar for other dtypes
-        from .activation import relu
+        from shared.core.activation import relu
 
         return relu(tensor)
 
@@ -144,7 +144,7 @@ fn leaky_relu_simd(tensor: ExTensor, alpha: Float64 = 0.01) raises -> ExTensor:
         _leaky_relu_simd_float64(tensor, result, alpha)
     else:
         # Fall back to scalar for other dtypes
-        from .activation import leaky_relu
+        from shared.core.activation import leaky_relu
 
         return leaky_relu(tensor, alpha)
 
@@ -228,7 +228,7 @@ fn relu6_simd(tensor: ExTensor) raises -> ExTensor:
         _relu6_simd_float64(tensor, result)
     else:
         # Fall back to scalar
-        from .activation import relu6
+        from shared.core.activation import relu6
 
         return relu6(tensor)
 
@@ -272,3 +272,8 @@ fn _relu6_simd_float64(tensor: ExTensor, mut result: ExTensor):
         out_ptr.store[width=width](idx, min(max(zero_vec, vec), six_vec))
 
     vectorize[simd_width](size, vectorized_relu6)
+
+
+fn main():
+    """Entry point for standalone compilation validation."""
+    pass
