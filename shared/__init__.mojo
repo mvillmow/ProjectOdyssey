@@ -55,7 +55,7 @@ See Issue #49 for details
 """
 
 # Package version
-from .version import VERSION
+from shared.version import VERSION
 
 comptime AUTHOR = "ML Odyssey Team"
 comptime LICENSE = "MIT"
@@ -159,9 +159,22 @@ comptime LICENSE = "MIT"
 # For implementation of component-level imports when core modules
 # are fully implemented, see test_packaging.mojo
 #
-from . import core
-from . import training
-from . import data
-from . import utils
-from . import autograd
-from . import testing
+from shared import core
+from shared import training
+from shared import data
+from shared import utils
+from shared import autograd
+from shared import testing
+
+
+def main():
+    """Entry point for standalone compilation.
+
+    This function exists solely to allow `mojo build shared/__init__.mojo`
+    to succeed. In normal usage, this module is imported as a package and
+    this function is never called.
+    """
+    print("shared package loaded successfully")
+    print("VERSION:", VERSION)
+    print("AUTHOR:", AUTHOR)
+    print("LICENSE:", LICENSE)
