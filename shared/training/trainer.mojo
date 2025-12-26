@@ -120,7 +120,7 @@ struct BaseTrainer(Trainer):
         zero_gradients: fn () raises -> None,
         mut train_loader: DataLoader,
         mut val_loader: DataLoader,
-        early_stopping: Optional[EarlyStopping] = None,
+        mut early_stopping: Optional[EarlyStopping],
     ) raises:
         """Train model with periodic validation and optional early stopping.
 
