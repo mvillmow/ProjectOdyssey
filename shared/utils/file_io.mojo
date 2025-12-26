@@ -1,34 +1,31 @@
-"""File I/O utilities for saving and loading models and tensors.
-
-This module provides utilities for saving and loading model checkpoints,
-serializing tensors, and safe file operations. Supports atomic writes,
-backup creation, and compression.
-
-Example:
-    from shared.utils import save_checkpoint, load_checkpoint
-
-    # Save checkpoint with model state
-    save_checkpoint("checkpoint.pt", model, optimizer, epoch=10)
-
-    # Load checkpoint
-    var loaded = load_checkpoint("checkpoint.pt")
-    ```
-
-I/O helpers in tests/shared/fixtures/io_helpers.mojo are fully implemented including:
-- create_temp_dir() - Creates temporary directory for testing
-- cleanup_temp_dir() - Cleans up temporary test directories
-- create_mock_config() - Creates mock configuration files
-- create_mock_checkpoint() - Creates mock checkpoint files for testing
-- create_mock_text_file() - Creates mock text files
-- get_test_data_path() - Gets path to test data
-- file_exists() - Checks if file exists
-- dir_exists() - Checks if directory exists
-"""
+# I/O utilities for saving and loading models and tensors.
+#
+# This module provides utilities for saving and loading model checkpoints,
+# serializing tensors, and safe file operations. Supports atomic writes,
+# backup creation, and compression.
+#
+# Example:
+#     from shared.utils import save_checkpoint, load_checkpoint
+#
+#     # Save checkpoint with model state
+#     save_checkpoint("checkpoint.pt", model, optimizer, epoch=10)
+#
+#     # Load checkpoint
+#     var loaded = load_checkpoint("checkpoint.pt")
+#
+# I/O helpers in tests/shared/fixtures/io_helpers.mojo are fully implemented including:
+# - create_temp_dir() - Creates temporary directory for testing
+# - cleanup_temp_dir() - Cleans up temporary test directories
+# - create_mock_config() - Creates mock configuration files
+# - create_mock_checkpoint() - Creates mock checkpoint files for testing
+# - create_mock_text_file() - Creates mock text files
+# - get_test_data_path() - Gets path to test data
+# - file_exists() - Checks if file exists
+# - dir_exists() - Checks if directory exists
 
 from python import Python, PythonObject
 from memory import UnsafePointer
 from shared.core.extensor import ExTensor
-from collections import List
 
 
 # ============================================================================
@@ -156,11 +153,11 @@ fn _deserialize_checkpoint(content: String) raises -> Checkpoint:
         var data = String(line[colon_pos + 1 :])
 
         if prefix == "EPOCH":
-            checkpoint.epoch = atol(data)
+            checkpoint.epoch = Int(data)
         elif prefix == "LOSS":
-            checkpoint.loss = Float32(atof(data))
+            checkpoint.loss = Float32(Float64(data))
         elif prefix == "ACCURACY":
-            checkpoint.accuracy = Float32(atof(data))
+            checkpoint.accuracy = Float32(Float64(data))
         elif prefix == "MODEL":
             # Parse key=value
             var eq_pos = data.find("=")
@@ -884,3 +881,13 @@ fn get_file_size(filepath: String) -> Int:
         return len(content)
     except:
         return -1
+
+
+# ============================================================================
+# Main Entry Point (for standalone compilation)
+# ============================================================================
+
+
+def main():
+    """Entry point for standalone compilation."""
+    pass

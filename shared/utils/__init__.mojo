@@ -65,7 +65,7 @@ from .config import (
 )
 
 # File I/O utilities
-from .io import (
+from .file_io import (
     Checkpoint,  # Checkpoint container
     save_checkpoint,  # Save model checkpoint
     load_checkpoint,  # Load model checkpoint
