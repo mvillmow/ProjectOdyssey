@@ -3,7 +3,7 @@
 This module provides various sampling strategies for iterating through datasets.
 """
 
-from .sampler_utils import (
+from shared.data.sampler_utils import (
     validate_range,
     create_range_indices,
     set_random_seed,
