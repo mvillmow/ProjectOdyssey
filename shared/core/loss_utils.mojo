@@ -89,7 +89,7 @@ fn validate_tensor_shapes(
 
         Example:
             ```mojo
-            alidate_tensor_shapes(predictions, targets, "cross_entropy")
+            validate_tensor_shapes(predictions, targets, "cross_entropy")
             ```
     """
     if tensor1.shape() != tensor2.shape():
@@ -111,7 +111,7 @@ fn validate_tensor_dtypes(
 
         Example:
             ```mojo
-            alidate_tensor_dtypes(predictions, targets, "cross_entropy")
+            validate_tensor_dtypes(predictions, targets, "cross_entropy")
             ```
     """
     if tensor1.dtype() != tensor2.dtype():
