@@ -42,6 +42,7 @@ from shared.data import extract_batch_pair, compute_num_batches, DatasetInfo
 # from shared.data.datasets import load_cifar10_train, load_cifar10_test  # TODO: Implement these functions
 from shared.training.optimizers import sgd_momentum_update_inplace
 from shared.training.metrics import evaluate_with_predict, top1_accuracy
+from shared.utils.training_args import parse_training_args_with_defaults
 from model import ResNet18
 
 
@@ -51,9 +52,9 @@ fn compute_accuracy(
     """Compute classification accuracy on a dataset.
 
     Args:
-        model: ResNet-18 model
-        images: Input images (N, 3, 32, 32)
-        labels: Ground truth labels (N,)
+        model: ResNet-18 model.
+        images: Input images (N, 3, 32, 32).
+        labels: Ground truth labels (N,).
 
     Returns:
         Accuracy as percentage (0-100).
