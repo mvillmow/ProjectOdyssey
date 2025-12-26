@@ -40,7 +40,7 @@ Error Handling:
 See notes/issues/dtype-refactoring-plan.md for complete design documentation
 """
 
-from .extensor import ExTensor
+from shared.core.extensor import ExTensor
 from collections import List
 
 
@@ -1498,3 +1498,13 @@ fn dispatch_hard_tanh_backward(
         )
 
     return result^
+
+
+def main():
+    """Entry point for standalone compilation.
+
+    This function exists solely to allow `mojo build shared/core/dtype_dispatch.mojo`
+    to succeed. In normal usage, this module is imported as a package and
+    this function is never called.
+    """
+    print("shared.core.dtype_dispatch module loaded successfully")
