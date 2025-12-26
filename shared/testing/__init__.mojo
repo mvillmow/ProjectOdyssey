@@ -26,7 +26,7 @@ Test Models:
     Parameter: Trainable parameter with gradient tracking
 """
 
-from .assertions import (
+from shared.testing.assertions import (
     TOLERANCE_DEFAULT,
     TOLERANCE_FLOAT32,
     TOLERANCE_FLOAT64,
@@ -62,7 +62,7 @@ from .assertions import (
     assert_type,
 )
 
-from .gradient_checker import (
+from shared.testing.gradient_checker import (
     check_gradients,
     check_gradients_verbose,
     relative_error,
@@ -71,14 +71,14 @@ from .gradient_checker import (
     assert_gradients_close,
 )
 
-from .data_generators import (
+from shared.testing.data_generators import (
     random_tensor,
     random_uniform,
     random_normal,
     synthetic_classification_data,
 )
 
-from .models import (
+from shared.testing.models import (
     SimpleCNN,
     LinearModel,
     SimpleMLP,
@@ -87,7 +87,7 @@ from .models import (
     Parameter,
 )
 
-from .fixtures import (
+from shared.testing.fixtures import (
     create_test_cnn,
     create_linear_model,
     create_test_input,
@@ -98,7 +98,7 @@ from .fixtures import (
     assert_tensor_not_all_zeros,
 )
 
-from .special_values import (
+from shared.testing.special_values import (
     SPECIAL_VALUE_ZERO,
     SPECIAL_VALUE_HALF,
     SPECIAL_VALUE_ONE,
@@ -115,12 +115,31 @@ from .special_values import (
     create_one_and_half_tensor,
 )
 
-from .layer_testers import LayerTester
+from shared.testing.layer_testers import LayerTester
 
-from .dtype_utils import (
+from shared.testing.dtype_utils import (
     get_test_dtypes,
     get_float_dtypes,
     get_precision_dtypes,
     get_float32_only,
     dtype_to_string,
 )
+
+
+def main():
+    """Entry point for standalone compilation.
+
+    This function exists solely to allow `mojo build shared/testing/__init__.mojo`
+    to succeed. In normal usage, this module is imported as a package and
+    this function is never called.
+    """
+    print("shared.testing package loaded successfully")
+    print("Testing utilities available:")
+    print("  - assertions:", TOLERANCE_DEFAULT)
+    print("  - gradient_checker")
+    print("  - data_generators")
+    print("  - models")
+    print("  - fixtures")
+    print("  - special_values:", SPECIAL_VALUE_ZERO)
+    print("  - layer_testers")
+    print("  - dtype_utils")
