@@ -7,8 +7,17 @@ Modules:
     cifar_loader: CIFAR-10 and CIFAR-100 binary format loader
 """
 
+
+fn main():
+    """No-op main function to satisfy mojo build requirements.
+
+    This __init__.mojo file is meant to be imported as a package, not executed.
+    """
+    pass
+
+
 # IDX Format Loaders
-from .idx_loader import (
+from shared.data.formats.idx_loader import (
     read_uint32_be,
     load_idx_labels,
     load_idx_images,
@@ -20,8 +29,8 @@ from .idx_loader import (
 )
 
 # CIFAR Binary Format Loaders
-from .cifar_loader import CIFARLoader
-from ..constants import (
+from shared.data.formats.cifar_loader import CIFARLoader
+from shared.data.constants import (
     CIFAR10_IMAGE_SIZE,
     CIFAR10_CHANNELS,
     CIFAR10_BYTES_PER_IMAGE,
