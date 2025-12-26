@@ -2,7 +2,7 @@ struct TestConfig:
     var value: Int
 
     fn __init__(
-        mut self,
+        out self,
         val: Int = 10,
     ):
         self.value = val
