@@ -5,11 +5,11 @@ All operations are stateless - caller provides all inputs.
 """
 
 from algorithm import parallelize
-
-from .extensor import ExTensor, zeros
-from .shape import pool_output_shape
-from .parallel_utils import should_parallelize
 from collections import List
+
+from shared.core.extensor import ExTensor, zeros
+from shared.core.shape import pool_output_shape
+from shared.core.parallel_utils import should_parallelize
 
 # max and min are now builtins in Mojo - no import needed
 
@@ -808,3 +808,12 @@ fn global_avgpool2d_backward(
                     ] = grad_per_position
 
     return grad_input^
+
+
+def main():
+    """Entry point for standalone compilation.
+
+    This file is a library module and not meant to be executed directly.
+    The main() function is provided only to allow standalone compilation for testing.
+    """
+    pass
