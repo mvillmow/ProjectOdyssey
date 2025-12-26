@@ -17,7 +17,7 @@ Issues covered:
 
 from shared.core import ExTensor
 from collections import List
-from .base import Metric
+from shared.training.metrics.base import Metric
 
 
 # ============================================================================
@@ -461,3 +461,12 @@ struct AccuracyMetric(Metric):
         """Reset counts to zero for next epoch."""
         self.correct_count = 0
         self.total_count = 0
+
+
+def main():
+    """Entry point for standalone compilation.
+
+    This function exists solely to allow `mojo build shared/training/metrics/accuracy.mojo`
+    to succeed. In normal usage, this module is imported and this function is never called.
+    """
+    print("shared.training.metrics.accuracy module loaded successfully")
