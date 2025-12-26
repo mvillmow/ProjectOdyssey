@@ -497,20 +497,6 @@ fn print_benchmark_summary(
 
 
 # ============================================================================
-# Main Function (for standalone compilation)
-# ============================================================================
-
-
-fn main():
-    """Dummy main function to allow standalone compilation.
-
-    This module is a library and not meant to be executed directly.
-    Use `mojo package` to build as a library package instead.
-    """
-    print("This is a library module. Import it instead of running it.")
-
-
-# ============================================================================
 # Helper Functions
 # ============================================================================
 
