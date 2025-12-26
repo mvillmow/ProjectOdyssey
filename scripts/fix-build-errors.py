@@ -9,22 +9,41 @@ Key properties:
 - Individual PR for each file
 - Branches off main
 - KISS + DRY enforced
+
+Mojo Requirements:
+- Requires Mojo v0.26.1 or later
+- Language reference: https://docs.modular.com/mojo/manual/
+- Uses modern Mojo syntax (list literals, @fieldwise_init, etc.)
+
+Path Dependencies:
+- Requires .claude/ directory in repository root
+- Claude runs with --add-dir .claude to access guidelines
+- Prompt references .claude/shared/mojo-guidelines.md and mojo-anti-patterns.md
+- If .claude/ is missing or --add-dir omitted, Claude cannot access guidelines
 """
 
 import argparse
 import concurrent.futures
+import hashlib
 import json
 import shutil
 import subprocess
+import sys
 import threading
+import time
 from pathlib import Path
 from datetime import datetime, timezone
+
+# Add scripts/utils to path for retry module
+sys.path.insert(0, str(Path(__file__).parent))
+from utils.retry import retry_with_backoff
 
 # ---------------- Configuration ----------------
 
 MAX_WORKERS_DEFAULT = 6
 BUILD_TIMEOUT = 120
-CLAUDE_TIMEOUT = 900
+# Adaptive timeout: start with 300s for fast failure, increase on retry
+CLAUDE_TIMEOUTS = [300, 600, 900]  # Progressive timeouts for retry
 
 BASE_BRANCH = "main"
 REMOTE = "origin"
@@ -34,10 +53,27 @@ WORKTREE_BASE = ROOT / "worktrees"
 LOG_DIR = ROOT / "build" / "logs"
 
 print_lock = threading.Lock()
+git_lock = threading.Lock()  # Protect all git operations from concurrent access
 stop_processing = threading.Event()
-active_workers = threading.Semaphore(MAX_WORKERS_DEFAULT)
 dry_run = False  # Set via --dry-run flag
 verbose = False  # Set via --verbose flag
+
+# Metrics tracking
+metrics_lock = threading.Lock()
+metrics = {
+    "start_time": None,
+    "end_time": None,
+    "files_processed": 0,
+    "files_succeeded": 0,
+    "files_failed": 0,
+    "files_skipped": 0,
+    "total_time_seconds": 0.0,
+    "retries": {
+        "claude_timeouts": 0,
+        "git_operations": 0,
+    },
+    "per_file": [],  # List of {file, success, time_seconds, retries}
+}
 
 
 def ts() -> str:
@@ -55,6 +91,55 @@ def write_log(path: Path, msg: str):
         f.write(f"[{ts()}] {msg.rstrip()}\n")
 
 
+def track_file_metrics(file, success, elapsed_time, retry_count=0):
+    """Record metrics for a processed file."""
+    with metrics_lock:
+        metrics["files_processed"] += 1
+        if success:
+            metrics["files_succeeded"] += 1
+        else:
+            metrics["files_failed"] += 1
+
+        metrics["per_file"].append(
+            {
+                "file": file,
+                "success": success,
+                "time_seconds": round(elapsed_time, 2),
+                "retries": retry_count,
+            }
+        )
+
+
+def track_retry(retry_type):
+    """Track a retry event (claude_timeouts or git_operations)."""
+    with metrics_lock:
+        if retry_type in metrics["retries"]:
+            metrics["retries"][retry_type] += 1
+
+
+def save_metrics():
+    """Save metrics to JSON file."""
+    with metrics_lock:  # Acquire lock BEFORE reading metrics
+        metrics_file = LOG_DIR / "metrics.json"
+
+        # Calculate derived metrics
+        if metrics["files_processed"] > 0:
+            metrics["success_rate"] = round(metrics["files_succeeded"] / metrics["files_processed"], 3)
+            metrics["average_time_per_file"] = round(
+                sum(f["time_seconds"] for f in metrics["per_file"]) / metrics["files_processed"], 2
+            )
+        else:
+            metrics["success_rate"] = 0.0
+            metrics["average_time_per_file"] = 0.0
+
+        # Write to file
+        metrics_file.parent.mkdir(parents=True, exist_ok=True)
+        with open(metrics_file, "w") as f:
+            json.dump(metrics, f, indent=2)
+
+        log(f"📊 Metrics saved to {metrics_file}")
+
+
 def run(cmd, cwd=None, timeout=None):
     return subprocess.run(
         cmd,
@@ -63,6 +148,158 @@ def run(cmd, cwd=None, timeout=None):
         capture_output=True,
         timeout=timeout,
     )
+
+
+@retry_with_backoff(max_retries=3, initial_delay=2.0, logger=log)
+def run_with_retry(cmd, cwd=None, timeout=None):
+    """Run command with automatic retry on network errors.
+
+    Wraps run() with retry logic for transient failures like:
+    - Network timeouts
+    - Connection errors
+    - Rate limiting
+    - Temporary Git server issues
+
+    Args:
+        cmd: Command to execute
+        cwd: Working directory
+        timeout: Timeout in seconds
+
+    Returns:
+        CompletedProcess result
+
+    Raises:
+        Exception after max retries exhausted
+    """
+    result = run(cmd, cwd=cwd, timeout=timeout)
+
+    # Treat non-zero exit codes as errors for retry logic
+    if result.returncode != 0:
+        # Check if it's a network error worth retrying
+        error_msg = result.stderr.lower() if result.stderr else ""
+        if any(
+            keyword in error_msg
+            for keyword in [
+                "connection",
+                "network",
+                "timeout",
+                "temporary failure",
+                "could not resolve",
+            ]
+        ):
+            raise ConnectionError(f"Network error: {result.stderr}")
+
+    return result
+
+
+def check_dependencies():
+    """Verify required external dependencies are available.
+
+    Raises:
+        RuntimeError: If any required command is missing.
+    """
+    required = ["mojo", "pixi", "gh", "git", "claude"]
+    missing = []
+
+    for cmd in required:
+        if not shutil.which(cmd):
+            missing.append(cmd)
+
+    if missing:
+        raise RuntimeError(
+            f"Required command(s) not found: {', '.join(missing)}\n"
+            f"Please install missing dependencies before running this script."
+        )
+
+    # Verify gh CLI is authenticated
+    result = subprocess.run(["gh", "auth", "status"], capture_output=True, text=True)
+    if result.returncode != 0:
+        raise RuntimeError("GitHub CLI (gh) is not authenticated.\nRun 'gh auth login' to authenticate.")
+
+
+def health_check():
+    """Check and display status of all required dependencies.
+
+    Displays version information and availability status for:
+    - mojo (Mojo compiler)
+    - pixi (Package manager)
+    - gh (GitHub CLI)
+    - git (Version control)
+    - claude (Claude Code CLI)
+
+    Exit codes:
+        0: All dependencies available and working
+        1: One or more dependencies missing or non-functional
+    """
+    required = {
+        "mojo": ["mojo", "--version"],
+        "pixi": ["pixi", "--version"],
+        "gh": ["gh", "--version"],
+        "git": ["git", "--version"],
+        "claude": ["claude", "--version"],
+    }
+
+    log("=" * 80)
+    log("DEPENDENCY HEALTH CHECK")
+    log("=" * 80)
+    log("")
+
+    all_ok = True
+    for cmd, version_cmd in required.items():
+        # Check if command exists
+        cmd_path = shutil.which(cmd)
+
+        if not cmd_path:
+            log(f"✗ {cmd:12} NOT FOUND")
+            all_ok = False
+            continue
+
+        # Get version information
+        try:
+            result = subprocess.run(version_cmd, capture_output=True, text=True, timeout=5)
+            if result.returncode == 0:
+                # Extract first line of version output
+                version = result.stdout.strip().split("\n")[0]
+                log(f"✓ {cmd:12} {version}")
+            else:
+                log(f"⚠ {cmd:12} FOUND but version check failed")
+                all_ok = False
+        except Exception as e:
+            log(f"⚠ {cmd:12} FOUND but error getting version: {e}")
+            all_ok = False
+
+    log("")
+    log("-" * 80)
+    log("GitHub CLI Authentication")
+    log("-" * 80)
+
+    # Check gh auth status
+    try:
+        result = subprocess.run(["gh", "auth", "status"], capture_output=True, text=True, timeout=5)
+        if result.returncode == 0:
+            # Parse auth status output
+            auth_lines = result.stderr.strip().split("\n")  # gh outputs to stderr
+            log("✓ GitHub CLI authenticated")
+            for line in auth_lines[:3]:  # Show first 3 lines
+                log(f"  {line}")
+        else:
+            log("✗ GitHub CLI NOT authenticated")
+            log("  Run 'gh auth login' to authenticate")
+            all_ok = False
+    except Exception as e:
+        log(f"⚠ Error checking gh auth: {e}")
+        all_ok = False
+
+    log("")
+    log("=" * 80)
+    if all_ok:
+        log("✓ ALL DEPENDENCIES OK")
+        log("=" * 80)
+        return 0
+    else:
+        log("✗ SOME DEPENDENCIES MISSING OR NON-FUNCTIONAL")
+        log("=" * 80)
+        return 1
 
 
 # ---------------- Build ----------------
@@ -129,82 +366,140 @@ def build_ok(cwd, root, file, log_path) -> bool:
 
 
 def sanitize_branch_name(file_path: str) -> str:
-    """Convert file path to valid branch name."""
+    """Convert file path to valid branch name with uniqueness guarantee.
+
+    Args:
+        file_path: File path to convert
+
+    Returns:
+        Unique branch name (e.g., "fix-shared-core-tensor-a3b2c1")
+    """
     # Remove extension and leading ./
     name = Path(file_path).with_suffix("").as_posix()
     if name.startswith("./"):
         name = name[2:]
+
     # Replace slashes and special chars with hyphens
     name = name.replace("/", "-").replace("_", "-")
     # Remove any remaining invalid characters
     name = "".join(c if c.isalnum() or c == "-" else "" for c in name)
-    # Ensure it starts with a letter (prepend 'fix-' if needed)
-    if not name[0].isalpha():
+
+    # Add uniqueness suffix (short hash of full path)
+    path_hash = hashlib.sha256(file_path.encode()).hexdigest()[:6]
+
+    # Ensure starts with letter
+    if not name or not name[0].isalpha():
+        name = f"fix-{name}" if name else "fix"
+    else:
         name = f"fix-{name}"
-    return f"fix-{name}"
+
+    # Add hash suffix for uniqueness
+    return f"{name}-{path_hash}"
 
 
 def ensure_base_branch():
-    run(["git", "fetch", REMOTE])
-    r = run(["git", "show-ref", "--verify", f"refs/remotes/{REMOTE}/{BASE_BRANCH}"])
-    if r.returncode != 0:
-        raise RuntimeError(f"{REMOTE}/{BASE_BRANCH} does not exist")
+    with git_lock:  # Protect git operations from concurrent access
+        run(["git", "fetch", REMOTE])
+        r = run(["git", "show-ref", "--verify", f"refs/remotes/{REMOTE}/{BASE_BRANCH}"])
+        if r.returncode != 0:
+            raise RuntimeError(f"{REMOTE}/{BASE_BRANCH} does not exist")
 
 
 def create_worktree(branch):
     """Create worktree branching from latest main."""
-    path = WORKTREE_BASE / branch
-    if path.exists():
+    with git_lock:  # Protect git operations from concurrent access
+        path = WORKTREE_BASE / branch
+        if path.exists():
+            if verbose:
+                log(f"  Removing existing worktree directory: {path}")
+            shutil.rmtree(path, ignore_errors=True)
+
+        # Fetch latest main before creating worktree
         if verbose:
-            log(f"  Removing existing worktree directory: {path}")
-        shutil.rmtree(path, ignore_errors=True)
+            log(f"  Fetching latest {REMOTE}/{BASE_BRANCH}")
+        r = run(["git", "fetch", REMOTE, BASE_BRANCH])
+        if r.returncode != 0:
+            raise RuntimeError(f"Failed to fetch {REMOTE}/{BASE_BRANCH}: {r.stderr}")
 
-    # Fetch latest main before creating worktree
-    if verbose:
-        log(f"  Fetching latest {REMOTE}/{BASE_BRANCH}")
-    r = run(["git", "fetch", REMOTE, BASE_BRANCH])
-    if r.returncode != 0:
-        raise RuntimeError(f"Failed to fetch {REMOTE}/{BASE_BRANCH}: {r.stderr}")
+        # Delete existing branch if it exists (git branch -D is idempotent)
+        if verbose:
+            log(f"  Deleting branch {branch} if it exists")
+        run(["git", "branch", "-D", branch])  # Ignore errors - branch may not exist
 
-    # Delete existing branch if it exists (git branch -D is idempotent)
-    if verbose:
-        log(f"  Deleting branch {branch} if it exists")
-    run(["git", "branch", "-D", branch])  # Ignore errors - branch may not exist
+        # Create worktree with new branch
+        if verbose:
+            log(f"  Creating worktree at {path} with branch {branch}")
+        r = run(
+            [
+                "git",
+                "worktree",
+                "add",
+                "--force",
+                "-b",
+                branch,
+                str(path),
+                f"{REMOTE}/{BASE_BRANCH}",
+            ]
+        )
+        if r.returncode != 0:
+            raise RuntimeError(f"Failed to create worktree: {r.stderr}")
 
-    # Create worktree with new branch
-    if verbose:
-        log(f"  Creating worktree at {path} with branch {branch}")
-    r = run(
-        [
-            "git",
-            "worktree",
-            "add",
-            "--force",
-            "-b",
-            branch,
-            str(path),
-            f"{REMOTE}/{BASE_BRANCH}",
-        ]
-    )
-    if r.returncode != 0:
-        raise RuntimeError(f"Failed to create worktree: {r.stderr}")
+        if verbose:
+            log(f"  ✓ Worktree created at {path}")
 
-    if verbose:
-        log(f"  ✓ Worktree created at {path}")
-
-    return path
+        return path
 
 
-def cleanup_worktree(path):
-    run(["git", "worktree", "remove", "--force", path])
-    shutil.rmtree(path, ignore_errors=True)
+def cleanup_worktree(path, branch=None):
+    """Remove git worktree and optionally delete remote branch.
+
+    Args:
+        path: Path to worktree directory
+        branch: Branch name to delete from remote (optional)
+
+    Raises:
+        RuntimeError: If worktree removal fails
+    """
+    with git_lock:  # Protect ALL operations from concurrent access (git + filesystem)
+        # Remove git worktree
+        r = run(["git", "worktree", "remove", "--force", path])
+        if r.returncode != 0:
+            # Log warning but continue - worktree might already be gone
+            if verbose:
+                log(f"⚠ git worktree remove failed: {r.stderr}")
+
+        # Ensure directory is actually removed (inside lock to prevent race condition)
+        if path.exists():
+            try:
+                shutil.rmtree(path)
+            except OSError as e:
+                if verbose:
+                    log(f"⚠ Failed to remove worktree directory {path}: {e}")
+
+        # Delete remote branch if provided (prevents orphaned branches)
+        if branch:
+            # Ignore errors - branch may not exist on remote
+            run(["git", "push", REMOTE, "--delete", branch])
 
 
 def ensure_clean_git(cwd, log_path) -> bool:
+    """Ensure git working directory is clean (no uncommitted changes).
+
+    Returns:
+        True if clean, False if dirty or error
+    """
     r = run(["git", "status", "--porcelain"], cwd=cwd)
-    if r.stdout.strip():
-        write_log(log_path, "DIRTY WORKTREE — aborting")
+    if r.returncode != 0:
+        write_log(log_path, f"GIT STATUS FAILED (exit code {r.returncode}) - {r.stderr}")
         return False
+
+    if r.stdout.strip():
+        # Log the actual dirty files for debugging
+        dirty_files = r.stdout.strip().split("\n")
+        write_log(log_path, f"DIRTY WORKTREE — aborting ({len(dirty_files)} files modified)")
+        write_log(log_path, f"Modified files: {r.stdout.strip()}")
+        return False
+
     return True
 
 
@@ -215,10 +510,14 @@ def has_commit(cwd) -> bool:
 
 def rebase_on_main(cwd, log_path) -> bool:
     """Rebase current branch on latest main."""
-    # Fetch latest main
-    run(["git", "fetch", REMOTE, BASE_BRANCH], cwd=cwd)
+    # Fetch latest main with retry (network operation)
+    try:
+        run_with_retry(["git", "fetch", REMOTE, BASE_BRANCH], cwd=cwd)
+    except Exception as e:
+        write_log(log_path, f"FETCH FAILED after retries - {e}")
+        return False
 
-    # Rebase on main
+    # Rebase on main (local operation, no retry needed)
     r = run(["git", "rebase", f"{REMOTE}/{BASE_BRANCH}"], cwd=cwd)
     if r.returncode == 0:
         write_log(log_path, "REBASE OK - rebased on latest main")
@@ -231,13 +530,17 @@ def rebase_on_main(cwd, log_path) -> bool:
 
 
 def push_branch(branch, cwd, log_path) -> bool:
-    """Push branch to remote."""
-    r = run(["git", "push", "-u", REMOTE, branch], cwd=cwd)
-    if r.returncode == 0:
-        write_log(log_path, f"PUSH OK - {branch} pushed to {REMOTE}")
-        return True
-    write_log(log_path, f"PUSH FAILED - {r.stderr}")
-    return False
+    """Push branch to remote with retry on network errors."""
+    try:
+        r = run_with_retry(["git", "push", "-u", REMOTE, branch], cwd=cwd)
+        if r.returncode == 0:
+            write_log(log_path, f"PUSH OK - {branch} pushed to {REMOTE}")
+            return True
+        write_log(log_path, f"PUSH FAILED - {r.stderr}")
+        return False
+    except Exception as e:
+        write_log(log_path, f"PUSH FAILED after retries - {e}")
+        return False
 
 
 def create_pr(branch, file, cwd, log_path) -> bool:
@@ -254,7 +557,7 @@ def create_pr(branch, file, cwd, log_path) -> bool:
     r = run(["git", "log", "-1", "--format=%b"], cwd=cwd)
     body = r.stdout.strip() if r.returncode == 0 else f"Automated fix for {file}"
 
-    # Create PR using gh CLI
+    # Create PR using gh CLI with retry
     cmd = [
         "gh",
         "pr",
@@ -269,9 +572,13 @@ def create_pr(branch, file, cwd, log_path) -> bool:
         branch,
     ]
 
-    r = run(cmd, cwd=cwd)
-    if r.returncode != 0:
-        write_log(log_path, f"PR CREATION FAILED - {r.stderr}")
+    try:
+        r = run_with_retry(cmd, cwd=cwd)
+        if r.returncode != 0:
+            write_log(log_path, f"PR CREATION FAILED - {r.stderr}")
+            return False
+    except Exception as e:
+        write_log(log_path, f"PR CREATION FAILED after retries - {e}")
         return False
 
     pr_url = r.stdout.strip()
@@ -279,39 +586,57 @@ def create_pr(branch, file, cwd, log_path) -> bool:
     if verbose:
         log(f"✓ PR created for {file}: {pr_url}")
 
-    # Enable auto-merge using rebase strategy
-    merge_cmd = ["gh", "pr", "merge", pr_url, "--auto", "--rebase"]
-    r = run(merge_cmd, cwd=cwd)
-    if r.returncode == 0:
-        write_log(log_path, "AUTO-MERGE ENABLED")
-        if verbose:
-            log(f"✓ Auto-merge enabled for {file}")
-        return True
+    # Extract PR number from URL for API calls
+    # URL format: https://github.com/owner/repo/pull/123
+    pr_number = pr_url.split("/")[-1] if "/" in pr_url else pr_url
 
-    write_log(log_path, f"AUTO-MERGE FAILED - {r.stderr}")
-    if verbose:
-        log(f"⚠️  Auto-merge failed for {file}: {r.stderr}")
-    # Return True anyway since PR was created
-    return True
+    # Enable auto-merge using rebase strategy with retry
+    merge_cmd = ["gh", "pr", "merge", pr_url, "--auto", "--rebase"]
+    try:
+        r = run_with_retry(merge_cmd, cwd=cwd)
+        if r.returncode != 0:
+            write_log(log_path, f"AUTO-MERGE FAILED - {r.stderr}")
+            if verbose:
+                log(f"⚠️  Auto-merge failed for {file}: {r.stderr}")
+            return False
+
+        # Verify auto-merge was enabled using structured JSON output (not string matching)
+        # This is more reliable than parsing stdout text which can change
+        verify_cmd = ["gh", "pr", "view", pr_number, "--json", "autoMergeRequest"]
+        verify_result = run(verify_cmd, cwd=cwd)
+
+        if verify_result.returncode == 0:
+            try:
+                data = json.loads(verify_result.stdout)
+                if data.get("autoMergeRequest"):
+                    write_log(log_path, "AUTO-MERGE VERIFIED VIA API")
+                    if verbose:
+                        log(f"✓ Auto-merge enabled for {file}")
+                    return True
+                else:
+                    write_log(log_path, "AUTO-MERGE NOT ENABLED (API returned null)")
+                    if verbose:
+                        log(f"⚠️  Auto-merge not enabled for {file}: {pr_url}")
+                    return False
+            except json.JSONDecodeError as e:
+                write_log(log_path, f"AUTO-MERGE VERIFICATION FAILED - Invalid JSON: {e}")
+                if verbose:
+                    log(f"⚠️  Failed to parse auto-merge status for {file}")
+                return False
+        else:
+            write_log(log_path, f"AUTO-MERGE VERIFICATION FAILED - {verify_result.stderr}")
+            if verbose:
+                log(f"⚠️  Failed to verify auto-merge for {file}")
+            return False
+
+    except Exception as e:
+        write_log(log_path, f"AUTO-MERGE FAILED after retries - {e}")
+        if verbose:
+            log(f"⚠️  Auto-merge failed for {file}: {e}")
+        return False
 
 
 # ---------------- Claude ----------------
-
-
-def load_text(path: Path) -> str:
-    return path.read_text(encoding="utf-8").strip()
-
-
-def build_agents_json(agent_dir: Path) -> str:
-    agents = {}
-    for p in agent_dir.glob("*.md"):
-        if p.name == "chief-architect.md":
-            continue
-        agents[p.stem] = {
-            "description": p.stem.replace("-", " "),
-            "prompt": load_text(p),
-        }
-    return json.dumps(agents, ensure_ascii=False)
 
 
 def build_prompt(file: str, root: str) -> str:
@@ -558,18 +883,31 @@ fix(layers): update constructor to use out self parameter
 </task_context>"""
 
 
-def run_claude(prompt, agents_json, architect_prompt, cwd, log_path):
-    """Run Claude with the given prompt in the specified working directory."""
+def run_claude(prompt, cwd, log_path, timeout=None):
+    """Run Claude with the given prompt in the specified working directory.
+
+    Args:
+        prompt: Prompt text to send to Claude
+        cwd: Working directory for Claude execution
+        log_path: Path to log file
+        timeout: Timeout in seconds (defaults to CLAUDE_TIMEOUTS[0])
+    """
+    if timeout is None:
+        timeout = CLAUDE_TIMEOUTS[0]
+
     if dry_run:
         write_log(log_path, "DRY RUN - Would run Claude here")
         write_log(log_path, f"Prompt length: {len(prompt)} chars")
+        write_log(log_path, f"Timeout: {timeout}s")
         if verbose:
-            log(f"DRY RUN - Would process with {len(prompt)} char prompt")
+            log(f"DRY RUN - Would process with {len(prompt)} char prompt, timeout={timeout}s")
         return
 
     allow_tools = [
         "Read",
         "Edit",
+        "Glob",
+        "Grep",
         "Web",
         "Bash(gh:*)",
         "Bash(pixi:*)",
@@ -595,6 +933,9 @@ def run_claude(prompt, agents_json, architect_prompt, cwd, log_path):
         system_prompt_addition,
         "--allowedTools",
         ",".join(allow_tools),
+        # CRITICAL: --add-dir allows Claude to access .claude/shared/ files
+        # The prompt references mojo-guidelines.md and mojo-anti-patterns.md
+        # Without this flag, Claude cannot read these files from the worktree
         "--add-dir",
         ".claude",
     ]
@@ -604,18 +945,18 @@ def run_claude(prompt, agents_json, architect_prompt, cwd, log_path):
     write_log(log_path, "=" * 80)
     write_log(log_path, prompt)
     write_log(log_path, "=" * 80)
-    write_log(log_path, "RUNNING CLAUDE")
+    write_log(log_path, f"RUNNING CLAUDE (timeout={timeout}s)")
     write_log(log_path, "=" * 80)
 
     if verbose:
-        log(f"Running Claude with {len(prompt)} char prompt in {cwd}")
+        log(f"Running Claude with {len(prompt)} char prompt in {cwd}, timeout={timeout}s")
         log("Prompt sent:")
         # Show first 500 chars of prompt in console
         log(prompt[:500] + "..." if len(prompt) > 500 else prompt)
         log("-" * 80)
 
     if verbose:
-        log("⏳ Claude is processing... (this may take up to 15 minutes)")
+        log(f"⏳ Claude is processing... (timeout: {timeout}s)")
 
     # Pass prompt via stdin
     r = subprocess.run(
@@ -624,7 +965,7 @@ def run_claude(prompt, agents_json, architect_prompt, cwd, log_path):
         text=True,
         input=prompt,
         capture_output=True,
-        timeout=CLAUDE_TIMEOUT,
+        timeout=timeout,
     )
 
     write_log(log_path, "=" * 80)
@@ -660,7 +1001,7 @@ def run_claude(prompt, agents_json, architect_prompt, cwd, log_path):
 # ---------------- Worker ----------------
 
 
-def worker_wrapper(file, root, agents_json, architect_prompt):
+def worker_wrapper(file, root):
     """Wrapper that respects semaphore and stop event."""
     if stop_processing.is_set():
         log(f"Skipping {file} - processing stopped")
@@ -668,17 +1009,38 @@ def worker_wrapper(file, root, agents_json, architect_prompt):
 
     # Don't acquire semaphore in wrapper - let ThreadPoolExecutor handle it
     try:
-        process_file(file, root, agents_json, architect_prompt)
+        process_file(file, root)
     except Exception as e:
-        log(f"ERROR processing {file}: {e}")
-        if "rate limit" in str(e).lower() or "quota" in str(e).lower():
+        error_msg = str(e).lower()
+
+        # Check for fatal errors that should stop all processing
+        if "rate limit" in error_msg or "quota" in error_msg:
             log("Claude Code limit hit - stopping all processing")
             stop_processing.set()
             raise
+        elif "authentication" in error_msg or "unauthorized" in error_msg:
+            log("Authentication failure - stopping all processing")
+            stop_processing.set()
+            raise
+        elif "disk" in error_msg and ("full" in error_msg or "space" in error_msg):
+            log("Disk space exhausted - stopping all processing")
+            stop_processing.set()
+            raise
+        else:
+            # Non-fatal error - log and continue with other files
+            log(f"ERROR processing {file}: {e}")
+            if verbose:
+                import traceback
+
+                log(f"Traceback: {traceback.format_exc()}")
 
 
-def process_file(file, root, agents_json, architect_prompt):
+def process_file(file, root):
     """Process a single file with isolated worktree and Claude agent."""
+    start_time = time.time()
+    retry_count = 0
+    success = False
+
     # Create branch name from file path
     branch = sanitize_branch_name(file)
     log_path = LOG_DIR / f"{branch}.log"
@@ -693,6 +1055,8 @@ def process_file(file, root, agents_json, architect_prompt):
         log(f"[{branch}] Processing {file}")
 
     wt = create_worktree(branch)
+    branch_pushed = False  # Track if remote branch exists
+    pr_created = False  # Track if PR was successfully created
 
     try:
         # CRITICAL: Check if file already compiles
@@ -717,8 +1081,33 @@ def process_file(file, root, agents_json, architect_prompt):
         # Build comprehensive prompt
         prompt = build_prompt(file, root)
 
-        # Run Claude with enhanced prompt
-        run_claude(prompt, agents_json, architect_prompt, wt, log_path)
+        # Run Claude with adaptive timeout (retry with increasing timeouts on timeout)
+        for attempt, timeout in enumerate(CLAUDE_TIMEOUTS, start=1):
+            try:
+                write_log(log_path, f"Claude attempt {attempt}/{len(CLAUDE_TIMEOUTS)} (timeout={timeout}s)")
+                if verbose and attempt > 1:
+                    log(
+                        f"[{branch}] Retrying Claude with {timeout}s timeout (attempt {attempt}/{len(CLAUDE_TIMEOUTS)})"
+                    )
+
+                run_claude(prompt, wt, log_path, timeout=timeout)
+                break  # Success - exit retry loop
+            except subprocess.TimeoutExpired:
+                write_log(log_path, f"Claude timeout after {timeout}s")
+                if verbose:
+                    log(f"[{branch}] ⚠ Claude timeout after {timeout}s")
+
+                # Track retry
+                retry_count += 1
+                track_retry("claude_timeouts")
+
+                if attempt == len(CLAUDE_TIMEOUTS):
+                    # All retries exhausted
+                    write_log(log_path, "All Claude retries exhausted - abandoning")
+                    if verbose:
+                        log(f"[{branch}] ✗ Claude timeout even after {timeout}s")
+                    return
+                # Otherwise, continue to next retry with higher timeout
 
         # Check if Claude made a commit
         if not has_commit(wt):
@@ -764,6 +1153,7 @@ def process_file(file, root, agents_json, architect_prompt):
             if verbose:
                 log(f"[{branch}] ✗ Failed to push")
             return
+        branch_pushed = True  # Track that branch exists on remote
 
         # Create pull request
         if not create_pr(branch, file, wt, log_path):
@@ -775,6 +1165,8 @@ def process_file(file, root, agents_json, architect_prompt):
         write_log(log_path, f"SUCCESS - {file} fixed, PR created")
         if verbose:
             log(f"[{branch}] ✓ {file} fixed and PR created")
+        pr_created = True  # Mark success
+        success = True  # Track for metrics
 
     except Exception as e:
         write_log(log_path, f"EXCEPTION: {e}")
@@ -783,23 +1175,45 @@ def process_file(file, root, agents_json, architect_prompt):
             stop_processing.set()
             raise
     finally:
-        cleanup_worktree(wt)
+        # Only delete remote branch if it was pushed but PR wasn't created
+        # (prevents orphaned branches from failed PR creation)
+        cleanup_branch = branch if (branch_pushed and not pr_created) else None
+        cleanup_worktree(wt, cleanup_branch)
+
+        # Track metrics
+        elapsed_time = time.time() - start_time
+        track_file_metrics(file, success, elapsed_time, retry_count)
 
 
 # ---------------- Main ----------------
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--input", "-i", required=True, help="File containing list of files to process")
-    parser.add_argument("--root", "-r", required=True, help="Root directory for include paths")
+    parser = argparse.ArgumentParser(
+        description="Autonomous Mojo repair with Claude Code (Requires Mojo v0.26.1+). "
+        "Language reference: https://docs.modular.com/mojo/manual/",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument("--input", "-i", help="File containing list of files to process")
+    parser.add_argument("--root", "-r", help="Root directory for include paths")
     parser.add_argument("--workers", "-w", type=int, default=MAX_WORKERS_DEFAULT, help="Number of parallel workers")
     parser.add_argument("--dry-run", action="store_true", help="Test run without actually calling Claude")
     parser.add_argument("--limit", "-n", type=int, help="Only process first N files (for testing)")
     parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose logging")
+    parser.add_argument("--health-check", action="store_true", help="Check dependency status and exit")
     args = parser.parse_args()
 
-    # Set global flags
+    # Health check mode - run and exit
+    if args.health_check:
+        exit_code = health_check()
+        sys.exit(exit_code)
+
+    # Validate required arguments for normal operation
+    if not args.input or not args.root:
+        parser.error("--input and --root are required (unless using --health-check)")
+
+    # CRITICAL: Set global flags BEFORE any worker threads start
+    # Workers read these flags without synchronization, so they must be initialized first
     global dry_run, verbose
     dry_run = args.dry_run
     verbose = args.verbose
@@ -810,51 +1224,77 @@ def main():
     if verbose:
         log("📢 VERBOSE MODE - Detailed logging enabled")
 
+    # Verify all required dependencies are available
+    check_dependencies()
+
     ensure_base_branch()
 
-    files = Path(args.input).read_text().splitlines()
+    # Register cleanup handler to save metrics on any exit (Ctrl+C, errors, etc.)
+    import atexit
+
+    atexit.register(save_metrics)
+
+    # Initialize metrics tracking
+    metrics["start_time"] = ts()
+
+    # Validate input file exists
+    input_path = Path(args.input)
+    if not input_path.exists():
+        log(f"ERROR: Input file not found: {input_path}")
+        sys.exit(1)
+
+    # Read and validate file list
+    try:
+        files = input_path.read_text().splitlines()
+    except Exception as e:
+        log(f"ERROR: Failed to read input file: {e}")
+        sys.exit(1)
+
+    # Filter to valid, existing files
+    files = [f.strip() for f in files if f.strip()]
+    if not files:
+        log("ERROR: No files found in input file")
+        sys.exit(1)
+
     WORKTREE_BASE.mkdir(parents=True, exist_ok=True)
     LOG_DIR.mkdir(parents=True, exist_ok=True)
 
-    agent_dir = Path(".claude/agents")
-    architect_prompt = load_text(agent_dir / "chief-architect.md")
-    agents_json = build_agents_json(agent_dir)
+    try:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as pool:
+            # Filter out empty lines
+            files_to_process = [f for f in files if f.strip()]
 
-    # Update the global semaphore with the actual worker count
-    global active_workers
-    active_workers = threading.Semaphore(args.workers)
+            # Apply limit if specified
+            if args.limit:
+                files_to_process = files_to_process[: args.limit]
+                log(f"⚠️  LIMIT MODE - Processing only first {args.limit} files")
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as pool:
-        # Filter out empty lines
-        files_to_process = [f for f in files if f.strip()]
+            log(f"Processing {len(files_to_process)} files with {args.workers} workers")
 
-        # Apply limit if specified
-        if args.limit:
-            files_to_process = files_to_process[: args.limit]
-            log(f"⚠️  LIMIT MODE - Processing only first {args.limit} files")
+            # Submit jobs incrementally with stop-processing check
+            futures = []
+            for file in files_to_process:
+                if stop_processing.is_set():
+                    log("Stopping - Claude Code limit reached")
+                    break
+                future = pool.submit(worker_wrapper, file, args.root)
+                futures.append(future)
 
-        log(f"Processing {len(files_to_process)} files with {args.workers} workers")
+            # Wait for completion
+            for future in concurrent.futures.as_completed(futures):
+                try:
+                    future.result()
+                except Exception as e:
+                    log(f"Worker failed: {e}")
 
-        # Submit jobs incrementally with stop-processing check
-        futures = []
-        for file in files_to_process:
             if stop_processing.is_set():
-                log("Stopping - Claude Code limit reached")
-                break
-            future = pool.submit(worker_wrapper, file, args.root, agents_json, architect_prompt)
-            futures.append(future)
-
-        # Wait for completion
-        for future in concurrent.futures.as_completed(futures):
-            try:
-                future.result()
-            except Exception as e:
-                log(f"Worker failed: {e}")
-
-        if stop_processing.is_set():
-            log("⚠️  Processing stopped due to Claude Code limit")
-        else:
-            log(f"✓ Completed processing {len(files_to_process)} files")
+                log("⚠️  Processing stopped due to Claude Code limit")
+            else:
+                log(f"✓ Completed processing {len(files_to_process)} files")
+    finally:
+        # Ensure metrics are saved even on early exit or exception
+        metrics["end_time"] = ts()
+        save_metrics()
 
 
 if __name__ == "__main__":

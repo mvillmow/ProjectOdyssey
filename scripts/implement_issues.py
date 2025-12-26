@@ -10,6 +10,11 @@ Design goals (following plan_issues.py and analyze_issues_claude.py patterns):
 - Live status display with StatusTracker
 - Resumable state persistence
 - Pause on CI failure for manual intervention
+
+Mojo Requirements:
+- Requires Mojo v0.26.1 or later
+- Language reference: https://docs.modular.com/mojo/manual/
+- Uses modern Mojo syntax (list literals, @fieldwise_init, etc.)
 """
 
 from __future__ import annotations
@@ -21,6 +26,7 @@ import curses
 import dataclasses
 import datetime as dt
 import json
+import os
 import pathlib
 import re
 import shutil
@@ -31,7 +37,7 @@ import tempfile
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Callable, NamedTuple
 
 if TYPE_CHECKING:
     pass
@@ -78,9 +84,342 @@ MIDNIGHT_HOUR = 0
 
 
 def write_secure(path: pathlib.Path, content: str) -> None:
-    """Write content to file with secure permissions (owner-only read/write)."""
-    path.write_text(content)
-    path.chmod(0o600)
+    """Write content to file with secure permissions (owner-only read/write).
+
+    Uses os.open() with mode flags to avoid TOCTOU race condition.
+    File is created with 0o600 permissions atomically.
+    """
+    # Create parent directory if it doesn't exist
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Open with secure permissions from the start (no TOCTOU window)
+    fd = os.open(str(path), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    try:
+        os.write(fd, content.encode("utf-8"))
+    finally:
+        os.close(fd)
+
+
+# ---------------------------------------------------------------------
+# Dependency Validation
+# ---------------------------------------------------------------------
+
+
+def check_dependencies() -> None:
+    """Verify required external dependencies are available.
+
+    Raises:
+        RuntimeError: If any required command is missing.
+    """
+    required = ["gh", "git", "claude", "python3"]
+    missing = []
+
+    for cmd in required:
+        if not shutil.which(cmd):
+            missing.append(cmd)
+
+    if missing:
+        raise RuntimeError(
+            f"Required command(s) not found: {', '.join(missing)}\n"
+            f"Please install missing dependencies before running this script."
+        )
+
+    # Verify gh CLI is authenticated
+    result = subprocess.run(["gh", "auth", "status"], capture_output=True, text=True)
+    if result.returncode != 0:
+        raise RuntimeError("GitHub CLI (gh) is not authenticated.\nRun 'gh auth login' to authenticate.")
+
+
+def health_check() -> int:
+    """Check and display status of all required dependencies.
+
+    Displays version information and availability status for:
+    - gh (GitHub CLI)
+    - git (Version control)
+    - claude (Claude Code CLI)
+    - python3 (Python interpreter)
+
+    Exit codes:
+        0: All dependencies available and working
+        1: One or more dependencies missing or non-functional
+    """
+    required = {
+        "gh": ["gh", "--version"],
+        "git": ["git", "--version"],
+        "claude": ["claude", "--version"],
+        "python3": ["python3", "--version"],
+    }
+
+    log("INFO", "=" * 80)
+    log("INFO", "DEPENDENCY HEALTH CHECK")
+    log("INFO", "=" * 80)
+    log("INFO", "")
+
+    all_ok = True
+    for cmd, version_cmd in required.items():
+        # Check if command exists
+        cmd_path = shutil.which(cmd)
+
+        if not cmd_path:
+            log("INFO", f"✗ {cmd:12} NOT FOUND")
+            all_ok = False
+            continue
+
+        # Get version information
+        try:
+            result = subprocess.run(version_cmd, capture_output=True, text=True, timeout=5)
+            if result.returncode == 0:
+                # Extract first line of version output
+                version = result.stdout.strip().split("\n")[0]
+                log("INFO", f"✓ {cmd:12} {version}")
+            else:
+                log("INFO", f"⚠ {cmd:12} FOUND but version check failed")
+                all_ok = False
+        except Exception as e:
+            log("INFO", f"⚠ {cmd:12} FOUND but error getting version: {e}")
+            all_ok = False
+
+    log("INFO", "")
+    log("INFO", "-" * 80)
+    log("INFO", "GitHub CLI Authentication")
+    log("INFO", "-" * 80)
+
+    # Check gh auth status
+    try:
+        result = subprocess.run(["gh", "auth", "status"], capture_output=True, text=True, timeout=5)
+        if result.returncode == 0:
+            # Parse auth status output
+            auth_lines = result.stderr.strip().split("\n")  # gh outputs to stderr
+            log("INFO", "✓ GitHub CLI authenticated")
+            for line in auth_lines[:3]:  # Show first 3 lines
+                log("INFO", f"  {line}")
+        else:
+            log("INFO", "✗ GitHub CLI NOT authenticated")
+            log("INFO", "  Run 'gh auth login' to authenticate")
+            all_ok = False
+    except Exception as e:
+        log("INFO", f"⚠ Error checking gh auth: {e}")
+        all_ok = False
+
+    log("INFO", "")
+    log("INFO", "=" * 80)
+    if all_ok:
+        log("INFO", "✓ ALL DEPENDENCIES OK")
+        log("INFO", "=" * 80)
+        return 0
+    else:
+        log("INFO", "✗ SOME DEPENDENCIES MISSING OR NON-FUNCTIONAL")
+        log("INFO", "=" * 80)
+        return 1
+
+
+def export_dependency_graph(issues: dict[int, IssueInfo], output_path: str) -> int:
+    """Export dependency graph to Graphviz DOT format.
+
+    Args:
+        issues: Dictionary of issue number to IssueInfo
+        output_path: Path to output DOT file
+
+    Returns:
+        0 on success, 1 on failure
+    """
+    try:
+        with open(output_path, "w") as f:
+            f.write("digraph Dependencies {\n")
+            f.write("  rankdir=LR;\n")
+            f.write("  node [shape=box];\n")
+            f.write("\n")
+
+            # Write nodes
+            for issue_num, info in sorted(issues.items()):
+                # Escape quotes in title
+                title = info.title.replace('"', '\\"')
+                # Truncate long titles
+                if len(title) > 40:
+                    title = title[:37] + "..."
+
+                # Color by priority
+                color = {
+                    "P0": "red",
+                    "P1": "orange",
+                    "P2": "yellow",
+                }.get(info.priority, "gray")
+
+                # Style by status
+                style = "solid"
+                if info.status == "completed":
+                    style = "filled"
+                    color = "lightgreen"
+
+                f.write(f'  {issue_num} [label="#{issue_num}: {title}\\n({info.priority})", ')
+                f.write(f'color="{color}", style="{style}"];\n')
+
+            f.write("\n")
+
+            # Write edges
+            for issue_num, info in sorted(issues.items()):
+                for dep in sorted(info.depends_on):
+                    # Only draw edge if dependency is in the issue set
+                    if dep in issues:
+                        f.write(f"  {dep} -> {issue_num};\n")
+                    else:
+                        # External dependency - show as dashed line
+                        f.write(f'  ext{dep} [label="#{dep} (external)", shape=ellipse, color=blue];\n')
+                        f.write(f"  ext{dep} -> {issue_num} [style=dashed, color=blue];\n")
+
+            f.write("}\n")
+
+        log("INFO", f"✓ Exported dependency graph to {output_path}")
+        log("INFO", f"  Visualize with: dot -Tpng {output_path} -o graph.png")
+        return 0
+
+    except Exception as e:
+        log("ERROR", f"Failed to export graph: {e}")
+        return 1
+
+
+def rollback_issue(issue_number: int, state_dir: pathlib.Path, repo_root: pathlib.Path) -> int:
+    """Rollback implementation of a specific issue.
+
+    Actions:
+    - Remove worktree
+    - Delete local and remote branch
+    - Remove issue from state
+    - Post rollback comment to issue
+
+    Args:
+        issue_number: Issue number to rollback
+        state_dir: Directory containing state file
+        repo_root: Repository root directory
+
+    Returns:
+        0 on success, 1 on failure
+    """
+    log("INFO", "=" * 80)
+    log("INFO", f"ROLLBACK ISSUE #{issue_number}")
+    log("INFO", "=" * 80)
+    log("INFO", "")
+
+    # Load state to check if issue was implemented
+    from ._state import State
+
+    state_file = state_dir / "implement_state.json"
+    state = State.load(state_file) if state_file.exists() else State()
+
+    # Check if issue is in state
+    if (
+        issue_number not in state.completed
+        and issue_number not in state.failed
+        and issue_number not in state.in_progress
+    ):
+        log("ERROR", f"Issue #{issue_number} not found in state (not yet processed or already rolled back)")
+        return 1
+
+    # Get issue status
+    if issue_number in state.completed:
+        status = "completed"
+    elif issue_number in state.failed:
+        status = "failed"
+    else:
+        status = "in_progress"
+
+    log("INFO", f"Issue #{issue_number} status: {status}")
+    log("INFO", "")
+
+    # Confirm rollback
+    log("INFO", "⚠️  WARNING: This will DELETE:")
+    log("INFO", f"  - Local worktree (worktrees/{issue_number}-*)")
+    log("INFO", f"  - Local branch ({issue_number}-*)")
+    log("INFO", f"  - Remote branch (origin/{issue_number}-*)")
+    log("INFO", "  - Issue from state file")
+    log("INFO", "")
+
+    response = input("Continue with rollback? (yes/no): ")
+    if response.lower() != "yes":
+        log("INFO", "Rollback cancelled")
+        return 0
+
+    log("INFO", "")
+    log("INFO", "Starting rollback...")
+    log("INFO", "")
+
+    # 1. Remove worktree
+    worktree_mgr = WorktreeManager(repo_root)
+    if worktree_mgr.remove(issue_number):
+        log("INFO", f"✓ Removed worktree for issue #{issue_number}")
+    else:
+        log("WARN", f"No worktree found for issue #{issue_number}")
+
+    # 2. Delete remote branch
+    # Find branch name matching issue
+    branch_name = None
+    result = subprocess.run(
+        ["git", "branch", "-r"],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode == 0:
+        for line in result.stdout.splitlines():
+            if f"origin/{issue_number}-" in line:
+                branch_name = line.strip().replace("origin/", "")
+                break
+
+    if branch_name:
+        result = subprocess.run(
+            ["git", "push", "origin", "--delete", branch_name],
+            cwd=repo_root,
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode == 0:
+            log("INFO", f"✓ Deleted remote branch: origin/{branch_name}")
+        else:
+            log("WARN", f"Failed to delete remote branch: {result.stderr}")
+    else:
+        log("WARN", f"No remote branch found for issue #{issue_number}")
+
+    # 3. Remove from state
+    if issue_number in state.completed:
+        del state.completed[issue_number]
+    if issue_number in state.failed:
+        del state.failed[issue_number]
+    if issue_number in state.in_progress:
+        del state.in_progress[issue_number]
+
+    state.save(state_file)
+    log("INFO", f"✓ Removed issue #{issue_number} from state")
+
+    # 4. Post comment to issue
+    comment = """## Implementation Rolled Back
+
+This issue's implementation has been rolled back.
+
+**Actions taken:**
+- Deleted worktree
+- Deleted branch
+- Removed from state
+
+The issue is now ready for re-implementation.
+"""
+
+    result = subprocess.run(
+        ["gh", "issue", "comment", str(issue_number), "--body", comment],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode == 0:
+        log("INFO", f"✓ Posted rollback comment to issue #{issue_number}")
+    else:
+        log("WARN", f"Failed to post comment: {result.stderr}")
+
+    log("INFO", "")
+    log("INFO", "=" * 80)
+    log("INFO", f"✓ ROLLBACK COMPLETE FOR ISSUE #{issue_number}")
+    log("INFO", "=" * 80)
+
+    return 0
 
 
 # ---------------------------------------------------------------------
@@ -195,8 +534,17 @@ def run(
     )
 
 
+class CachedIssueState(NamedTuple):
+    """Cached issue state with timestamp for TTL support."""
+
+    is_closed: bool
+    cached_at: float  # epoch seconds
+
+
 # Cache for external issue states (avoid repeated API calls)
-_external_issue_cache: dict[int, bool] = {}  # issue_num -> is_closed
+# Now includes timestamps for TTL support (5-minute expiration)
+_external_issue_cache: dict[int, CachedIssueState] = {}
+_CACHE_TTL_SECONDS = 300  # 5 minutes
 
 # Cache for repo owner/name
 _repo_info_cache: tuple[str, str] | None = None
@@ -246,10 +594,21 @@ def prefetch_issue_states(issue_nums: list[int]) -> None:
     """Batch fetch issue states using GraphQL to populate cache.
 
     This reduces API calls when checking multiple external dependencies.
+    Cache entries are timestamped for TTL support.
     """
-    # Filter to issues not already cached
-    to_fetch = [n for n in issue_nums if n not in _external_issue_cache]
+    # Filter to issues not already cached or expired
+    now = time.time()
+    to_fetch = []
+    for n in issue_nums:
+        if n not in _external_issue_cache:
+            to_fetch.append(n)
+        else:
+            cached = _external_issue_cache[n]
+            if now - cached.cached_at >= _CACHE_TTL_SECONDS:
+                to_fetch.append(n)
+
     if not to_fetch:
+        log("DEBUG", "All issues cached and fresh, skipping prefetch")
         return
 
     log("DEBUG", f"Prefetching states for {len(to_fetch)} external issues...")
@@ -283,43 +642,79 @@ def prefetch_issue_states(issue_nums: list[int]) -> None:
                     issue_data = repo_data.get(f"issue{j}")
                     if issue_data:
                         is_closed = issue_data.get("state", "OPEN").upper() == "CLOSED"
-                        _external_issue_cache[num] = is_closed
+                        _external_issue_cache[num] = CachedIssueState(is_closed=is_closed, cached_at=now)
                     else:
-                        _external_issue_cache[num] = False
+                        _external_issue_cache[num] = CachedIssueState(is_closed=False, cached_at=now)
             except (json.JSONDecodeError, KeyError):
                 # Mark all as not closed on parse error
                 for num in batch:
                     if num not in _external_issue_cache:
-                        _external_issue_cache[num] = False
+                        _external_issue_cache[num] = CachedIssueState(is_closed=False, cached_at=now)
         else:
             # Mark all as not closed on API error
             for num in batch:
                 if num not in _external_issue_cache:
-                    _external_issue_cache[num] = False
+                    _external_issue_cache[num] = CachedIssueState(is_closed=False, cached_at=now)
 
 
-def is_issue_closed(issue_num: int) -> bool:
+def is_issue_closed(issue_num: int, force_refresh: bool = False) -> bool:
     """Check if an external issue is closed via GitHub API.
 
-    Results are cached to avoid repeated API calls.
+    Results are cached for 5 minutes to avoid repeated API calls.
     Use prefetch_issue_states() first for batch operations.
-    """
-    if issue_num in _external_issue_cache:
-        return _external_issue_cache[issue_num]
 
+    Args:
+        issue_num: Issue number to check
+        force_refresh: Bypass cache and fetch fresh data
+
+    Returns:
+        True if issue is closed
+    """
+    now = time.time()
+
+    # Check cache if not forcing refresh
+    if not force_refresh and issue_num in _external_issue_cache:
+        cached = _external_issue_cache[issue_num]
+        age = now - cached.cached_at
+
+        if age < _CACHE_TTL_SECONDS:
+            log("DEBUG", f"Cache hit for issue #{issue_num} (age: {age:.0f}s)")
+            return cached.is_closed
+        else:
+            log("DEBUG", f"Cache expired for issue #{issue_num} (age: {age:.0f}s)")
+
+    # Fetch from API
+    log("DEBUG", f"Fetching state for issue #{issue_num}")
     cp = run(["gh", "issue", "view", str(issue_num), "--json", "state"])
+
     if cp.returncode == 0:
         try:
             data = json.loads(cp.stdout)
             is_closed = data.get("state", "OPEN").upper() == "CLOSED"
-            _external_issue_cache[issue_num] = is_closed
-            return is_closed
-        except json.JSONDecodeError:
-            pass
 
-    # If we can't fetch, assume not closed (conservative)
-    _external_issue_cache[issue_num] = False
-    return False
+            # Update cache with timestamp
+            _external_issue_cache[issue_num] = CachedIssueState(is_closed=is_closed, cached_at=now)
+            return is_closed
+        except json.JSONDecodeError as e:
+            log("ERROR", f"Failed to parse issue #{issue_num} state: {e}")
+            raise RuntimeError(f"Invalid JSON from GitHub API for issue #{issue_num}: {e}")
+
+    # Fetch failed - distinguish error types
+    stderr_lower = cp.stderr.lower()
+
+    # Check if issue doesn't exist
+    if "not found" in stderr_lower or "could not resolve" in stderr_lower:
+        log("ERROR", f"Issue #{issue_num} does not exist")
+        raise ValueError(f"External dependency issue #{issue_num} does not exist")
+
+    # Check for network/temporary errors
+    if any(msg in stderr_lower for msg in ["connection", "network", "timeout", "eof", "dns", "rate limit"]):
+        log("ERROR", f"Network error fetching issue #{issue_num}: {cp.stderr[:200]}")
+        raise RuntimeError(f"Network error checking external dependency #{issue_num}: {cp.stderr[:200]}")
+
+    # Unknown error - raise
+    log("ERROR", f"Unknown error fetching issue #{issue_num}: {cp.stderr[:200]}")
+    raise RuntimeError(f"Failed to check external dependency #{issue_num}: {cp.stderr[:200]}")
 
 
 # ---------------------------------------------------------------------
@@ -328,8 +723,37 @@ def is_issue_closed(issue_num: int) -> bool:
 
 
 def parse_reset_epoch(time_str: str, tz: str) -> int:
-    """Parse a rate limit reset time string and return epoch seconds."""
+    """Parse a rate limit reset time string and return epoch seconds.
+
+    Supports multiple formats:
+    - ISO 8601 timestamps (GitHub API format)
+    - Unix epoch seconds (integer)
+    - Human-readable time (e.g., "3:45pm")
+
+    Args:
+        time_str: Time string to parse
+        tz: Timezone identifier (e.g., "America/Los_Angeles")
+
+    Returns:
+        Epoch seconds for reset time
+    """
+    # Strategy 1: Try ISO 8601 timestamp (GitHub API format)
+    try:
+        parsed = dt.datetime.fromisoformat(time_str.replace("Z", "+00:00"))
+        return int(parsed.timestamp())
+    except (ValueError, AttributeError):
+        pass
+
+    # Strategy 2: Try unix epoch (integer seconds)
+    try:
+        return int(time_str)
+    except ValueError:
+        pass
+
+    # Strategy 3: Human-readable time (e.g., "3:45pm")
+    # Validate timezone
     if tz not in ALLOWED_TIMEZONES:
+        log("WARN", f"Unknown timezone '{tz}', falling back to America/Los_Angeles")
         tz = "America/Los_Angeles"
 
     now_utc = dt.datetime.now(dt.UTC)
@@ -337,11 +761,20 @@ def parse_reset_epoch(time_str: str, tz: str) -> int:
 
     m = re.match(r"^(\d{1,2})(?::(\d{2}))?(am|pm)?$", time_str, re.IGNORECASE)
     if not m:
-        return int(time.time()) + 3600
+        log("WARN", f"Could not parse rate limit reset time '{time_str}', using 12-hour fallback")
+        return int(time.time()) + 43200  # 12 hours - conservative fallback
 
     hour, minute, ampm = m.groups()
     hour = int(hour)
     minute = int(minute or 0)
+
+    # Validate ranges BEFORE conversion
+    if hour < 1 or hour > 12:
+        log("WARN", f"Invalid hour {hour} in time '{time_str}', using 12-hour fallback")
+        return int(time.time()) + 43200
+    if minute < 0 or minute > 59:
+        log("WARN", f"Invalid minute {minute} in time '{time_str}', using 12-hour fallback")
+        return int(time.time()) + 43200
 
     if ampm:
         ampm = ampm.lower()
@@ -350,11 +783,15 @@ def parse_reset_epoch(time_str: str, tz: str) -> int:
         if ampm == "am" and hour == NOON_HOUR:
             hour = MIDNIGHT_HOUR
 
-    local = dt.datetime.combine(
-        today,
-        dt.time(hour, minute),
-        tzinfo=dt.ZoneInfo(tz),
-    )
+    try:
+        local = dt.datetime.combine(
+            today,
+            dt.time(hour, minute),
+            tzinfo=dt.ZoneInfo(tz),
+        )
+    except (ValueError, KeyError) as e:
+        log("ERROR", f"Failed to construct datetime for '{time_str}' in {tz}: {e}")
+        return int(time.time()) + 43200
 
     if local < now_utc.astimezone(dt.ZoneInfo(tz)):
         local += dt.timedelta(days=1)
@@ -418,6 +855,8 @@ class StatusTracker:
         self._lock = threading.Lock()
         self._max_workers = max_workers
         self._slots: dict[int, tuple[int, str, str, float]] = {}
+        self._slot_to_item: dict[int, int] = {}  # Track which item owns which slot
+        self._slot_available = threading.Condition(self._lock)  # For waiting on slots
         self._update_event = threading.Event()
         self._completed_count = 0
         self._total_count = 0
@@ -439,35 +878,110 @@ class StatusTracker:
             self._slots[self.MAIN_THREAD] = (0, stage, info, time.time())
             self._update_event.set()
 
-    def acquire_slot(self, item_id: int) -> int:
-        """Acquire a display slot for an item. Returns slot number."""
-        with self._lock:
-            for slot in range(self._max_workers):
-                if slot not in self._slots:
-                    self._slots[slot] = (item_id, "Starting", "", time.time())
-                    self._update_event.set()
-                    return slot
-            slot = item_id % self._max_workers
-            self._slots[slot] = (item_id, "Starting", "", time.time())
-            self._update_event.set()
-            return slot
+    def acquire_slot(self, item_id: int, timeout: float = 60.0) -> int:
+        """Acquire a display slot for an item. Returns slot number.
+
+        Args:
+            item_id: ID of item needing a slot
+            timeout: Max seconds to wait for slot (default 60s)
+
+        Returns:
+            Slot number (0 to max_workers-1)
+
+        Raises:
+            RuntimeError: If no slot becomes available within timeout
+        """
+        deadline = time.time() + timeout
+
+        with self._slot_available:  # Uses condition variable
+            while True:
+                # Try to find an available slot
+                for slot in range(self._max_workers):
+                    if slot not in self._slot_to_item:
+                        # Slot is available - claim it
+                        self._slots[slot] = (item_id, "Starting", "", time.time())
+                        self._slot_to_item[slot] = item_id
+                        self._update_event.set()
+                        log("DEBUG", f"Item #{item_id} acquired slot {slot}")
+                        return slot
+
+                # No slots available - wait for one to be released
+                remaining = deadline - time.time()
+                if remaining <= 0:
+                    raise RuntimeError(
+                        f"Timeout waiting for slot (item #{item_id}). All {self._max_workers} slots occupied."
+                    )
+
+                log("DEBUG", f"Item #{item_id} waiting for slot (timeout in {remaining:.0f}s)")
+                self._slot_available.wait(timeout=min(remaining, 5.0))
 
     def update(self, slot: int, item_id: int, stage: str, info: str = "") -> None:
-        """Update the status for a slot."""
+        """Update the status for a slot.
+
+        Validates that the slot is owned by the item before updating.
+        """
         with self._lock:
+            # Verify slot ownership
+            if slot not in self._slot_to_item:
+                log("WARN", f"Update to unoccupied slot {slot} by item #{item_id}")
+                return
+            if self._slot_to_item[slot] != item_id:
+                log(
+                    "ERROR",
+                    f"Slot ownership mismatch! Slot {slot} owned by item #{self._slot_to_item[slot]}, not #{item_id}",
+                )
+                return
+
             self._slots[slot] = (item_id, stage, info, time.time())
             self._update_event.set()
 
     def release_slot(self, slot: int) -> None:
         """Release a slot when done."""
-        with self._lock:
+        with self._slot_available:  # Uses condition variable
             if slot in self._slots:
+                item_id = self._slot_to_item.get(slot, -1)
+                log("DEBUG", f"Item #{item_id} released slot {slot}")
                 del self._slots[slot]
-            self._update_event.set()
+                if slot in self._slot_to_item:
+                    del self._slot_to_item[slot]
+                self._update_event.set()
+                self._slot_available.notify()  # Wake up waiters
+            else:
+                log("WARN", f"Attempted to release unoccupied slot {slot}")
+
+    def release_by_item(self, item_id: int) -> bool:
+        """Release the slot owned by a specific item.
+
+        Args:
+            item_id: ID of the item to release
+
+        Returns:
+            True if slot was found and released, False otherwise
+        """
+        with self._slot_available:
+            # Find slot for this item
+            for slot, owner in self._slot_to_item.items():
+                if owner == item_id:
+                    # Found it - release
+                    log("DEBUG", f"Item #{item_id} releasing slot {slot}")
+                    if slot in self._slots:
+                        del self._slots[slot]
+                    del self._slot_to_item[slot]
+                    self._update_event.set()
+                    self._slot_available.notify()
+                    return True
+
+            log("WARN", f"No slot found for item #{item_id}")
+            return False
 
     def get_status_data(self) -> dict:
         """Return current state snapshot for external rendering."""
         with self._lock:
+            # Detect slot leaks
+            leaked_slots = set(self._slots.keys()) - set(self._slot_to_item.keys())
+            if leaked_slots:
+                log("ERROR", f"Slot leak detected! Slots without owners: {leaked_slots}")
+
             return {
                 "completed": self._completed_count,
                 "total": self._total_count,
@@ -733,20 +1247,59 @@ class ImplementationState:
     pr_numbers: dict[int, int] = dataclasses.field(default_factory=dict)  # issue -> PR number
     started_at: str = ""
     last_updated: str = ""
+    _save_lock: threading.Lock = dataclasses.field(default_factory=threading.Lock, init=False, repr=False)
 
     def save(self, path: pathlib.Path) -> None:
-        """Save state to JSON file."""
-        data = {
-            "epic_number": self.epic_number,
-            "issues": {str(k): v.to_dict() for k, v in self.issues.items()},
-            "completed_issues": list(self.completed_issues),
-            "paused_issues": {str(k): v.to_dict() for k, v in self.paused_issues.items()},
-            "in_progress": {str(k): v for k, v in self.in_progress.items()},
-            "pr_numbers": {str(k): v for k, v in self.pr_numbers.items()},
-            "started_at": self.started_at,
-            "last_updated": dt.datetime.now().isoformat(),
-        }
-        write_secure(path, json.dumps(data, indent=2))
+        """Save state to JSON file with atomic write.
+
+        Uses thread lock + file lock + atomic rename for safety.
+        """
+        with self._save_lock:  # Thread safety
+            data = {
+                "epic_number": self.epic_number,
+                "issues": {str(k): v.to_dict() for k, v in self.issues.items()},
+                "completed_issues": list(self.completed_issues),
+                "paused_issues": {str(k): v.to_dict() for k, v in self.paused_issues.items()},
+                "in_progress": {str(k): v for k, v in self.in_progress.items()},
+                "pr_numbers": {str(k): v for k, v in self.pr_numbers.items()},
+                "started_at": self.started_at,
+                "last_updated": dt.datetime.now().isoformat(),
+            }
+
+            json_content = json.dumps(data, indent=2)
+
+            # Atomic write: write to temp file, then rename
+            path.parent.mkdir(parents=True, exist_ok=True)
+            temp_fd, temp_path = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
+
+            try:
+                # Write to temp file with exclusive lock
+                with os.fdopen(temp_fd, "w") as f:
+                    # Acquire exclusive lock (blocks other processes)
+                    import fcntl
+
+                    fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                    try:
+                        f.write(json_content)
+                        f.flush()
+                        os.fsync(f.fileno())  # Force write to disk
+                    finally:
+                        fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+
+                # Set permissions before rename
+                os.chmod(temp_path, 0o600)
+
+                # Atomic rename
+                os.replace(temp_path, str(path))
+                log("DEBUG", f"Saved state to {path}")
+
+            except Exception as e:
+                # Cleanup temp file on error
+                try:
+                    os.unlink(temp_path)
+                except OSError:
+                    pass
+                raise RuntimeError(f"Failed to save state: {e}")
 
     @classmethod
     def load(cls, path: pathlib.Path) -> "ImplementationState":
@@ -836,6 +1389,17 @@ class DependencyResolver:
         4. Return issues sorted by priority (P0 first) then by number
         """
         all_issues = self.get_all_issue_numbers()
+
+        # Collect all external dependencies across ALL issues and prefetch their states
+        all_external_deps = set()
+        for info in self.issues.values():
+            external_deps = info.depends_on - all_issues
+            all_external_deps.update(external_deps)
+
+        # Prefetch all external dependencies at once (batch API call)
+        if all_external_deps:
+            prefetch_issue_states(list(all_external_deps))
+
         priority_order = {"P0": 0, "P1": 1, "P2": 2}
 
         with self._lock:
@@ -848,7 +1412,7 @@ class DependencyResolver:
                 # Check for external dependencies (not in epic)
                 external_deps = info.depends_on - all_issues
                 if external_deps:
-                    # Check if ALL external deps are closed
+                    # Check if ALL external deps are closed (uses cached data from prefetch)
                     open_external = {d for d in external_deps if not is_issue_closed(d)}
                     if open_external:
                         info.status = "blocked_external"
@@ -934,7 +1498,11 @@ class DependencyResolver:
         return any(color[n] == WHITE and dfs(n) for n in self.issues)
 
     def get_topological_order(self) -> list[int]:
-        """Return issues in dependency order (no issue before its dependencies)."""
+        """Return issues in dependency order (no issue before its dependencies).
+
+        Raises:
+            ValueError: If a dependency cycle is detected
+        """
         priority_order = {"P0": 0, "P1": 1, "P2": 2}
         all_issues = self.get_all_issue_numbers()
 
@@ -954,6 +1522,22 @@ class DependencyResolver:
                     in_degree[other] -= 1
                     if in_degree[other] == 0:
                         queue.append(other)
+
+        # CRITICAL: Detect dependency cycles
+        # If not all issues were processed, there's a cycle
+        if len(result) != len(self.issues):
+            unprocessed = set(self.issues.keys()) - set(result)
+            # Build cycle description for error message
+            cycle_details = []
+            for issue_num in sorted(unprocessed):
+                deps = self.issues[issue_num].depends_on & all_issues
+                cycle_details.append(f"  #{issue_num} depends on: {sorted(deps)}")
+
+            raise ValueError(
+                f"Dependency cycle detected! {len(unprocessed)} issue(s) cannot be processed:\n"
+                + "\n".join(cycle_details)
+                + "\n\nPlease fix the circular dependencies in your epic issue."
+            )
 
         return result
 
@@ -1173,17 +1757,22 @@ class IssueImplementer:
         self._last_api_call = 0.0
 
     def _gh_call(self, args: list[str], retries: int = MAX_RETRIES) -> subprocess.CompletedProcess:
-        """Make a rate-limited GitHub CLI call with retries."""
-        with self._api_lock:
-            # Wait for rate limit delay
-            elapsed = time.time() - self._last_api_call
-            if elapsed < self.opts.api_delay:
-                time.sleep(self.opts.api_delay - elapsed)
-            self._last_api_call = time.time()
+        """Make a rate-limited GitHub CLI call with retries.
 
+        CRITICAL: The API call must happen INSIDE the lock to prevent concurrent calls.
+        """
         # Execute with retries
         for attempt in range(1, retries + 1):
-            cp = run(args)
+            with self._api_lock:
+                # Wait for rate limit delay
+                elapsed = time.time() - self._last_api_call
+                if elapsed < self.opts.api_delay:
+                    time.sleep(self.opts.api_delay - elapsed)
+
+                # Execute API call INSIDE lock to prevent concurrent calls
+                cp = run(args)
+                self._last_api_call = time.time()
+
             if cp.returncode == 0:
                 return cp
 
@@ -1212,10 +1801,12 @@ class IssueImplementer:
             break
         return cp
 
-    def _fetch_issues_batch(self, issue_nums: list[int]) -> dict[int, dict]:
+    def _fetch_issues_batch(self, issue_nums: list[int]) -> dict[int, dict] | None:
         """Fetch multiple issues in one GraphQL query.
 
-        Returns dict mapping issue number to {title, state} or empty dict on error.
+        Returns:
+            dict mapping issue number to {title, state} if successful
+            None if fetch failed (allows caller to distinguish error from empty result)
         """
         if not issue_nums:
             return {}
@@ -1239,8 +1830,8 @@ class IssueImplementer:
 
         cp = self._gh_call(["gh", "api", "graphql", "-f", f"query={query}"])
         if cp.returncode != 0:
-            log("DEBUG", f"GraphQL batch fetch failed: {cp.stderr}")
-            return {}
+            log("WARN", f"GraphQL batch fetch failed: {cp.stderr}")
+            return None  # Explicit error signal
 
         try:
             data = json.loads(cp.stdout)
@@ -1255,14 +1846,22 @@ class IssueImplementer:
                     }
             return result
         except (json.JSONDecodeError, KeyError) as e:
-            log("DEBUG", f"Failed to parse GraphQL response: {e}")
-            return {}
+            log("WARN", f"Failed to parse GraphQL response: {e}")
+            return None  # Explicit error signal
 
     def _fetch_issue_title(self, issue_num: int) -> str:
         """Fetch title for a single issue (fallback, rate-limited)."""
         cp = self._gh_call(["gh", "issue", "view", str(issue_num), "--json", "title"])
         if cp.returncode == 0:
-            return json.loads(cp.stdout).get("title", f"Issue #{issue_num}")
+            try:
+                data = json.loads(cp.stdout)
+                # Validate data is a dict
+                if not isinstance(data, dict):
+                    log("WARN", f"Expected dict from gh issue view, got {type(data)}")
+                    return f"Issue #{issue_num}"
+                return data.get("title", f"Issue #{issue_num}")
+            except json.JSONDecodeError as e:
+                log("WARN", f"Failed to parse issue #{issue_num} title: {e}")
         return f"Issue #{issue_num}"
 
     def fetch_titles_for_issues(self, issue_nums: list[int]) -> None:
@@ -1285,11 +1884,11 @@ class IssueImplementer:
             results = self._fetch_issues_batch(batch)
 
             for issue_num in batch:
-                if issue_num in results:
+                if results is not None and issue_num in results:
                     if issue_num in self.state.issues:
                         self.state.issues[issue_num].title = results[issue_num]["title"]
                 else:
-                    # Fallback to individual fetch if batch missed this one
+                    # Fallback to individual fetch if batch missed this one or batch failed
                     title = self._fetch_issue_title(issue_num)
                     if issue_num in self.state.issues:
                         self.state.issues[issue_num].title = title
@@ -1376,6 +1975,21 @@ class IssueImplementer:
                     status=status,
                 )
 
+        # Validate that at least one issue was found
+        if not issues:
+            log("ERROR", f"No issues found in epic #{epic_number}")
+            log("ERROR", "Expected format in epic body:")
+            log("ERROR", "  ### P0: Foundation")
+            log("ERROR", "  - [ ] #123 (depends on: #456, #789)")
+            log("ERROR", "  - [x] #124")
+            log("ERROR", "")
+            log("ERROR", "Epic body preview (first 500 chars):")
+            log("ERROR", f"{body[:500]}")
+            raise ValueError(
+                f"No issues found in epic #{epic_number}. "
+                "Check the epic issue format - expected checklist items like '- [ ] #123'"
+            )
+
         # Titles are fetched lazily when needed (to avoid rate limiting)
         log("INFO", f"Parsed {len(issues)} issues from epic #{epic_number}")
         return issues
@@ -1455,7 +2069,7 @@ class IssueImplementer:
             "--model",
             "haiku",
             "--permission-mode",
-            "bypassPermissions",
+            "dontAsk",
             "--allowedTools",
             "Read,Write,Edit,Glob,Grep,Bash",
             "--add-dir",
@@ -1468,6 +2082,10 @@ class IssueImplementer:
         log("DEBUG", f"  Claude command: {' '.join(cmd[:6])}...")
         log("DEBUG", f"  Claude log file: {log_file}")
 
+        # Output limits to prevent memory exhaustion
+        MAX_OUTPUT_LINES = 10000
+        MAX_OUTPUT_SIZE = 10 * 1024 * 1024  # 10MB
+
         try:
             proc = subprocess.Popen(
                 cmd,
@@ -1475,63 +2093,118 @@ class IssueImplementer:
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
+                bufsize=1,  # Line-buffered
             )
 
-            output_lines = []
             deadline = time.time() + self.opts.timeout
             line_count = 0
+            total_bytes = 0
+            last_meaningful_line = ""
+            last_update_time = time.time()
+            update_interval = 0.5  # Update at most every 0.5 seconds
 
             with log_file.open("w") as log_handle:
-                last_meaningful_line = ""
-                last_update_time = time.time()
-                update_interval = 0.5  # Update at most every 0.5 seconds
-
-                for line in proc.stdout:
-                    if time.time() > deadline:
+                # Read output line-by-line, streaming to file (not memory)
+                while True:
+                    # Check timeout
+                    remaining = deadline - time.time()
+                    if remaining <= 0:
                         proc.kill()
+                        proc.wait(timeout=5)  # Give it time to die
                         log("DEBUG", "  Claude timed out")
                         return False, "Timeout exceeded"
 
-                    log_handle.write(line)
-                    output_lines.append(line)
-                    line_count += 1
+                    # Non-blocking read with timeout using select
+                    import select
 
-                    # Extract meaningful output lines for status display
-                    stripped = line.strip()
-                    if stripped and not stripped.startswith("{") and len(stripped) < 200:
-                        # Clean up the line for display
-                        display_line = stripped[:60]
-                        last_meaningful_line = display_line
+                    readable, _, _ = select.select([proc.stdout], [], [], 0.5)
 
-                        # In verbose mode, print Claude output
-                        if self.opts.verbose:
-                            print(f"    [Claude] {stripped[:100]}", flush=True)
+                    if readable:
+                        line = proc.stdout.readline()
+                        if not line:  # EOF
+                            break
 
-                    # Update status with throttling (at most every update_interval seconds)
-                    now = time.time()
-                    if last_meaningful_line and (now - last_update_time >= update_interval):
-                        self._update_status(slot, issue, "Claude", last_meaningful_line)
-                        last_update_time = now
+                        # Write to file (not memory)
+                        log_handle.write(line)
+                        log_handle.flush()
 
-            proc.wait()
-            log(
-                "DEBUG",
-                f"  Claude finished with {line_count} lines, exit code {proc.returncode}",
-            )
-            combined = "".join(output_lines)
+                        # Track size limits
+                        line_count += 1
+                        total_bytes += len(line.encode("utf-8"))
+
+                        if line_count > MAX_OUTPUT_LINES:
+                            proc.kill()
+                            proc.wait(timeout=5)
+                            return False, f"Output exceeded {MAX_OUTPUT_LINES} lines"
+
+                        if total_bytes > MAX_OUTPUT_SIZE:
+                            proc.kill()
+                            proc.wait(timeout=5)
+                            return False, f"Output exceeded {MAX_OUTPUT_SIZE / 1024 / 1024:.0f}MB"
+
+                        # Extract meaningful output for status
+                        stripped = line.strip()
+                        if stripped and not stripped.startswith("{") and len(stripped) < 200:
+                            display_line = stripped[:60]
+                            last_meaningful_line = display_line
+
+                            if self.opts.verbose:
+                                print(f"    [Claude] {stripped[:100]}", flush=True)
+
+                        # Update status with throttling
+                        now = time.time()
+                        if last_meaningful_line and (now - last_update_time >= update_interval):
+                            self._update_status(slot, issue, "Claude", last_meaningful_line)
+                            last_update_time = now
+                    else:
+                        # Check if process exited
+                        if proc.poll() is not None:
+                            break
+
+            # Process finished - get exit code
+            returncode = proc.wait(timeout=5)
+            log("DEBUG", f"  Claude finished with {line_count} lines, exit code {returncode}")
+
+            # Read last 500 lines from log file for error checking
+            with log_file.open("r") as f:
+                lines = f.readlines()
+                tail = "".join(lines[-500:])  # Last 500 lines only
 
             # Check for rate limit
-            reset = detect_rate_limit(combined)
+            reset = detect_rate_limit(tail)
             if reset:
                 wait_until(reset)
                 return False, "Rate limited - retry needed"
 
-            if proc.returncode == 0:
-                return True, combined
+            if returncode == 0:
+                return True, tail
             else:
-                return False, f"Exit code {proc.returncode}: {combined[-500:]}"
+                return False, f"Exit code {returncode}: {tail[-500:]}"
 
+        except (KeyboardInterrupt, SystemExit):
+            # Clean shutdown - kill process and re-raise
+            try:
+                proc.kill()
+                proc.wait(timeout=5)
+            except (OSError, subprocess.SubprocessError):
+                pass
+            raise
+        except subprocess.TimeoutExpired as e:
+            log("ERROR", f"  Claude timed out: {e}")
+            return False, "Timeout exceeded"
+        except OSError as e:
+            log("ERROR", f"  Claude process error: {e}")
+            return False, f"Process error: {e}"
         except Exception as e:
+            import traceback
+
+            log("ERROR", f"  Claude execution failed: {e}\n{traceback.format_exc()}")
+            # Ensure process is dead
+            try:
+                proc.kill()
+                proc.wait(timeout=5)
+            except (OSError, subprocess.SubprocessError):
+                pass
             return False, str(e)
 
     def _get_summary(self, worktree: pathlib.Path, slot: int, issue: int) -> str:
@@ -1561,13 +2234,26 @@ Focus on what functionality was added or fixed. Do not include implementation de
             )
             if cp.returncode == 0:
                 return cp.stdout.strip()
-        except Exception as e:
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except subprocess.TimeoutExpired:
+            log("WARN", "  Summary generation timed out")
+        except (OSError, subprocess.SubprocessError) as e:
             log("WARN", f"  Failed to get summary: {e}")
 
         return "Implementation completed."
 
+    # ============================================================================
+    # DISABLED: PR creation functionality was removed (see line 2743, 2840)
+    # These methods (_check_existing_pr, _analyze_and_fix_pr) are preserved
+    # for potential future restoration but are NOT called anywhere.
+    # If PR creation is re-enabled, uncomment the call sites and update logic.
+    # ============================================================================
+
     def _check_existing_pr(self, issue: int) -> dict | None:
         """Check if a PR already exists for this issue.
+
+        **DISABLED**: This method is not called - PR creation was removed.
 
         Returns PR info dict if found, None otherwise.
         Checks both by issue number in title/body AND by branch name pattern.
@@ -1586,17 +2272,33 @@ Focus on what functionality was added or fixed. Do not include implementation de
         )
         if cp.returncode == 0:
             try:
-                prs = json.loads(cp.stdout)
+                data = json.loads(cp.stdout)
+                # Validate data is a list
+                if not isinstance(data, list):
+                    log("WARN", f"Expected list from gh pr list, got {type(data)}")
+                    prs = []
+                else:
+                    prs = data
+
                 # Find open PR for this issue
                 for pr in prs:
+                    # Validate pr is a dict
+                    if not isinstance(pr, dict):
+                        log("WARN", f"Skipping non-dict PR entry: {type(pr)}")
+                        continue
                     if pr.get("state") == "OPEN":
                         return pr
+
                 # Check for merged PRs too
                 for pr in prs:
+                    if not isinstance(pr, dict):
+                        continue
                     if pr.get("state") == "MERGED":
                         return pr
-            except json.JSONDecodeError:
-                pass
+            except json.JSONDecodeError as e:
+                log("WARN", f"Failed to parse PR list: {e}")
+            except TypeError as e:
+                log("ERROR", f"Type error iterating PRs: {e}")
 
         # Also check by branch name pattern (issue number prefix)
         cp = self._gh_call(
@@ -1612,8 +2314,20 @@ Focus on what functionality was added or fixed. Do not include implementation de
         )
         if cp.returncode == 0:
             try:
-                prs = json.loads(cp.stdout)
+                data = json.loads(cp.stdout)
+                # Validate data is a list
+                if not isinstance(data, list):
+                    log("WARN", f"Expected list from gh pr list, got {type(data)}")
+                    prs = []
+                else:
+                    prs = data
+
                 for pr in prs:
+                    # Validate pr is a dict
+                    if not isinstance(pr, dict):
+                        log("WARN", f"Skipping non-dict PR entry: {type(pr)}")
+                        continue
+
                     branch = pr.get("headRefName", "")
                     # Check if branch starts with issue number
                     if branch.startswith(f"{issue}-") or branch.startswith(f"{issue}_"):
@@ -1630,13 +2344,18 @@ Focus on what functionality was added or fixed. Do not include implementation de
                                 f"  Found merged PR by branch: #{pr['number']} ({branch})",
                             )
                             return pr
-            except json.JSONDecodeError:
-                pass
+            except json.JSONDecodeError as e:
+                log("WARN", f"Failed to parse PR list: {e}")
+            except TypeError as e:
+                log("ERROR", f"Type error iterating PRs: {e}")
 
         return None
 
     def _analyze_and_fix_pr(self, pr_info: dict, issue: int, slot: int) -> WorkerResult:
-        """Analyze CI failures on an existing PR and attempt to fix them."""
+        """Analyze CI failures on an existing PR and attempt to fix them.
+
+        **DISABLED**: This method is not called - PR creation was removed.
+        """
         start_time = time.time()
         pr_number = pr_info["number"]
         branch = pr_info.get("headRefName", "")
@@ -1672,9 +2391,11 @@ Focus on what functionality was added or fixed. Do not include implementation de
         self._update_status(slot, issue, "Worktree", "setting up")
         worktree = self.worktree_manager.create_for_existing_branch(issue, branch)
         log("DEBUG", f"  Worktree ready: {worktree}")
-        self.state.in_progress[issue] = str(worktree)
-        self.state.pr_numbers[issue] = pr_number
-        self.state.save(self.state_file)
+        # Protect state modifications with lock
+        with self.state._save_lock:
+            self.state.in_progress[issue] = str(worktree)
+            self.state.pr_numbers[issue] = pr_number
+            self.state.save(self.state_file)
 
         # Fetch CI logs
         log("DEBUG", "  Fetching CI run info")
@@ -1847,8 +2568,10 @@ DO NOT describe what you're doing - just run the commands to commit.
 
         # Cleanup worktree since we're moving on
         self.worktree_manager.remove(issue)
-        del self.state.in_progress[issue]
-        self.state.save(self.state_file)
+        # Protect state modifications with lock
+        with self.state._save_lock:
+            del self.state.in_progress[issue]
+            self.state.save(self.state_file)
 
         duration = time.time() - start_time
         log("INFO", f"  Fixed PR #{pr_number} - moving to next issue")
@@ -1864,15 +2587,22 @@ DO NOT describe what you're doing - just run the commands to commit.
             stderr=subprocess.PIPE,
             text=True,
         )
-        proc.communicate(input=comment)
+        try:
+            proc.communicate(input=comment, timeout=30)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            proc.wait(timeout=5)
+            log("WARN", f"Timeout posting update to issue #{issue}")
 
     def _poll_pr_status(self, pr_number: int, slot: int, issue: int) -> str:
         """Poll PR status until merged, failed, or timeout.
 
-        Returns: "merged", "failed", "timeout"
+        Returns: "merged", "failed", "timeout", "stalled"
         """
         max_wait = PR_MAX_WAIT
         start = time.time()
+        passed_but_not_merged_count = 0
+        MAX_PASSED_POLLS = 5  # If passed 5 times but not merged, give up
 
         while time.time() - start < max_wait:
             self._update_status(slot, issue, "PR", "checking")
@@ -1884,18 +2614,26 @@ DO NOT describe what you're doing - just run the commands to commit.
                     "view",
                     str(pr_number),
                     "--json",
-                    "state,mergeStateStatus,statusCheckRollup",
+                    "state,mergeStateStatus,statusCheckRollup,autoMergeRequest",
                 ]
             )
 
             if cp.returncode != 0:
+                log("WARN", f"  Failed to check PR #{pr_number}: {cp.stderr[:100]}")
                 self._update_status(slot, issue, "PR", "error")
                 time.sleep(PR_POLL_INTERVAL)
                 continue
 
-            data = json.loads(cp.stdout)
+            try:
+                data = json.loads(cp.stdout)
+            except json.JSONDecodeError as e:
+                log("ERROR", f"  Failed to parse PR status: {e}")
+                time.sleep(PR_POLL_INTERVAL)
+                continue
+
             state = data.get("state", "").upper()
             checks = data.get("statusCheckRollup", []) or []
+            auto_merge = data.get("autoMergeRequest")  # Check auto-merge status
 
             if state == "MERGED":
                 return "merged"
@@ -1904,7 +2642,7 @@ DO NOT describe what you're doing - just run the commands to commit.
                 return "failed"
 
             # Count check statuses
-            pending = sum(1 for c in checks if c.get("status") == "PENDING" or c.get("status") == "QUEUED")
+            pending = sum(1 for c in checks if c.get("status") in ("PENDING", "QUEUED"))
             failing = sum(1 for c in checks if c.get("conclusion") == "FAILURE")
 
             if failing > 0:
@@ -1912,8 +2650,28 @@ DO NOT describe what you're doing - just run the commands to commit.
                 return "failed"
             elif pending > 0:
                 self._update_status(slot, issue, "PR", f"CI running ({pending})")
+                passed_but_not_merged_count = 0  # Reset counter
             else:
-                self._update_status(slot, issue, "PR", "waiting for merge")
+                # All checks passed
+                if auto_merge is None:
+                    # Auto-merge not enabled - will never merge automatically
+                    log("WARN", f"  PR #{pr_number} has passed CI but auto-merge not enabled")
+                    return "stalled"
+
+                # Auto-merge enabled but not merged yet
+                passed_but_not_merged_count += 1
+                if passed_but_not_merged_count >= MAX_PASSED_POLLS:
+                    # Passed CI multiple times but still not merged - something wrong
+                    log(
+                        "WARN",
+                        f"  PR #{pr_number} passed CI {MAX_PASSED_POLLS} times but not merged. "
+                        f"Possible merge conflicts or approval needed.",
+                    )
+                    return "stalled"
+
+                self._update_status(
+                    slot, issue, "PR", f"waiting for auto-merge ({passed_but_not_merged_count}/{MAX_PASSED_POLLS})"
+                )
 
             time.sleep(PR_POLL_INTERVAL)
 
@@ -1953,8 +2711,10 @@ DO NOT describe what you're doing - just run the commands to commit.
             # 2. Create worktree
             self._update_status(slot, issue, "Worktree", "creating")
             worktree = self.worktree_manager.create(issue, title)
-            self.state.in_progress[issue] = str(worktree)
-            self.state.save(self.state_file)
+            # Protect state modifications with lock
+            with self.state._save_lock:
+                self.state.in_progress[issue] = str(worktree)
+                self.state.save(self.state_file)
 
             # 3. Fetch and rebase
             self._update_status(slot, issue, "Git", "fetch & rebase")
@@ -2034,8 +2794,10 @@ You are on branch: {worktree.name}
             if not has_uncommitted and not has_new_commits:
                 log("WARN", f"  No changes made for #{issue}")
                 self.worktree_manager.remove(issue)
-                del self.state.in_progress[issue]
-                self.state.save(self.state_file)
+                # Protect state modifications with lock
+                with self.state._save_lock:
+                    del self.state.in_progress[issue]
+                    self.state.save(self.state_file)
                 return WorkerResult(issue, "skipped", None, "No changes made", time.time() - start_time)
 
             # 6. Get summary
@@ -2051,7 +2813,12 @@ You are on branch: {worktree.name}
                 stderr=subprocess.PIPE,
                 text=True,
             )
-            proc.communicate(input=summary_comment)
+            try:
+                proc.communicate(input=summary_comment, timeout=30)
+            except subprocess.TimeoutExpired:
+                proc.kill()
+                proc.wait(timeout=5)
+                log("WARN", f"Timeout posting summary to issue #{issue}")
 
             # 8. Commit (if Claude didn't already)
             if has_uncommitted:
@@ -2122,31 +2889,67 @@ DO NOT describe what you're doing - just run the commands to commit.
             # NOTE: PR creation removed - commits are pushed to branches only
             self._update_status(slot, issue, "Cleanup", "removing worktree")
             self.worktree_manager.remove(issue)
-            del self.state.in_progress[issue]
-            self.state.save(self.state_file)
+            # Protect state modifications with lock
+            with self.state._save_lock:
+                del self.state.in_progress[issue]
+                self.state.save(self.state_file)
 
             duration = time.time() - start_time
             log("INFO", f"  Committed #{issue} to branch {branch} in {duration:.0f}s")
             self._post_issue_update(issue, f"✅ Committed changes to branch: {branch}")
             return WorkerResult(issue, "completed", None, None, duration)
 
-        except Exception as e:
+        except (KeyboardInterrupt, SystemExit):
+            # Clean shutdown - preserve state and re-raise
+            if issue in self.state.in_progress:
+                with self.state._save_lock:
+                    self.state.paused_issues[issue] = PausedIssue(
+                        worktree=self.state.in_progress[issue],
+                        pr=None,
+                        reason="Interrupted by user",
+                    )
+                    del self.state.in_progress[issue]
+                    # Save inside lock to prevent race conditions
+                    self.state.save(self.state_file)
+            raise
+        except RuntimeError as e:
+            # Expected failures (git push failed, etc.)
             log("ERROR", f"  Issue #{issue} failed: {e}")
-
-            # Post failure to GitHub issue
             error_msg = str(e)[:200]
             self._post_issue_update(issue, f"❌ Implementation failed:\n\n```\n{error_msg}\n```")
 
-            # Cleanup on failure if worktree was created
             if issue in self.state.in_progress:
-                # Keep worktree for debugging, just update state
-                self.state.paused_issues[issue] = PausedIssue(
-                    worktree=self.state.in_progress[issue],
-                    pr=None,  # PR creation removed
-                    reason=str(e)[:100],
-                )
-                del self.state.in_progress[issue]
-                self.state.save(self.state_file)
+                with self.state._save_lock:
+                    self.state.paused_issues[issue] = PausedIssue(
+                        worktree=self.state.in_progress[issue],
+                        pr=None,
+                        reason=str(e)[:100],
+                    )
+                    del self.state.in_progress[issue]
+                    # Save inside lock to prevent race conditions
+                    self.state.save(self.state_file)
+
+            duration = time.time() - start_time
+            return WorkerResult(issue, "paused", None, str(e), duration)
+        except Exception as e:
+            # Unexpected failures - log with traceback
+            import traceback
+
+            log("ERROR", f"  Issue #{issue} failed unexpectedly: {e}\n{traceback.format_exc()}")
+
+            error_msg = str(e)[:200]
+            self._post_issue_update(issue, f"❌ Implementation failed:\n\n```\n{error_msg}\n```")
+
+            if issue in self.state.in_progress:
+                with self.state._save_lock:
+                    self.state.paused_issues[issue] = PausedIssue(
+                        worktree=self.state.in_progress[issue],
+                        pr=None,
+                        reason=str(e)[:100],
+                    )
+                    del self.state.in_progress[issue]
+                    # Save inside lock to prevent race conditions
+                    self.state.save(self.state_file)
 
             duration = time.time() - start_time
             return WorkerResult(issue, "paused", None, str(e), duration)
@@ -2237,7 +3040,8 @@ def print_paused_summary(state: ImplementationState) -> None:
 def main() -> int:
     """CLI entry point for the issue implementer."""
     p = argparse.ArgumentParser(
-        description="Orchestrate parallel implementation of GitHub issues using worktrees",
+        description="Orchestrate parallel implementation of GitHub issues using worktrees.\n"
+        "Requires Mojo v0.26.1+. Language reference: https://docs.modular.com/mojo/manual/",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""\
 Examples:
@@ -2269,6 +3073,7 @@ Examples:
     )
     p.add_argument("--dry-run", action="store_true", help="Preview actions without making changes")
     p.add_argument("--analyze", action="store_true", help="Just show dependency graph")
+    p.add_argument("--export-graph", metavar="OUTPUT.dot", help="Export dependency graph to Graphviz DOT file")
     p.add_argument("--resume", action="store_true", help="Resume from previous run")
     p.add_argument(
         "--timeout",
@@ -2278,6 +3083,12 @@ Examples:
         help=f"Timeout per issue (default: {ISSUE_TIMEOUT})",
     )
     p.add_argument("--cleanup", action="store_true", help="Cleanup stale worktrees and exit")
+    p.add_argument(
+        "--rollback",
+        type=int,
+        metavar="ISSUE",
+        help="Rollback implementation of specific issue (delete branch, remove from state)",
+    )
     p.add_argument("--state-dir", type=pathlib.Path, help="Directory to persist state")
     p.add_argument(
         "--api-delay",
@@ -2297,11 +3108,28 @@ Examples:
         action="store_true",
         help="Enable DEBUG output (requires --verbose)",
     )
+    p.add_argument("--health-check", action="store_true", help="Check dependency status and exit")
 
     args = p.parse_args()
 
     # Set verbose/debug mode
     set_verbose(args.verbose, args.debug)
+
+    # Health check mode - run and exit
+    if args.health_check:
+        exit_code = health_check()
+        return exit_code
+
+    # Rollback mode - run and exit
+    if args.rollback:
+        # Get repo root and state dir
+        repo_root = pathlib.Path.cwd()
+        state_dir = args.state_dir or (repo_root / ".state")
+        exit_code = rollback_issue(args.rollback, state_dir, repo_root)
+        return exit_code
+
+    # Verify all required dependencies are available
+    check_dependencies()
 
     # Parse issue numbers if provided
     issues: list[int] | None = None
@@ -2410,6 +3238,11 @@ Examples:
     if opts.analyze:
         print_analysis(resolver, state)
         return 0
+
+    # Handle export-graph mode
+    if opts.export_graph:
+        exit_code = export_dependency_graph(state.issues, opts.export_graph)
+        return exit_code
 
     # Calculate actual worker count (don't spawn more threads than issues)
     pending_count = len(state.issues) - len(state.completed_issues) - len(state.paused_issues)
@@ -2557,17 +3390,8 @@ Examples:
                                 f"Main loop: marked #{issue_num} as paused ({result.status})",
                             )
 
-                        # Release slot (find slot first, then release without holding lock)
-                        slot_to_release = None
-                        with status_tracker._lock:
-                            for slot in range(actual_workers):
-                                if slot in status_tracker._slots:
-                                    item, _, _, _ = status_tracker._slots[slot]
-                                    if item == issue_num:
-                                        slot_to_release = slot
-                                        break
-                        if slot_to_release is not None:
-                            status_tracker.release_slot(slot_to_release)
+                        # Release slot for this issue
+                        status_tracker.release_by_item(issue_num)
 
         finally:
             # Save state even if interrupted

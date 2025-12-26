@@ -403,6 +403,21 @@ struct ExTensor(Copyable, Movable, Sized):
         if self._refcount:
             self._refcount[] += 1
 
+    fn __moveinit__(out self, deinit existing: Self):
+        """Move constructor - transfers ownership.
+
+        For safety, we copy the List fields instead of moving them with ^
+        to avoid potential corruption issues with List's internal buffer.
+        """
+        self._data = existing._data
+        self._shape = existing._shape.copy()
+        self._strides = existing._strides.copy()
+        self._dtype = existing._dtype
+        self._numel = existing._numel
+        self._is_view = existing._is_view
+        self._refcount = existing._refcount
+        self._original_numel_quantized = existing._original_numel_quantized
+
     fn __del__(deinit self):
         """Destructor - decrements ref count, frees if last reference.
 
@@ -638,21 +653,14 @@ struct ExTensor(Copyable, Movable, Sized):
         var dtype_size = self._get_dtype_size()
         var offset_bytes = offset_elements * dtype_size
 
-        # Create view by explicitly copying (increments refcount via __copyinit__)
+        # Create view by copying (increments refcount)
         var result = self.copy()
-        result._is_view = (
-            True  # Mark as view since it shares data with original
-        )
+        result._is_view = True
 
-        # Update shape with sliced dimension
-        result._shape = List[Int]()
-        for i in range(len(self._shape)):
-            if i == axis:
-                result._shape.append(end - start)
-            else:
-                result._shape.append(self._shape[i])
+        # Update the sliced dimension in place
+        result._shape[axis] = end - start
 
-        # Update data pointer to slice offset
+        # Update data pointer to point to sliced data
         result._data = self._data.offset(offset_bytes)
 
         # Strides remain the same (already copied by __copyinit__)
