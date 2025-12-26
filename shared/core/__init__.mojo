@@ -62,13 +62,13 @@ imports to be uncommented as Issue #49 progresses. See Issue #49 for details
 """
 
 # Package version
-from ..version import VERSION
+from shared.version import VERSION
 
 # ============================================================================
 # Default Hyperparameters
 # ============================================================================
 
-from .defaults import (
+from shared.core.defaults import (
     DEFAULT_LEAKY_RELU_ALPHA,
     DEFAULT_ELU_ALPHA,
     DEFAULT_HARD_TANH_MIN,
@@ -86,7 +86,7 @@ from .defaults import (
 # Mathematical Constants
 # ============================================================================
 
-from .math_constants import (
+from shared.core.math_constants import (
     PI,
     SQRT_2,
     SQRT_2_OVER_PI,
@@ -100,7 +100,7 @@ from .math_constants import (
 # Numerical Stability Constants
 # ============================================================================
 
-from .numerical_constants import (
+from shared.core.numerical_constants import (
     EPSILON_DIV,
     EPSILON_LOSS,
     EPSILON_NORM,
@@ -112,7 +112,7 @@ from .numerical_constants import (
 # Core Tensor Type and Creation Functions
 # ============================================================================
 
-from .extensor import (
+from shared.core.extensor import (
     ExTensor,
     zeros,
     ones,
@@ -136,7 +136,7 @@ from .extensor import (
 # Shape Manipulation Operations
 # ============================================================================
 
-from .shape import (
+from shared.core.shape import (
     reshape,
     squeeze,
     unsqueeze,
@@ -161,14 +161,14 @@ from .shape import (
 # Custom Data Types
 # ============================================================================
 
-from .types.fp8 import FP8
-from .types.bf8 import BF8
+from shared.core.types.fp8 import FP8
+from shared.core.types.bf8 import BF8
 
 # ============================================================================
 # Gradient Container Types
 # ============================================================================
 
-from .gradient_types import (
+from shared.core.gradient_types import (
     GradientPair,
     GradientTriple,
     GradientQuad,
@@ -178,7 +178,7 @@ from .gradient_types import (
 # Arithmetic Operations
 # ============================================================================
 
-from .arithmetic import (
+from shared.core.arithmetic import (
     add,
     subtract,
     multiply,
@@ -197,7 +197,7 @@ from .arithmetic import (
 # Matrix Operations
 # ============================================================================
 
-from .matrix import (
+from shared.core.matrix import (
     matmul,
     transpose,
     dot,
@@ -210,7 +210,7 @@ from .matrix import (
 # Activation Functions
 # ============================================================================
 
-from .activation import (
+from shared.core.activation import (
     relu,
     leaky_relu,
     prelu,
@@ -239,7 +239,7 @@ from .activation import (
     hard_tanh_backward,
 )
 
-from .activation_ops import (
+from shared.core.activation_ops import (
     exp_scalar_f32,
     exp_scalar_f64,
 )
@@ -248,7 +248,7 @@ from .activation_ops import (
 # Neural Network Operations
 # ============================================================================
 
-from .linear import (
+from shared.core.linear import (
     linear,
     linear_no_bias,
     linear_backward,
@@ -257,7 +257,7 @@ from .linear import (
     LinearNoBiasBackwardResult,
 )
 
-from .conv import (
+from shared.core.conv import (
     conv2d,
     conv2d_no_bias,
     conv2d_backward,
@@ -278,7 +278,7 @@ from .conv import (
     DepthwiseSeparableConv2dNoBiasBackwardResult,
 )
 
-from .pooling import (
+from shared.core.pooling import (
     maxpool2d,
     avgpool2d,
     global_avgpool2d,
@@ -287,14 +287,14 @@ from .pooling import (
     global_avgpool2d_backward,
 )
 
-from .dropout import (
+from shared.core.dropout import (
     dropout,
     dropout2d,
     dropout_backward,
     dropout2d_backward,
 )
 
-from .normalization import (
+from shared.core.normalization import (
     batch_norm2d,
     batch_norm2d_backward,
     layer_norm,
@@ -305,9 +305,9 @@ from .normalization import (
     instance_norm_backward,
 )
 
-from .normalize_ops import normalize_rgb
+from shared.core.normalize_ops import normalize_rgb
 
-from .scalar_ops import (
+from shared.core.scalar_ops import (
     sqrt_scalar_f32,
     sqrt_scalar_f64,
     pow_scalar_f32,
@@ -318,7 +318,7 @@ from .scalar_ops import (
 # Attention Mechanisms
 # ============================================================================
 
-from .attention import (
+from shared.core.attention import (
     scaled_dot_product_attention,
     scaled_dot_product_attention_masked,
     scaled_dot_product_attention_backward,
@@ -337,7 +337,7 @@ from .attention import (
 # Element-wise Operations
 # ============================================================================
 
-from .elementwise import (
+from shared.core.elementwise import (
     abs,
     sign,
     exp,
@@ -371,7 +371,7 @@ from .elementwise import (
 # Comparison Operations
 # ============================================================================
 
-from .comparison import (
+from shared.core.comparison import (
     equal,
     not_equal,
     less,
@@ -384,7 +384,7 @@ from .comparison import (
 # Broadcasting Utilities
 # ============================================================================
 
-from .broadcasting import (
+from shared.core.broadcasting import (
     broadcast_shapes,
     are_shapes_broadcastable,
     compute_broadcast_strides,
@@ -395,7 +395,7 @@ from .broadcasting import (
 # Initialization Functions
 # ============================================================================
 
-from .initializers import (
+from shared.core.initializers import (
     xavier_uniform,
     xavier_normal,
     kaiming_uniform,
@@ -411,7 +411,7 @@ from .initializers import (
 # Loss Functions
 # ============================================================================
 
-from .loss import (
+from shared.core.loss import (
     binary_cross_entropy,
     mean_squared_error,
     cross_entropy,
@@ -428,7 +428,7 @@ from .loss import (
     kl_divergence_backward,
 )
 
-from .loss_utils import (
+from shared.core.loss_utils import (
     clip_predictions,
     create_epsilon_tensor,
     validate_tensor_shapes,
@@ -443,7 +443,7 @@ from .loss_utils import (
     negate_tensor,
 )
 
-from .numerical_safety import (
+from shared.core.numerical_safety import (
     has_nan,
     has_inf,
     count_nan,
@@ -462,7 +462,7 @@ from .numerical_safety import (
 # Dtype Dispatch Helpers
 # ============================================================================
 
-from .dtype_dispatch import (
+from shared.core.dtype_dispatch import (
     dispatch_unary,
     dispatch_binary,
     dispatch_scalar,
@@ -485,7 +485,7 @@ from .dtype_dispatch import (
 # Reduction Operations
 # ============================================================================
 
-from .reduction import (
+from shared.core.reduction import (
     sum,
     mean,
     max_reduce,
@@ -504,7 +504,7 @@ from .reduction import (
     percentile_backward,
 )
 
-from .reduction_ops import (
+from shared.core.reduction_ops import (
     ReduceOp,
     ReduceBackwardOp,
     SumOp,
@@ -517,7 +517,7 @@ from .reduction_ops import (
     MinBackwardOp,
 )
 
-from .reduction_utils import (
+from shared.core.reduction_utils import (
     compute_strides,
     linear_to_coords,
     coords_to_linear,
@@ -529,7 +529,7 @@ from .reduction_utils import (
 # Utility Functions
 # ============================================================================
 
-from .utils import (
+from shared.core.utils import (
     argmax,
     top_k_indices,
     top_k,
@@ -540,7 +540,7 @@ from .utils import (
 # Tensor Validation Functions
 # ============================================================================
 
-from .validation import (
+from shared.core.validation import (
     validate_tensor_shape,
     validate_tensor_dtype,
     validate_matching_tensors,
@@ -562,7 +562,7 @@ from .validation import (
 # Parallel Processing Utilities
 # ============================================================================
 
-from .parallel_utils import (
+from shared.core.parallel_utils import (
     PARALLEL_BATCH_THRESHOLD,
     DEFAULT_NUM_WORKERS,
     should_parallelize,
@@ -573,7 +573,18 @@ from .parallel_utils import (
 # Module Interface for Layer Composition
 # ============================================================================
 
-from .module import Module
+from shared.core.module import Module
 
 # Note: Mojo does not support Python's __all__ mechanism.
 # All imported symbols are automatically available to package consumers.
+
+
+def main():
+    """Entry point for standalone compilation.
+
+    This function exists solely to allow `mojo build shared/core/__init__.mojo`
+    to succeed. In normal usage, this module is imported as a package and
+    this function is never called.
+    """
+    print("shared.core package loaded successfully")
+    print("VERSION:", VERSION)
