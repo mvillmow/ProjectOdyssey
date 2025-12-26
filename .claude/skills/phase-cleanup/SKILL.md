@@ -22,7 +22,7 @@ Refactor and finalize code after all parallel phases (Test, Implementation, Pack
 ```bash
 # Check for code quality issues
 grep -r "TODO\|FIXME\|HACK" src/
-just pre-commit-all
+make pre-commit-all
 pixi run mojo test -I . tests/
 
 # Format and clean
@@ -152,7 +152,7 @@ grep -i "warning" /tmp/build.log && echo "❌ Warnings found" || echo "✅ Clean
 grep -r "TODO\|FIXME" src/ && echo "❌ TODOs found" || echo "✅ Clean"
 
 # 5. Pre-commit
-just pre-commit-all
+make pre-commit-all
 
 # 6. Final confirmation
 git status  # No uncommitted changes

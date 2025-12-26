@@ -15,9 +15,9 @@ fi
 echo "Building project ($BUILD_TYPE mode: $MODE) and checking for warnings..."
 
 if [ "$NATIVE" = "1" ]; then
-    build_output=$(NATIVE=1 just build "$MODE" 2>&1)
+    build_output=$(NATIVE=1 make build "$MODE" 2>&1)
 else
-    build_output=$(just build "$MODE" 2>&1)
+    build_output=$(make build "$MODE" 2>&1)
 fi
 
 warning_count=$(echo "$build_output" | grep -c "warning:" || echo "0")

@@ -16,7 +16,7 @@ permissions:
   contents: read
 
 jobs:
-  pre-commit:
+  precommit:
     runs-on: ubuntu-latest
 
     steps:
@@ -43,7 +43,7 @@ jobs:
 
       - name: Run pre-commit hooks
         run: |
-          pixi run pre-commit run --all-files --show-diff-on-failure
+          make pre-commit-all --show-diff-on-failure
 
       - name: Display helpful message on failure
         if: failure()
@@ -51,10 +51,10 @@ jobs:
           echo "❌ Pre-commit checks failed!"
           echo ""
           echo "To fix formatting issues locally:"
-          echo "  1. Install pre-commit: pip install pre-commit"
-          echo "  2. Install hooks: pre-commit install"
-          echo "  3. Run on all files: pre-commit run --all-files"
+          echo "  1. Install pixi run pre-commit: pip install pre-commit"
+          echo "  2. Install hooks: pixi run pre-commit install"
+          echo "  3. Run on all files: make pre-commit-all"
           echo "  4. Commit the fixes"
           echo ""
           echo "Most formatting issues can be auto-fixed by running:"
-          echo "  pre-commit run --all-files"
+          echo "  make pre-commit-all"

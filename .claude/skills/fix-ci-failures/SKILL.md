@@ -43,7 +43,7 @@ gh run view <run-id> --log-failed
 
 | Failure | Command | Fix |
 |---------|---------|-----|
-| Trailing whitespace | `just pre-commit-all` | Stage and re-commit |
+| Trailing whitespace | `make pre-commit-all` | Stage and re-commit |
 | Test failure | `pixi run mojo test tests/` | Fix code, re-run tests |
 | Markdown lint | `npx markdownlint-cli2 --fix "**/*.md"` | Commit fixes |
 | Build error | Check imports/deps | Update and rebuild |

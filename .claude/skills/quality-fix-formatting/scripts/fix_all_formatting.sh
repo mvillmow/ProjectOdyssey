@@ -46,7 +46,7 @@ fi
 # 3. Run pre-commit hooks
 if command -v pre-commit &> /dev/null; then
     echo "📝 Running pre-commit hooks..."
-    if just pre-commit-all 2>&1 | tail -20; then
+    if make pre-commit-all 2>&1 | tail -20; then
         echo "✅ Pre-commit hooks applied"
     else
         echo "✅ Pre-commit hooks fixed issues"

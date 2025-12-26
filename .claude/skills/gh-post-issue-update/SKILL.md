@@ -81,7 +81,7 @@ gh issue comment <number> --body "$(cat <<'EOF'
 
 ### Verification
 - [x] `pixi run test` passes
-- [x] `just pre-commit-all` passes
+- [x] `make pre-commit-all` passes
 - [x] Manual verification complete
 EOF
 )"

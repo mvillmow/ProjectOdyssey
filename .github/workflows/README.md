@@ -8,7 +8,7 @@ on their purpose: testing, validation, security, and performance monitoring.
 The CI/CD strategy uses GitHub Actions with the following principles:
 
 1. **Pixi-based Setup**: All workflows use Pixi for environment management instead of modular/setup-mojo
-2. **Justfile Integration**: Workflows use justfile recipes for consistency between local and CI environments
+2. **Makefile Integration**: Workflows use Makefile recipes for consistency between local and CI environments
 3. **Parallel Execution**: Test workflows use matrix strategies for parallelization
 4. **Fail-Fast Control**: Strategic use of `fail-fast: false` allows complete test runs without early stopping
 5. **Artifact Preservation**: Test results and reports are uploaded for 7-30 days for analysis
@@ -456,43 +456,43 @@ The CI/CD strategy uses GitHub Actions with the following principles:
 
 ## Common Patterns
 
-### Justfile Integration
+### Makefile Integration
 
-All CI workflows use justfile recipes for consistent command execution between local development and CI:
+All CI workflows use Makefile recipes for consistent command execution between local development and CI:
 
 ```yaml
-# Install Just in workflow (using official GitHub Action - more reliable)
+# Install make in workflow (using official GitHub Action - more reliable)
 - name: Install Just
   uses: extractions/setup-just@v2
 
-# Use justfile recipes
+# Use Makefile recipes
 - name: Build package
-  run: just build
+  run: make build
 
 - name: Run test group
-  run: just test-group "tests/shared/core" "test_*.mojo"
+  run: make test-group "tests/shared/core" "test_*.mojo"
 
 - name: Run all tests
-  run: just test-mojo
+  run: make test-mojo
 ```
 
 **Benefits**:
 
-1. **Reproducibility**: Developers can run `just validate` locally to reproduce CI results
+1. **Reproducibility**: Developers can run `make validate` locally to reproduce CI results
 2. **Maintainability**: Complex logic lives in justfile, not scattered across workflow YAML
 3. **Consistency**: Identical flags and commands between local and CI environments
-4. **Documentation**: Justfile is self-documenting with `just --list`
+4. **Documentation**: Makefile is self-documenting with `make <tab>`
 
 **Available CI Recipes**:
 
-- `just build` - Build shared package with compilation validation
-- `just package` - Compile package (validation only, no output artifact)
-- `just test-group PATH PATTERN` - Run specific test group
-- `just test-mojo` - Run all Mojo tests
-- `just validate` - Full validation (build + test)
-- `just pre-commit` - Run pre-commit hooks
+- `make build` - Build shared package with compilation validation
+- `make package` - Compile package (validation only, no output artifact)
+- `make test-group PATH PATTERN` - Run specific test group
+- `make test-mojo` - Run all Mojo tests
+- `make validate` - Full validation (build + test)
+- `make pre-commit` - Run pre-commit hooks
 
-**See**: `/justfile` for complete implementation and `CLAUDE.md` for developer documentation.
+**See**: `/Makefile` for complete implementation and `CLAUDE.md` for developer documentation.
 
 ### Pixi-Based Environment Setup
 

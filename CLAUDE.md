@@ -778,7 +778,7 @@ Output: Section outline, examples drafted, verification plan
 Iteration 3: Execution
 - Insert new section using Edit tool
 - Add cross-references to existing sections
-- Run markdown linting (just pre-commit-all)
+- Run markdown linting (make pre-commit-all)
 - Fix any linting errors
 - Create PR with "Closes #2549"
 Output: Updated CLAUDE.md, passing linting, PR created
@@ -881,69 +881,69 @@ This project uses Pixi for environment management:
 
 ## Common Commands
 
-### Justfile Build System
+### Makefile Build System
 
-The project uses [Just](<https://just.systems/>) as a unified command runner for local development and CI/CD consistency.
+The project uses [Make](https://www.gnu.org/software/make/) as a unified command runner for local development and CI/CD consistency.
 
 #### Quick Reference
 
 ```bash
 # Show all available recipes
-just --list
+make --list
 
 # Get help
-just help
+make help
 
 # Development commands
-just build                  # Build project in debug mode
-just test                   # Run all tests
-just test-mojo             # Run only Mojo tests
-just format                # Format all files
+make build                  # Build project in debug mode
+make test                   # Run all tests
+make test-mojo             # Run only Mojo tests
+make format                # Format all files
 
 # CI-specific commands (match GitHub Actions)
-just validate           # Full validation (build + test)
-just build              # Build shared package
-just package           # Compile package (validation only)
-just test-mojo          # Run all Mojo tests
-just test-group PATH PATTERN  # Run specific test group
-just pre-commit               # Run pre-commit hooks
-just pre-commit-all               # Run pre-commit hooks on all files
+make validate           # Full validation (build + test)
+make build              # Build shared package
+make package           # Compile package (validation only)
+make test-mojo          # Run all Mojo tests
+make test-group PATH PATTERN  # Run specific test group
+make pre-commit               # Run pre-commit hooks
+make pre-commit-all               # Run pre-commit hooks on all files
 
 # Training and inference
-just train                 # Train LeNet-5 with defaults
-just train lenet5 fp16 20  # Train with FP16, 20 epochs
-just infer lenet5 ./weights  # Run inference
+make train                 # Train LeNet-5 with defaults
+make train lenet5 fp16 20  # Train with FP16, 20 epochs
+make infer lenet5 ./weights  # Run inference
 
 # Docker management
-just docker-up             # Start development environment
-just docker-down           # Stop environment
-just shell          # Open shell in container
+make docker-up             # Start development environment
+make docker-down           # Stop environment
+make shell          # Open shell in container
 ```
 
-### Why Use Justfile?
+### Why Use Makefile
 
 1. **Consistency**: Same commands work locally and in CI
 2. **Simplicity**: Easy-to-read recipes vs complex bash scripts
-3. **Documentation**: Self-documenting with `just --list`
+3. **Documentation**: Self-documenting with `make <tab>`
 4. **Reliability**: Ensures identical flags between local dev and CI
 
 ### CI Integration
 
-GitHub Actions workflows use justfile recipes to ensure consistency:
+GitHub Actions workflows use Makefile recipes to ensure consistency:
 
 ```yaml
 # Example from comprehensive-tests.yml
 - name: Run test group
-  run: just test-group "tests/shared/core" "test_*.mojo"
+  run: make test-group "tests/shared/core" "test_*.mojo"
 
 # Example from build-validation.yml
 - name: Build package
-  run: just build
+  run: make build
 ```
 
-This ensures developers can run `just validate` locally to reproduce CI results exactly.
+This ensures developers can run `make validate` locally to reproduce CI results exactly.
 
-**See**: `justfile` for complete recipe list and implementation details.
+**See**: `Makefile` for complete recipe list and implementation details.
 
 ### Development Workflows
 
@@ -1007,10 +1007,10 @@ for Mojo code and markdown linting for documentation.
 pixi run pre-commit install
 
 # Run hooks manually on all files
-just pre-commit-all
+make pre-commit-all
 
 # Run hooks manually on staged files only
-just precommit
+make precommit
 
 # NEVER skip hooks with --no-verify
 # If a hook fails, fix the code instead
@@ -1026,7 +1026,7 @@ SKIP=trailing-whitespace git commit -m "message"
 
 1. Read the error message to understand what failed
 2. Fix the code to pass the hook
-3. Re-run `just precommit` to verify fixes
+3. Re-run `make precommit` to verify fixes
 4. Commit again
 
 **Valid alternatives to --no-verify:**
@@ -1693,7 +1693,7 @@ Before committing markdown files:
 pixi run npx markdownlint-cli2 path/to/file.md
 
 # Check all markdown files
-zust pre-commit-all
+make pre-commit-all
 
 # View detailed errors
 pixi run npx markdownlint-cli2 path/to/file.md 2>&1

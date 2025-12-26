@@ -54,8 +54,8 @@ jobs:
 
           # Check if shared package exists
           if [ -d "shared" ]; then
-            echo "Building shared package using justfile..."
-            just build ci
+            echo "Building shared package using Makefile..."
+            make build ci
             echo "✅ Shared package built successfully"
           else
             echo "⚠️  No shared package found yet"
@@ -68,8 +68,8 @@ jobs:
 
           # Check if smoke tests exist
           if [ -d "tests/smoke" ]; then
-            echo "Running smoke tests using justfile..."
-            just test-group "tests/smoke" "test_*.mojo" || true
+            echo "Running smoke tests using Makefile..."
+            make test-group "tests/smoke" "test_*.mojo" || true
           else
             echo "⚠️  No smoke tests found yet (tests/smoke/)"
           fi

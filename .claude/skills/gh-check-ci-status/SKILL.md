@@ -48,7 +48,7 @@ gh run rerun <run-id>
 **Pre-commit issues** (formatting/linting):
 
 ```bash
-just pre-commit-all  # Fix locally
+make pre-commit-all  # Fix locally
 git add . && git commit --amend --no-edit
 git push --force-with-lease
 ```

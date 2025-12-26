@@ -23,7 +23,7 @@ If pre-commit hooks fail when you try to commit:
 
 1. **Read the error message** - Hooks tell you exactly what's wrong
 2. **Fix the code** - Update your code to pass the check
-3. **Verify the fix** - Run `just precommit` or `just pre-commit-all`
+3. **Verify the fix** - Run `make precommit` or `make pre-commit-all`
 4. **Commit again** - Let the hooks validate your changes
 
 ### Auto-Fix Hooks

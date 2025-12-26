@@ -28,7 +28,7 @@ git checkout -b <issue>-<description>
 # - Run tests: mojo test tests/
 
 # 3. Quality checks
-just pre-commit-all
+make pre-commit-all
 
 # 4. Commit and PR
 git add . && git commit -m "feat: description

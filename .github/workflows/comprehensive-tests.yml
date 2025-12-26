@@ -321,9 +321,9 @@ jobs:
           mkdir -p test-results
           start_time=$(date +%s)
 
-          # Use justfile to run test group
-          # The justfile handles all the complexity of test discovery and execution
-          if just test-group "${{ matrix.test-group.path }}" "${{ matrix.test-group.pattern }}"; then
+          # Use Makefile to run test group
+          # The Makefile handles all the complexity of test discovery and execution
+          if make test-group "${{ matrix.test-group.path }}" "${{ matrix.test-group.pattern }}"; then
             test_result="passed"
             exit_code=0
           else
@@ -336,7 +336,7 @@ jobs:
           duration=$((end_time - start_time))
 
           # Create simplified result files
-          # Note: Detailed metrics are in justfile output, these are for aggregation
+          # Note: Detailed metrics are in Makefile output, these are for aggregation
           cat > "test-results/${{ matrix.test-group.name }}.json" << EOF
           {
             "group": "${{ matrix.test-group.name }}",
@@ -385,7 +385,7 @@ jobs:
         uses: extractions/setup-just@v3
 
       - name: Run Configs tests
-        run: just test-group tests/configs "test_*.mojo"
+        run: make test-group tests/configs "test_*.mojo"
 
       - name: Upload test results
         if: always()
@@ -423,7 +423,7 @@ jobs:
         uses: extractions/setup-just@v3
 
       - name: Run Benchmarks tests
-        run: just test-group tests/shared/benchmarks "bench_*.mojo"
+        run: make test-group tests/shared/benchmarks "bench_*.mojo"
 
       - name: Upload test results
         if: always()
@@ -457,7 +457,7 @@ jobs:
         uses: extractions/setup-just@v3
 
       - name: Run Core Layers tests
-        run: just test-group tests/shared/core/layers "test_*.mojo"
+        run: make test-group tests/shared/core/layers "test_*.mojo"
 
       - name: Upload test results
         if: always()

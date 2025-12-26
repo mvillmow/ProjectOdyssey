@@ -101,7 +101,7 @@ npx markdownlint-cli2 --fix "**/*.md"  # Fix auto-fixable
 Checks: trailing whitespace, file endings, YAML syntax, large files, line endings
 
 ```bash
-just pre-commit-all        # Run all
+make pre-commit-all        # Run all
 pixi run pre-commit trailing-whitespace --all-files  # Specific
 ```
 
@@ -112,7 +112,7 @@ Linters run automatically in GitHub Actions:
 ```yaml
 - name: Run Linters
   run: |
-    just pre-commit-all
+    make pre-commit-all
 ```
 
 ## Workflow Integration

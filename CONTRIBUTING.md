@@ -146,7 +146,7 @@ To install the package:
 
 \```bash
 
-just install
+make install
 
 \```
 
@@ -180,11 +180,11 @@ pre-commit install
 
 # Run hooks on all files
 
-just pre-commit-all
+make pre-commit-all
 
 # Run hooks on staged files only
 
-just precommit
+make precommit
 
 # NEVER use --no-verify to bypass hooks
 # If a hook fails, fix the code instead
@@ -204,7 +204,7 @@ Pre-commit hooks exist to enforce code quality. **Never bypass them with `--no-v
 
 1. **Read the error** - Hooks tell you exactly what's wrong
 2. **Fix the issue** - Update your code to pass the check
-3. **Verify locally** - Run `just pre-commit-all` before committing
+3. **Verify locally** - Run `make pre-commit-all` before committing
 4. **Commit properly** - Let hooks validate your changes
 
 **Broken hook?** If a hook itself is broken (not your code):

@@ -99,7 +99,7 @@ jobs:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip
 
-      - run: just pre-commit-all
+      - run: make pre-commit-all
 ```
 
 ## Validation Workflow

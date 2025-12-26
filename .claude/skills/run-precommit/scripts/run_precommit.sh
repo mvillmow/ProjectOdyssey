@@ -40,7 +40,7 @@ echo "Running pre-commit hooks..."
 echo ""
 
 # Build command
-CMD="just precommit"
+CMD="make precommit"
 
 if [[ -n "$SPECIFIC_HOOK" ]]; then
     CMD="$CMD $SPECIFIC_HOOK"
@@ -69,6 +69,6 @@ else
     echo ""
     echo "If you need to fix manually:"
     echo "  Fix the issues reported above"
-    echo "  Run: just pre-commit-all"
+    echo "  Run: make pre-commit-all"
     exit $EXIT_CODE
 fi

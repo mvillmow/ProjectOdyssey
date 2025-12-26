@@ -25,7 +25,7 @@ Automatically fix code formatting issues across file types.
 # Fix specific types
 pixi run mojo format src/**/*.mojo
 npx markdownlint-cli2 --fix "**/*.md"
-just pre-commit-all
+make pre-commit-all
 ```
 
 ## Auto-Fix Capabilities
@@ -70,10 +70,10 @@ Manual fixes: language tags, line length
 
 ```bash
 # Run hooks on changed files
-just pre-commit
+make pre-commit
 
 # Run hooks on all files
-just pre-commit-all
+make pre-commit-all
 ```
 
 Auto-fixes: trailing whitespace, missing newlines, line endings, YAML

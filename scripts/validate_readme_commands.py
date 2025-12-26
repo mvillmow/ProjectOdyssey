@@ -59,7 +59,7 @@ ALLOWED_PREFIXES = [
     "pixi run mojo test",
     "pixi run mojo format",
     "pixi run mojo --version",
-    "just precommit",
+    "make precommit",
     "pixi run pre-commit install",
     "python3 -m py_compile",
     "python3 --version",

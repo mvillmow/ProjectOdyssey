@@ -55,24 +55,20 @@ RUN curl -fsSL https://pixi.sh/install.sh | bash
 # Copy project dependency files
 COPY --chown=${USER_NAME}:${USER_NAME} pixi.toml pixi.lock pyproject.toml requirements.txt requirements-dev.txt ./
 
-# Copy the rest of the workspace
-COPY --chown=${USER_NAME}:${USER_NAME} . .
-
 # Set Python path
 ENV PYTHONPATH=/workspace:${PYTHONPATH:-}
 
-# Install just tool
-RUN cargo install just --version 1.14.0
-
 # Install project dependencies
 RUN pixi install
+
+# Copy the rest of the workspace
+COPY --chown=${USER_NAME}:${USER_NAME} . .
 
 # Install pre-commit inside Pixi environment
 RUN pixi run pip install --upgrade pip pre-commit
 
 # Copy and install pre-commit hooks
 COPY --chown=${USER_NAME}:${USER_NAME} .pre-commit-config.yaml ./
-RUN pixi run pre-commit install --install-hooks || true
 
 # Default shell
 CMD ["pixi", "shell"]
@@ -83,7 +79,7 @@ CMD ["pixi", "shell"]
 # ---------------------------
 FROM development AS ci
 
-CMD ["pixi", "run", "pytest", "tests/", "-v"]
+CMD ["make", "test"]
 
 # ---------------------------
 # Stage 4: Production

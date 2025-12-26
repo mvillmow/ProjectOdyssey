@@ -75,7 +75,7 @@ fi
 # 3. Pre-commit hooks
 if command -v pre-commit &> /dev/null; then
     echo "📝 Running pre-commit hooks..."
-    if just pre-commit-all; then
+    if make pre-commit-all; then
         echo "✅ Pre-commit hooks passed"
     else
         if [[ "$MODE" == "check" ]]; then

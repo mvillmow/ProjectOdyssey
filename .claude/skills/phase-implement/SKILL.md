@@ -26,7 +26,7 @@ gh issue view <number> --json body --jq '.body'
 # Verify code quality
 pixi run mojo test -I . tests/
 pixi run mojo build -I . <module>
-just pre-commit-all
+make pre-commit-all
 
 # Check for warnings (zero-warnings policy)
 # Any output = fix before committing

@@ -23,10 +23,10 @@ Validate code quality with pre-commit hooks before committing.
 pixi run pre-commit install
 
 # Run on all files
-just pre-commit-all
+make pre-commit-all
 
 # Run on staged files
-just precommit
+make precommit
 
 # NEVER use --no-verify to bypass hooks
 # Fix the code instead to pass hooks
@@ -53,7 +53,7 @@ SKIP=hook-name git commit -m "message"  # Document why in message
 # ... edit files ...
 
 # 2. Run hooks on staged files
-just precommit
+make precommit
 
 # 3. If hooks auto-fixed files
 git add .              # Stage fixed files
@@ -124,7 +124,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
       - run: pip install pre-commit
-      - run: just pre-commit-all
+      - run: make pre-commit-all
 ```
 
 ## Advanced Usage

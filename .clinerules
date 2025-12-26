@@ -98,7 +98,7 @@ python3 scripts/create_issues.py --dry-run
 
 ```bash
 # Run hooks manually
-just pre-commit-all
+make pre-commit-all
 
 # Mojo format issues
 pixi run mojo format path/to/file.mojo
