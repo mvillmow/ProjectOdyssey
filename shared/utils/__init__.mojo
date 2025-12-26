@@ -102,21 +102,8 @@ from .progress_bar import (
     create_progress_bar_with_eta,  # Factory with ETA
 )
 
-# Random seed utilities
-from .random import (
-    set_seed,  # Set random seed globally
-    get_global_seed,  # Get current seed
-    get_random_state,  # Get current random state
-    set_random_state,  # Restore random state
-    save_random_state,  # Save random state to history
-    get_saved_state,  # Get saved random state by index
-    RandomState,  # Random state container
-    random_uniform,  # Generate uniform random
-    random_normal,  # Generate normal random
-    random_int,  # Generate random integer
-    random_choice,  # Choose random element from list
-    shuffle,  # Shuffle list in-place
-)
+# Note: Random utilities removed - use Mojo stdlib 'random' module directly
+# Example: from random import random_float64, random_si64, seed
 
 # Profiling utilities
 from .profiling import (
