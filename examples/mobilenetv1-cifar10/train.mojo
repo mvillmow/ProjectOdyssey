@@ -44,7 +44,7 @@ from shared.core import (
     cross_entropy_backward,
 )
 from shared.data import extract_batch_pair, compute_num_batches, DatasetInfo
-from shared.data.datasets import load_cifar10_train
+from shared.data.datasets import CIFAR10Dataset
 from shared.training.schedulers import step_lr
 from shared.utils.training_args import parse_training_args_with_defaults
 from model import MobileNetV1
@@ -101,7 +101,8 @@ fn train_epoch(
 
         # Compute loss
         var loss = cross_entropy(logits, batch_labels)
-        total_loss = total_loss + loss
+        var loss_value = loss._data.bitcast[Float32]()[0]
+        total_loss = total_loss + loss_value
 
         # Backward pass (see structure documentation above)
         # ... (would be ~1400 lines of gradient computation)
@@ -155,7 +156,7 @@ fn validate(
                     max_logit = logits_data[i * 10 + j]
                     pred_class = j
 
-            var true_class = int(batch_labels[i])
+            var true_class = Int(batch_labels[i])
             if pred_class == true_class:
                 total_correct += 1
 
@@ -201,7 +202,8 @@ fn main() raises:
     print()
 
     print("Loading CIFAR-10 training set...")
-    var train_data = load_cifar10_train(data_dir)
+    var dataset = CIFAR10Dataset(data_dir)
+    var train_data = dataset.get_train_data()
     var train_images = train_data[0]
     var train_labels = train_data[1]
     print("  Training samples: " + String(train_images.shape()[0]))
