@@ -2,15 +2,8 @@
 # See https://pre-commit.com for more information
 
 repos:
-  # Mojo formatting (BUGGY)
-  #
-  # BUGGY REASON: The mojo format tool incorrectly removes spaces in method signatures,
-  # specifically converting "fn method(mut self" to "fn method(mutself" which breaks the code.
-  # This causes all Mojo files formatted by this hook to become syntactically invalid.
-  #
-  # TRACKING ISSUE: https://github.com/modular/modular/issues/5573
-  # Bug description: mojo format removes the space after 'mut' keyword in parameter lists, and other issues
-  #
+  # Mojo formatting - requires Mojo v0.26.1+
+  # See: https://docs.modular.com/mojo/manual/
   - repo: local
     hooks:
       - id: mojo-format
