@@ -11,11 +11,11 @@ All functions are pure functional - they process inputs to produce outputs witho
 maintaining internal state.
 """
 
-from .extensor import ExTensor, ones_like, zeros_like, full_like
-from .arithmetic import add, subtract, multiply, divide
-from .elementwise import log, clip, abs
-from .comparison import less, greater
-from .dtype_cast import cast_tensor
+from shared.core.extensor import ExTensor, ones_like, zeros_like, full_like
+from shared.core.arithmetic import add, subtract, multiply, divide
+from shared.core.elementwise import log, clip, abs
+from shared.core.comparison import less, greater
+from shared.core.dtype_cast import cast_tensor
 
 
 fn clip_predictions(
@@ -333,3 +333,12 @@ fn negate_tensor(tensor: ExTensor) raises -> ExTensor:
     """
     var zero = zeros_like(tensor)
     return subtract(zero, tensor)
+
+
+def main():
+    """Entry point for build validation only.
+
+    This function exists solely to satisfy `mojo build` requirements for
+    library files during CI validation. It should never be called in production.
+    """
+    pass
