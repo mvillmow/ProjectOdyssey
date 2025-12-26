@@ -13,7 +13,7 @@ Example:
     ```
 """
 
-from .config import Config, load_config, merge_configs
+from shared.utils.config import Config, load_config, merge_configs
 from python import Python
 
 
@@ -272,3 +272,12 @@ fn validate_experiment_config(config: Config) raises:
     valid_optimizers.append("adamw")
     valid_optimizers.append("rmsprop")
     config.validate_enum("optimizer.name", valid_optimizers)
+
+
+def main():
+    """Entry point for standalone compilation.
+
+    This module is primarily used as a library. The main function
+    exists only to allow standalone compilation for validation purposes.
+    """
+    pass
