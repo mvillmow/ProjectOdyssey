@@ -326,12 +326,3 @@ fn dropout2d_backward(
     """
     # Same as regular dropout backward - mask is already broadcast
     return dropout_backward(grad_output, mask, p)
-
-
-def main():
-    """Entry point for build validation only.
-
-    This function exists solely to satisfy `mojo build` requirements for
-    library files during CI validation. It should never be called in production.
-    """
-    pass

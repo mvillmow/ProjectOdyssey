@@ -34,8 +34,3 @@ from shared.training.schedulers.step_decay import (
     exponential_lr,
     constant_lr,
 )
-
-
-def main():
-    """Main entry point for standalone compilation."""
-    pass

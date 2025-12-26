@@ -209,12 +209,3 @@ struct PrefetchDataLoader[
         # - Benchmark point for measuring any async benefits
 
         return batches^
-
-
-def main():
-    """Entry point for standalone compilation validation.
-
-    This function exists only to allow `mojo build` to compile this library file.
-    In normal usage, this module is imported as part of the shared.data package.
-    """
-    pass

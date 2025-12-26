@@ -849,14 +849,3 @@ struct LogicalOrOp(ElementwiseBinaryOp):
             return 1.0
         else:
             return 0.0
-
-
-def main():
-    """Entry point for standalone compilation.
-
-    This function exists solely to allow the module to be compiled
-    as an executable with `mojo build`. In normal usage, this module
-    is imported by other code and this function is never called.
-    """
-    print("elementwise_dispatch.mojo: Library module compiled successfully")
-    print("This module is meant to be imported, not executed directly.")

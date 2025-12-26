@@ -577,14 +577,3 @@ from shared.core.module import Module
 
 # Note: Mojo does not support Python's __all__ mechanism.
 # All imported symbols are automatically available to package consumers.
-
-
-def main():
-    """Entry point for standalone compilation.
-
-    This function exists solely to allow `mojo build shared/core/__init__.mojo`
-    to succeed. In normal usage, this module is imported as a package and
-    this function is never called.
-    """
-    print("shared.core package loaded successfully")
-    print("VERSION:", VERSION)

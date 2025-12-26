@@ -808,12 +808,3 @@ fn global_avgpool2d_backward(
                     ] = grad_per_position
 
     return grad_input^
-
-
-def main():
-    """Entry point for standalone compilation.
-
-    This file is a library module and not meant to be executed directly.
-    The main() function is provided only to allow standalone compilation for testing.
-    """
-    pass

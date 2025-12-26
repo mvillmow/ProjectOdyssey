@@ -309,13 +309,3 @@ struct BatchLoader[
         var stacked = ExTensor(stacked_data^)
 
         return stacked^
-
-
-def main():
-    """Entry point for standalone compilation.
-
-    This function exists solely to allow `mojo build shared/data/loaders.mojo`
-    to succeed. In normal usage, this module is imported as a package and
-    this function is never called.
-    """
-    print("shared.data.loaders module loaded successfully")

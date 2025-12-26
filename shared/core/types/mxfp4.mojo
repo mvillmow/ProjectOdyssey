@@ -735,14 +735,3 @@ struct MXFP4Block(Copyable, Movable, Representable, Stringable):
             Detailed string representation.
         """
         return "MXFP4Block(scale=" + repr(self.scale) + ", data=16 bytes)"
-
-
-def main():
-    """Entry point for standalone compilation.
-
-    This function exists solely to allow standalone compilation validation.
-    In normal usage, this module is imported as part of the shared.core.types
-    package and this function is never called.
-    """
-    print("shared.core.types.mxfp4 module loaded successfully")
-    print("Available types: MXFP4, E8M0Scale, MXFP4Block")

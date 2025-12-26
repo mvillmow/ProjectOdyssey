@@ -807,12 +807,3 @@ fn xavier_uniform(
     var fan_out = fans[1]
 
     return xavier_uniform(fan_in, fan_out, shape, dtype, -1)
-
-
-def main():
-    """Entry point for build validation only.
-
-    This function exists solely to satisfy `mojo build` requirements for
-    library files during CI validation. It should never be called in production.
-    """
-    pass

@@ -366,16 +366,3 @@ fn compute_gradient(
 # ============================================================================
 # Module Validation Entry Point
 # ============================================================================
-
-
-fn main():
-    """Module validation entry point.
-
-    This function exists solely for build validation. The functional module
-    is a library meant to be imported, not executed standalone.
-
-    For actual usage, import the module:
-        from shared.autograd.functional import mse_loss_and_grad
-    """
-    print("shared.autograd.functional - library module for gradient helpers")
-    print("This module should be imported, not executed directly.")

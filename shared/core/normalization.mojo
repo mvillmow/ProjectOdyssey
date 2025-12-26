@@ -2872,12 +2872,3 @@ fn instance_norm_backward(
         raise Error("instance_norm_backward: only float32/64 dtypes supported")
 
     return (grad_input, grad_gamma, grad_beta)
-
-
-def main():
-    """Entry point for standalone compilation.
-
-    This file is a library module and not meant to be executed directly.
-    The main() function is provided only to allow standalone compilation for testing.
-    """
-    pass

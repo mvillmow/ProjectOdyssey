@@ -1431,12 +1431,3 @@ fn hard_tanh_backward(
         )
 
     return dispatch_hard_tanh_backward(grad_output, x, min_val, max_val)
-
-
-def main():
-    """Entry point for standalone compilation.
-
-    This file is a library module and not meant to be executed directly.
-    The main() function is provided only to allow standalone compilation for testing.
-    """
-    pass

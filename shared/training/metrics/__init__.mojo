@@ -55,13 +55,3 @@ from shared.training.metrics.results_printer import (
 # Future exports (to be implemented):
 # from .precision import Precision
 # from .recall import Recall
-
-
-def main():
-    """Entry point for standalone compilation.
-
-    This function exists solely to allow `mojo build shared/training/metrics/__init__.mojo`
-    to succeed. In normal usage, this module is imported as a package and
-    this function is never called.
-    """
-    print("shared.training.metrics package loaded successfully")

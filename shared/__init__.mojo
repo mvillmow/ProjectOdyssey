@@ -165,16 +165,3 @@ from shared import data
 from shared import utils
 from shared import autograd
 from shared import testing
-
-
-def main():
-    """Entry point for standalone compilation.
-
-    This function exists solely to allow `mojo build shared/__init__.mojo`
-    to succeed. In normal usage, this module is imported as a package and
-    this function is never called.
-    """
-    print("shared package loaded successfully")
-    print("VERSION:", VERSION)
-    print("AUTHOR:", AUTHOR)
-    print("LICENSE:", LICENSE)

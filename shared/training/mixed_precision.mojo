@@ -613,13 +613,3 @@ fn _clip_by_value_simd_float64(
         dst_ptr.store[width=width](idx, min(max(vec, min_vec), max_vec))
 
     vectorize[simd_width](size, vectorized_clamp)
-
-
-def main():
-    """Entry point for standalone compilation.
-
-    This function exists solely to allow `mojo build shared/training/mixed_precision.mojo`
-    to succeed. In normal usage, this module is imported as a package and
-    this function is never called.
-    """
-    print("mixed_precision module loaded successfully")

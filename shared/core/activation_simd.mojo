@@ -272,8 +272,3 @@ fn _relu6_simd_float64(tensor: ExTensor, mut result: ExTensor):
         out_ptr.store[width=width](idx, min(max(zero_vec, vec), six_vec))
 
     vectorize[simd_width](size, vectorized_relu6)
-
-
-fn main():
-    """Entry point for standalone compilation validation."""
-    pass

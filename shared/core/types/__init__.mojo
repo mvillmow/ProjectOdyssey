@@ -44,14 +44,3 @@ from shared.core.types.nvfp4 import NVFP4, E4M3Scale
 # from shared.core.types.tensor import Tensor
 # from shared.core.types.shape import Shape
 # from shared.core.types.dtype import DType
-
-
-def main():
-    """Entry point for standalone compilation.
-
-    This function exists solely to allow `mojo build shared/core/types/__init__.mojo`
-    to succeed. In normal usage, this module is imported as a package and
-    this function is never called.
-    """
-    print("shared.core.types package loaded successfully")
-    print("Available types: FP8, BF8, FP4_E2M1, MXFP4, NVFP4")

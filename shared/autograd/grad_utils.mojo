@@ -194,18 +194,3 @@ fn clip_grad_global_norm_(
                 grad._set_float64(elem_idx, val * scale_factor)
 
     return global_norm
-
-
-fn main():
-    """Module validation entry point.
-
-    This function exists solely for build validation. The grad_utils module
-    is a library meant to be imported, not executed standalone.
-
-    For actual usage, import the module:
-        from shared.autograd.grad_utils import clip_grad_value_
-        from shared.autograd.grad_utils import clip_grad_norm_
-        from shared.autograd.grad_utils import clip_grad_global_norm_
-    """
-    print("shared.autograd.grad_utils - library module for gradient clipping")
-    print("This module should be imported, not executed directly.")

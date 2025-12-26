@@ -3458,12 +3458,3 @@ fn diff(tensor: ExTensor, n: Int = 1) raises -> ExTensor:
         ```
     """
     return tensor.diff(n)
-
-
-def main():
-    """Entry point for standalone compilation.
-
-    This file is a library module and not meant to be executed directly.
-    The main() function is provided only to allow standalone compilation for testing.
-    """
-    pass

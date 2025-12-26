@@ -1582,8 +1582,3 @@ fn log2_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     var result = ExTensor(grad_output.shape(), grad_output.dtype())
     _dispatch_log2_backward(result, grad_output, x, grad_output.numel())
     return result
-
-
-def main():
-    """Validation entry point for build system."""
-    pass

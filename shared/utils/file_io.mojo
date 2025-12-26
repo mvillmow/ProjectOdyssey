@@ -886,8 +886,3 @@ fn get_file_size(filepath: String) -> Int:
 # ============================================================================
 # Main Entry Point (for standalone compilation)
 # ============================================================================
-
-
-def main():
-    """Entry point for standalone compilation."""
-    pass

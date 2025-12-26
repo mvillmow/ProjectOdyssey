@@ -52,8 +52,3 @@ from shared.training.optimizers.optimizer_utils import (
     apply_bias_correction,
     validate_optimizer_state,
 )
-
-
-def main():
-    """Main entry point for standalone compilation."""
-    pass

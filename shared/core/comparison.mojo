@@ -724,12 +724,3 @@ fn greater_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
         result, a, b, strides_a, strides_b, result_shape, total_elems
     )
     return result^
-
-
-def main():
-    """Entry point for standalone compilation.
-
-    This file is a library module and not meant to be executed directly.
-    The main() function is provided only to allow standalone compilation for testing.
-    """
-    pass

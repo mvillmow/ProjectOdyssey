@@ -267,12 +267,3 @@ fn is_integer_dtype(dtype: DType) -> Bool:
         or dtype == DType.uint32
         or dtype == DType.uint64
     )
-
-
-def main():
-    """Entry point for standalone compilation.
-
-    This file is a library module and not meant to be executed directly.
-    The main() function is provided only to allow standalone compilation for testing.
-    """
-    pass

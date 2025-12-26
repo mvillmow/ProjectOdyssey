@@ -1023,12 +1023,3 @@ fn kl_divergence_backward(
 
     # Chain rule: multiply by upstream gradient
     return multiply(grad_output, grad)
-
-
-def main():
-    """Entry point for standalone compilation.
-
-    This file is a library module and not meant to be executed directly.
-    The main() function is provided only to allow standalone compilation for testing.
-    """
-    pass

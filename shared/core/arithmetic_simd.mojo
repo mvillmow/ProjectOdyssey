@@ -371,8 +371,3 @@ fn _divide_simd_float64(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
         result_ptr.store[width=width](idx, a_vec / b_vec)
 
     vectorize[simd_width](size, vectorized_divide)
-
-
-def main():
-    """Entry point for standalone compilation."""
-    print("arithmetic_simd module loaded successfully")

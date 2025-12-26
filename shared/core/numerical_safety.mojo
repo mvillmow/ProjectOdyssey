@@ -505,12 +505,3 @@ fn check_gradient_safety[
 
         # Check gradient vanishing
         check_gradient_vanishing(gradient, min_norm, name)
-
-
-def main():
-    """Entry point for build validation only.
-
-    This function exists solely to satisfy `mojo build` requirements for
-    library files during CI validation. It should never be called in production.
-    """
-    pass

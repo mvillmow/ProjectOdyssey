@@ -124,22 +124,3 @@ from shared.testing.dtype_utils import (
     get_float32_only,
     dtype_to_string,
 )
-
-
-def main():
-    """Entry point for standalone compilation.
-
-    This function exists solely to allow `mojo build shared/testing/__init__.mojo`
-    to succeed. In normal usage, this module is imported as a package and
-    this function is never called.
-    """
-    print("shared.testing package loaded successfully")
-    print("Testing utilities available:")
-    print("  - assertions:", TOLERANCE_DEFAULT)
-    print("  - gradient_checker")
-    print("  - data_generators")
-    print("  - models")
-    print("  - fixtures")
-    print("  - special_values:", SPECIAL_VALUE_ZERO)
-    print("  - layer_testers")
-    print("  - dtype_utils")

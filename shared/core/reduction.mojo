@@ -1233,12 +1233,3 @@ fn percentile_backward(
                 result._set_float64(upper_input_idx, fraction * grad_val)
 
     return result^
-
-
-def main():
-    """Entry point for standalone compilation.
-
-    This file is a library module and not meant to be executed directly.
-    The main() function is provided only to allow standalone compilation for testing.
-    """
-    pass

@@ -593,17 +593,3 @@ fn test_normal_distribution(sample_count: Int = 1000) -> Bool:
     var critical_value = 1.36 / sqrt(Float32(sample_count))
 
     return ks_statistic <= critical_value
-
-
-fn main():
-    """Main function required for standalone compilation.
-
-    This module is primarily a library and should be imported, not executed.
-    This main function exists only to allow standalone compilation for validation.
-    """
-    print("shared.utils.random module - library mode")
-    print("This module provides random number generation utilities.")
-    print(
-        "Import it using: from shared.utils.random import set_seed,"
-        " random_uniform"
-    )

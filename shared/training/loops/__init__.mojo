@@ -35,13 +35,3 @@ from shared.training.loops.training_loop import (
 
 # Export validation loop
 from shared.training.loops.validation_loop import ValidationLoop
-
-
-def main():
-    """Entry point for standalone compilation.
-
-    This function exists solely to allow `mojo build shared/training/loops/__init__.mojo`
-    to succeed. In normal usage, this module is imported as a package and
-    this function is never called.
-    """
-    print("shared.training.loops package loaded successfully")
