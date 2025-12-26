@@ -6,13 +6,19 @@ All operations are stateless - caller manages running statistics and parameters.
 
 from algorithm import parallelize
 
-from .extensor import ExTensor, zeros, zeros_like, ones_like, full_like
-from .arithmetic import subtract, add, multiply, divide, power
-from .elementwise import sqrt
-from .reduction import mean as reduce_mean, sum as reduce_sum
-from .normalize_ops import normalize_rgb
-from .parallel_utils import should_parallelize, parallel_for_batch
-from .scalar_ops import (
+from shared.core.extensor import (
+    ExTensor,
+    zeros,
+    zeros_like,
+    ones_like,
+    full_like,
+)
+from shared.core.arithmetic import subtract, add, multiply, divide, power
+from shared.core.elementwise import sqrt
+from shared.core.reduction import mean as reduce_mean, sum as reduce_sum
+from shared.core.normalize_ops import normalize_rgb
+from shared.core.parallel_utils import should_parallelize, parallel_for_batch
+from shared.core.scalar_ops import (
     sqrt_scalar_f32,
     sqrt_scalar_f64,
     pow_scalar_f32,
@@ -2866,3 +2872,12 @@ fn instance_norm_backward(
         raise Error("instance_norm_backward: only float32/64 dtypes supported")
 
     return (grad_input, grad_gamma, grad_beta)
+
+
+def main():
+    """Entry point for standalone compilation.
+
+    This file is a library module and not meant to be executed directly.
+    The main() function is provided only to allow standalone compilation for testing.
+    """
+    pass
