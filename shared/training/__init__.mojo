@@ -23,14 +23,14 @@ from shared.core.traits import Model, Loss, Optimizer
 from shared.autograd.tape import GradientTape
 
 # Package version
-from ..version import VERSION
+from shared.version import VERSION
 
 # ============================================================================
 # Exports - Training Components
 # ============================================================================
 
 # Export model utilities for weight persistence (Issue #2294)
-from .model_utils import (
+from shared.training.model_utils import (
     save_model_weights,
     load_model_weights,
     get_model_parameter_names,
@@ -38,7 +38,7 @@ from .model_utils import (
 )
 
 # Export base interfaces and utilities
-from .base import (
+from shared.training.base import (
     Callback,
     CallbackSignal,
     CONTINUE,
@@ -52,7 +52,7 @@ from .base import (
 )
 
 # Export scheduler implementations
-from .schedulers import (
+from shared.training.schedulers import (
     StepLR,
     CosineAnnealingLR,
     WarmupLR,
@@ -67,7 +67,11 @@ from .schedulers import (
 # NOTE: Callbacks must be imported directly from submodules due to Mojo limitations:
 #   from shared.training.callbacks import EarlyStopping
 # NOT from shared.training import EarlyStopping
-from .callbacks import EarlyStopping, ModelCheckpoint, LoggingCallback
+from shared.training.callbacks import (
+    EarlyStopping,
+    ModelCheckpoint,
+    LoggingCallback,
+)
 
 # ============================================================================
 # Core Training Components (Issue #1939)
@@ -404,10 +408,10 @@ struct TrainingLoop[
 
 
 # Export validation loop
-from .loops.validation_loop import ValidationLoop
+from shared.training.loops.validation_loop import ValidationLoop
 
 # Export evaluation module (Issue #2352)
-from .evaluation import (
+from shared.training.evaluation import (
     EvaluationResult,
     evaluate_model,
     evaluate_model_simple,
@@ -415,7 +419,7 @@ from .evaluation import (
 )
 
 # Export mixed precision training utilities
-from .mixed_precision import (
+from shared.training.mixed_precision import (
     GradientScaler,
     convert_to_fp32_master,
     update_model_from_master,
@@ -425,10 +429,10 @@ from .mixed_precision import (
 )
 
 # Export precision configuration
-from .precision_config import PrecisionConfig, PrecisionMode
+from shared.training.precision_config import PrecisionConfig, PrecisionMode
 
 # Export training configuration (Issue #2602)
-from .config import TrainingConfig
+from shared.training.config import TrainingConfig
 
 
 # Export CrossEntropyLoss wrapper (wraps core.loss.cross_entropy)
@@ -472,15 +476,26 @@ struct CrossEntropyLoss(Loss, Movable):
 # ============================================================================
 
 # TODO(#2597): Export training script utilities when implemented
-# from .script_runner import (
+# from shared.training.script_runner import (
 #     TrainingCallbacks,
 #     run_epoch_with_batches,
 #     print_training_header,
 #     print_dataset_info,
 # )
-# from .dataset_loaders import (
+# from shared.training.dataset_loaders import (
 #     DatasetSplit,
 #     load_emnist_dataset,
 #     load_cifar10_dataset,
 #     print_dataset_summary,
 # )
+
+
+def main():
+    """Entry point for standalone compilation.
+
+    This function exists solely to allow `mojo build shared/training/__init__.mojo`
+    to succeed. In normal usage, this module is imported as a package and
+    this function is never called.
+    """
+    print("shared.training package loaded successfully")
+    print("VERSION:", VERSION)
