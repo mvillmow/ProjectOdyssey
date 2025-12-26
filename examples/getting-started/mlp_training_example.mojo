@@ -48,7 +48,7 @@ from shared.core.matrix import matmul, matmul_backward
 from shared.training.optimizers import sgd_step_simple
 
 
-fn create_synthetic_data() raises -> tuple[ExTensor, ExTensor]:
+fn create_synthetic_data() raises -> (ExTensor, ExTensor):
     """Create synthetic XOR-like binary classification data.
 
     Returns:
