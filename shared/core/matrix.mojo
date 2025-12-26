@@ -11,8 +11,8 @@ Includes:
 """
 
 from collections import List
-from .extensor import ExTensor
-from .gradient_types import GradientPair
+from shared.core.extensor import ExTensor
+from shared.core.gradient_types import GradientPair
 
 
 # ============================================================================
