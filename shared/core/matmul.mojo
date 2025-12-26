@@ -875,12 +875,3 @@ fn verify_matmul_correctness(M: Int, K: Int, N: Int) raises -> Bool:
     assert_matrices_equal(c4, c1, rtol=1e-4, atol=1e-6)
 
     return True
-
-
-def main():
-    """Entry point for build validation only.
-
-    This function exists solely to satisfy `mojo build` requirements for
-    library files during CI validation. It should never be called in production.
-    """
-    pass
