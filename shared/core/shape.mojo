@@ -11,7 +11,7 @@ Optimizations:
 
 from collections import List
 from memory import memcpy, UnsafePointer
-from .extensor import ExTensor
+from shared.core.extensor import ExTensor
 
 
 # ============================================================================
@@ -916,7 +916,7 @@ fn tile(tensor: ExTensor, reps: List[Int]) raises -> ExTensor:
             src_idx += src_coord * src_stride
 
         # Adjust for original tensor dimensions
-        # FIXME(unused) var adjusted_idx = 0
+        var adjusted_idx: Int
         if out_ndim > ndim:
             # Remove padding from source index calculation
             var temp_idx = src_idx
@@ -1053,7 +1053,7 @@ fn broadcast_to(tensor: ExTensor, target_shape: List[Int]) raises -> ExTensor:
             var b = broadcast_to(a, target)  # Shape (4, 3)
     ```
     """
-    from .broadcasting import (
+    from shared.core.broadcasting import (
         are_shapes_broadcastable,
         compute_broadcast_strides,
     )
@@ -1195,3 +1195,12 @@ fn permute(tensor: ExTensor, dims: List[Int]) raises -> ExTensor:
         result._set_float64(i, val)
 
     return result^
+
+
+def main():
+    """Entry point for standalone compilation.
+
+    This file is a library module and not meant to be executed directly.
+    The main() function is provided only to allow standalone compilation for testing.
+    """
+    pass
