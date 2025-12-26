@@ -23,7 +23,7 @@ Example:
 """
 
 # Core dataset types from _datasets_core.mojo
-from .._datasets_core import (
+from shared.data._datasets_core import (
     Dataset,
     ExTensorDataset,
     TensorDataset,
@@ -31,4 +31,4 @@ from .._datasets_core import (
 )
 
 # CIFAR-10 dataset
-from .cifar10 import CIFAR10Dataset, get_cifar10_classes
+from shared.data.datasets.cifar10 import CIFAR10Dataset, get_cifar10_classes
