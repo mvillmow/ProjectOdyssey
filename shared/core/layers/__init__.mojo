@@ -32,11 +32,21 @@ Example:
 """
 
 # Layer exports
-from .linear import Linear
-from .conv2d import Conv2dLayer
-from .batchnorm import BatchNorm2dLayer
-from .relu import ReLULayer
-from .dropout import DropoutLayer
+from shared.core.layers.linear import Linear
+from shared.core.layers.conv2d import Conv2dLayer
+from shared.core.layers.batchnorm import BatchNorm2dLayer
+from shared.core.layers.relu import ReLULayer
+from shared.core.layers.dropout import DropoutLayer
 
 # from .activation import ReLU, Sigmoid, Tanh
 # from .pooling import MaxPool2D, AvgPool2D
+
+
+def main():
+    """Entry point for standalone compilation.
+
+    This function exists solely to allow `mojo build shared/core/layers/__init__.mojo`
+    to succeed. In normal usage, this module is imported as a package and
+    this function is never called.
+    """
+    print("shared.core.layers package loaded successfully")
