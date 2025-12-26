@@ -16,7 +16,7 @@ Issues covered:
 from shared.core import ExTensor
 from collections import List
 from math import sqrt
-from .base import Metric
+from shared.training.metrics.base import Metric
 
 
 # ============================================================================
@@ -381,3 +381,12 @@ fn argmax(var tensor: ExTensor) raises -> ExTensor:
         result._data.bitcast[Int32]()[b] = Int32(max_idx)
 
     return result^
+
+
+def main():
+    """Entry point for standalone compilation.
+
+    This function exists solely to allow `mojo build shared/training/metrics/confusion_matrix.mojo`
+    to succeed. In normal usage, this module is imported and this function is never called.
+    """
+    print("shared.training.metrics.confusion_matrix module loaded successfully")
