@@ -40,6 +40,15 @@ References:
 from shared.core import ExTensor, zeros_like
 
 
+@fieldwise_init
+struct IndexGradientPair(Copyable, Movable):
+    """Simple wrapper for (index, gradient) pair returned by sampled gradient checking.
+    """
+
+    var index: Int
+    var gradient: Float64
+
+
 fn check_gradients(
     forward_fn: fn (ExTensor) raises escaping -> ExTensor,
     backward_fn: fn (ExTensor, ExTensor) raises escaping -> ExTensor,
@@ -381,6 +390,186 @@ fn compute_numerical_gradient(
         grad._set_float64(i, grad_val)
 
     return grad^
+
+
+fn compute_sampled_numerical_gradient(
+    forward_fn: fn (ExTensor) raises escaping -> ExTensor,
+    x: ExTensor,
+    num_samples: Int = 100,
+    epsilon: Float64 = 1e-5,
+    seed: Int = 42,
+) raises -> List[IndexGradientPair]:
+    """Compute numerical gradient for random sample of input elements.
+
+    Uses simple linear congruential generator (LCG) for reproducible sampling.
+    Samples input elements and computes finite difference gradients only for
+    those elements, reducing computation by factor of (numel / num_samples).
+
+    This is 99% faster than exhaustive gradient checking while maintaining
+    statistical confidence with 100+ samples from large tensors.
+
+    Args:
+        forward_fn: Function that computes forward pass (x -> output).
+        x: Input tensor.
+        num_samples: Number of elements to sample (default: 100).
+        epsilon: Perturbation for finite differences (default: 1e-5).
+        seed: Random seed for reproducibility (default: 42).
+
+    Returns:
+        List of (index, gradient_value) tuples for sampled elements.
+
+    Raises:
+        Error: If forward function fails.
+
+    Notes:
+        - Always includes first (index 0) and last (index numel-1) elements
+        - Remaining samples generated via LCG: x_{n+1} = (a*x_n + c) mod m
+        - LCG parameters: a=1103515245, c=12345, m=numel
+        - For 4096-element tensors with 100 samples: ~40x speedup vs exhaustive
+
+    Example:
+        ```mojo
+        fn forward(x: ExTensor) raises escaping -> ExTensor:
+            return relu(x)
+
+        var x = ExTensor([100, 100], DType.float32)
+        var sampled = compute_sampled_numerical_gradient(
+            forward, x, num_samples=100, epsilon=1e-5, seed=42
+        )
+        # sampled contains ~100 (index, gradient) tuples
+        ```
+    """
+    var numel = x.numel()
+    var actual_samples = min(num_samples, numel)
+
+    # Generate sample indices using simple LCG for reproducibility
+    var indices = List[Int]()
+
+    # Always include boundary indices
+    indices.append(0)
+    indices.append(numel - 1)
+
+    # Generate additional random indices
+    var rng_state = seed
+    var samples_needed = actual_samples - 2
+    var count = 0
+
+    while count < samples_needed:
+        # LCG: x_{n+1} = (a * x_n + c) mod m
+        rng_state = ((rng_state * 1103515245 + 12345) % 2147483648) % numel
+        indices.append(rng_state)
+        count += 1
+
+    # Compute gradients for sampled indices
+    var gradients = List[IndexGradientPair]()
+
+    for idx in indices:
+        var original_val = x._get_float64(idx)
+
+        # f(x + ε)
+        x._set_float64(idx, original_val + epsilon)
+        var f_plus = forward_fn(x)
+        var f_plus_sum: Float64 = 0.0
+        for j in range(f_plus.numel()):
+            f_plus_sum += f_plus._get_float64(j)
+
+        # f(x - ε)
+        x._set_float64(idx, original_val - epsilon)
+        var f_minus = forward_fn(x)
+        var f_minus_sum: Float64 = 0.0
+        for j in range(f_minus.numel()):
+            f_minus_sum += f_minus._get_float64(j)
+
+        # Restore original
+        x._set_float64(idx, original_val)
+
+        # Compute gradient: (f(x + ε) - f(x - ε)) / (2ε)
+        var grad = (f_plus_sum - f_minus_sum) / (2.0 * epsilon)
+        gradients.append(IndexGradientPair(idx, grad))
+
+    return gradients^
+
+
+fn assert_sampled_gradients_close(
+    analytical_grad: ExTensor,
+    sampled_numerical: List[IndexGradientPair],
+    rtol: Float64 = 1e-2,
+    message: String = "Sampled gradients mismatch",
+) raises:
+    """Compare analytical gradient with sampled numerical gradients.
+
+    Validates that analytical gradients match numerical gradients at randomly
+    sampled locations. If any sampled gradient exceeds relative tolerance,
+    raises error with details of worst mismatch.
+
+    This complements compute_sampled_numerical_gradient() to provide hybrid
+    validation: fast analytical gradients verified by statistical sampling.
+
+    Args:
+        analytical_grad: Full analytical gradient tensor.
+        sampled_numerical: List of IndexGradientPair samples from sampling.
+        rtol: Relative tolerance (default: 1e-2 for float32).
+        message: Error message prefix.
+
+    Raises:
+        Error: If any sampled gradient exceeds tolerance, includes worst case details.
+
+    Notes:
+        - Relative error: |analytical - numerical| / max(|analytical|, |numerical|, 1e-8)
+        - Handles gradients near zero with epsilon=1e-8
+        - Reports worst mismatch (highest relative error) for debugging
+        - Typical tolerance: 1e-2 for float32, 1e-1 for float16
+
+    Example:
+        ```mojo
+        var analytical = relu_backward(grad_output, x)
+        var sampled = compute_sampled_numerical_gradient(
+            relu_forward, x, num_samples=100
+        )
+        assert_sampled_gradients_close(analytical, sampled, rtol=1e-2)
+        ```
+    """
+    var max_error: Float64 = 0.0
+    var worst_idx: Int = -1
+
+    for sample in sampled_numerical:
+        var idx = sample.index
+        var numerical = sample.gradient
+        var analytical = analytical_grad._get_float64(idx)
+
+        var abs_diff = analytical - numerical
+        if abs_diff < 0.0:
+            abs_diff = -abs_diff
+
+        # Relative error: diff / max(|analytical|, |numerical|, epsilon)
+        var abs_analytical = analytical if analytical >= 0.0 else -analytical
+        var abs_numerical = numerical if numerical >= 0.0 else -numerical
+        var denominator = (
+            abs_analytical if abs_analytical > abs_numerical else abs_numerical
+        )
+        if denominator < 1e-8:
+            denominator = 1e-8
+
+        var rel_error = abs_diff / denominator
+
+        if rel_error > max_error:
+            max_error = rel_error
+            worst_idx = idx
+
+    # Check if any sample exceeded tolerance
+    if max_error > rtol:
+        var analytical_val = analytical_grad._get_float64(worst_idx)
+        var msg = (
+            message
+            + ": max relative error "
+            + String(max_error)
+            + " at index "
+            + String(worst_idx)
+            + " exceeds tolerance "
+            + String(rtol)
+        )
+        msg += " (analytical=" + String(analytical_val) + ")"
+        raise Error(msg)
 
 
 fn assert_gradients_close(
