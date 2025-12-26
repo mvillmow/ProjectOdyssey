@@ -4,8 +4,8 @@ Provides efficient dtype conversion for tensors with optimized paths
 for common conversions (FP32 <-> FP16, FP32 <-> BF16).
 """
 
-from .extensor import ExTensor
-from .bfloat16 import BFloat16
+from shared.core.extensor import ExTensor
+from shared.core.bfloat16 import BFloat16
 
 
 fn cast_tensor(tensor: ExTensor, target_dtype: DType) raises -> ExTensor:
@@ -267,3 +267,12 @@ fn is_integer_dtype(dtype: DType) -> Bool:
         or dtype == DType.uint32
         or dtype == DType.uint64
     )
+
+
+def main():
+    """Entry point for standalone compilation.
+
+    This file is a library module and not meant to be executed directly.
+    The main() function is provided only to allow standalone compilation for testing.
+    """
+    pass
