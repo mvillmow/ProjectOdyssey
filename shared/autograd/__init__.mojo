@@ -178,13 +178,3 @@ from shared.core.dropout import (
 
 # Note: In Mojo, all imported symbols are automatically available
 # to package consumers. No __all__ equivalent is needed.
-
-
-def main():
-    """Build validation stub.
-
-    This main() function exists only to allow standalone compilation for
-    build validation purposes. In normal usage, this module is imported
-    as part of the `shared` package, not executed directly.
-    """
-    print("autograd module loaded successfully")
