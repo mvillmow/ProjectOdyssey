@@ -7,15 +7,6 @@ Modules:
     cifar_loader: CIFAR-10 and CIFAR-100 binary format loader
 """
 
-
-fn main():
-    """No-op main function to satisfy mojo build requirements.
-
-    This __init__.mojo file is meant to be imported as a package, not executed.
-    """
-    pass
-
-
 # IDX Format Loaders
 from shared.data.formats.idx_loader import (
     read_uint32_be,
