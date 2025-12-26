@@ -31,14 +31,14 @@ Common Patterns Supported:
 - Parameter update helpers
 """
 
-from ..core.extensor import ExTensor
-from ..core.arithmetic import add, multiply, subtract, divide
-from ..core.reduction import sum as tensor_sum, mean
-from ..core.reduction import sum_backward, mean_backward
-from ..core.loss import mean_squared_error, mean_squared_error_backward
-from ..core.loss import binary_cross_entropy, binary_cross_entropy_backward
-from ..core.loss import cross_entropy, cross_entropy_backward
-from ..core.extensor import ones
+from shared.core.extensor import ExTensor
+from shared.core.arithmetic import add, multiply, subtract, divide
+from shared.core.reduction import sum as tensor_sum, mean
+from shared.core.reduction import sum_backward, mean_backward
+from shared.core.loss import mean_squared_error, mean_squared_error_backward
+from shared.core.loss import binary_cross_entropy, binary_cross_entropy_backward
+from shared.core.loss import cross_entropy, cross_entropy_backward
+from shared.core.extensor import ones
 
 
 # ============================================================================
@@ -361,3 +361,21 @@ fn compute_gradient(
         raise Error(
             "Unknown loss type: " + loss_type + ". Use 'mse', 'bce', or 'ce'."
         )
+
+
+# ============================================================================
+# Module Validation Entry Point
+# ============================================================================
+
+
+fn main():
+    """Module validation entry point.
+
+    This function exists solely for build validation. The functional module
+    is a library meant to be imported, not executed standalone.
+
+    For actual usage, import the module:
+        from shared.autograd.functional import mse_loss_and_grad
+    """
+    print("shared.autograd.functional - library module for gradient helpers")
+    print("This module should be imported, not executed directly.")
