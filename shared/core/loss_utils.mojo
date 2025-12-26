@@ -333,12 +333,3 @@ fn negate_tensor(tensor: ExTensor) raises -> ExTensor:
     """
     var zero = zeros_like(tensor)
     return subtract(zero, tensor)
-
-
-def main():
-    """Entry point for build validation only.
-
-    This function exists solely to satisfy `mojo build` requirements for
-    library files during CI validation. It should never be called in production.
-    """
-    pass
