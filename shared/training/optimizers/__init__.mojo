@@ -16,7 +16,7 @@ All optimizers follow pure functional design - caller manages state
 # Export optimizer implementations
 
 # SGD optimizer (functional implementation and in-place mutation)
-from .sgd import (
+from shared.training.optimizers.sgd import (
     sgd_step,
     sgd_step_simple,
     sgd_momentum_update_inplace,
@@ -25,19 +25,19 @@ from .sgd import (
 )
 
 # Adam optimizer (functional implementation)
-from .adam import adam_step, adam_step_simple
+from shared.training.optimizers.adam import adam_step, adam_step_simple
 
 # AdamW optimizer (functional implementation with decoupled weight decay)
-from .adamw import adamw_step, adamw_step_simple
+from shared.training.optimizers.adamw import adamw_step, adamw_step_simple
 
 # RMSprop optimizer (functional implementation)
-from .rmsprop import rmsprop_step, rmsprop_step_simple
+from shared.training.optimizers.rmsprop import rmsprop_step, rmsprop_step_simple
 
 # LARS optimizer (Layer-wise Adaptive Rate Scaling)
-from .lars import lars_step, lars_step_simple
+from shared.training.optimizers.lars import lars_step, lars_step_simple
 
 # Optimizer utilities (common helper functions)
-from .optimizer_utils import (
+from shared.training.optimizers.optimizer_utils import (
     initialize_optimizer_state,
     initialize_optimizer_state_from_params,
     compute_weight_decay_term,
@@ -52,3 +52,8 @@ from .optimizer_utils import (
     apply_bias_correction,
     validate_optimizer_state,
 )
+
+
+def main():
+    """Main entry point for standalone compilation."""
+    pass
