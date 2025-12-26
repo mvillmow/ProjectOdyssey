@@ -15,7 +15,7 @@ Issues covered:
 
 from collections import List
 from math import sqrt
-from .base import Metric
+from shared.training.metrics.base import Metric
 from shared.core import ExTensor
 
 # min and max are now builtins in Mojo - no import needed
@@ -425,3 +425,12 @@ struct LossTracker(Metric):
         # Reset all components
         for i in range(len(self.trackers)):
             self.trackers[i].reset()
+
+
+def main():
+    """Entry point for standalone compilation.
+
+    This function exists solely to allow `mojo build shared/training/metrics/loss_tracker.mojo`
+    to succeed. In normal usage, this module is imported and this function is never called.
+    """
+    print("shared.training.metrics.loss_tracker module loaded successfully")
