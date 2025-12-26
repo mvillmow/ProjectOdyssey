@@ -4,8 +4,8 @@ Implements operations that reduce tensors along specified axes
 """
 
 from collections import List
-from .extensor import ExTensor
-from .reduction_utils import (
+from shared.core.extensor import ExTensor
+from shared.core.reduction_utils import (
     compute_strides,
     linear_to_coords,
     coords_to_linear,
@@ -14,7 +14,7 @@ from .reduction_utils import (
     compute_axis_strides,
     build_reduced_shape,
 )
-from .reduction_ops import (
+from shared.core.reduction_ops import (
     ReduceOp,
     ReduceBackwardOp,
     SumOp,
@@ -1233,3 +1233,12 @@ fn percentile_backward(
                 result._set_float64(upper_input_idx, fraction * grad_val)
 
     return result^
+
+
+def main():
+    """Entry point for standalone compilation.
+
+    This file is a library module and not meant to be executed directly.
+    The main() function is provided only to allow standalone compilation for testing.
+    """
+    pass
