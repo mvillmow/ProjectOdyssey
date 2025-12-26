@@ -352,7 +352,7 @@ fn _log10_forward_impl[
     dtype: DType
 ](result: ExTensor, tensor: ExTensor, numel: Int) raises:
     """Dtype-specialized log10 forward: log(x) / log(10)."""
-    comptime ln10 = Scalar[dtype](2.302585092994046)
+    var ln10 = Scalar[dtype](2.302585092994046)
     var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
     var out_ptr = result._data.bitcast[Scalar[dtype]]()
     for i in range(numel):
@@ -381,7 +381,7 @@ fn _log2_forward_impl[
     dtype: DType
 ](result: ExTensor, tensor: ExTensor, numel: Int) raises:
     """Dtype-specialized log2 forward: log(x) / log(2)."""
-    comptime ln2 = Scalar[dtype](0.6931471805599453)
+    var ln2 = Scalar[dtype](0.6931471805599453)
     var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
     var out_ptr = result._data.bitcast[Scalar[dtype]]()
     for i in range(numel):
@@ -418,8 +418,8 @@ fn _logical_and_impl[
     total_elems: Int,
 ):
     """Dtype-specialized logical AND."""
-    comptime zero = Scalar[dtype](0)
-    comptime one = Scalar[dtype](1)
+    var zero = Scalar[dtype](0)
+    var one = Scalar[dtype](1)
     var a_ptr = a._data.bitcast[Scalar[dtype]]()
     var b_ptr = b._data.bitcast[Scalar[dtype]]()
     var out_ptr = result._data.bitcast[Scalar[dtype]]()
@@ -496,8 +496,8 @@ fn _logical_or_impl[
     total_elems: Int,
 ):
     """Dtype-specialized logical OR."""
-    comptime zero = Scalar[dtype](0)
-    comptime one = Scalar[dtype](1)
+    var zero = Scalar[dtype](0)
+    var one = Scalar[dtype](1)
     var a_ptr = a._data.bitcast[Scalar[dtype]]()
     var b_ptr = b._data.bitcast[Scalar[dtype]]()
     var out_ptr = result._data.bitcast[Scalar[dtype]]()
@@ -565,8 +565,8 @@ fn _logical_not_impl[
     dtype: DType
 ](result: ExTensor, tensor: ExTensor, numel: Int):
     """Dtype-specialized logical NOT."""
-    comptime zero = Scalar[dtype](0)
-    comptime one = Scalar[dtype](1)
+    var zero = Scalar[dtype](0)
+    var one = Scalar[dtype](1)
     var in_ptr = tensor._data.bitcast[Scalar[dtype]]()
     var out_ptr = result._data.bitcast[Scalar[dtype]]()
     for i in range(numel):
@@ -607,8 +607,8 @@ fn _logical_xor_impl[
     total_elems: Int,
 ):
     """Dtype-specialized logical XOR."""
-    comptime zero = Scalar[dtype](0)
-    comptime one = Scalar[dtype](1)
+    var zero = Scalar[dtype](0)
+    var one = Scalar[dtype](1)
     var a_ptr = a._data.bitcast[Scalar[dtype]]()
     var b_ptr = b._data.bitcast[Scalar[dtype]]()
     var out_ptr = result._data.bitcast[Scalar[dtype]]()
@@ -1094,7 +1094,7 @@ fn _log_backward_impl[
     dtype: DType
 ](result: ExTensor, grad_output: ExTensor, x: ExTensor, numel: Int):
     """Dtype-specialized log backward: grad / (x + epsilon)."""
-    comptime epsilon = Scalar[dtype](1e-10)
+    var epsilon = Scalar[dtype](1e-10)
     var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
     var x_ptr = x._data.bitcast[Scalar[dtype]]()
     var out_ptr = result._data.bitcast[Scalar[dtype]]()
@@ -1121,8 +1121,8 @@ fn _sqrt_backward_impl[
     dtype: DType
 ](result: ExTensor, grad_output: ExTensor, x: ExTensor, numel: Int):
     """Dtype-specialized sqrt backward: grad / (2 * sqrt(x) + epsilon)."""
-    comptime epsilon = Scalar[dtype](1e-10)
-    comptime two = Scalar[dtype](2.0)
+    var epsilon = Scalar[dtype](1e-10)
+    var two = Scalar[dtype](2.0)
     var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
     var x_ptr = x._data.bitcast[Scalar[dtype]]()
     var out_ptr = result._data.bitcast[Scalar[dtype]]()
@@ -1201,9 +1201,9 @@ fn _abs_backward_impl[
     dtype: DType
 ](result: ExTensor, grad_output: ExTensor, x: ExTensor, numel: Int):
     """Dtype-specialized abs backward: grad * sign(x)."""
-    comptime zero = Scalar[dtype](0)
-    comptime one = Scalar[dtype](1)
-    comptime neg_one = Scalar[dtype](-1)
+    var zero = Scalar[dtype](0)
+    var one = Scalar[dtype](1)
+    var neg_one = Scalar[dtype](-1)
     var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
     var x_ptr = x._data.bitcast[Scalar[dtype]]()
     var out_ptr = result._data.bitcast[Scalar[dtype]]()
@@ -1251,7 +1251,7 @@ fn _clip_backward_impl[
     numel: Int,
 ):
     """Dtype-specialized clip backward: grad where min <= x <= max, else 0."""
-    comptime zero = Scalar[dtype](0)
+    var zero = Scalar[dtype](0)
     var min_t = Scalar[dtype](min_val)
     var max_t = Scalar[dtype](max_val)
     var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
@@ -1295,8 +1295,8 @@ fn _log10_backward_impl[
     dtype: DType
 ](result: ExTensor, grad_output: ExTensor, x: ExTensor, numel: Int):
     """Dtype-specialized log10 backward: grad / (x * ln(10) + epsilon)."""
-    comptime epsilon = Scalar[dtype](1e-10)
-    comptime ln10 = Scalar[dtype](2.302585092994046)
+    var epsilon = Scalar[dtype](1e-10)
+    var ln10 = Scalar[dtype](2.302585092994046)
     var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
     var x_ptr = x._data.bitcast[Scalar[dtype]]()
     var out_ptr = result._data.bitcast[Scalar[dtype]]()
@@ -1323,8 +1323,8 @@ fn _log2_backward_impl[
     dtype: DType
 ](result: ExTensor, grad_output: ExTensor, x: ExTensor, numel: Int):
     """Dtype-specialized log2 backward: grad / (x * ln(2) + epsilon)."""
-    comptime epsilon = Scalar[dtype](1e-10)
-    comptime ln2 = Scalar[dtype](0.6931471805599453)
+    var epsilon = Scalar[dtype](1e-10)
+    var ln2 = Scalar[dtype](0.6931471805599453)
     var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
     var x_ptr = x._data.bitcast[Scalar[dtype]]()
     var out_ptr = result._data.bitcast[Scalar[dtype]]()
