@@ -25,7 +25,7 @@ Usage:
 
 from algorithm import vectorize
 from sys.info import simd_width_of
-from .extensor import ExTensor
+from shared.core.extensor import ExTensor
 
 
 # ============================================================================
@@ -73,7 +73,7 @@ fn add_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     # Check if we can use SIMD (same shape, contiguous)
     if a.shape() != b.shape():
         # Fall back to broadcasting
-        from .arithmetic import add
+        from shared.core.arithmetic import add
 
         return add(a, b)
 
@@ -86,7 +86,7 @@ fn add_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
         _add_simd_float64(a, b, result)
     else:
         # Fall back to scalar for other dtypes
-        from .arithmetic import add
+        from shared.core.arithmetic import add
 
         return add(a, b)
 
@@ -153,7 +153,7 @@ fn subtract_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
         raise Error("Cannot subtract tensors with different dtypes")
 
     if a.shape() != b.shape():
-        from .arithmetic import subtract
+        from shared.core.arithmetic import subtract
 
         return subtract(a, b)
 
@@ -164,7 +164,7 @@ fn subtract_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     elif a.dtype() == DType.float64:
         _subtract_simd_float64(a, b, result)
     else:
-        from .arithmetic import subtract
+        from shared.core.arithmetic import subtract
 
         return subtract(a, b)
 
@@ -235,7 +235,7 @@ fn multiply_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
         raise Error("Cannot multiply tensors with different dtypes")
 
     if a.shape() != b.shape():
-        from .arithmetic import multiply
+        from shared.core.arithmetic import multiply
 
         return multiply(a, b)
 
@@ -246,7 +246,7 @@ fn multiply_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     elif a.dtype() == DType.float64:
         _multiply_simd_float64(a, b, result)
     else:
-        from .arithmetic import multiply
+        from shared.core.arithmetic import multiply
 
         return multiply(a, b)
 
@@ -317,7 +317,7 @@ fn divide_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
         raise Error("Cannot divide tensors with different dtypes")
 
     if a.shape() != b.shape():
-        from .arithmetic import divide
+        from shared.core.arithmetic import divide
 
         return divide(a, b)
 
@@ -328,7 +328,7 @@ fn divide_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     elif a.dtype() == DType.float64:
         _divide_simd_float64(a, b, result)
     else:
-        from .arithmetic import divide
+        from shared.core.arithmetic import divide
 
         return divide(a, b)
 
@@ -371,3 +371,8 @@ fn _divide_simd_float64(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
         result_ptr.store[width=width](idx, a_vec / b_vec)
 
     vectorize[simd_width](size, vectorized_divide)
+
+
+def main():
+    """Entry point for standalone compilation."""
+    print("arithmetic_simd module loaded successfully")
