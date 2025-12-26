@@ -415,9 +415,7 @@ fn main() raises:
     # Load CIFAR-10 dataset
     print("Loading CIFAR-10 training set...")
     var cifar10_dataset = CIFAR10Dataset(data_dir)
-    var train_dataset = cifar10_dataset.get_train_data()
-    var train_images = train_dataset.data
-    var train_labels = train_dataset.labels
+    var (train_images, train_labels) = cifar10_dataset.get_train_data()
 
     var num_train = train_images.shape()[0]
     print("  Training samples: " + String(num_train))

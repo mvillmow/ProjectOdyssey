@@ -164,6 +164,7 @@ build mode="debug": (_ensure_build_dir mode)
         -not -path "./worktrees/*" \
         -not -path "./.claude/*" \
         -not -path "./tests/*" \
+        -not -path "./benchmarks/*" \
         -not -name "test_*.mojo" \
         -not -name "model.mojo" \
         | while read -r file; do
