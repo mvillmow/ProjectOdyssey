@@ -23,7 +23,7 @@ Usage:
 
 from algorithm import vectorize
 from sys.info import simd_width_of
-from .extensor import ExTensor
+from shared.core.extensor import ExTensor
 
 
 # ============================================================================
@@ -150,7 +150,7 @@ fn _add_contiguous[dtype: DType](a: ExTensor, b: ExTensor) raises -> ExTensor:
     # SIMD vectorization for float types
     @parameter
     if dtype == DType.float32 or dtype == DType.float64:
-        alias simd_width = simd_width_of[dtype]()
+        comptime simd_width = simd_width_of[dtype]()
 
         @parameter
         fn vectorized_add[width: Int](idx: Int) unified {mut}:
@@ -230,7 +230,7 @@ fn _subtract_contiguous[
     # SIMD vectorization for float types
     @parameter
     if dtype == DType.float32 or dtype == DType.float64:
-        alias simd_width = simd_width_of[dtype]()
+        comptime simd_width = simd_width_of[dtype]()
 
         @parameter
         fn vectorized_sub[width: Int](idx: Int) unified {mut}:
@@ -309,7 +309,7 @@ fn _multiply_contiguous[
     # SIMD vectorization for float types
     @parameter
     if dtype == DType.float32 or dtype == DType.float64:
-        alias simd_width = simd_width_of[dtype]()
+        comptime simd_width = simd_width_of[dtype]()
 
         @parameter
         fn vectorized_mul[width: Int](idx: Int) unified {mut}:
@@ -388,7 +388,7 @@ fn _divide_contiguous[
     # SIMD vectorization for float types
     @parameter
     if dtype == DType.float32 or dtype == DType.float64:
-        alias simd_width = simd_width_of[dtype]()
+        comptime simd_width = simd_width_of[dtype]()
 
         @parameter
         fn vectorized_div[width: Int](idx: Int) unified {mut}:
@@ -403,3 +403,11 @@ fn _divide_contiguous[
             result_ptr[i] = a_ptr[i] / b_ptr[i]
 
     return result^
+
+
+def main():
+    """Entry point for standalone compilation.
+
+    This file is a library module and not meant to be executed directly.
+    The main() function is provided only to allow standalone compilation for testing.
+    """
