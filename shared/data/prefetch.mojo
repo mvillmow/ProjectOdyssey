@@ -21,9 +21,9 @@ Example:
 """
 
 from shared.core.extensor import ExTensor
-from .loaders import Batch, BatchLoader
-from .datasets import Dataset
-from .samplers import Sampler
+from shared.data.loaders import Batch, BatchLoader
+from shared.data.datasets import Dataset
+from shared.data.samplers import Sampler
 
 
 struct PrefetchBuffer(Copyable, Movable):
