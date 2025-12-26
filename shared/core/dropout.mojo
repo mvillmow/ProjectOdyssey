@@ -7,9 +7,14 @@ Dropout randomly zeros some elements of the input tensor with probability p duri
 This helps prevent overfitting by randomly "dropping out" neurons.
 """
 
-from .extensor import ExTensor, zeros, zeros_like, ones_like
-from .arithmetic import multiply, divide
-from .extensor import full_like
+from shared.core.extensor import (
+    ExTensor,
+    zeros,
+    zeros_like,
+    ones_like,
+    full_like,
+)
+from shared.core.arithmetic import multiply, divide
 import random
 
 
@@ -321,3 +326,12 @@ fn dropout2d_backward(
     """
     # Same as regular dropout backward - mask is already broadcast
     return dropout_backward(grad_output, mask, p)
+
+
+def main():
+    """Entry point for build validation only.
+
+    This function exists solely to satisfy `mojo build` requirements for
+    library files during CI validation. It should never be called in production.
+    """
+    pass
