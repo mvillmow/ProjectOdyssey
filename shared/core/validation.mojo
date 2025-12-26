@@ -727,3 +727,12 @@ fn _dtype_to_string(dtype: DType) -> String:
         return "bool"
     else:
         return "unknown"
+
+
+def main():
+    """Entry point for build validation only.
+
+    This function exists solely to satisfy `mojo build` requirements for
+    library files during CI validation. It should never be called in production.
+    """
+    pass
