@@ -333,3 +333,13 @@ fn negate_tensor(tensor: ExTensor) raises -> ExTensor:
     """
     var zero = zeros_like(tensor)
     return subtract(zero, tensor)
+
+
+def main():
+    """Entry point for standalone compilation.
+
+    This function exists solely to allow `mojo build shared/core/loss_utils.mojo`
+    to succeed. In normal usage, this module is imported as a package and
+    this function is never called.
+    """
+    print("shared.core.loss_utils module loaded successfully")

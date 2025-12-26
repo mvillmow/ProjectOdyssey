@@ -72,13 +72,13 @@ Example - Advanced runner with manual control:
 """
 
 # Package version
-from ..version import VERSION
+from shared.version import VERSION
 
 # ============================================================================
 # Exports - Implemented modules
 # ============================================================================
 
-from .runner import (
+from shared.benchmarking.runner import (
     BenchmarkStatistics,  # High-level benchmark results with percentiles (primary)
     BenchmarkResult,  # Alias for backward compatibility (points to BenchmarkStatistics)
     benchmark_function,  # Main benchmarking function
