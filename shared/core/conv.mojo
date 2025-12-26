@@ -6,14 +6,18 @@ The caller manages all state (kernels, biases).
 """
 
 from algorithm import parallelize
-
-from .extensor import ExTensor, zeros
-from .arithmetic import add
-from .reduction import sum as reduce_sum
-from .shape import conv2d_output_shape
-from .gradient_types import GradientPair, GradientTriple, GradientQuad
-from .parallel_utils import should_parallelize
 from collections import List
+
+from shared.core.extensor import ExTensor, zeros
+from shared.core.arithmetic import add
+from shared.core.reduction import sum as reduce_sum
+from shared.core.shape import conv2d_output_shape
+from shared.core.gradient_types import (
+    GradientPair,
+    GradientTriple,
+    GradientQuad,
+)
+from shared.core.parallel_utils import should_parallelize
 
 # max is now a builtin in Mojo - no import needed
 
