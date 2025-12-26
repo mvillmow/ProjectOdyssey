@@ -19,11 +19,11 @@ from shared.utils.config_loader import (
 from shared.utils.config import Config
 
 
-fn parse_arguments() -> (String, String):
+fn parse_arguments() -> Tuple[String, String]:
     """Parse command-line arguments.
 
     Returns:
-        Tuple of (paper_name, experiment_name)
+        Tuple of (paper_name, experiment_name).
 
     TODO(#2733): Implement proper argument parsing when Mojo stdlib supports it.
     For now, returns hardcoded values for demonstration.
@@ -38,7 +38,7 @@ fn create_model(config: Config) raises:
     """Create model from configuration.
 
     Args:
-        config: Configuration containing model parameters
+        config: Configuration containing model parameters.
 
     TODO(#2733): Implement actual model creation based on config.
     This is a placeholder demonstrating the pattern.
@@ -68,7 +68,7 @@ fn create_trainer(config: Config) raises:
     """Create trainer from configuration.
 
     Args:
-        config: Configuration containing training parameters
+        config: Configuration containing training parameters.
 
     TODO(#2733): Implement actual trainer creation based on config.
     This is a placeholder demonstrating the pattern.
@@ -93,7 +93,7 @@ fn run_training(config: Config) raises:
     """Run the training loop.
 
     Args:
-        config: Complete configuration for training
+        config: Complete configuration for training.
 
     TODO(#2733): Implement actual training loop.
     This is a placeholder demonstrating the pattern.
