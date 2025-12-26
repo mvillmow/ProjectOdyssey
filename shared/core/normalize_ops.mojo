@@ -18,7 +18,7 @@ Example:
     ```
 """
 
-from .extensor import ExTensor, zeros
+from shared.core.extensor import ExTensor, zeros
 
 
 # ============================================================================
