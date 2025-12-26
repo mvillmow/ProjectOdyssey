@@ -12,7 +12,7 @@ All tests use the real CSVMetricsLogger implementation.
 
 from shared.training.metrics.csv_metrics_logger import CSVMetricsLogger
 from shared.training.base import TrainingState, CONTINUE
-from shared.utils.io import file_exists, safe_read_file, create_directory
+from shared.utils.file_io import file_exists, safe_read_file, create_directory
 from collections import List, Dict
 
 

@@ -53,7 +53,7 @@ fn test_checkpoint_roundtrip():
 
 fn test_checkpoint_serialization_with_model_state() raises:
     """Test checkpoint serialization includes model_state dict (Issue #2585)."""
-    from shared.utils.io import Checkpoint, _serialize_checkpoint
+    from shared.utils.file_io import Checkpoint, _serialize_checkpoint
 
     var checkpoint = Checkpoint()
     checkpoint.set_epoch(10)
@@ -79,7 +79,7 @@ fn test_checkpoint_serialization_with_model_state() raises:
 fn test_checkpoint_serialization_with_optimizer_state() raises:
     """Test checkpoint serialization includes optimizer_state dict (Issue #2585).
     """
-    from shared.utils.io import Checkpoint, _serialize_checkpoint
+    from shared.utils.file_io import Checkpoint, _serialize_checkpoint
 
     var checkpoint = Checkpoint()
     checkpoint.set_epoch(5)
@@ -104,7 +104,7 @@ fn test_checkpoint_serialization_with_optimizer_state() raises:
 
 fn test_checkpoint_serialization_with_metadata() raises:
     """Test checkpoint serialization includes metadata dict (Issue #2585)."""
-    from shared.utils.io import Checkpoint, _serialize_checkpoint
+    from shared.utils.file_io import Checkpoint, _serialize_checkpoint
 
     var checkpoint = Checkpoint()
     checkpoint.set_epoch(15)

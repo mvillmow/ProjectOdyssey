@@ -33,7 +33,7 @@ from shared.training.base import (
     CONTINUE,
     TrainingState,
 )
-from shared.utils.io import create_directory, safe_write_file, file_exists
+from shared.utils.file_io import create_directory, safe_write_file, file_exists
 
 
 struct CSVMetricsLogger(Callback, Copyable, Movable):

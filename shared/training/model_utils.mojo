@@ -80,7 +80,7 @@ fn save_model_weights(
             save_model_weights(params, "checkpoint/", names)
             ```
     """
-    from shared.utils.io import create_directory
+    from shared.utils.file_io import create_directory
 
     # Validate inputs match
     if len(parameters) != len(param_names):
