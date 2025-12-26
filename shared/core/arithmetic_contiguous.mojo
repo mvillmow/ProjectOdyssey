@@ -403,11 +403,3 @@ fn _divide_contiguous[
             result_ptr[i] = a_ptr[i] / b_ptr[i]
 
     return result^
-
-
-def main():
-    """Entry point for standalone compilation.
-
-    This file is a library module and not meant to be executed directly.
-    The main() function is provided only to allow standalone compilation for testing.
-    """
