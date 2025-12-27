@@ -46,6 +46,15 @@ from shared.training.gradient_ops import (
 
 # Export checkpoint manager (Issue #2664)
 from shared.training.checkpoint import CheckpointManager
+# Export gradient clipping utilities (Issue #2666)
+from shared.training.gradient_clipping import (
+    clip_gradients_by_global_norm,
+    clip_gradients_per_param,
+    clip_gradients_by_value_list,
+    compute_gradient_norm_list,
+    compute_gradient_statistics,
+    GradientStatistics,
+)
 
 # Export base interfaces and utilities
 from shared.training.base import (
