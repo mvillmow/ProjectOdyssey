@@ -1088,9 +1088,161 @@ fn elu(tensor: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
     return result
 
 
+fn selu(
+    tensor: ExTensor,
+    alpha: Float64 = 1.6732632423543772848170429916717,
+    lambda_: Float64 = 1.0507009873554804934193349852946,
+) raises -> ExTensor:
+    """Scaled Exponential Linear Unit (SELU) activation function.
+
+    SELU enables self-normalizing neural networks where activations
+    converge to zero mean and unit variance during training.
+
+    Formula:
+        selu(x) = λ * (x if x > 0 else α * (exp(x) - 1))
+        where α ≈ 1.6732632423543772848 (optimal scaling for SNNs)
+        and λ ≈ 1.0507009873554804934 (variance normalization)
+
+    Args:
+        tensor: Input tensor of any shape.
+        alpha: Scale for exponential branch (default: optimal value for SNNs).
+        lambda_: Overall scale factor (default: optimal value for SNNs).
+
+    Returns:
+        Output tensor with SELU applied element-wise.
+
+    Raises:
+        Error: If operation fails.
+
+    Reference:
+        Klambauer et al., "Self-Normalizing Neural Networks" (2017).
+    """
+    var result = zeros_like(tensor)
+    var data_ptr = tensor._data
+    var result_ptr = result._data
+    var size = tensor.numel()
+
+    if tensor.dtype() == DType.float32:
+        for i in range(size):
+            var val = data_ptr.bitcast[Float32]()[i]
+            if val > 0:
+                result_ptr.bitcast[Float32]()[i] = Float32(lambda_) * val
+            else:
+                var val_clipped = max(val, Float32(-20.0))
+                var exp_val = exp_scalar_f32(val_clipped)
+                result_ptr.bitcast[Float32]()[i] = (
+                    Float32(lambda_) * Float32(alpha) * (exp_val - 1.0)
+                )
+    elif tensor.dtype() == DType.float64:
+        for i in range(size):
+            var val = data_ptr.bitcast[Float64]()[i]
+            if val > 0:
+                result_ptr.bitcast[Float64]()[i] = lambda_ * val
+            else:
+                var val_clipped = max(val, Float64(-20.0))
+                var exp_val = exp_scalar_f64(val_clipped)
+                result_ptr.bitcast[Float64]()[i] = (
+                    lambda_ * alpha * (exp_val - 1.0)
+                )
+    elif tensor.dtype() == DType.float16:
+        for i in range(size):
+            var val = Float32(data_ptr.bitcast[Float16]()[i])
+            if val > 0:
+                result_ptr.bitcast[Float16]()[i] = Float16(
+                    Float32(lambda_) * val
+                )
+            else:
+                var val_clipped = max(val, Float32(-20.0))
+                var exp_val = exp_scalar_f32(val_clipped)
+                result_ptr.bitcast[Float16]()[i] = Float16(
+                    Float32(lambda_) * Float32(alpha) * (exp_val - 1.0)
+                )
+    else:
+        raise Error("selu: only float16/32/64 dtypes supported")
+
+    return result
+
+
 # ============================================================================
 # Backward Passes for Advanced Activations
 # ============================================================================
+
+
+fn selu_backward(
+    grad_output: ExTensor,
+    x: ExTensor,
+    alpha: Float64 = 1.6732632423543772848170429916717,
+    lambda_: Float64 = 1.0507009873554804934193349852946,
+) raises escaping -> ExTensor:
+    """Backward pass for SELU activation.
+
+    The derivative is:
+        d/dx[selu(x)] = λ if x > 0.
+        d/dx[selu(x)] = λ * α * exp(x) if x <= 0.
+
+    Args:
+        grad_output: Gradient from upstream.
+        x: Input from forward pass.
+        alpha: Scale for exponential branch (must match forward pass).
+        lambda_: Overall scale factor (must match forward pass).
+
+    Returns:
+        Gradient with respect to input.
+
+    Raises:
+        Error: If operation fails.
+    """
+    var result = zeros_like(x)
+    var x_ptr = x._data
+    var grad_ptr = grad_output._data
+    var result_ptr = result._data
+    var size = x.numel()
+
+    if x.dtype() == DType.float32:
+        for i in range(size):
+            var val = x_ptr.bitcast[Float32]()[i]
+            var grad_val = grad_ptr.bitcast[Float32]()[i]
+
+            if val > 0:
+                result_ptr.bitcast[Float32]()[i] = grad_val * Float32(lambda_)
+            else:
+                var val_clipped = max(val, Float32(-20.0))
+                var exp_val = exp_scalar_f32(val_clipped)
+                result_ptr.bitcast[Float32]()[i] = (
+                    grad_val * Float32(lambda_) * Float32(alpha) * exp_val
+                )
+    elif x.dtype() == DType.float64:
+        for i in range(size):
+            var val = x_ptr.bitcast[Float64]()[i]
+            var grad_val = grad_ptr.bitcast[Float64]()[i]
+
+            if val > 0:
+                result_ptr.bitcast[Float64]()[i] = grad_val * lambda_
+            else:
+                var val_clipped = max(val, Float64(-20.0))
+                var exp_val = exp_scalar_f64(val_clipped)
+                result_ptr.bitcast[Float64]()[i] = (
+                    grad_val * lambda_ * alpha * exp_val
+                )
+    elif x.dtype() == DType.float16:
+        for i in range(size):
+            var val = Float32(x_ptr.bitcast[Float16]()[i])
+            var grad_val = Float32(grad_ptr.bitcast[Float16]()[i])
+
+            if val > 0:
+                result_ptr.bitcast[Float16]()[i] = Float16(
+                    grad_val * Float32(lambda_)
+                )
+            else:
+                var val_clipped = max(val, Float32(-20.0))
+                var exp_val = exp_scalar_f32(val_clipped)
+                result_ptr.bitcast[Float16]()[i] = Float16(
+                    grad_val * Float32(lambda_) * Float32(alpha) * exp_val
+                )
+    else:
+        raise Error("selu_backward: only float16/32/64 dtypes supported")
+
+    return result
 
 
 fn swish_backward(

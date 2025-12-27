@@ -221,6 +221,7 @@ from shared.core.activation import (
     swish,
     mish,
     elu,
+    selu,
     hard_sigmoid,
     hard_swish,
     hard_tanh,
@@ -234,6 +235,7 @@ from shared.core.activation import (
     swish_backward,
     mish_backward,
     elu_backward,
+    selu_backward,
     hard_sigmoid_backward,
     hard_swish_backward,
     hard_tanh_backward,
@@ -242,6 +244,15 @@ from shared.core.activation import (
 from shared.core.activation_ops import (
     exp_scalar_f32,
     exp_scalar_f64,
+)
+
+from shared.core.activation_simd import (
+    relu_simd,
+    leaky_relu_simd,
+    relu6_simd,
+    elu_simd,
+    selu_simd,
+    swish_simd,
 )
 
 # ============================================================================
