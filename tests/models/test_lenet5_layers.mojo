@@ -40,6 +40,7 @@ from shared.testing.special_values import (
     create_seeded_random_tensor,
     SPECIAL_VALUE_ONE,
     SPECIAL_VALUE_NEG_ONE,
+    SPECIAL_VALUE_HALF,
 )
 from shared.testing.layer_testers import LayerTester
 from math import isnan, isinf
@@ -132,6 +133,7 @@ fn test_conv1_forward_float16() raises:
         dtype=dtype,
         stride=1,
         padding=0,
+        input_value=SPECIAL_VALUE_HALF,
     )
 
 
@@ -207,6 +209,7 @@ fn test_conv2_forward_float16() raises:
         dtype=dtype,
         stride=1,
         padding=0,
+        input_value=SPECIAL_VALUE_HALF,
     )
 
 
