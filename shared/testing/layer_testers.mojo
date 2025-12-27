@@ -47,11 +47,18 @@ Usage:
 """
 
 from math import isnan, isinf
-from shared.core.extensor import ExTensor, zeros_like
-from shared.core.conv import conv2d, conv2d_output_shape
-from shared.core.linear import linear
+from shared.core.extensor import ExTensor, zeros_like, ones_like
+from shared.core.conv import conv2d, conv2d_output_shape, conv2d_backward
+from shared.core.linear import linear, linear_backward
 from shared.core.pooling import maxpool2d, avgpool2d, pool_output_shape
-from shared.core.activation import relu, sigmoid, tanh
+from shared.core.activation import (
+    relu,
+    sigmoid,
+    tanh,
+    relu_backward,
+    sigmoid_backward,
+    tanh_backward,
+)
 from shared.testing.assertions import (
     assert_shape,
     assert_dtype,
@@ -488,6 +495,7 @@ struct LayerTester:
         dtype: DType,
         stride: Int = 1,
         padding: Int = 0,
+        validate_analytical: Bool = False,
     ) raises:
         """Test conv2d backward pass with gradient checking.
 
@@ -506,6 +514,8 @@ struct LayerTester:
             dtype: Data type to test.
             stride: Convolution stride (default: 1).
             padding: Convolution padding (default: 0).
+            validate_analytical: If True, validate analytical gradient against
+                numerical gradient (default: False).
 
         Verifies:
             - Forward pass runs without error
@@ -558,16 +568,18 @@ struct LayerTester:
         # Verify output dtype
         assert_dtype(output, dtype, "Conv2D backward: output dtype mismatch")
 
-        # Test gradient checking with small epsilon and tolerance appropriate for dtype
-        var epsilon = 1e-5 if dtype == DType.float32 else 1e-4
-        # FIXME(#2710, unused) var tolerance = 1e-2 if dtype == DType.float32 else 1e-1
+        # Test gradient checking with epsilon and tolerance appropriate for conv complexity
+        # Conv operations have more accumulated numerical error due to multiple multiplies
+        var epsilon = 1e-4 if dtype == DType.float32 else 1e-3
+        var tolerance = (
+            0.05 if dtype == DType.float32 else 0.1
+        )  # 5% tolerance for conv
 
         # Define forward function for gradient checking
         fn forward(x: ExTensor) raises escaping -> ExTensor:
             return conv2d(x, weights, bias, stride=stride, padding=padding)
 
-        # Since we don't have analytical backward implementation yet,
-        # we validate that numerical gradient computation works
+        # Compute numerical gradient (always computed for validation)
         var numerical_grad = compute_numerical_gradient(forward, input, epsilon)
 
         # Verify numerical gradient has correct shape
@@ -587,6 +599,26 @@ struct LayerTester:
                 isinf(val), "Conv2D backward: Inf in numerical gradient"
             )
 
+        # Optionally validate analytical gradient
+        if validate_analytical:
+            # Create gradient output (upstream gradient)
+            var grad_output = ones_like(output)
+
+            # Compute analytical gradient using conv2d_backward
+            var backward_result = conv2d_backward(
+                grad_output, input, weights, stride=stride, padding=padding
+            )
+            var analytical_grad = backward_result.grad_input
+
+            # Compare analytical vs numerical gradients
+            assert_gradients_close(
+                analytical_grad,
+                numerical_grad,
+                rtol=tolerance,
+                atol=tolerance,
+                message="Conv2D analytical gradient doesn't match numerical",
+            )
+
     @staticmethod
     fn test_linear_layer_backward(
         in_features: Int,
@@ -594,6 +626,7 @@ struct LayerTester:
         weights: ExTensor,
         bias: ExTensor,
         dtype: DType,
+        validate_analytical: Bool = False,
     ) raises:
         """Test linear layer backward pass with gradient checking.
 
@@ -606,6 +639,8 @@ struct LayerTester:
             weights: Linear weights (out_features, in_features).
             bias: Linear bias (out_features,).
             dtype: Data type to test.
+            validate_analytical: If True, validate analytical gradient against
+                numerical gradient (default: False).
 
         Verifies:
             - Forward pass runs without error
@@ -644,15 +679,14 @@ struct LayerTester:
         # Verify output dtype
         assert_dtype(output, dtype, "Linear backward: output dtype mismatch")
 
-        # Test gradient checking with small epsilon and tolerance appropriate for dtype
+        # Test gradient checking with epsilon appropriate for dtype
         var epsilon = 1e-5 if dtype == DType.float32 else 1e-4
-        # FIXME(#2710, unused) var tolerance = 1e-2 if dtype == DType.float32 else 1e-1
 
         # Define forward function for gradient checking
         fn forward(x: ExTensor) raises escaping -> ExTensor:
             return linear(x, weights, bias)
 
-        # Validate numerical gradient computation
+        # Compute numerical gradient (always computed for validation)
         var numerical_grad = compute_numerical_gradient(forward, input, epsilon)
 
         # Verify numerical gradient has correct shape
@@ -672,9 +706,32 @@ struct LayerTester:
                 isinf(val), "Linear backward: Inf in numerical gradient"
             )
 
+        # Optionally validate analytical gradient
+        if validate_analytical:
+            # Create gradient output (upstream gradient)
+            var grad_output = ones_like(output)
+
+            # Compute analytical gradient using linear_backward
+            var backward_result = linear_backward(grad_output, input, weights)
+            var analytical_grad = backward_result.grad_input
+
+            # Compare analytical vs numerical gradients
+            # Use wider tolerance (1.5%) for matrix operations due to accumulated errors
+            var wide_tolerance = 0.015
+            assert_gradients_close(
+                analytical_grad,
+                numerical_grad,
+                rtol=wide_tolerance,
+                atol=wide_tolerance,
+                message="Linear analytical gradient doesn't match numerical",
+            )
+
     @staticmethod
     fn test_activation_layer_backward(
-        shape: List[Int], dtype: DType, activation: String = "relu"
+        shape: List[Int],
+        dtype: DType,
+        activation: String = "relu",
+        validate_analytical: Bool = False,
     ) raises:
         """Test activation backward pass with gradient checking.
 
@@ -688,6 +745,8 @@ struct LayerTester:
             shape: Input/output shape.
             dtype: Data type to test.
             activation: "relu", "sigmoid", "tanh" (default: "relu").
+            validate_analytical: If True, validate analytical gradient against
+                numerical gradient (default: False).
 
         Verifies:
             - Forward pass runs without error
@@ -737,7 +796,7 @@ struct LayerTester:
 
         # Test gradient checking with appropriate epsilon and tolerance for dtype
         var epsilon = 1e-5 if dtype == DType.float32 else 1e-4
-        # FIXME(#2710, unused) var tolerance = 1e-2 if dtype == DType.float32 else 1e-1
+        var tolerance = 1e-2 if dtype == DType.float32 else 1e-1
 
         # Define forward function for gradient checking
         fn forward(x: ExTensor) raises escaping -> ExTensor:
@@ -748,7 +807,7 @@ struct LayerTester:
             else:  # tanh
                 return tanh(x)
 
-        # Validate numerical gradient computation
+        # Compute numerical gradient (always computed for validation)
         var numerical_grad = compute_numerical_gradient(forward, input, epsilon)
 
         # Verify numerical gradient has correct shape
@@ -766,6 +825,33 @@ struct LayerTester:
             )
             assert_false(
                 isinf(val), activation + " backward: Inf in numerical gradient"
+            )
+
+        # Optionally validate analytical gradient
+        if validate_analytical:
+            # Create gradient output (upstream gradient)
+            var grad_output = ones_like(output)
+
+            # Compute analytical gradient using activation-specific backward
+            var analytical_grad: ExTensor
+            if activation == "relu":
+                # ReLU backward takes input
+                analytical_grad = relu_backward(grad_output, input)
+            elif activation == "sigmoid":
+                # Sigmoid backward takes output
+                analytical_grad = sigmoid_backward(grad_output, output)
+            else:  # tanh
+                # Tanh backward takes output
+                analytical_grad = tanh_backward(grad_output, output)
+
+            # Compare analytical vs numerical gradients
+            assert_gradients_close(
+                analytical_grad,
+                numerical_grad,
+                rtol=tolerance,
+                atol=tolerance,
+                message=activation
+                + " analytical gradient doesn't match numerical",
             )
 
     @staticmethod
