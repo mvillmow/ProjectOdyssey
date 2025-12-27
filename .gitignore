@@ -37,3 +37,4 @@ checkpoints/
 # Editor files
 *.swp
 .coverage
+/test_cumulative.mojo
