@@ -25,6 +25,7 @@ Example:
 # ============================================================================
 
 
+@always_inline
 fn exp_scalar_f32(x: Float32) -> Float32:
     """Compute exp of a scalar float32.
 
@@ -54,6 +55,7 @@ fn exp_scalar_f32(x: Float32) -> Float32:
     return Float32(2.718281828459045) ** x
 
 
+@always_inline
 fn exp_scalar_f64(x: Float64) -> Float64:
     """Compute exp of a scalar float64.
 

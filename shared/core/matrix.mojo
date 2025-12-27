@@ -20,6 +20,7 @@ from shared.core.gradient_types import GradientPair
 # ============================================================================
 
 
+@always_inline
 fn _matmul_2d_1d_impl[
     dtype: DType
 ](result: ExTensor, a: ExTensor, b: ExTensor, m: Int, k: Int):
@@ -54,6 +55,7 @@ fn _dispatch_matmul_2d_1d(
         raise Error("matmul: unsupported dtype")
 
 
+@always_inline
 fn _matmul_1d_2d_impl[
     dtype: DType
 ](result: ExTensor, a: ExTensor, b: ExTensor, m: Int, n: Int):
@@ -330,6 +332,7 @@ fn _dispatch_transpose_copy(
         raise Error("transpose: unsupported dtype")
 
 
+@always_inline
 fn _dot_impl[
     dtype: DType
 ](result: ExTensor, a: ExTensor, b: ExTensor, length: Int):
@@ -363,6 +366,7 @@ fn _dispatch_dot(
         raise Error("dot: unsupported dtype")
 
 
+@always_inline
 fn _outer_impl[
     dtype: DType
 ](result: ExTensor, a: ExTensor, b: ExTensor, len_a: Int, len_b: Int):
@@ -396,6 +400,7 @@ fn _dispatch_outer(
         raise Error("outer: unsupported dtype")
 
 
+@always_inline
 fn _matmul_backward_2d_1d_impl[
     dtype: DType
 ](grad_a: ExTensor, grad_output: ExTensor, b: ExTensor, m: Int, k: Int):
@@ -429,6 +434,7 @@ fn _dispatch_matmul_backward_2d_1d(
         raise Error("matmul_backward: unsupported dtype")
 
 
+@always_inline
 fn _matmul_backward_1d_2d_impl[
     dtype: DType
 ](grad_b: ExTensor, a: ExTensor, grad_output: ExTensor, k: Int, n: Int):

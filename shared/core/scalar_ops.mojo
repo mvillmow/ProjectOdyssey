@@ -28,6 +28,7 @@ Example:
 # ============================================================================
 
 
+@always_inline
 fn sqrt_scalar_f32(x: Float32) -> Float32:
     """Compute square root of a scalar float32.
 
@@ -47,6 +48,7 @@ fn sqrt_scalar_f32(x: Float32) -> Float32:
     return x**0.5
 
 
+@always_inline
 fn sqrt_scalar_f64(x: Float64) -> Float64:
     """Compute square root of a scalar float64.
 
@@ -66,6 +68,7 @@ fn sqrt_scalar_f64(x: Float64) -> Float64:
     return x**0.5
 
 
+@always_inline
 fn pow_scalar_f32(x: Float32, y: Float32) -> Float32:
     """Compute x^y for scalar float32 values.
 
@@ -86,6 +89,7 @@ fn pow_scalar_f32(x: Float32, y: Float32) -> Float32:
     return x**y
 
 
+@always_inline
 fn pow_scalar_f64(x: Float64, y: Float64) -> Float64:
     """Compute x^y for scalar float64 values.
 

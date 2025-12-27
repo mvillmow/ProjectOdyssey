@@ -307,6 +307,7 @@ fn tanh(tensor: ExTensor) raises -> ExTensor:
 # ============================================================================
 
 
+@always_inline
 fn _clip_forward_impl[
     dtype: DType
 ](result: ExTensor, tensor: ExTensor, min_val: Float64, max_val: Float64):
@@ -348,6 +349,7 @@ fn _dispatch_clip_forward(
         raise Error("clip: unsupported dtype")
 
 
+@always_inline
 fn _log10_forward_impl[
     dtype: DType
 ](result: ExTensor, tensor: ExTensor, numel: Int) raises:
@@ -377,6 +379,7 @@ fn _dispatch_log10_forward(
         raise Error("log10: unsupported dtype (requires float type)")
 
 
+@always_inline
 fn _log2_forward_impl[
     dtype: DType
 ](result: ExTensor, tensor: ExTensor, numel: Int) raises:
@@ -561,6 +564,7 @@ fn _dispatch_logical_or(
         raise Error("logical_or: unsupported dtype")
 
 
+@always_inline
 fn _logical_not_impl[
     dtype: DType
 ](result: ExTensor, tensor: ExTensor, numel: Int):
@@ -1064,6 +1068,7 @@ fn log2(tensor: ExTensor) raises -> ExTensor:
 # ============================================================================
 
 
+@always_inline
 fn _exp_backward_impl[
     dtype: DType
 ](result: ExTensor, grad_output: ExTensor, x: ExTensor, numel: Int):
@@ -1090,6 +1095,7 @@ fn _dispatch_exp_backward(
         raise Error("exp_backward: unsupported dtype")
 
 
+@always_inline
 fn _log_backward_impl[
     dtype: DType
 ](result: ExTensor, grad_output: ExTensor, x: ExTensor, numel: Int):
@@ -1117,6 +1123,7 @@ fn _dispatch_log_backward(
         raise Error("log_backward: unsupported dtype")
 
 
+@always_inline
 fn _sqrt_backward_impl[
     dtype: DType
 ](result: ExTensor, grad_output: ExTensor, x: ExTensor, numel: Int):
@@ -1197,6 +1204,7 @@ fn _dispatch_cos_backward(
         raise Error("cos_backward: unsupported dtype")
 
 
+@always_inline
 fn _abs_backward_impl[
     dtype: DType
 ](result: ExTensor, grad_output: ExTensor, x: ExTensor, numel: Int):
@@ -1291,6 +1299,7 @@ fn _dispatch_clip_backward(
         raise Error("clip_backward: unsupported dtype")
 
 
+@always_inline
 fn _log10_backward_impl[
     dtype: DType
 ](result: ExTensor, grad_output: ExTensor, x: ExTensor, numel: Int):
@@ -1319,6 +1328,7 @@ fn _dispatch_log10_backward(
         raise Error("log10_backward: unsupported dtype")
 
 
+@always_inline
 fn _log2_backward_impl[
     dtype: DType
 ](result: ExTensor, grad_output: ExTensor, x: ExTensor, numel: Int):
