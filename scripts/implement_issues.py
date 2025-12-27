@@ -544,6 +544,7 @@ class CachedIssueState(NamedTuple):
 # Cache for external issue states (avoid repeated API calls)
 # Now includes timestamps for TTL support (5-minute expiration)
 _external_issue_cache: dict[int, CachedIssueState] = {}
+_external_issue_cache_lock = threading.Lock()  # Thread-safe access to cache
 _CACHE_TTL_SECONDS = 300  # 5 minutes
 
 # Cache for repo owner/name
@@ -596,16 +597,17 @@ def prefetch_issue_states(issue_nums: list[int]) -> None:
     This reduces API calls when checking multiple external dependencies.
     Cache entries are timestamped for TTL support.
     """
-    # Filter to issues not already cached or expired
+    # Filter to issues not already cached or expired (with thread-safe access)
     now = time.time()
     to_fetch = []
-    for n in issue_nums:
-        if n not in _external_issue_cache:
-            to_fetch.append(n)
-        else:
-            cached = _external_issue_cache[n]
-            if now - cached.cached_at >= _CACHE_TTL_SECONDS:
+    with _external_issue_cache_lock:
+        for n in issue_nums:
+            if n not in _external_issue_cache:
                 to_fetch.append(n)
+            else:
+                cached = _external_issue_cache[n]
+                if now - cached.cached_at >= _CACHE_TTL_SECONDS:
+                    to_fetch.append(n)
 
     if not to_fetch:
         log("DEBUG", "All issues cached and fresh, skipping prefetch")
@@ -639,29 +641,34 @@ def prefetch_issue_states(issue_nums: list[int]) -> None:
                 try:
                     data = json.loads(cp.stdout)
                     repo_data = data.get("data", {}).get("repository", {})
-                    for j, num in enumerate(batch):
-                        issue_data = repo_data.get(f"issue{j}")
-                        if issue_data:
-                            is_closed = issue_data.get("state", "OPEN").upper() == "CLOSED"
-                            _external_issue_cache[num] = CachedIssueState(is_closed=is_closed, cached_at=now)
-                        else:
-                            _external_issue_cache[num] = CachedIssueState(is_closed=False, cached_at=now)
+                    # Update cache with thread-safe access
+                    with _external_issue_cache_lock:
+                        for j, num in enumerate(batch):
+                            issue_data = repo_data.get(f"issue{j}")
+                            if issue_data:
+                                is_closed = issue_data.get("state", "OPEN").upper() == "CLOSED"
+                                _external_issue_cache[num] = CachedIssueState(is_closed=is_closed, cached_at=now)
+                            else:
+                                _external_issue_cache[num] = CachedIssueState(is_closed=False, cached_at=now)
                 except (json.JSONDecodeError, KeyError):
-                    # Mark all as not closed on parse error
+                    # Mark all as not closed on parse error (with thread-safe access)
+                    with _external_issue_cache_lock:
+                        for num in batch:
+                            if num not in _external_issue_cache:
+                                _external_issue_cache[num] = CachedIssueState(is_closed=False, cached_at=now)
+            else:
+                # Mark all as not closed on API error (with thread-safe access)
+                with _external_issue_cache_lock:
                     for num in batch:
                         if num not in _external_issue_cache:
                             _external_issue_cache[num] = CachedIssueState(is_closed=False, cached_at=now)
-            else:
-                # Mark all as not closed on API error
+        except subprocess.TimeoutExpired:
+            log("WARN", f"GitHub API timeout for batch {i // batch_size + 1}, marking as not closed")
+            # Mark all as not closed on timeout (with thread-safe access)
+            with _external_issue_cache_lock:
                 for num in batch:
                     if num not in _external_issue_cache:
                         _external_issue_cache[num] = CachedIssueState(is_closed=False, cached_at=now)
-        except subprocess.TimeoutExpired:
-            log("WARN", f"GitHub API timeout for batch {i // batch_size + 1}, marking as not closed")
-            # Mark all as not closed on timeout
-            for num in batch:
-                if num not in _external_issue_cache:
-                    _external_issue_cache[num] = CachedIssueState(is_closed=False, cached_at=now)
 
 
 def is_issue_closed(issue_num: int, force_refresh: bool = False) -> bool:
@@ -679,18 +686,20 @@ def is_issue_closed(issue_num: int, force_refresh: bool = False) -> bool:
     """
     now = time.time()
 
-    # Check cache if not forcing refresh
-    if not force_refresh and issue_num in _external_issue_cache:
-        cached = _external_issue_cache[issue_num]
-        age = now - cached.cached_at
+    # Check cache if not forcing refresh (with thread-safe access)
+    if not force_refresh:
+        with _external_issue_cache_lock:
+            if issue_num in _external_issue_cache:
+                cached = _external_issue_cache[issue_num]
+                age = now - cached.cached_at
 
-        if age < _CACHE_TTL_SECONDS:
-            log("DEBUG", f"Cache hit for issue #{issue_num} (age: {age:.0f}s)")
-            return cached.is_closed
-        else:
-            log("DEBUG", f"Cache expired for issue #{issue_num} (age: {age:.0f}s)")
+                if age < _CACHE_TTL_SECONDS:
+                    log("DEBUG", f"Cache hit for issue #{issue_num} (age: {age:.0f}s)")
+                    return cached.is_closed
+                else:
+                    log("DEBUG", f"Cache expired for issue #{issue_num} (age: {age:.0f}s)")
 
-    # Fetch from API
+    # Fetch from API (outside lock - slow operation)
     log("DEBUG", f"Fetching state for issue #{issue_num}")
     cp = run(["gh", "issue", "view", str(issue_num), "--json", "state"])
 
@@ -699,8 +708,9 @@ def is_issue_closed(issue_num: int, force_refresh: bool = False) -> bool:
             data = json.loads(cp.stdout)
             is_closed = data.get("state", "OPEN").upper() == "CLOSED"
 
-            # Update cache with timestamp
-            _external_issue_cache[issue_num] = CachedIssueState(is_closed=is_closed, cached_at=now)
+            # Update cache with timestamp (with thread-safe access)
+            with _external_issue_cache_lock:
+                _external_issue_cache[issue_num] = CachedIssueState(is_closed=is_closed, cached_at=now)
             return is_closed
         except json.JSONDecodeError as e:
             log("ERROR", f"Failed to parse issue #{issue_num} state: {e}")
@@ -2405,9 +2415,10 @@ Focus on what functionality was added or fixed. Do not include implementation de
         self._update_status(slot, issue, "Worktree", "setting up")
         worktree = self.worktree_manager.create_for_existing_branch(issue, branch)
         log("DEBUG", f"  Worktree ready: {worktree}")
-        # Update state and save (save() handles its own locking)
-        self.state.in_progress[issue] = str(worktree)
-        self.state.pr_numbers[issue] = pr_number
+        # Update state with synchronization, then save (save() handles its own locking)
+        with self.state._save_lock:
+            self.state.in_progress[issue] = str(worktree)
+            self.state.pr_numbers[issue] = pr_number
         self.state.save(self.state_file)
 
         # Fetch CI logs
@@ -2581,8 +2592,9 @@ DO NOT describe what you're doing - just run the commands to commit.
 
         # Cleanup worktree since we're moving on
         self.worktree_manager.remove(issue)
-        # Update state and save (save() handles its own locking)
-        del self.state.in_progress[issue]
+        # Update state with synchronization, then save (save() handles its own locking)
+        with self.state._save_lock:
+            del self.state.in_progress[issue]
         self.state.save(self.state_file)
 
         duration = time.time() - start_time
@@ -2725,9 +2737,10 @@ DO NOT describe what you're doing - just run the commands to commit.
             log("DEBUG", f"  Creating worktree for #{issue}")
             worktree = self.worktree_manager.create(issue, title)
             log("DEBUG", f"  Worktree created: {worktree}")
-            # Update state and save (save() handles its own locking)
+            # Update state with synchronization, then save (save() handles its own locking)
             log("DEBUG", f"  Updating state for #{issue}")
-            self.state.in_progress[issue] = str(worktree)
+            with self.state._save_lock:
+                self.state.in_progress[issue] = str(worktree)
             self.state.save(self.state_file)
             log("DEBUG", f"  State saved for #{issue}")
 
@@ -2810,9 +2823,17 @@ You are on branch: {worktree.name}
 
             if not has_uncommitted and not has_new_commits:
                 log("WARN", f"  No changes made for #{issue}")
+
+                # Release slot before cleanup
+                log("DEBUG", f"  Releasing slot {slot} for #{issue} (no changes)")
+                if self.status_tracker:
+                    self.status_tracker.release_slot(slot)
+                    slot = -1
+
                 self.worktree_manager.remove(issue)
-                # Update state and save (save() handles its own locking)
-                del self.state.in_progress[issue]
+                # Update state with synchronization, then save (save() handles its own locking)
+                with self.state._save_lock:
+                    del self.state.in_progress[issue]
                 self.state.save(self.state_file)
                 return WorkerResult(issue, "skipped", None, "No changes made", time.time() - start_time)
 
@@ -2901,12 +2922,21 @@ DO NOT describe what you're doing - just run the commands to commit.
             if cp.returncode != 0:
                 raise RuntimeError(f"git push failed: {cp.stderr}")
 
+            # Release slot BEFORE cleanup so new work can start immediately
+            # Cleanup can happen in parallel with other work
+            log("DEBUG", f"  Releasing slot {slot} for #{issue} before cleanup")
+            if self.status_tracker:
+                self.status_tracker.release_slot(slot)
+                slot = -1  # Mark as released to prevent double-release in main loop
+
             # 10. Cleanup worktree and move to next issue
             # NOTE: PR creation removed - commits are pushed to branches only
-            self._update_status(slot, issue, "Cleanup", "removing worktree")
+            # NOTE: No status update for cleanup since slot is released
+            log("DEBUG", f"  Cleaning up worktree for #{issue}")
             self.worktree_manager.remove(issue)
-            # Update state and save (save() handles its own locking)
-            del self.state.in_progress[issue]
+            # Update state with synchronization, then save (save() handles its own locking)
+            with self.state._save_lock:
+                del self.state.in_progress[issue]
             self.state.save(self.state_file)
 
             duration = time.time() - start_time
@@ -2916,14 +2946,21 @@ DO NOT describe what you're doing - just run the commands to commit.
 
         except (KeyboardInterrupt, SystemExit):
             # Clean shutdown - preserve state and re-raise
+            # Release slot before state updates
+            if slot != -1 and self.status_tracker:
+                log("DEBUG", f"  Releasing slot {slot} for #{issue} (interrupted)")
+                self.status_tracker.release_slot(slot)
+                slot = -1
+
             if issue in self.state.in_progress:
-                # Update state and save (save() handles its own locking)
-                self.state.paused_issues[issue] = PausedIssue(
-                    worktree=self.state.in_progress[issue],
-                    pr=None,
-                    reason="Interrupted by user",
-                )
-                del self.state.in_progress[issue]
+                # Update state with synchronization, then save (save() handles its own locking)
+                with self.state._save_lock:
+                    self.state.paused_issues[issue] = PausedIssue(
+                        worktree=self.state.in_progress[issue],
+                        pr=None,
+                        reason="Interrupted by user",
+                    )
+                    del self.state.in_progress[issue]
                 self.state.save(self.state_file)
             raise
         except RuntimeError as e:
@@ -2932,14 +2969,21 @@ DO NOT describe what you're doing - just run the commands to commit.
             error_msg = str(e)[:200]
             self._post_issue_update(issue, f"❌ Implementation failed:\n\n```\n{error_msg}\n```")
 
+            # Release slot before state updates
+            if slot != -1 and self.status_tracker:
+                log("DEBUG", f"  Releasing slot {slot} for #{issue} (error)")
+                self.status_tracker.release_slot(slot)
+                slot = -1
+
             if issue in self.state.in_progress:
-                # Update state and save (save() handles its own locking)
-                self.state.paused_issues[issue] = PausedIssue(
-                    worktree=self.state.in_progress[issue],
-                    pr=None,
-                    reason=str(e)[:100],
-                )
-                del self.state.in_progress[issue]
+                # Update state with synchronization, then save (save() handles its own locking)
+                with self.state._save_lock:
+                    self.state.paused_issues[issue] = PausedIssue(
+                        worktree=self.state.in_progress[issue],
+                        pr=None,
+                        reason=str(e)[:100],
+                    )
+                    del self.state.in_progress[issue]
                 self.state.save(self.state_file)
 
             duration = time.time() - start_time
@@ -2953,14 +2997,21 @@ DO NOT describe what you're doing - just run the commands to commit.
             error_msg = str(e)[:200]
             self._post_issue_update(issue, f"❌ Implementation failed:\n\n```\n{error_msg}\n```")
 
+            # Release slot before state updates
+            if slot != -1 and self.status_tracker:
+                log("DEBUG", f"  Releasing slot {slot} for #{issue} (unexpected error)")
+                self.status_tracker.release_slot(slot)
+                slot = -1
+
             if issue in self.state.in_progress:
-                # Update state and save (save() handles its own locking)
-                self.state.paused_issues[issue] = PausedIssue(
-                    worktree=self.state.in_progress[issue],
-                    pr=None,
-                    reason=str(e)[:100],
-                )
-                del self.state.in_progress[issue]
+                # Update state with synchronization, then save (save() handles its own locking)
+                with self.state._save_lock:
+                    self.state.paused_issues[issue] = PausedIssue(
+                        worktree=self.state.in_progress[issue],
+                        pr=None,
+                        reason=str(e)[:100],
+                    )
+                    del self.state.in_progress[issue]
                 self.state.save(self.state_file)
 
             duration = time.time() - start_time
