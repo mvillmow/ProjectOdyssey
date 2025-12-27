@@ -201,7 +201,7 @@ jobs:
             pattern: "test_bf8.mojo test_bfloat16.mojo test_fp4.mojo test_fp8.mojo test_mxfp4.mojo test_nvfp4.mojo test_unsigned.mojo test_dtype_dispatch.mojo"
           - name: "Core Gradient"
             path: "tests/shared/core"
-            pattern: "test_backward.mojo test_backward_compat_aliases.mojo test_gradient_checking.mojo test_gradient_numerical_stability.mojo test_variable_backward.mojo"
+            pattern: "test_backward.mojo test_backward_compat_aliases.mojo test_gradient_checking.mojo test_gradient_numerical_stability.mojo test_gradient_validation.mojo test_variable_backward.mojo"
           - name: "Core Initializers"
             path: "tests/shared/core"
             pattern: "test_initializers.mojo test_initializers_validation.mojo"
