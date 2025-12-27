@@ -824,6 +824,24 @@ def detect_rate_limit(text: str) -> int | None:
     return parse_reset_epoch(m.group("time"), m.group("tz"))
 
 
+def detect_claude_usage_limit(text: str) -> bool:
+    """Detect Claude API usage limit errors in output.
+
+    Returns:
+        True if usage limit detected, False otherwise
+    """
+    usage_limit_indicators = [
+        "usage limit",
+        "rate limit exceeded",
+        "429",  # HTTP 429 Too Many Requests
+        "quota exceeded",
+        "too many requests",
+        "overloaded_error",  # Claude-specific error type
+    ]
+    text_lower = text.lower()
+    return any(indicator in text_lower for indicator in usage_limit_indicators)
+
+
 def wait_until(epoch: int) -> None:
     """Wait until the given epoch time, showing a countdown."""
     interrupted = False
@@ -2194,7 +2212,15 @@ class IssueImplementer:
                 lines = f.readlines()
                 tail = "".join(lines[-500:])  # Last 500 lines only
 
-            # Check for rate limit
+            # Check for Claude API usage limit (FATAL - must stop processing)
+            if detect_claude_usage_limit(tail):
+                log("ERROR", "Claude API usage limit detected - stopping all processing")
+                raise RuntimeError(
+                    "Claude API usage limit reached. Please wait before running again.\n\n"
+                    f"Error details:\n{tail[-500:]}"
+                )
+
+            # Check for GitHub rate limit
             reset = detect_rate_limit(tail)
             if reset:
                 wait_until(reset)
