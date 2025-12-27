@@ -198,7 +198,7 @@ jobs:
             pattern: "test_losses.mojo test_loss_funcs.mojo test_loss_utils.mojo"
           - name: "Core DTypes"
             path: "tests/shared/core"
-            pattern: "test_bf8.mojo test_bfloat16.mojo test_fp4.mojo test_fp8.mojo test_mxfp4.mojo test_nvfp4.mojo test_unsigned.mojo test_dtype_dispatch.mojo"
+            pattern: "test_bf8.mojo test_bfloat16.mojo test_fp4.mojo test_fp8.mojo test_mxfp4.mojo test_nvfp4.mojo test_unsigned.mojo test_dtype_dispatch.mojo test_dtype_ordinal.mojo"
           - name: "Core Gradient"
             path: "tests/shared/core"
             pattern: "test_backward.mojo test_backward_compat_aliases.mojo test_gradient_checking.mojo test_gradient_numerical_stability.mojo test_gradient_validation.mojo test_variable_backward.mojo"

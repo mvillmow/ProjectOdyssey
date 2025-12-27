@@ -42,6 +42,21 @@ See notes/issues/dtype-refactoring-plan.md for complete design documentation
 
 from shared.core.extensor import ExTensor
 from collections import List
+from shared.core.dtype_ordinal import (
+    dtype_to_ordinal,
+    format_dtype_name,
+    DTYPE_FLOAT16,
+    DTYPE_FLOAT32,
+    DTYPE_FLOAT64,
+    DTYPE_INT8,
+    DTYPE_INT16,
+    DTYPE_INT32,
+    DTYPE_INT64,
+    DTYPE_UINT8,
+    DTYPE_UINT16,
+    DTYPE_UINT32,
+    DTYPE_UINT64,
+)
 
 
 # ============================================================================
@@ -58,32 +73,9 @@ fn _format_dtype_name(dtype: DType) -> String:
     Returns:
             String representation of the dtype name.
 
-        Note: Used internally for error messages.
+        Note: Used internally for error messages. Delegates to dtype_ordinal module.
     """
-    if dtype == DType.float16:
-        return "float16"
-    elif dtype == DType.float32:
-        return "float32"
-    elif dtype == DType.float64:
-        return "float64"
-    elif dtype == DType.int8:
-        return "int8"
-    elif dtype == DType.int16:
-        return "int16"
-    elif dtype == DType.int32:
-        return "int32"
-    elif dtype == DType.int64:
-        return "int64"
-    elif dtype == DType.uint8:
-        return "uint8"
-    elif dtype == DType.uint16:
-        return "uint16"
-    elif dtype == DType.uint32:
-        return "uint32"
-    elif dtype == DType.uint64:
-        return "uint64"
-    else:
-        return "unknown"
+    return format_dtype_name(dtype)
 
 
 # ============================================================================
@@ -143,6 +135,8 @@ fn dispatch_unary[
         specialized versions of the operation, ensuring zero overhead compared to
         hand-written dtype branches.
 
+        Uses ordinal-based dispatch for optimized lookup (compiler can generate jump table).
+
     Parameters:
             op: Unary operation function pointer.
 
@@ -168,28 +162,31 @@ fn dispatch_unary[
             Supports: float16, float32, float64, int8, int16, int32, int64,
                       uint8, uint16, uint32, uint64.
     """
-    # Runtime dispatch to compile-time specialized version
-    if tensor._dtype == DType.float16:
+    # Get ordinal for dispatch (compiler can optimize to efficient lookup)
+    var ordinal = dtype_to_ordinal(tensor._dtype)
+
+    # Dispatch based on ordinal - compiler generates jump table for consecutive integers
+    if ordinal == DTYPE_FLOAT16:
         return elementwise_unary[DType.float16, op](tensor)
-    elif tensor._dtype == DType.float32:
+    elif ordinal == DTYPE_FLOAT32:
         return elementwise_unary[DType.float32, op](tensor)
-    elif tensor._dtype == DType.float64:
+    elif ordinal == DTYPE_FLOAT64:
         return elementwise_unary[DType.float64, op](tensor)
-    elif tensor._dtype == DType.int8:
+    elif ordinal == DTYPE_INT8:
         return elementwise_unary[DType.int8, op](tensor)
-    elif tensor._dtype == DType.int16:
+    elif ordinal == DTYPE_INT16:
         return elementwise_unary[DType.int16, op](tensor)
-    elif tensor._dtype == DType.int32:
+    elif ordinal == DTYPE_INT32:
         return elementwise_unary[DType.int32, op](tensor)
-    elif tensor._dtype == DType.int64:
+    elif ordinal == DTYPE_INT64:
         return elementwise_unary[DType.int64, op](tensor)
-    elif tensor._dtype == DType.uint8:
+    elif ordinal == DTYPE_UINT8:
         return elementwise_unary[DType.uint8, op](tensor)
-    elif tensor._dtype == DType.uint16:
+    elif ordinal == DTYPE_UINT16:
         return elementwise_unary[DType.uint16, op](tensor)
-    elif tensor._dtype == DType.uint32:
+    elif ordinal == DTYPE_UINT32:
         return elementwise_unary[DType.uint32, op](tensor)
-    elif tensor._dtype == DType.uint64:
+    elif ordinal == DTYPE_UINT64:
         return elementwise_unary[DType.uint64, op](tensor)
     else:
         var dtype_name = _format_dtype_name(tensor._dtype)
@@ -261,6 +258,8 @@ fn dispatch_binary[
         This function performs runtime dtype checking but dispatches to compile-time
         specialized versions of the operation.
 
+        Uses ordinal-based dispatch for optimized lookup (compiler can generate jump table).
+
     Parameters:
             op: Binary operation function pointer.
     Args:
@@ -298,28 +297,31 @@ fn dispatch_binary[
             + rhs_dtype
         )
 
-    # Runtime dispatch to compile-time specialized version
-    if lhs._dtype == DType.float16:
+    # Get ordinal for dispatch (compiler can optimize to efficient lookup)
+    var ordinal = dtype_to_ordinal(lhs._dtype)
+
+    # Dispatch based on ordinal - compiler generates jump table for consecutive integers
+    if ordinal == DTYPE_FLOAT16:
         return elementwise_binary[DType.float16, op](lhs, rhs)
-    elif lhs._dtype == DType.float32:
+    elif ordinal == DTYPE_FLOAT32:
         return elementwise_binary[DType.float32, op](lhs, rhs)
-    elif lhs._dtype == DType.float64:
+    elif ordinal == DTYPE_FLOAT64:
         return elementwise_binary[DType.float64, op](lhs, rhs)
-    elif lhs._dtype == DType.int8:
+    elif ordinal == DTYPE_INT8:
         return elementwise_binary[DType.int8, op](lhs, rhs)
-    elif lhs._dtype == DType.int16:
+    elif ordinal == DTYPE_INT16:
         return elementwise_binary[DType.int16, op](lhs, rhs)
-    elif lhs._dtype == DType.int32:
+    elif ordinal == DTYPE_INT32:
         return elementwise_binary[DType.int32, op](lhs, rhs)
-    elif lhs._dtype == DType.int64:
+    elif ordinal == DTYPE_INT64:
         return elementwise_binary[DType.int64, op](lhs, rhs)
-    elif lhs._dtype == DType.uint8:
+    elif ordinal == DTYPE_UINT8:
         return elementwise_binary[DType.uint8, op](lhs, rhs)
-    elif lhs._dtype == DType.uint16:
+    elif ordinal == DTYPE_UINT16:
         return elementwise_binary[DType.uint16, op](lhs, rhs)
-    elif lhs._dtype == DType.uint32:
+    elif ordinal == DTYPE_UINT32:
         return elementwise_binary[DType.uint32, op](lhs, rhs)
-    elif lhs._dtype == DType.uint64:
+    elif ordinal == DTYPE_UINT64:
         return elementwise_binary[DType.uint64, op](lhs, rhs)
     else:
         var dtype_name = _format_dtype_name(lhs._dtype)
@@ -387,6 +389,8 @@ fn dispatch_scalar[
         specialized versions of the operation. The scalar value is automatically
         converted to the tensor's dtype.
 
+        Uses ordinal-based dispatch for optimized lookup (compiler can generate jump table).
+
     Parameters:
             op: Binary operation function pointer.
     Args:
@@ -413,28 +417,31 @@ fn dispatch_scalar[
                       uint8, uint16, uint32, uint64.
             The scalar is automatically converted to match the tensor's dtype.
     """
-    # Runtime dispatch to compile-time specialized version
-    if tensor._dtype == DType.float16:
+    # Get ordinal for dispatch (compiler can optimize to efficient lookup)
+    var ordinal = dtype_to_ordinal(tensor._dtype)
+
+    # Dispatch based on ordinal - compiler generates jump table for consecutive integers
+    if ordinal == DTYPE_FLOAT16:
         return elementwise_scalar[DType.float16, op](tensor, scalar)
-    elif tensor._dtype == DType.float32:
+    elif ordinal == DTYPE_FLOAT32:
         return elementwise_scalar[DType.float32, op](tensor, scalar)
-    elif tensor._dtype == DType.float64:
+    elif ordinal == DTYPE_FLOAT64:
         return elementwise_scalar[DType.float64, op](tensor, scalar)
-    elif tensor._dtype == DType.int8:
+    elif ordinal == DTYPE_INT8:
         return elementwise_scalar[DType.int8, op](tensor, scalar)
-    elif tensor._dtype == DType.int16:
+    elif ordinal == DTYPE_INT16:
         return elementwise_scalar[DType.int16, op](tensor, scalar)
-    elif tensor._dtype == DType.int32:
+    elif ordinal == DTYPE_INT32:
         return elementwise_scalar[DType.int32, op](tensor, scalar)
-    elif tensor._dtype == DType.int64:
+    elif ordinal == DTYPE_INT64:
         return elementwise_scalar[DType.int64, op](tensor, scalar)
-    elif tensor._dtype == DType.uint8:
+    elif ordinal == DTYPE_UINT8:
         return elementwise_scalar[DType.uint8, op](tensor, scalar)
-    elif tensor._dtype == DType.uint16:
+    elif ordinal == DTYPE_UINT16:
         return elementwise_scalar[DType.uint16, op](tensor, scalar)
-    elif tensor._dtype == DType.uint32:
+    elif ordinal == DTYPE_UINT32:
         return elementwise_scalar[DType.uint32, op](tensor, scalar)
-    elif tensor._dtype == DType.uint64:
+    elif ordinal == DTYPE_UINT64:
         return elementwise_scalar[DType.uint64, op](tensor, scalar)
     else:
         var dtype_name = _format_dtype_name(tensor._dtype)
@@ -461,6 +468,8 @@ fn dispatch_float_unary[
         one of the supported float types and dispatches to the appropriate
         compile-time specialized version.
 
+        Uses ordinal-based dispatch for optimized lookup (compiler can generate jump table).
+
     Parameters:
             op: Unary operation function pointer.
     Args:
@@ -486,12 +495,15 @@ fn dispatch_float_unary[
             Supports float types only: float16, float32, float64.
             For integer operations, use dispatch_unary instead.
     """
-    # Runtime dispatch for float types only
-    if tensor._dtype == DType.float16:
+    # Get ordinal for dispatch (compiler can optimize to efficient lookup)
+    var ordinal = dtype_to_ordinal(tensor._dtype)
+
+    # Dispatch based on ordinal - only float types
+    if ordinal == DTYPE_FLOAT16:
         return elementwise_unary[DType.float16, op](tensor)
-    elif tensor._dtype == DType.float32:
+    elif ordinal == DTYPE_FLOAT32:
         return elementwise_unary[DType.float32, op](tensor)
-    elif tensor._dtype == DType.float64:
+    elif ordinal == DTYPE_FLOAT64:
         return elementwise_unary[DType.float64, op](tensor)
     else:
         var dtype_name = _format_dtype_name(tensor._dtype)
@@ -509,6 +521,9 @@ fn dispatch_float_binary[
         Use this for operations that only support floating-point dtypes.
         This function validates that both input tensors are float types
         and dispatches to the appropriate compile-time specialized version.
+
+        Uses ordinal-based dispatch for optimized lookup (compiler can generate jump table).
+
     Parameters:
             op: Binary operation function pointer.
     Args:
@@ -537,12 +552,15 @@ fn dispatch_float_binary[
             + rhs_dtype
         )
 
-    # Runtime dispatch for float types only
-    if lhs._dtype == DType.float16:
+    # Get ordinal for dispatch (compiler can optimize to efficient lookup)
+    var ordinal = dtype_to_ordinal(lhs._dtype)
+
+    # Dispatch based on ordinal - only float types
+    if ordinal == DTYPE_FLOAT16:
         return elementwise_binary[DType.float16, op](lhs, rhs)
-    elif lhs._dtype == DType.float32:
+    elif ordinal == DTYPE_FLOAT32:
         return elementwise_binary[DType.float32, op](lhs, rhs)
-    elif lhs._dtype == DType.float64:
+    elif ordinal == DTYPE_FLOAT64:
         return elementwise_binary[DType.float64, op](lhs, rhs)
     else:
         var dtype_name = _format_dtype_name(lhs._dtype)
@@ -559,6 +577,9 @@ fn dispatch_float_scalar[
 
         Use this for operations that only support floating-point dtypes.
         The scalar value is automatically converted to the tensor's float dtype.
+
+        Uses ordinal-based dispatch for optimized lookup (compiler can generate jump table).
+
     Parameters:
             op: Binary operation function pointer.
     Args:
@@ -576,12 +597,15 @@ fn dispatch_float_scalar[
             Supports float types only: float16, float32, float64.
             The scalar is automatically converted to match the tensor's float dtype.
     """
-    # Runtime dispatch for float types only
-    if tensor._dtype == DType.float16:
+    # Get ordinal for dispatch (compiler can optimize to efficient lookup)
+    var ordinal = dtype_to_ordinal(tensor._dtype)
+
+    # Dispatch based on ordinal - only float types
+    if ordinal == DTYPE_FLOAT16:
         return elementwise_scalar[DType.float16, op](tensor, scalar)
-    elif tensor._dtype == DType.float32:
+    elif ordinal == DTYPE_FLOAT32:
         return elementwise_scalar[DType.float32, op](tensor, scalar)
-    elif tensor._dtype == DType.float64:
+    elif ordinal == DTYPE_FLOAT64:
         return elementwise_scalar[DType.float64, op](tensor, scalar)
     else:
         var dtype_name = _format_dtype_name(tensor._dtype)

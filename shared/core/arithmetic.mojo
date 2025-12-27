@@ -8,6 +8,20 @@ from math import nan
 from shared.core.extensor import ExTensor, full
 from shared.core.broadcasting import broadcast_shapes, compute_broadcast_strides
 from shared.core.gradient_types import GradientPair
+from shared.core.dtype_ordinal import (
+    dtype_to_ordinal,
+    DTYPE_FLOAT16,
+    DTYPE_FLOAT32,
+    DTYPE_FLOAT64,
+    DTYPE_INT8,
+    DTYPE_INT16,
+    DTYPE_INT32,
+    DTYPE_INT64,
+    DTYPE_UINT8,
+    DTYPE_UINT16,
+    DTYPE_UINT32,
+    DTYPE_UINT64,
+)
 
 
 # ============================================================================
@@ -100,6 +114,8 @@ fn _dispatch_broadcast_binary[
     This dispatcher performs runtime dtype checking but dispatches to compile-time
     specialized versions, ensuring zero overhead compared to hand-written dtype branches.
 
+    Uses ordinal-based dispatch for optimized lookup (compiler can generate jump table).
+
     Parameters:
         op: Binary operation function pointer.
 
@@ -117,28 +133,31 @@ fn _dispatch_broadcast_binary[
     if a._dtype != b._dtype:
         raise Error("Cannot operate on tensors with different dtypes")
 
-    # Runtime dispatch to compile-time specialized version
-    if a._dtype == DType.float16:
+    # Get ordinal for dispatch (compiler can optimize to efficient lookup)
+    var ordinal = dtype_to_ordinal(a._dtype)
+
+    # Dispatch based on ordinal - compiler generates jump table for consecutive integers
+    if ordinal == DTYPE_FLOAT16:
         return _broadcast_binary[DType.float16, op](a, b)
-    elif a._dtype == DType.float32:
+    elif ordinal == DTYPE_FLOAT32:
         return _broadcast_binary[DType.float32, op](a, b)
-    elif a._dtype == DType.float64:
+    elif ordinal == DTYPE_FLOAT64:
         return _broadcast_binary[DType.float64, op](a, b)
-    elif a._dtype == DType.int8:
+    elif ordinal == DTYPE_INT8:
         return _broadcast_binary[DType.int8, op](a, b)
-    elif a._dtype == DType.int16:
+    elif ordinal == DTYPE_INT16:
         return _broadcast_binary[DType.int16, op](a, b)
-    elif a._dtype == DType.int32:
+    elif ordinal == DTYPE_INT32:
         return _broadcast_binary[DType.int32, op](a, b)
-    elif a._dtype == DType.int64:
+    elif ordinal == DTYPE_INT64:
         return _broadcast_binary[DType.int64, op](a, b)
-    elif a._dtype == DType.uint8:
+    elif ordinal == DTYPE_UINT8:
         return _broadcast_binary[DType.uint8, op](a, b)
-    elif a._dtype == DType.uint16:
+    elif ordinal == DTYPE_UINT16:
         return _broadcast_binary[DType.uint16, op](a, b)
-    elif a._dtype == DType.uint32:
+    elif ordinal == DTYPE_UINT32:
         return _broadcast_binary[DType.uint32, op](a, b)
-    elif a._dtype == DType.uint64:
+    elif ordinal == DTYPE_UINT64:
         return _broadcast_binary[DType.uint64, op](a, b)
     else:
         raise Error("Unsupported dtype for binary operation")
@@ -298,6 +317,8 @@ fn multiply_scalar(tensor: ExTensor, scalar: Float32) raises -> ExTensor:
     creating an intermediate full tensor. Useful for operations like negation
     (multiply by -1.0) or scaling in gradient computations.
 
+    Uses ordinal-based dispatch for optimized lookup (compiler can generate jump table).
+
     Args:
         tensor: Input tensor to multiply.
         scalar: Scalar value to multiply by.
@@ -322,68 +343,71 @@ fn multiply_scalar(tensor: ExTensor, scalar: Float32) raises -> ExTensor:
     for dim in tensor.shape():
         numel *= dim
 
-    # Dispatch based on dtype for compile-time specialization
-    if tensor.dtype() == DType.float16:
+    # Get ordinal for dispatch (compiler can optimize to efficient lookup)
+    var ordinal = dtype_to_ordinal(tensor.dtype())
+
+    # Dispatch based on ordinal - compiler generates jump table for consecutive integers
+    if ordinal == DTYPE_FLOAT16:
         var input_ptr = tensor._data.bitcast[Scalar[DType.float16]]()
         var result_ptr = result._data.bitcast[Scalar[DType.float16]]()
         var scalar_cast = Scalar[DType.float16](scalar)
         for i in range(numel):
             result_ptr[i] = input_ptr[i] * scalar_cast
-    elif tensor.dtype() == DType.float32:
+    elif ordinal == DTYPE_FLOAT32:
         var input_ptr = tensor._data.bitcast[Scalar[DType.float32]]()
         var result_ptr = result._data.bitcast[Scalar[DType.float32]]()
         var scalar_cast = Scalar[DType.float32](scalar)
         for i in range(numel):
             result_ptr[i] = input_ptr[i] * scalar_cast
-    elif tensor.dtype() == DType.float64:
+    elif ordinal == DTYPE_FLOAT64:
         var input_ptr = tensor._data.bitcast[Scalar[DType.float64]]()
         var result_ptr = result._data.bitcast[Scalar[DType.float64]]()
         var scalar_cast = Scalar[DType.float64](scalar)
         for i in range(numel):
             result_ptr[i] = input_ptr[i] * scalar_cast
-    elif tensor.dtype() == DType.int8:
+    elif ordinal == DTYPE_INT8:
         var input_ptr = tensor._data.bitcast[Scalar[DType.int8]]()
         var result_ptr = result._data.bitcast[Scalar[DType.int8]]()
         var scalar_cast = Scalar[DType.int8](scalar)
         for i in range(numel):
             result_ptr[i] = input_ptr[i] * scalar_cast
-    elif tensor.dtype() == DType.int16:
+    elif ordinal == DTYPE_INT16:
         var input_ptr = tensor._data.bitcast[Scalar[DType.int16]]()
         var result_ptr = result._data.bitcast[Scalar[DType.int16]]()
         var scalar_cast = Scalar[DType.int16](scalar)
         for i in range(numel):
             result_ptr[i] = input_ptr[i] * scalar_cast
-    elif tensor.dtype() == DType.int32:
+    elif ordinal == DTYPE_INT32:
         var input_ptr = tensor._data.bitcast[Scalar[DType.int32]]()
         var result_ptr = result._data.bitcast[Scalar[DType.int32]]()
         var scalar_cast = Scalar[DType.int32](scalar)
         for i in range(numel):
             result_ptr[i] = input_ptr[i] * scalar_cast
-    elif tensor.dtype() == DType.int64:
+    elif ordinal == DTYPE_INT64:
         var input_ptr = tensor._data.bitcast[Scalar[DType.int64]]()
         var result_ptr = result._data.bitcast[Scalar[DType.int64]]()
         var scalar_cast = Scalar[DType.int64](scalar)
         for i in range(numel):
             result_ptr[i] = input_ptr[i] * scalar_cast
-    elif tensor.dtype() == DType.uint8:
+    elif ordinal == DTYPE_UINT8:
         var input_ptr = tensor._data.bitcast[Scalar[DType.uint8]]()
         var result_ptr = result._data.bitcast[Scalar[DType.uint8]]()
         var scalar_cast = Scalar[DType.uint8](scalar)
         for i in range(numel):
             result_ptr[i] = input_ptr[i] * scalar_cast
-    elif tensor.dtype() == DType.uint16:
+    elif ordinal == DTYPE_UINT16:
         var input_ptr = tensor._data.bitcast[Scalar[DType.uint16]]()
         var result_ptr = result._data.bitcast[Scalar[DType.uint16]]()
         var scalar_cast = Scalar[DType.uint16](scalar)
         for i in range(numel):
             result_ptr[i] = input_ptr[i] * scalar_cast
-    elif tensor.dtype() == DType.uint32:
+    elif ordinal == DTYPE_UINT32:
         var input_ptr = tensor._data.bitcast[Scalar[DType.uint32]]()
         var result_ptr = result._data.bitcast[Scalar[DType.uint32]]()
         var scalar_cast = Scalar[DType.uint32](scalar)
         for i in range(numel):
             result_ptr[i] = input_ptr[i] * scalar_cast
-    elif tensor.dtype() == DType.uint64:
+    elif ordinal == DTYPE_UINT64:
         var input_ptr = tensor._data.bitcast[Scalar[DType.uint64]]()
         var result_ptr = result._data.bitcast[Scalar[DType.uint64]]()
         var scalar_cast = Scalar[DType.uint64](scalar)
