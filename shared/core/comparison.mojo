@@ -13,6 +13,7 @@ from shared.core.broadcasting import broadcast_shapes, compute_broadcast_strides
 # ============================================================================
 
 
+@always_inline
 fn _compare_equal_impl[
     dtype: DType
 ](
@@ -89,6 +90,7 @@ fn _dispatch_compare_equal(
         raise Error("equal: unsupported dtype")
 
 
+@always_inline
 fn _compare_not_equal_impl[
     dtype: DType
 ](
@@ -165,6 +167,7 @@ fn _dispatch_compare_not_equal(
         raise Error("not_equal: unsupported dtype")
 
 
+@always_inline
 fn _compare_less_impl[
     dtype: DType
 ](
@@ -241,6 +244,7 @@ fn _dispatch_compare_less(
         raise Error("less: unsupported dtype")
 
 
+@always_inline
 fn _compare_less_equal_impl[
     dtype: DType
 ](
@@ -317,6 +321,7 @@ fn _dispatch_compare_less_equal(
         raise Error("less_equal: unsupported dtype")
 
 
+@always_inline
 fn _compare_greater_impl[
     dtype: DType
 ](
@@ -393,6 +398,7 @@ fn _dispatch_compare_greater(
         raise Error("greater: unsupported dtype")
 
 
+@always_inline
 fn _compare_greater_equal_impl[
     dtype: DType
 ](

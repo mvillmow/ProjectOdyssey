@@ -1248,6 +1248,7 @@ fn _dispatch_abs_backward(
         raise Error("abs_backward: unsupported dtype")
 
 
+@always_inline
 fn _clip_backward_impl[
     dtype: DType
 ](

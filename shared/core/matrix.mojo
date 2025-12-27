@@ -90,6 +90,7 @@ fn _dispatch_matmul_1d_2d(
         raise Error("matmul: unsupported dtype")
 
 
+@always_inline
 fn _matmul_2d_2d_impl[
     dtype: DType
 ](
@@ -137,6 +138,7 @@ fn _dispatch_matmul_2d_2d(
         raise Error("matmul: unsupported dtype")
 
 
+@always_inline
 fn _matmul_batched_impl[
     dtype: DType
 ](
@@ -255,6 +257,7 @@ fn _dispatch_matmul_batched(
         raise Error("matmul: unsupported dtype")
 
 
+@always_inline
 fn _transpose_copy_impl[
     dtype: DType
 ](
