@@ -575,6 +575,19 @@ from shared.core.parallel_utils import (
 )
 
 # ============================================================================
+# Memory Pool for Efficient Small Allocations
+# ============================================================================
+
+from shared.core.memory_pool import (
+    TensorMemoryPool,
+    PoolConfig,
+    PoolStats,
+    get_global_pool,
+    pooled_alloc,
+    pooled_free,
+)
+
+# ============================================================================
 # Module Interface for Layer Composition
 # ============================================================================
 

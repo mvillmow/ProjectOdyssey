@@ -36,6 +36,7 @@ from sys.info import simd_width_of
 from math import ceildiv, sqrt, log, cos, sin
 from utils.numerics import inf as numeric_inf, neg_inf as numeric_neg_inf
 from random import random_float64
+from .memory_pool import pooled_alloc, pooled_free
 
 # Memory safety constants
 comptime MAX_TENSOR_BYTES: Int = 2_000_000_000  # 2 GB max per tensor
@@ -90,6 +91,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
     """Reference count for shared memory management."""
     var _original_numel_quantized: Int
     """Original element count before quantization padding."""
+    var _allocated_size: Int
+    """Actual allocated size (may differ from requested due to pool bucketing)."""
 
     fn __init__(out self, shape: List[Int], dtype: DType) raises:
         """Initialize a new ExTensor with given shape and dtype.
@@ -148,8 +151,9 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
         if total_bytes > WARN_TENSOR_BYTES:
             print("Warning: Large tensor allocation:", total_bytes, "bytes")
 
-        # Allocate raw byte storage (now with validation)
-        self._data = alloc[UInt8](total_bytes)
+        # Allocate raw byte storage through memory pool (for efficiency)
+        self._data = pooled_alloc(total_bytes)
+        self._allocated_size = total_bytes
 
         # Allocate and initialize reference count (fixes MOJO-003, MOJO-006)
         self._refcount = alloc[Int](1)
@@ -181,7 +185,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
         self._is_view = False
         self._original_numel_quantized = -1
         var dtype_size = ExTensor._get_dtype_size_static(DType.int64)
-        self._data = alloc[UInt8](dtype_size)
+        self._data = pooled_alloc(dtype_size)
+        self._allocated_size = dtype_size
         self._refcount = alloc[Int](1)
         self._refcount[] = 1
         self._data.bitcast[Int64]()[] = Int64(value)
@@ -212,7 +217,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
         self._is_view = False
         self._original_numel_quantized = -1
         var dtype_size = ExTensor._get_dtype_size_static(DType.float64)
-        self._data = alloc[UInt8](dtype_size)
+        self._data = pooled_alloc(dtype_size)
+        self._allocated_size = dtype_size
         self._refcount = alloc[Int](1)
         self._refcount[] = 1
         self._data.bitcast[Float64]()[] = Float64(value)
@@ -237,7 +243,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
         self._is_view = False
         self._original_numel_quantized = -1
         var dtype_size = ExTensor._get_dtype_size_static(DType.int64)
-        self._data = alloc[UInt8](dtype_size)
+        self._data = pooled_alloc(dtype_size)
+        self._allocated_size = dtype_size
         self._refcount = alloc[Int](1)
         self._refcount[] = 1
         self._data.bitcast[Int64]()[] = Int64(value)
@@ -267,7 +274,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
         self._is_view = False
         self._original_numel_quantized = -1
         var dtype_size = ExTensor._get_dtype_size_static(DType.float64)
-        self._data = alloc[UInt8](dtype_size)
+        self._data = pooled_alloc(dtype_size)
+        self._allocated_size = dtype_size
         self._refcount = alloc[Int](1)
         self._refcount[] = 1
         self._data.bitcast[Float64]()[] = value
@@ -318,7 +326,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
                 + " bytes"
             )
 
-        self._data = alloc[UInt8](total_bytes)
+        self._data = pooled_alloc(total_bytes)
+        self._allocated_size = total_bytes
         self._refcount = alloc[Int](1)
         self._refcount[] = 1
 
@@ -372,7 +381,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
                 + " bytes"
             )
 
-        self._data = alloc[UInt8](total_bytes)
+        self._data = pooled_alloc(total_bytes)
+        self._allocated_size = total_bytes
         self._refcount = alloc[Int](1)
         self._refcount[] = 1
 
@@ -397,6 +407,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
         self._is_view = existing._is_view
         self._refcount = existing._refcount
         self._original_numel_quantized = existing._original_numel_quantized
+        self._allocated_size = existing._allocated_size
 
         # Increment reference count (shared ownership)
         # All copies (views or not) participate in refcount management
@@ -417,6 +428,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
         self._is_view = existing._is_view
         self._refcount = existing._refcount
         self._original_numel_quantized = existing._original_numel_quantized
+        self._allocated_size = existing._allocated_size
 
     fn __del__(deinit self):
         """Destructor - decrements ref count, frees if last reference.
@@ -431,7 +443,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
 
             # If last reference, free everything
             if self._refcount[] == 0:
-                self._data.free()
+                pooled_free(self._data, self._allocated_size)
                 self._refcount.free()
 
     fn _get_dtype_size(self) -> Int:
