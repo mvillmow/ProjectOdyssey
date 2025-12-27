@@ -1,5 +1,27 @@
-"""Layerwise Unit Tests for LeNet-5
+"""DEPRECATED: Layerwise Unit Tests for LeNet-5
 
+⚠️ **THIS FILE IS DEPRECATED** ⚠️
+
+This monolithic test file has been split into smaller files to work around
+Issue #2942 (heap corruption after running 15+ cumulative tests).
+
+**Use these files instead**:
+- test_lenet5_conv_layers.mojo (6 tests)
+- test_lenet5_activation_layers.mojo (3 tests)
+- test_lenet5_pooling_layers.mojo (4 tests)
+- test_lenet5_fc_layers.mojo (8 tests)
+- test_lenet5_reshape_layers.mojo (2 tests)
+
+**Why this was deprecated**:
+Running all 24 tests in a single file triggers a Mojo 0.26.1 runtime bug that
+causes heap corruption after approximately 15 cumulative tests. Splitting the
+tests into smaller files (<10 tests each) avoids this issue.
+
+**See**: BUG_REPORT_HEAP_CORRUPTION.md and Issue #2942 for details.
+
+---
+
+Original description:
 Tests each layer independently with special FP-representable values.
 Each layer test runs on all dtypes: float16, bfloat16, float32
 
