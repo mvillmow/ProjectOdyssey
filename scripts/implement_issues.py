@@ -633,25 +633,32 @@ def prefetch_issue_states(issue_nums: list[int]) -> None:
         }}
         """
 
-        cp = run(["gh", "api", "graphql", "-f", f"query={query}"])
-        if cp.returncode == 0:
-            try:
-                data = json.loads(cp.stdout)
-                repo_data = data.get("data", {}).get("repository", {})
-                for j, num in enumerate(batch):
-                    issue_data = repo_data.get(f"issue{j}")
-                    if issue_data:
-                        is_closed = issue_data.get("state", "OPEN").upper() == "CLOSED"
-                        _external_issue_cache[num] = CachedIssueState(is_closed=is_closed, cached_at=now)
-                    else:
-                        _external_issue_cache[num] = CachedIssueState(is_closed=False, cached_at=now)
-            except (json.JSONDecodeError, KeyError):
-                # Mark all as not closed on parse error
+        try:
+            cp = run(["gh", "api", "graphql", "-f", f"query={query}"], timeout=30)
+            if cp.returncode == 0:
+                try:
+                    data = json.loads(cp.stdout)
+                    repo_data = data.get("data", {}).get("repository", {})
+                    for j, num in enumerate(batch):
+                        issue_data = repo_data.get(f"issue{j}")
+                        if issue_data:
+                            is_closed = issue_data.get("state", "OPEN").upper() == "CLOSED"
+                            _external_issue_cache[num] = CachedIssueState(is_closed=is_closed, cached_at=now)
+                        else:
+                            _external_issue_cache[num] = CachedIssueState(is_closed=False, cached_at=now)
+                except (json.JSONDecodeError, KeyError):
+                    # Mark all as not closed on parse error
+                    for num in batch:
+                        if num not in _external_issue_cache:
+                            _external_issue_cache[num] = CachedIssueState(is_closed=False, cached_at=now)
+            else:
+                # Mark all as not closed on API error
                 for num in batch:
                     if num not in _external_issue_cache:
                         _external_issue_cache[num] = CachedIssueState(is_closed=False, cached_at=now)
-        else:
-            # Mark all as not closed on API error
+        except subprocess.TimeoutExpired:
+            log("WARN", f"GitHub API timeout for batch {i // batch_size + 1}, marking as not closed")
+            # Mark all as not closed on timeout
             for num in batch:
                 if num not in _external_issue_cache:
                     _external_issue_cache[num] = CachedIssueState(is_closed=False, cached_at=now)
@@ -977,8 +984,8 @@ class StatusTracker:
     def get_status_data(self) -> dict:
         """Return current state snapshot for external rendering."""
         with self._lock:
-            # Detect slot leaks
-            leaked_slots = set(self._slots.keys()) - set(self._slot_to_item.keys())
+            # Detect slot leaks (exclude MAIN_THREAD which doesn't use slot_to_item tracking)
+            leaked_slots = set(self._slots.keys()) - set(self._slot_to_item.keys()) - {self.MAIN_THREAD}
             if leaked_slots:
                 log("ERROR", f"Slot leak detected! Slots without owners: {leaked_slots}")
 
@@ -1255,6 +1262,7 @@ class ImplementationState:
         Uses thread lock + file lock + atomic rename for safety.
         """
         with self._save_lock:  # Thread safety
+            log("DEBUG", f"State.save(): Preparing data for {path}")
             data = {
                 "epic_number": self.epic_number,
                 "issues": {str(k): v.to_dict() for k, v in self.issues.items()},
@@ -1267,10 +1275,13 @@ class ImplementationState:
             }
 
             json_content = json.dumps(data, indent=2)
+            log("DEBUG", f"State.save(): JSON serialized, {len(json_content)} bytes")
 
             # Atomic write: write to temp file, then rename
             path.parent.mkdir(parents=True, exist_ok=True)
+            log("DEBUG", f"State.save(): Creating temp file in {path.parent}")
             temp_fd, temp_path = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
+            log("DEBUG", f"State.save(): Temp file created: {temp_path}")
 
             try:
                 # Write to temp file with exclusive lock
@@ -1278,7 +1289,9 @@ class ImplementationState:
                     # Acquire exclusive lock (blocks other processes)
                     import fcntl
 
+                    log("DEBUG", "State.save(): Acquiring file lock...")
                     fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                    log("DEBUG", "State.save(): File lock acquired")
                     try:
                         f.write(json_content)
                         f.flush()
@@ -1344,6 +1357,7 @@ class Options:
     parallel: int  # 1 = sequential, N = parallel workers
     dry_run: bool
     analyze: bool  # Just show dependency graph
+    export_graph: str | None  # Export dependency graph to DOT file
     resume: bool
     timeout: int
     cleanup: bool
@@ -2391,11 +2405,10 @@ Focus on what functionality was added or fixed. Do not include implementation de
         self._update_status(slot, issue, "Worktree", "setting up")
         worktree = self.worktree_manager.create_for_existing_branch(issue, branch)
         log("DEBUG", f"  Worktree ready: {worktree}")
-        # Protect state modifications with lock
-        with self.state._save_lock:
-            self.state.in_progress[issue] = str(worktree)
-            self.state.pr_numbers[issue] = pr_number
-            self.state.save(self.state_file)
+        # Update state and save (save() handles its own locking)
+        self.state.in_progress[issue] = str(worktree)
+        self.state.pr_numbers[issue] = pr_number
+        self.state.save(self.state_file)
 
         # Fetch CI logs
         log("DEBUG", "  Fetching CI run info")
@@ -2568,10 +2581,9 @@ DO NOT describe what you're doing - just run the commands to commit.
 
         # Cleanup worktree since we're moving on
         self.worktree_manager.remove(issue)
-        # Protect state modifications with lock
-        with self.state._save_lock:
-            del self.state.in_progress[issue]
-            self.state.save(self.state_file)
+        # Update state and save (save() handles its own locking)
+        del self.state.in_progress[issue]
+        self.state.save(self.state_file)
 
         duration = time.time() - start_time
         log("INFO", f"  Fixed PR #{pr_number} - moving to next issue")
@@ -2710,15 +2722,20 @@ DO NOT describe what you're doing - just run the commands to commit.
 
             # 2. Create worktree
             self._update_status(slot, issue, "Worktree", "creating")
+            log("DEBUG", f"  Creating worktree for #{issue}")
             worktree = self.worktree_manager.create(issue, title)
-            # Protect state modifications with lock
-            with self.state._save_lock:
-                self.state.in_progress[issue] = str(worktree)
-                self.state.save(self.state_file)
+            log("DEBUG", f"  Worktree created: {worktree}")
+            # Update state and save (save() handles its own locking)
+            log("DEBUG", f"  Updating state for #{issue}")
+            self.state.in_progress[issue] = str(worktree)
+            self.state.save(self.state_file)
+            log("DEBUG", f"  State saved for #{issue}")
 
             # 3. Fetch and rebase
             self._update_status(slot, issue, "Git", "fetch & rebase")
-            cp = run(["git", "fetch", "origin"], cwd=worktree)
+            log("DEBUG", f"  Running git fetch for #{issue}")
+            cp = run(["git", "fetch", "origin"], cwd=worktree, timeout=30)
+            log("DEBUG", f"  Git fetch completed for #{issue}: returncode={cp.returncode}")
             if cp.returncode != 0:
                 raise RuntimeError(f"git fetch failed: {cp.stderr}")
 
@@ -2794,10 +2811,9 @@ You are on branch: {worktree.name}
             if not has_uncommitted and not has_new_commits:
                 log("WARN", f"  No changes made for #{issue}")
                 self.worktree_manager.remove(issue)
-                # Protect state modifications with lock
-                with self.state._save_lock:
-                    del self.state.in_progress[issue]
-                    self.state.save(self.state_file)
+                # Update state and save (save() handles its own locking)
+                del self.state.in_progress[issue]
+                self.state.save(self.state_file)
                 return WorkerResult(issue, "skipped", None, "No changes made", time.time() - start_time)
 
             # 6. Get summary
@@ -2889,10 +2905,9 @@ DO NOT describe what you're doing - just run the commands to commit.
             # NOTE: PR creation removed - commits are pushed to branches only
             self._update_status(slot, issue, "Cleanup", "removing worktree")
             self.worktree_manager.remove(issue)
-            # Protect state modifications with lock
-            with self.state._save_lock:
-                del self.state.in_progress[issue]
-                self.state.save(self.state_file)
+            # Update state and save (save() handles its own locking)
+            del self.state.in_progress[issue]
+            self.state.save(self.state_file)
 
             duration = time.time() - start_time
             log("INFO", f"  Committed #{issue} to branch {branch} in {duration:.0f}s")
@@ -2902,15 +2917,14 @@ DO NOT describe what you're doing - just run the commands to commit.
         except (KeyboardInterrupt, SystemExit):
             # Clean shutdown - preserve state and re-raise
             if issue in self.state.in_progress:
-                with self.state._save_lock:
-                    self.state.paused_issues[issue] = PausedIssue(
-                        worktree=self.state.in_progress[issue],
-                        pr=None,
-                        reason="Interrupted by user",
-                    )
-                    del self.state.in_progress[issue]
-                    # Save inside lock to prevent race conditions
-                    self.state.save(self.state_file)
+                # Update state and save (save() handles its own locking)
+                self.state.paused_issues[issue] = PausedIssue(
+                    worktree=self.state.in_progress[issue],
+                    pr=None,
+                    reason="Interrupted by user",
+                )
+                del self.state.in_progress[issue]
+                self.state.save(self.state_file)
             raise
         except RuntimeError as e:
             # Expected failures (git push failed, etc.)
@@ -2919,15 +2933,14 @@ DO NOT describe what you're doing - just run the commands to commit.
             self._post_issue_update(issue, f"❌ Implementation failed:\n\n```\n{error_msg}\n```")
 
             if issue in self.state.in_progress:
-                with self.state._save_lock:
-                    self.state.paused_issues[issue] = PausedIssue(
-                        worktree=self.state.in_progress[issue],
-                        pr=None,
-                        reason=str(e)[:100],
-                    )
-                    del self.state.in_progress[issue]
-                    # Save inside lock to prevent race conditions
-                    self.state.save(self.state_file)
+                # Update state and save (save() handles its own locking)
+                self.state.paused_issues[issue] = PausedIssue(
+                    worktree=self.state.in_progress[issue],
+                    pr=None,
+                    reason=str(e)[:100],
+                )
+                del self.state.in_progress[issue]
+                self.state.save(self.state_file)
 
             duration = time.time() - start_time
             return WorkerResult(issue, "paused", None, str(e), duration)
@@ -2941,15 +2954,14 @@ DO NOT describe what you're doing - just run the commands to commit.
             self._post_issue_update(issue, f"❌ Implementation failed:\n\n```\n{error_msg}\n```")
 
             if issue in self.state.in_progress:
-                with self.state._save_lock:
-                    self.state.paused_issues[issue] = PausedIssue(
-                        worktree=self.state.in_progress[issue],
-                        pr=None,
-                        reason=str(e)[:100],
-                    )
-                    del self.state.in_progress[issue]
-                    # Save inside lock to prevent race conditions
-                    self.state.save(self.state_file)
+                # Update state and save (save() handles its own locking)
+                self.state.paused_issues[issue] = PausedIssue(
+                    worktree=self.state.in_progress[issue],
+                    pr=None,
+                    reason=str(e)[:100],
+                )
+                del self.state.in_progress[issue]
+                self.state.save(self.state_file)
 
             duration = time.time() - start_time
             return WorkerResult(issue, "paused", None, str(e), duration)
@@ -3148,6 +3160,7 @@ Examples:
         parallel=parallel_workers,
         dry_run=args.dry_run,
         analyze=args.analyze,
+        export_graph=args.export_graph,
         resume=args.resume,
         timeout=args.timeout,
         cleanup=args.cleanup,
@@ -3216,12 +3229,20 @@ Examples:
         filtered = {k: v for k, v in state.issues.items() if v.priority == opts.priority}
         log("INFO", f"Filtered to {len(filtered)} {opts.priority} issues")
         state.issues = filtered
+        # Also filter completed/paused to match filtered issues
+        filtered_issue_nums = set(state.issues.keys())
+        state.completed_issues = state.completed_issues & filtered_issue_nums
+        state.paused_issues = {k: v for k, v in state.paused_issues.items() if k in filtered_issue_nums}
 
     # Filter by specific issues if specified
     if opts.issues:
         filtered = {k: v for k, v in state.issues.items() if k in opts.issues}
         log("INFO", f"Filtered to {len(filtered)} specified issues")
         state.issues = filtered
+        # Also filter completed/paused to match filtered issues
+        filtered_issue_nums = set(state.issues.keys())
+        state.completed_issues = state.completed_issues & filtered_issue_nums
+        state.paused_issues = {k: v for k, v in state.paused_issues.items() if k in filtered_issue_nums}
 
     # Create resolver
     resolver = DependencyResolver(state.issues)
@@ -3232,28 +3253,39 @@ Examples:
     for info in state.issues.values():
         all_external.update(info.depends_on - set(state.issues.keys()))
     if all_external:
+        log("INFO", f"Prefetching states for {len(all_external)} external dependencies...")
         prefetch_issue_states(list(all_external))
+        log("INFO", "Prefetch complete")
 
     # Handle analyze mode
     if opts.analyze:
+        log("DEBUG", "Entering analyze mode")
         print_analysis(resolver, state)
         return 0
 
     # Handle export-graph mode
     if opts.export_graph:
+        log("DEBUG", "Entering export-graph mode")
         exit_code = export_dependency_graph(state.issues, opts.export_graph)
         return exit_code
 
     # Calculate actual worker count (don't spawn more threads than issues)
+    log("DEBUG", "Calculating worker count...")
     pending_count = len(state.issues) - len(state.completed_issues) - len(state.paused_issues)
     actual_workers = min(opts.parallel, max(1, pending_count))
+    log("DEBUG", f"Worker count: {actual_workers} (pending: {pending_count})")
 
     # Create status tracker with correct worker count
+    log("DEBUG", "Creating status tracker...")
     status_tracker = StatusTracker(actual_workers)
+    log("DEBUG", "Status tracker created")
 
     # Create implementer
+    log("DEBUG", "Creating implementer...")
     implementer = IssueImplementer(repo_root, tempdir, opts, state, resolver, worktree_manager, status_tracker)
+    log("DEBUG", "Implementer created")
 
+    log("DEBUG", "Printing banner...")
     print()
     print("==========================================")
     print("  ML Odyssey Issue Implementer")
@@ -3266,8 +3298,10 @@ Examples:
     print(f"  Mode: {mode}")
     print("==========================================")
     print()
+    log("DEBUG", "Banner printed")
 
     if opts.dry_run or opts.analyze:
+        log("DEBUG", "Dry-run or analyze mode")
         print_analysis(resolver, state)
         ready = resolver.get_ready_issues()
         if opts.dry_run:
@@ -3282,12 +3316,17 @@ Examples:
         return 0
 
     # Create log file for persistent logging
+    log("DEBUG", "Creating log file...")
     log_dir = repo_root / "logs"
     log_file = log_dir / f"implement-epic-{opts.epic}-{time.strftime('%Y%m%d-%H%M%S')}.log"
+    log("DEBUG", f"Log file: {log_file}")
 
     # Create log buffer for curses UI with file output
+    log("DEBUG", "Creating log buffer...")
     log_buffer = LogBuffer(log_file=log_file)
+    log("DEBUG", "Setting log buffer...")
     set_log_buffer(log_buffer)
+    log("DEBUG", "Log buffer set")
 
     # Results container (shared with run_implementation)
     results: list[WorkerResult] = []
