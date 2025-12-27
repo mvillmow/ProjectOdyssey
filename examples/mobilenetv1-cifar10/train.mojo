@@ -46,6 +46,7 @@ from shared.core import (
 from shared.data import extract_batch_pair, compute_num_batches, DatasetInfo
 from shared.data.datasets import CIFAR10Dataset
 from shared.training.schedulers import step_lr
+from shared.training.loops import TrainingLoop
 from shared.utils.training_args import parse_training_args_with_defaults
 from model import MobileNetV1
 
@@ -81,28 +82,19 @@ fn train_epoch(
 
     For actual training, consider using automatic differentiation.
     """
-    var num_samples = train_images.shape()[0]
-    var num_batches = compute_num_batches(num_samples, batch_size)
-    var total_loss = Float32(0.0)
+    # Create training loop with progress logging every 100 batches
+    var loop = TrainingLoop(log_interval=100)
 
-    print("Epoch " + String(epoch + 1) + ": lr=" + String(learning_rate))
-
-    # Placeholder training loop
-    for batch_idx in range(num_batches):
-        var start_idx = batch_idx * batch_size
-        var batch_pair = extract_batch_pair(
-            train_images, train_labels, start_idx, batch_size
-        )
-        var batch_images = batch_pair[0]
-        var batch_labels = batch_pair[1]
-
+    # Define compute_batch_loss closure that processes batches
+    fn compute_batch_loss(
+        batch_images: ExTensor, batch_labels: ExTensor
+    ) raises -> Float32:
         # Forward pass
         var logits = model.forward(batch_images, training=True)
 
         # Compute loss
         var loss = cross_entropy(logits, batch_labels)
         var loss_value = loss._data.bitcast[Float32]()[0]
-        total_loss = total_loss + loss_value
 
         # Backward pass (see structure documentation above)
         # ... (would be ~1400 lines of gradient computation)
@@ -110,18 +102,19 @@ fn train_epoch(
         # Parameter updates (SGD with momentum)
         # ... (would be ~200 lines of parameter updates)
 
-        if (batch_idx + 1) % 100 == 0:
-            var avg_loss = total_loss / Float32(batch_idx + 1)
-            print(
-                "  Batch "
-                + String(batch_idx + 1)
-                + "/"
-                + String(num_batches)
-                + ", Loss: "
-                + String(avg_loss)
-            )
+        return loss_value
 
-    var avg_loss = total_loss / Float32(num_batches)
+    # Run one epoch using the consolidated training loop
+    # Convert 0-indexed epoch to 1-indexed for display
+    var avg_loss = loop.run_epoch_manual(
+        train_images,
+        train_labels,
+        batch_size=batch_size,
+        compute_batch_loss=compute_batch_loss,
+        epoch=epoch + 1,
+        total_epochs=200,  # Default from main()
+    )
+
     return avg_loss
 
 
