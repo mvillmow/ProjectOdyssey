@@ -386,6 +386,198 @@ fn conv2d_no_bias(
     return conv2d(x, kernel, bias, stride, padding)
 
 
+fn _conv2d_backward_kernel[
+    dtype: DType
+](
+    grad_output: ExTensor,
+    x: ExTensor,
+    kernel: ExTensor,
+    stride: Int,
+    padding: Int,
+    batch: Int,
+    in_channels: Int,
+    in_height: Int,
+    in_width: Int,
+    out_channels: Int,
+    out_height: Int,
+    out_width: Int,
+    kH: Int,
+    kW: Int,
+) raises -> Conv2dBackwardResult:
+    """Dtype-generic conv2d backward kernel - handles gradient accumulation in correct precision.
+    """
+    # Get shapes for gradient tensors
+    var x_shape = x.shape()
+    var k_shape = kernel.shape()
+
+    # Initialize gradients
+    var grad_input = zeros(x_shape, dtype)
+    var grad_kernel = zeros(k_shape, dtype)
+
+    # Compute grad_input
+    # For each input position, sum contributions from all output positions it affected
+    #
+    # Derivation:
+    #   Forward: in_h = oh * stride - padding + kh
+    #   Backward: For input position ih, find (oh, kh) pairs where ih = oh * stride - padding + kh
+    #   Solving: kh = ih - (oh * stride - padding) = ih - oh * stride + padding
+    #
+    # This correctly handles all stride values including stride > 1
+    for b in range(batch):
+        for ic in range(in_channels):
+            for ih in range(in_height):
+                for iw in range(in_width):
+                    var grad_sum = Scalar[dtype](0.0)
+
+                    # This input position (ih, iw) contributed to output positions (oh, ow)
+                    # where: ih = oh * stride - padding + kh
+                    # Solving for kh: kh = ih - oh * stride + padding
+                    for oh in range(out_height):
+                        for ow in range(out_width):
+                            # Compute kernel offsets that would access this input position
+                            # from this output position in the forward pass
+                            var kh = ih - oh * stride + padding
+                            var kw = iw - ow * stride + padding
+
+                            # Check if kernel offsets are valid
+                            if kh >= 0 and kh < kH and kw >= 0 and kw < kW:
+                                # Sum over output channels
+                                for oc in range(out_channels):
+                                    # Get grad_output value
+                                    var grad_out_idx = (
+                                        b
+                                        * (
+                                            out_channels
+                                            * out_height
+                                            * out_width
+                                        )
+                                        + oc * (out_height * out_width)
+                                        + oh * out_width
+                                        + ow
+                                    )
+                                    var grad_out_val = (
+                                        grad_output._data.bitcast[
+                                            Scalar[dtype]
+                                        ]()[grad_out_idx]
+                                    )
+
+                                    # Get kernel value
+                                    var k_idx = (
+                                        oc * (in_channels * kH * kW)
+                                        + ic * (kH * kW)
+                                        + kh * kW
+                                        + kw
+                                    )
+                                    var k_val = kernel._data.bitcast[
+                                        Scalar[dtype]
+                                    ]()[k_idx]
+
+                                    grad_sum += grad_out_val * k_val
+
+                    # Write to grad_input
+                    var grad_in_idx = (
+                        b * (in_channels * in_height * in_width)
+                        + ic * (in_height * in_width)
+                        + ih * in_width
+                        + iw
+                    )
+                    grad_input._data.bitcast[Scalar[dtype]]()[
+                        grad_in_idx
+                    ] = grad_sum
+
+    # Compute grad_kernel
+    # For each kernel position, sum input * grad_output over all valid positions
+    for oc in range(out_channels):
+        for ic in range(in_channels):
+            for kh in range(kH):
+                for kw in range(kW):
+                    var grad_sum = Scalar[dtype](0.0)
+
+                    # For each batch element
+                    for b in range(batch):
+                        # For each output position
+                        for oh in range(out_height):
+                            for ow in range(out_width):
+                                # Compute input position
+                                var in_h = oh * stride - padding + kh
+                                var in_w = ow * stride - padding + kw
+
+                                # Check bounds
+                                if (
+                                    in_h >= 0
+                                    and in_h < in_height
+                                    and in_w >= 0
+                                    and in_w < in_width
+                                ):
+                                    # Get input value
+                                    var in_idx = (
+                                        b * (in_channels * in_height * in_width)
+                                        + ic * (in_height * in_width)
+                                        + in_h * in_width
+                                        + in_w
+                                    )
+                                    var in_val = x._data.bitcast[
+                                        Scalar[dtype]
+                                    ]()[in_idx]
+
+                                    # Get grad_output value
+                                    var grad_out_idx = (
+                                        b
+                                        * (
+                                            out_channels
+                                            * out_height
+                                            * out_width
+                                        )
+                                        + oc * (out_height * out_width)
+                                        + oh * out_width
+                                        + ow
+                                    )
+                                    var grad_out_val = (
+                                        grad_output._data.bitcast[
+                                            Scalar[dtype]
+                                        ]()[grad_out_idx]
+                                    )
+
+                                    grad_sum += in_val * grad_out_val
+
+                    # Write to grad_kernel
+                    var grad_k_idx = (
+                        oc * (in_channels * kH * kW)
+                        + ic * (kH * kW)
+                        + kh * kW
+                        + kw
+                    )
+                    grad_kernel._data.bitcast[Scalar[dtype]]()[
+                        grad_k_idx
+                    ] = grad_sum
+
+    # Compute grad_bias: sum over batch, height, width
+    var grad_bias_shape = List[Int]()
+    grad_bias_shape.append(out_channels)
+    var grad_bias = zeros(grad_bias_shape, dtype)
+
+    for oc in range(out_channels):
+        var bias_grad_sum = Scalar[dtype](0.0)
+
+        for b in range(batch):
+            for oh in range(out_height):
+                for ow in range(out_width):
+                    var grad_out_idx = (
+                        b * (out_channels * out_height * out_width)
+                        + oc * (out_height * out_width)
+                        + oh * out_width
+                        + ow
+                    )
+                    var grad_out_val = grad_output._data.bitcast[
+                        Scalar[dtype]
+                    ]()[grad_out_idx]
+                    bias_grad_sum += grad_out_val
+
+        grad_bias._data.bitcast[Scalar[dtype]]()[oc] = bias_grad_sum
+
+    return Conv2dBackwardResult(grad_input^, grad_kernel^, grad_bias^)
+
+
 fn conv2d_backward(
     grad_output: ExTensor,
     x: ExTensor,
@@ -452,168 +644,64 @@ fn conv2d_backward(
     var out_height = grad_out_shape[2]
     var out_width = grad_out_shape[3]
 
-    # Initialize gradients
-    var grad_input = zeros(x_shape, x.dtype())
-    var grad_kernel = zeros(k_shape, kernel.dtype())
-
-    # Compute grad_input
-    # For each input position, sum contributions from all output positions it affected
-    #
-    # Derivation:
-    #   Forward: in_h = oh * stride - padding + kh
-    #   Backward: For input position ih, find (oh, kh) pairs where ih = oh * stride - padding + kh
-    #   Solving: kh = ih - (oh * stride - padding) = ih - oh * stride + padding
-    #
-    # This correctly handles all stride values including stride > 1
-    for b in range(batch):
-        for ic in range(in_channels):
-            for ih in range(in_height):
-                for iw in range(in_width):
-                    var grad_sum = Float32(0.0)
-
-                    # This input position (ih, iw) contributed to output positions (oh, ow)
-                    # where: ih = oh * stride - padding + kh
-                    # Solving for kh: kh = ih - oh * stride + padding
-                    for oh in range(out_height):
-                        for ow in range(out_width):
-                            # Compute kernel offsets that would access this input position
-                            # from this output position in the forward pass
-                            var kh = ih - oh * stride + padding
-                            var kw = iw - ow * stride + padding
-
-                            # Check if kernel offsets are valid
-                            if kh >= 0 and kh < kH and kw >= 0 and kw < kW:
-                                # Sum over output channels
-                                for oc in range(out_channels):
-                                    # Get grad_output value
-                                    var grad_out_idx = (
-                                        b
-                                        * (
-                                            out_channels
-                                            * out_height
-                                            * out_width
-                                        )
-                                        + oc * (out_height * out_width)
-                                        + oh * out_width
-                                        + ow
-                                    )
-                                    var grad_out_val = (
-                                        grad_output._data.bitcast[Float32]()[
-                                            grad_out_idx
-                                        ]
-                                    )
-
-                                    # Get kernel value
-                                    var k_idx = (
-                                        oc * (in_channels * kH * kW)
-                                        + ic * (kH * kW)
-                                        + kh * kW
-                                        + kw
-                                    )
-                                    var k_val = kernel._data.bitcast[Float32]()[
-                                        k_idx
-                                    ]
-
-                                    grad_sum += grad_out_val * k_val
-
-                    # Write to grad_input
-                    var grad_in_idx = (
-                        b * (in_channels * in_height * in_width)
-                        + ic * (in_height * in_width)
-                        + ih * in_width
-                        + iw
-                    )
-                    grad_input._data.bitcast[Float32]()[grad_in_idx] = grad_sum
-
-    # Compute grad_kernel
-    # For each kernel position, sum input * grad_output over all valid positions
-    for oc in range(out_channels):
-        for ic in range(in_channels):
-            for kh in range(kH):
-                for kw in range(kW):
-                    var grad_sum = Float32(0.0)
-
-                    # For each batch element
-                    for b in range(batch):
-                        # For each output position
-                        for oh in range(out_height):
-                            for ow in range(out_width):
-                                # Compute input position
-                                var in_h = oh * stride - padding + kh
-                                var in_w = ow * stride - padding + kw
-
-                                # Check bounds
-                                if (
-                                    in_h >= 0
-                                    and in_h < in_height
-                                    and in_w >= 0
-                                    and in_w < in_width
-                                ):
-                                    # Get input value
-                                    var in_idx = (
-                                        b * (in_channels * in_height * in_width)
-                                        + ic * (in_height * in_width)
-                                        + in_h * in_width
-                                        + in_w
-                                    )
-                                    var in_val = x._data.bitcast[Float32]()[
-                                        in_idx
-                                    ]
-
-                                    # Get grad_output value
-                                    var grad_out_idx = (
-                                        b
-                                        * (
-                                            out_channels
-                                            * out_height
-                                            * out_width
-                                        )
-                                        + oc * (out_height * out_width)
-                                        + oh * out_width
-                                        + ow
-                                    )
-                                    var grad_out_val = (
-                                        grad_output._data.bitcast[Float32]()[
-                                            grad_out_idx
-                                        ]
-                                    )
-
-                                    grad_sum += in_val * grad_out_val
-
-                    # Write to grad_kernel
-                    var grad_k_idx = (
-                        oc * (in_channels * kH * kW)
-                        + ic * (kH * kW)
-                        + kh * kW
-                        + kw
-                    )
-                    grad_kernel._data.bitcast[Float32]()[grad_k_idx] = grad_sum
-
-    # Compute grad_bias: sum over batch, height, width
-    var grad_bias_shape = List[Int]()
-    grad_bias_shape.append(out_channels)
-    var grad_bias = zeros(grad_bias_shape, grad_output.dtype())
-
-    for oc in range(out_channels):
-        var bias_grad_sum = Float32(0.0)
-
-        for b in range(batch):
-            for oh in range(out_height):
-                for ow in range(out_width):
-                    var grad_out_idx = (
-                        b * (out_channels * out_height * out_width)
-                        + oc * (out_height * out_width)
-                        + oh * out_width
-                        + ow
-                    )
-                    var grad_out_val = grad_output._data.bitcast[Float32]()[
-                        grad_out_idx
-                    ]
-                    bias_grad_sum += grad_out_val
-
-        grad_bias._data.bitcast[Float32]()[oc] = bias_grad_sum
-
-    return Conv2dBackwardResult(grad_input^, grad_kernel^, grad_bias^)
+    # Dispatch to dtype-generic kernel based on input dtype
+    var input_dtype = x.dtype()
+    if input_dtype == DType.float16:
+        return _conv2d_backward_kernel[DType.float16](
+            grad_output,
+            x,
+            kernel,
+            stride,
+            padding,
+            batch,
+            in_channels,
+            in_height,
+            in_width,
+            out_channels,
+            out_height,
+            out_width,
+            kH,
+            kW,
+        )
+    elif input_dtype == DType.float32:
+        return _conv2d_backward_kernel[DType.float32](
+            grad_output,
+            x,
+            kernel,
+            stride,
+            padding,
+            batch,
+            in_channels,
+            in_height,
+            in_width,
+            out_channels,
+            out_height,
+            out_width,
+            kH,
+            kW,
+        )
+    elif input_dtype == DType.float64:
+        return _conv2d_backward_kernel[DType.float64](
+            grad_output,
+            x,
+            kernel,
+            stride,
+            padding,
+            batch,
+            in_channels,
+            in_height,
+            in_width,
+            out_channels,
+            out_height,
+            out_width,
+            kH,
+            kW,
+        )
+    else:
+        raise Error(
+            "Unsupported dtype for conv2d_backward: only float16, float32,"
+            " float64 supported"
+        )
 
 
 fn conv2d_no_bias_backward(
