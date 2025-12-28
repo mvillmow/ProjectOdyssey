@@ -640,9 +640,9 @@ regression = (new_mean - baseline_mean) / baseline_mean * 100
 
 See the following for complete benchmarking examples:
 
-- **[benchmarks/bench_matmul.mojo](../../benchmarks/bench_matmul.mojo)** - Progressive
+- **[benchmarks/bench_matmul.mojo](https://github.com/mvillmow/ProjectOdyssey/blob/main/benchmarks/bench_matmul.mojo)** - Progressive
   optimization with GFLOPS tracking
-- **[benchmarks/bench_simd.mojo](../../benchmarks/bench_simd.mojo)** - SIMD vs scalar
+- **[benchmarks/bench_simd.mojo](https://github.com/mvillmow/ProjectOdyssey/blob/main/benchmarks/bench_simd.mojo)** - SIMD vs scalar
   comparison
 
 ## Related Issues
@@ -660,7 +660,7 @@ Performance optimization ongoing work:
 
 ## References
 
-- [Benchmarking Infrastructure](../../benchmarks/README.md) - Framework documentation
+- [Benchmarking Infrastructure](https://github.com/mvillmow/ProjectOdyssey/blob/main/benchmarks/README.md) - Framework documentation
 - [SIMD Integration Guide](integration.md) - SIMD optimization patterns
 - [Mojo Performance Guide](https://docs.modular.com/mojo/performance) - Official docs
 - [Welford's Algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance)
