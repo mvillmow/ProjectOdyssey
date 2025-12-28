@@ -786,7 +786,9 @@ struct LayerTester:
                 # Large linear layers (e.g., FC1: 9216→4096) accumulate significant
                 # floating-point errors in matmul, requiring looser tolerance. See #2704.
                 var wide_tolerance = 0.10  # 10% relative tolerance
-                var abs_tolerance = 0.01  # 1% absolute tolerance for small gradients
+                var abs_tolerance = (
+                    0.01  # 1% absolute tolerance for small gradients
+                )
                 assert_sampled_gradients_close(
                     analytical_grad,
                     sampled_gradients,
