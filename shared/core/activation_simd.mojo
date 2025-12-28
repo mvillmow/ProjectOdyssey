@@ -360,7 +360,7 @@ fn _elu_simd_float32(tensor: ExTensor, mut result: ExTensor, alpha: Float32):
         var neg_result = alpha_vec * (exp_result - one_vec)
 
         # Select based on condition: x > 0
-        var mask = vec > zero_vec
+        var mask = vec.gt(zero_vec)
         # SIMD conditional selection: mask.select(true_value, false_value)
         out_ptr.store[width=width](idx, mask.select(pos_result, neg_result))
 
@@ -390,7 +390,7 @@ fn _elu_simd_float64(tensor: ExTensor, mut result: ExTensor, alpha: Float64):
         var exp_result = math_exp(neg_clipped)
         var neg_result = alpha_vec * (exp_result - one_vec)
 
-        var mask = vec > zero_vec
+        var mask = vec.gt(zero_vec)
         # SIMD conditional selection: mask.select(true_value, false_value)
         out_ptr.store[width=width](idx, mask.select(pos_result, neg_result))
 
@@ -469,7 +469,7 @@ fn _selu_simd_float32(
         var exp_result = math_exp(neg_clipped)
         var neg_result = lambda_vec * alpha_vec * (exp_result - one_vec)
 
-        var mask = vec > zero_vec
+        var mask = vec.gt(zero_vec)
         # SIMD conditional selection: mask.select(true_value, false_value)
         out_ptr.store[width=width](idx, mask.select(pos_result, neg_result))
 
@@ -500,7 +500,7 @@ fn _selu_simd_float64(
         var exp_result = math_exp(neg_clipped)
         var neg_result = lambda_vec * alpha_vec * (exp_result - one_vec)
 
-        var mask = vec > zero_vec
+        var mask = vec.gt(zero_vec)
         # SIMD conditional selection: mask.select(true_value, false_value)
         out_ptr.store[width=width](idx, mask.select(pos_result, neg_result))
 
