@@ -3284,6 +3284,20 @@ Examples:
         if state.epic_number != opts.epic:
             log("WARN", f"State file is for epic #{state.epic_number}, not #{opts.epic}")
             state = ImplementationState(epic_number=opts.epic)
+
+        # Clean up stale in_progress issues from interrupted execution
+        # Move them to paused_issues so they can be retried if needed
+        if state.in_progress:
+            log("INFO", f"Found {len(state.in_progress)} issues in stale in_progress state, moving to paused")
+            for issue_num, worktree_path in state.in_progress.items():
+                if issue_num not in state.paused_issues:
+                    state.paused_issues[issue_num] = PausedIssue(
+                        worktree=worktree_path,
+                        pr=None,
+                        reason="Interrupted during previous run",
+                    )
+            state.in_progress.clear()
+            state.save(state_file)
     else:
         state = ImplementationState(epic_number=opts.epic)
         state.started_at = dt.datetime.now().isoformat()
