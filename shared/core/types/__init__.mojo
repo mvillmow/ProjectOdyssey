@@ -40,6 +40,18 @@ from shared.core.types.fp4 import FP4_E2M1
 from shared.core.types.mxfp4 import MXFP4, E8M0Scale
 from shared.core.types.nvfp4 import NVFP4, E4M3Scale
 
+# FP type constants
+from shared.core.types.fp_constants import (
+    FP8_E4M3_MIN_NORMAL,
+    FP8_E4M3_MAX_NORMAL,
+    FP4_E2M1_MAX_NORMAL,
+    FP4_E2M1_MIN_SUBNORMAL,
+    FP4_E2M1_MANTISSA_SCALE,
+    BF8_E5M2_SATURATION,
+    BF8_E5M2_MANTISSA_SCALE,
+    STOCHASTIC_ROUNDING_SCALE,
+)
+
 # Future exports will be added here as components are implemented
 # from shared.core.types.tensor import Tensor
 # from shared.core.types.shape import Shape

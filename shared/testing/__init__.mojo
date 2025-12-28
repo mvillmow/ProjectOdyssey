@@ -26,15 +26,20 @@ Test Models:
     Parameter: Trainable parameter with gradient tracking
 """
 
-from shared.testing.assertions import (
+from shared.testing.tolerance_constants import (
     TOLERANCE_DEFAULT,
+    TOLERANCE_FLOAT16,
     TOLERANCE_FLOAT32,
     TOLERANCE_FLOAT64,
     TOLERANCE_GRADIENT_RTOL,
     TOLERANCE_GRADIENT_ATOL,
+    GRADIENT_CHECK_EPSILON,
     TOLERANCE_CONV,
     TOLERANCE_SOFTMAX,
     TOLERANCE_CROSS_ENTROPY,
+)
+
+from shared.testing.assertions import (
     assert_true,
     assert_false,
     assert_equal,

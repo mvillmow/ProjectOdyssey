@@ -45,6 +45,10 @@ from shared.core.dtype_dispatch import (
 )
 from shared.core.gradient_types import GradientPair
 from shared.core.activation_ops import exp_scalar_f32, exp_scalar_f64
+from shared.core.activation_constants import (
+    RELU6_UPPER_BOUND,
+    SIGMOID_CLIP_THRESHOLD,
+)
 
 
 # ============================================================================
@@ -98,8 +102,8 @@ fn relu(tensor: ExTensor) raises -> ExTensor:
 
 @always_inline
 fn _relu6_op[T: DType](x: Scalar[T]) -> Scalar[T]:
-    """ReLU6 operation: min(max(0, x), 6)."""
-    return min(max(Scalar[T](0), x), Scalar[T](6))
+    """ReLU6 operation: min(max(0, x), RELU6_UPPER_BOUND)."""
+    return min(max(Scalar[T](0), x), Scalar[T](RELU6_UPPER_BOUND))
 
 
 fn relu6(tensor: ExTensor) raises -> ExTensor:
@@ -291,9 +295,9 @@ fn _sigmoid_op[T: DType](x: Scalar[T]) -> Scalar[T]:
         Sigmoid(x) = 1 / (1 + exp(-x)), with clipping for numerical stability.
     """
     # Numerically stable sigmoid with clipping
-    if x > Scalar[T](20.0):
+    if x > Scalar[T](SIGMOID_CLIP_THRESHOLD):
         return Scalar[T](1.0)
-    elif x < Scalar[T](-20.0):
+    elif x < Scalar[T](-SIGMOID_CLIP_THRESHOLD):
         return Scalar[T](0.0)
     else:
 
@@ -345,9 +349,9 @@ fn sigmoid(tensor: ExTensor) raises -> ExTensor:
     if tensor.dtype() == DType.float32:
         for i in range(size):
             var x = data_ptr.bitcast[Float32]()[i]
-            if x > Float32(20.0):
+            if x > Float32(SIGMOID_CLIP_THRESHOLD):
                 result_ptr.bitcast[Float32]()[i] = Float32(1.0)
-            elif x < Float32(-20.0):
+            elif x < Float32(-SIGMOID_CLIP_THRESHOLD):
                 result_ptr.bitcast[Float32]()[i] = Float32(0.0)
             else:
                 var exp_neg_x = exp_scalar_f32(-x)
@@ -357,9 +361,9 @@ fn sigmoid(tensor: ExTensor) raises -> ExTensor:
     elif tensor.dtype() == DType.float64:
         for i in range(size):
             var x = data_ptr.bitcast[Float64]()[i]
-            if x > Float64(20.0):
+            if x > Float64(SIGMOID_CLIP_THRESHOLD):
                 result_ptr.bitcast[Float64]()[i] = Float64(1.0)
-            elif x < Float64(-20.0):
+            elif x < Float64(-SIGMOID_CLIP_THRESHOLD):
                 result_ptr.bitcast[Float64]()[i] = Float64(0.0)
             else:
                 var exp_neg_x = exp_scalar_f64(-x)
@@ -370,9 +374,9 @@ fn sigmoid(tensor: ExTensor) raises -> ExTensor:
         # Tensor-level handling: convert to Float32, compute, convert back
         for i in range(size):
             var x = Float32(data_ptr.bitcast[Float16]()[i])
-            if x > Float32(20.0):
+            if x > Float32(SIGMOID_CLIP_THRESHOLD):
                 result_ptr.bitcast[Float16]()[i] = Float16(1.0)
-            elif x < Float32(-20.0):
+            elif x < Float32(-SIGMOID_CLIP_THRESHOLD):
                 result_ptr.bitcast[Float16]()[i] = Float16(0.0)
             else:
                 var exp_neg_x = exp_scalar_f32(-x)
