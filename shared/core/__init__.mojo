@@ -241,6 +241,24 @@ from shared.core.matrix import (
 )
 
 # ============================================================================
+# Optimized Matrix Multiplication Kernels
+# ============================================================================
+
+from shared.core.matmul import (
+    matmul_optimized,
+    matmul_tiled,
+    matmul_simd,
+    matmul_typed,
+)
+
+from shared.core.strassen import (
+    matmul_strassen,
+    STRASSEN_ENABLED,
+    STRASSEN_THRESHOLD,
+    next_power_of_2,
+)
+
+# ============================================================================
 # Activation Functions
 # ============================================================================
 
