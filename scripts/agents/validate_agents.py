@@ -23,7 +23,7 @@ import argparse
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Set
+from typing import Any, Dict, List, Set
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from common import get_agents_dir, get_repo_root
@@ -106,16 +106,16 @@ MOJO_KEYWORDS = [
 class ValidationResult:
     """Result of validating an agent file."""
 
-    def __init__(self, file_path: Path):
-        self.file_path = file_path
+    def __init__(self, file_path: Path) -> None:
+        self.file_path: Path = file_path
         self.errors: List[str] = []
         self.warnings: List[str] = []
 
-    def add_error(self, message: str):
+    def add_error(self, message: str) -> None:
         """Add an error message."""
         self.errors.append(message)
 
-    def add_warning(self, message: str):
+    def add_warning(self, message: str) -> None:
         """Add a warning message."""
         self.warnings.append(message)
 
@@ -128,7 +128,7 @@ class ValidationResult:
         return len(self.errors) > 0 or len(self.warnings) > 0
 
 
-def validate_frontmatter(frontmatter: Dict, result: ValidationResult):
+def validate_frontmatter(frontmatter: Dict[str, Any], result: ValidationResult) -> None:
     """
     Validate YAML frontmatter content.
 
@@ -187,7 +187,7 @@ def extract_sections(content: str) -> Set[str]:
     return set(headers)
 
 
-def validate_structure(content: str, result: ValidationResult):
+def validate_structure(content: str, result: ValidationResult) -> None:
     """
     Validate file structure and required sections.
 
@@ -208,7 +208,7 @@ def validate_structure(content: str, result: ValidationResult):
         result.add_warning("No delegation section found (should have 'Delegation' or 'No Delegation')")
 
 
-def validate_mojo_content(content: str, result: ValidationResult):
+def validate_mojo_content(content: str, result: ValidationResult) -> None:
     """
     Validate Mojo-specific content is present.
 
@@ -227,7 +227,7 @@ def validate_mojo_content(content: str, result: ValidationResult):
         )
 
 
-def validate_delegation_patterns(content: str, frontmatter: Dict, result: ValidationResult):
+def validate_delegation_patterns(content: str, frontmatter: Dict[str, Any], result: ValidationResult) -> None:
     """
     Validate delegation patterns are properly defined.
 
@@ -267,7 +267,7 @@ def validate_delegation_patterns(content: str, frontmatter: Dict, result: Valida
                 result.add_error(f"Broken link to agent: {link_target}.md")
 
 
-def validate_workflow_phase(content: str, result: ValidationResult):
+def validate_workflow_phase(content: str, result: ValidationResult) -> None:
     """
     Validate that workflow phase is defined.
 
@@ -299,7 +299,7 @@ def validate_file(file_path: Path, verbose: bool = False) -> ValidationResult:
     Returns:
         ValidationResult with all errors and warnings
     """
-    result = ValidationResult(file_path)
+    result: ValidationResult = ValidationResult(file_path)
 
     # Read file
     try:
@@ -346,7 +346,7 @@ def validate_file(file_path: Path, verbose: bool = False) -> ValidationResult:
     return result
 
 
-def main():
+def main() -> int:
     """Main entry point."""
     parser = argparse.ArgumentParser(
         description="Comprehensive validation of agent configuration files",

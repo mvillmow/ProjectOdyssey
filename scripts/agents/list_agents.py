@@ -25,7 +25,11 @@ from common import get_agents_dir, get_repo_root
 from agent_utils import AgentInfo, load_all_agents
 
 
-def group_by_level(agents: List[AgentInfo]) -> Dict[int, List[AgentInfo]]:
+# Type aliases for clarity
+AgentsByLevel = Dict[int, List[AgentInfo]]
+
+
+def group_by_level(agents: List[AgentInfo]) -> AgentsByLevel:
     """
     Group agents by their level.
 
@@ -35,7 +39,7 @@ def group_by_level(agents: List[AgentInfo]) -> Dict[int, List[AgentInfo]]:
     Returns:
         Dictionary mapping level to list of agents
     """
-    grouped = {}
+    grouped: AgentsByLevel = {}
     for agent in agents:
         if agent.level not in grouped:
             grouped[agent.level] = []
@@ -82,7 +86,7 @@ def format_description(description: str, max_width: int = 60, indent: int = 0) -
     return ("\n" + indent_str).join(lines)
 
 
-def display_agents(agents: List[AgentInfo], verbose: bool = False, level_filter: Optional[int] = None):
+def display_agents(agents: List[AgentInfo], verbose: bool = False, level_filter: Optional[int] = None) -> None:
     """
     Display agents organized by level.
 
@@ -91,7 +95,7 @@ def display_agents(agents: List[AgentInfo], verbose: bool = False, level_filter:
         verbose: Whether to show detailed information
         level_filter: If specified, only show agents at this level
     """
-    level_names = {
+    level_names: Dict[int, str] = {
         0: "Level 0: Meta-Orchestrator",
         1: "Level 1: Section Orchestrators",
         2: "Level 2: Design Agents",
@@ -142,7 +146,7 @@ def display_agents(agents: List[AgentInfo], verbose: bool = False, level_filter:
                     print(f"Tools: {tools_display}")
 
 
-def main():
+def main() -> int:
     """Main entry point."""
     parser = argparse.ArgumentParser(
         description="List all available agents organized by level",

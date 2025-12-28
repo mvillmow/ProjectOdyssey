@@ -20,7 +20,7 @@ Classes:
 
 import re
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Type
 
 import yaml
 
@@ -63,7 +63,7 @@ def extract_frontmatter_with_lines(content: str) -> Optional[Tuple[str, int, int
     return None
 
 
-def extract_frontmatter_parsed(content: str) -> Optional[Tuple[str, Dict]]:
+def extract_frontmatter_parsed(content: str) -> Optional[Tuple[str, Dict[str, Any]]]:
     """Extract and parse frontmatter to Dict.
 
     Args:
@@ -84,7 +84,7 @@ def extract_frontmatter_parsed(content: str) -> Optional[Tuple[str, Dict]]:
     return None
 
 
-def extract_frontmatter_full(content: str) -> Optional[Tuple[str, Dict, int, int]]:
+def extract_frontmatter_full(content: str) -> Optional[Tuple[str, Dict[str, Any], int, int]]:
     """Extract frontmatter with both parsed dict and line numbers.
 
     Args:
@@ -120,7 +120,7 @@ class AgentInfo:
         level: Agent level (0-5) in the hierarchy
     """
 
-    def __init__(self, file_path: Path, frontmatter: Dict):
+    def __init__(self, file_path: Path, frontmatter: Dict[str, Any]) -> None:
         """Initialize AgentInfo from file path and parsed frontmatter.
 
         Args:
@@ -128,13 +128,13 @@ class AgentInfo:
             frontmatter: Parsed YAML frontmatter dictionary
         """
         self.file_path = file_path
-        self.name = frontmatter.get("name", "unknown")
-        self.description = frontmatter.get("description", "No description")
-        self.tools = frontmatter.get("tools", "")
-        self.model = frontmatter.get("model", "unknown")
-        self.level = self._infer_level(frontmatter)
+        self.name: str = frontmatter.get("name", "unknown")
+        self.description: str = frontmatter.get("description", "No description")
+        self.tools: str = frontmatter.get("tools", "")
+        self.model: str = frontmatter.get("model", "unknown")
+        self.level: int = self._infer_level(frontmatter)
 
-    def _infer_level(self, frontmatter: Dict) -> int:
+    def _infer_level(self, frontmatter: Dict[str, Any]) -> int:
         """Infer agent level from frontmatter or name.
 
         Level hierarchy:
@@ -187,7 +187,7 @@ class AgentInfo:
             return []
         return [t.strip() for t in self.tools.split(",")]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return string representation."""
         return f"AgentInfo(level={self.level}, name={self.name})"
 
@@ -254,9 +254,9 @@ def load_all_agents(agents_dir: Path) -> List[AgentInfo]:
 
 
 def validate_frontmatter_structure(
-    frontmatter: Dict,
-    required_fields: Optional[Dict[str, type]] = None,
-    optional_fields: Optional[Dict[str, type]] = None,
+    frontmatter: Dict[str, Any],
+    required_fields: Optional[Dict[str, Type[Any]]] = None,
+    optional_fields: Optional[Dict[str, Type[Any]]] = None,
 ) -> List[str]:
     """Validate frontmatter structure.
 
@@ -283,7 +283,7 @@ def validate_frontmatter_structure(
             "workflow_phase": str,
         }
 
-    errors = []
+    errors: List[str] = []
 
     # Check required fields
     for field, expected_type in required_fields.items():
