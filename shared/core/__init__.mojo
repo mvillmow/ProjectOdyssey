@@ -164,6 +164,7 @@ from shared.core.extensor import (
     clone,
     item,
     diff,
+    randn,
 )
 
 # ============================================================================
