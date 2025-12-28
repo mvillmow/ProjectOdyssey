@@ -15,10 +15,25 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     ca-certificates \
     vim \
+    wget \
     uuid \
     sudo \
     cargo \
     && rm -rf /var/lib/apt/lists/*
+
+# Install GitHub CLI (gh) as root
+RUN mkdir -p -m 755 /etc/apt/keyrings \
+    && out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+    && cat $out | tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
+    && chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+    && mkdir -p -m 755 /etc/apt/sources.list.d \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+    && apt-get update \
+    && apt-get install -y gh \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Claude Code CLI
+RUN curl -fsSL https://claude.ai/install.sh | bash
 
 # ---------------------------
 # Stage 1.5: Create dev user
@@ -32,7 +47,7 @@ RUN groupadd -g ${GROUP_ID} ${USER_NAME} && \
 
 # Set environment for dev user
 ENV HOME=/home/${USER_NAME}
-ENV PATH="$HOME/.pixi/bin:$PATH:$HOME/.cargo/bin"
+ENV PATH="$HOME/.local/bin:$HOME/.pixi/bin:$PATH:$HOME/.cargo/bin"
 
 # ---------------------------
 # Stage 2: Development environment
