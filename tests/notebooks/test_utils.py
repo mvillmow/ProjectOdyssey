@@ -3,7 +3,6 @@
 import sys
 import tempfile
 from pathlib import Path
-from unittest.mock import patch, MagicMock
 
 import numpy as np
 import pytest
@@ -35,11 +34,7 @@ class TestTensorUtils:
             output_path = Path(tmpdir) / "tensor.bin"
 
             tensor_utils.numpy_to_mojo_binary(original, str(output_path))
-            loaded = tensor_utils.mojo_binary_to_numpy(
-                str(output_path),
-                shape=(4, 5),
-                dtype="float32"
-            )
+            loaded = tensor_utils.mojo_binary_to_numpy(str(output_path), shape=(4, 5), dtype="float32")
 
             np.testing.assert_array_almost_equal(original, loaded)
 
@@ -108,7 +103,7 @@ class TestVisualization:
         fig = visualization.plot_training_curves(losses)
 
         assert fig is not None
-        assert hasattr(fig, 'axes'), "Should return a matplotlib figure"
+        assert hasattr(fig, "axes"), "Should return a matplotlib figure"
         plt.close(fig)
 
     def test_plot_training_curves_with_all_data(self):
@@ -120,10 +115,7 @@ class TestVisualization:
         train_accs = [0.6, 0.8, 0.9]
         val_accs = [0.55, 0.75, 0.88]
 
-        fig = visualization.plot_training_curves(
-            train_losses, val_losses,
-            train_accs, val_accs
-        )
+        fig = visualization.plot_training_curves(train_losses, val_losses, train_accs, val_accs)
 
         assert fig is not None
         assert len(fig.axes) == 2, "Should have 2 subplots"
@@ -133,25 +125,19 @@ class TestVisualization:
         """Test that plot_confusion_matrix returns a figure."""
         import matplotlib.pyplot as plt
 
-        cm = np.array([
-            [90, 10],
-            [5, 95]
-        ])
+        cm = np.array([[90, 10], [5, 95]])
 
         fig = visualization.plot_confusion_matrix(cm)
 
         assert fig is not None
-        assert hasattr(fig, 'axes'), "Should return a matplotlib figure"
+        assert hasattr(fig, "axes"), "Should return a matplotlib figure"
         plt.close(fig)
 
     def test_plot_confusion_matrix_with_labels(self):
         """Test confusion matrix with class names."""
         import matplotlib.pyplot as plt
 
-        cm = np.array([
-            [90, 10],
-            [5, 95]
-        ])
+        cm = np.array([[90, 10], [5, 95]])
         class_names = ["Class A", "Class B"]
 
         fig = visualization.plot_confusion_matrix(cm, class_names)

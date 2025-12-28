@@ -59,7 +59,7 @@ just jupyter
 
 The notebook infrastructure bridges Python and Mojo:
 
-```
+```text
 ┌─────────────────────────────┐
 │  Jupyter Notebook (Python)  │
 └──────────────┬──────────────┘
@@ -93,22 +93,26 @@ The notebook infrastructure bridges Python and Mojo:
 The `notebooks/utils/` package provides helpers:
 
 ### `mojo_bridge.py`
+
 - Run Mojo scripts from notebooks
 - Compile Mojo code to binaries
 - Parse JSON/structured output
 
 ### `tensor_utils.py`
+
 - Convert between NumPy and Mojo binary formats
 - Save/load tensor metadata
 - Compare tensors for debugging
 
 ### `visualization.py`
+
 - Plot training curves (loss, accuracy)
 - Display confusion matrices
 - Visualize tensor heatmaps
 - Show model architecture summary
 
 ### `progress.py`
+
 - Track training progress with live updates
 - Display epoch/batch statistics
 - Generate training history plots
@@ -176,6 +180,7 @@ Notebooks are designed to be run incrementally. Each cell:
 4. Has error handling with helpful messages
 
 You can:
+
 - Run individual cells with Shift+Enter
 - Run all cells with Kernel → Restart & Run All
 - Skip cells (e.g., skip long training to load pre-trained weights)
@@ -223,7 +228,7 @@ just jupyter
 
 ### "Timeout" on Training Notebook
 
-```
+```text
 subprocess.TimeoutExpired: Timeout after 300s
 ```
 
@@ -292,6 +297,7 @@ See `.github/workflows/notebook-validation.yml` for details.
 ## Future Enhancements
 
 When Mojo gains Jupyter kernel support, notebooks can:
+
 - Include native Mojo cells with syntax highlighting
 - Use `%%mojo` magic commands
 - Display ExTensor directly without conversion

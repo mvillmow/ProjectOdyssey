@@ -104,9 +104,7 @@ def test_notebook_cell_structure():
             assert "source" in cell, f"Cell {i} in {notebook_path.name} missing source"
 
             cell_type = cell["cell_type"]
-            assert cell_type in ["code", "markdown"], (
-                f"Cell {i} in {notebook_path.name} has invalid type: {cell_type}"
-            )
+            assert cell_type in ["code", "markdown"], f"Cell {i} in {notebook_path.name} has invalid type: {cell_type}"
 
 
 def test_notebook_metadata():

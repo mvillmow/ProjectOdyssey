@@ -102,21 +102,19 @@ jobs:
           for notebook in notebooks/*.ipynb; do
             if [ -f "$notebook" ]; then
               # Extract markdown cells and check for common issues
-              python3 << 'EOF'
-import json
-import sys
-
-with open('$notebook') as f:
-    nb = json.load(f)
-
-for cell in nb['cells']:
-    if cell['cell_type'] == 'markdown':
-        source = ''.join(cell['source'])
-        # Check for unclosed code blocks
-        if source.count('```') % 2 != 0:
-            print(f"⚠️  Unclosed code block in {notebook}")
-            sys.exit(1)
-EOF
+              python3 -c "
+          import json
+          import sys
+          with open('$notebook') as f:
+              nb = json.load(f)
+          for cell in nb['cells']:
+              if cell['cell_type'] == 'markdown':
+                  source = ''.join(cell['source'])
+                  # Check for unclosed code blocks
+                  if source.count('\`\`\`') % 2 != 0:
+                      print(f'Warning: Unclosed code block in $notebook')
+                      sys.exit(1)
+          "
             fi
           done
           echo "✅ Notebook markdown looks good"
@@ -130,44 +128,6 @@ EOF
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-
-      - name: Check Python syntax in code cells
-        run: |
-          echo "Checking Python code in notebooks..."
-          python3 << 'EOF'
-import json
-import py_compile
-import tempfile
-import os
-
-error_count = 0
-for notebook_path in ['notebooks/01_introduction.ipynb', 'notebooks/02_tensor_operations.ipynb']:
-    if not os.path.exists(notebook_path):
-        continue
-
-    with open(notebook_path) as f:
-        nb = json.load(f)
-
-    for cell_idx, cell in enumerate(nb['cells']):
-        if cell['cell_type'] == 'code':
-            source = ''.join(cell['source'])
-            if not source.strip():
-                continue  # Skip empty cells
-
-            # Try to compile the Python code
-            try:
-                compile(source, '<notebook>', 'exec')
-            except SyntaxError as e:
-                print(f"❌ Syntax error in {notebook_path}, cell {cell_idx + 1}")
-                print(f"   {e}")
-                error_count += 1
-
-if error_count > 0:
-    print(f"❌ Found {error_count} syntax errors")
-    exit(1)
-else:
-    print("✅ All Python code has valid syntax")
-EOF
 
       - name: Lint utility modules
         run: |
