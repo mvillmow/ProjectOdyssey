@@ -278,7 +278,7 @@ list-models:
 
 # Open development shell
 shell:
-    @docker compose exec -e USER_ID={{USER_ID}} -e GROUP_ID={{GROUP_ID}} {{docker_service}} bash
+    @docker compose exec -it -e USER_ID={{USER_ID}} -e GROUP_ID={{GROUP_ID}} {{docker_service}} bash
 
 # Serve documentation
 docs-serve:
