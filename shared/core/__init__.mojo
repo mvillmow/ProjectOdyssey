@@ -106,6 +106,40 @@ from shared.core.numerical_constants import (
     EPSILON_NORM,
     GRADIENT_MAX_NORM,
     GRADIENT_MIN_NORM,
+    EPSILON_OPTIMIZER_ADAM,
+    EPSILON_OPTIMIZER_ADAGRAD,
+    EPSILON_OPTIMIZER_RMSPROP,
+    EPSILON_NUMERICAL_GRAD,
+    EPSILON_RELATIVE_ERROR,
+)
+
+# ============================================================================
+# Activation Function Constants
+# ============================================================================
+
+from shared.core.activation_constants import (
+    RELU6_UPPER_BOUND,
+    SIGMOID_CLIP_THRESHOLD,
+    HARD_SIGMOID_OFFSET,
+    HARD_SIGMOID_SCALE,
+    HARD_TANH_LOWER_BOUND,
+    HARD_TANH_UPPER_BOUND,
+)
+
+# ============================================================================
+# Optimizer Default Hyperparameters
+# ============================================================================
+
+from shared.core.optimizer_constants import (
+    DEFAULT_LEARNING_RATE_SGD,
+    DEFAULT_LEARNING_RATE_ADAM,
+    DEFAULT_MOMENTUM,
+    DEFAULT_ADAM_BETA1,
+    DEFAULT_ADAM_BETA2,
+    DEFAULT_ADAM_EPSILON,
+    DEFAULT_RMSPROP_ALPHA,
+    DEFAULT_RMSPROP_EPSILON,
+    DEFAULT_ADAGRAD_EPSILON,
 )
 
 # ============================================================================

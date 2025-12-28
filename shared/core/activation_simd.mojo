@@ -38,6 +38,7 @@ from algorithm import vectorize
 from sys.info import simd_width_of
 from math import exp as math_exp
 from shared.core.extensor import ExTensor
+from shared.core.activation_constants import SIGMOID_CLIP_THRESHOLD
 
 
 # ============================================================================

@@ -41,27 +41,16 @@ Functions:
 from math import isnan, isinf
 from collections.optional import Optional
 from shared.core.extensor import ExTensor
-
-
-# ============================================================================
-# Test Tolerance Constants
-# ============================================================================
-
-# Default tolerance for exact comparisons
-comptime TOLERANCE_DEFAULT: Float64 = 1e-6
-
-# Tolerances by dtype
-comptime TOLERANCE_FLOAT32: Float64 = 1e-5
-comptime TOLERANCE_FLOAT64: Float64 = 1e-10
-
-# Gradient checking tolerances (more relaxed due to numerical differences)
-comptime TOLERANCE_GRADIENT_RTOL: Float64 = 1e-2
-comptime TOLERANCE_GRADIENT_ATOL: Float64 = 1e-2
-
-# Operation-specific tolerances
-comptime TOLERANCE_CONV: Float64 = 1e-3
-comptime TOLERANCE_SOFTMAX: Float64 = 5e-4
-comptime TOLERANCE_CROSS_ENTROPY: Float64 = 1e-3
+from shared.testing.tolerance_constants import (
+    TOLERANCE_DEFAULT,
+    TOLERANCE_FLOAT32,
+    TOLERANCE_FLOAT64,
+    TOLERANCE_GRADIENT_RTOL,
+    TOLERANCE_GRADIENT_ATOL,
+    TOLERANCE_CONV,
+    TOLERANCE_SOFTMAX,
+    TOLERANCE_CROSS_ENTROPY,
+)
 
 
 # ============================================================================
