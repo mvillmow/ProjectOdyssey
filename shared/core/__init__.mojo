@@ -584,24 +584,15 @@ from shared.core.module import Module
 # Lazy Expression Evaluation
 # ============================================================================
 
-from shared.core.lazy_expression import (
-    expr,
-    TensorExpr,
-    ExprNode,
-    OpType,
-    OP_LEAF,
-    OP_ADD,
-    OP_SUB,
-    OP_MUL,
-    OP_DIV,
-    OP_NEG,
-    OP_SCALAR_MUL,
-    OP_SCALAR_DIV,
-)
-
-from shared.core.lazy_eval import (
-    evaluate,
-)
+# Note: Lazy evaluation exports pending #2628 - avoid importing until ready
+# from shared.core.lazy_expression import (
+#     expr,
+#     TensorExpr,
+# )
+#
+# from shared.core.lazy_eval import (
+#     evaluate,
+# )
 
 # Note: Mojo does not support Python's __all__ mechanism.
 # All imported symbols are automatically available to package consumers.
