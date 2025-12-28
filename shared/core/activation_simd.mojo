@@ -36,6 +36,7 @@ Related:
 
 from algorithm import vectorize
 from sys.info import simd_width_of
+from math import exp as math_exp
 from shared.core.extensor import ExTensor
 
 
@@ -355,12 +356,12 @@ fn _elu_simd_float32(tensor: ExTensor, mut result: ExTensor, alpha: Float32):
 
         # Note: SIMD exp may have limited vectorization
         # but still benefits from SIMD for the rest of computation
-        var exp_result = neg_clipped.exp()
+        var exp_result = math_exp(neg_clipped)
         var neg_result = alpha_vec * (exp_result - one_vec)
 
         # Select based on condition: x > 0
         var mask = vec > zero_vec
-        out_ptr.store[width=width](idx, mask.select(pos_result, neg_result))
+        out_ptr.store[width=width](idx, select(mask, pos_result, neg_result))
 
     vectorize[simd_width](size, vectorized_elu)
 
@@ -385,11 +386,11 @@ fn _elu_simd_float64(tensor: ExTensor, mut result: ExTensor, alpha: Float64):
 
         var pos_result = vec
         var neg_clipped = max(vec, SIMD[DType.float64, width](-20.0))
-        var exp_result = neg_clipped.exp()
+        var exp_result = math_exp(neg_clipped)
         var neg_result = alpha_vec * (exp_result - one_vec)
 
         var mask = vec > zero_vec
-        out_ptr.store[width=width](idx, mask.select(pos_result, neg_result))
+        out_ptr.store[width=width](idx, select(mask, pos_result, neg_result))
 
     vectorize[simd_width](size, vectorized_elu)
 
@@ -463,11 +464,11 @@ fn _selu_simd_float32(
 
         var pos_result = lambda_vec * vec
         var neg_clipped = max(vec, SIMD[DType.float32, width](-20.0))
-        var exp_result = neg_clipped.exp()
+        var exp_result = math_exp(neg_clipped)
         var neg_result = lambda_vec * alpha_vec * (exp_result - one_vec)
 
         var mask = vec > zero_vec
-        out_ptr.store[width=width](idx, mask.select(pos_result, neg_result))
+        out_ptr.store[width=width](idx, select(mask, pos_result, neg_result))
 
     vectorize[simd_width](size, vectorized_selu)
 
@@ -493,11 +494,11 @@ fn _selu_simd_float64(
 
         var pos_result = lambda_vec * vec
         var neg_clipped = max(vec, SIMD[DType.float64, width](-20.0))
-        var exp_result = neg_clipped.exp()
+        var exp_result = math_exp(neg_clipped)
         var neg_result = lambda_vec * alpha_vec * (exp_result - one_vec)
 
         var mask = vec > zero_vec
-        out_ptr.store[width=width](idx, mask.select(pos_result, neg_result))
+        out_ptr.store[width=width](idx, select(mask, pos_result, neg_result))
 
     vectorize[simd_width](size, vectorized_selu)
 
@@ -565,7 +566,7 @@ fn _swish_simd_float32(tensor: ExTensor, mut result: ExTensor):
 
         var neg_vec = -vec
         var neg_clipped = max(neg_vec, SIMD[DType.float32, width](-20.0))
-        var exp_neg = neg_clipped.exp()
+        var exp_neg = math_exp(neg_clipped)
         var one_vec = SIMD[DType.float32, width](1)
         var sigmoid = one_vec / (one_vec + exp_neg)
 
@@ -591,7 +592,7 @@ fn _swish_simd_float64(tensor: ExTensor, mut result: ExTensor):
 
         var neg_vec = -vec
         var neg_clipped = max(neg_vec, SIMD[DType.float64, width](-20.0))
-        var exp_neg = neg_clipped.exp()
+        var exp_neg = math_exp(neg_clipped)
         var one_vec = SIMD[DType.float64, width](1)
         var sigmoid = one_vec / (one_vec + exp_neg)
 
