@@ -5,7 +5,7 @@ Compares pool vs system malloc for various allocation sizes.
 
 from shared.core.memory_pool import get_global_pool, pooled_alloc, pooled_free
 from memory import alloc
-from sys.info import clock_now
+from time import perf_counter_ns
 
 
 fn bench_pool_small_allocations() raises:
@@ -20,11 +20,11 @@ fn bench_pool_small_allocations() raises:
         pool.reset_stats()
 
         # Allocate and deallocate through pool
-        var start = clock_now()
+        var start = perf_counter_ns()
         for _ in range(iterations):
             var ptr = pooled_alloc(size)
             pooled_free(ptr, size)
-        var pool_time = clock_now() - start
+        var pool_time = perf_counter_ns() - start
 
         var stats = pool.get_stats()
         var hit_rate = (stats.pool_hits * 100) // (
@@ -55,11 +55,11 @@ fn bench_pool_medium_allocations() raises:
         pool.reset_stats()
 
         # Allocate and deallocate through pool
-        var start = clock_now()
+        var start = perf_counter_ns()
         for _ in range(iterations):
             var ptr = pooled_alloc(size)
             pooled_free(ptr, size)
-        var pool_time = clock_now() - start
+        var pool_time = perf_counter_ns() - start
 
         var stats = pool.get_stats()
         var hit_rate = (stats.pool_hits * 100) // (
