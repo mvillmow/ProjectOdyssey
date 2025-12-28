@@ -84,7 +84,7 @@ struct ExprNode(Copyable, ImplicitlyCopyable, Movable):
 # ============================================================================
 
 
-struct TensorExpr(Copyable, Movable):
+struct TensorExpr(Movable):
     """Lazy tensor expression with deferred evaluation.
 
     Builds expression trees lazily without computing any values. Supports
@@ -151,7 +151,7 @@ struct TensorExpr(Copyable, Movable):
         var result = List[Int]()
         for i in range(len(self._result_shape)):
             result.append(self._result_shape[i])
-        return result
+        return result^
 
     fn dtype(self) -> DType:
         """Get the data type of the expression result.
@@ -205,7 +205,7 @@ struct TensorExpr(Copyable, Movable):
         self._nodes.append(leaf)
 
         self._tensors.append(tensor)
-        self._result_shape = new_shape
+        self._result_shape = new_shape^
 
         return node_idx
 
@@ -267,6 +267,182 @@ struct TensorExpr(Copyable, Movable):
         self._scalars.append(scalar)
         return node_idx
 
+    fn __add__(var self, other: TensorExpr) raises -> TensorExpr:
+        """Add two lazy expressions element-wise."""
+        # Compute new broadcast shape
+        var new_shape = broadcast_shapes(
+            self._result_shape, other._result_shape
+        )
+        self._result_shape = new_shape^
+
+        # Add other's tensors and nodes to self
+        var b_offset = len(self._tensors)
+        var b_scalar_offset = len(self._scalars)
+        for i in range(len(other._tensors)):
+            self._tensors.append(other._tensors[i])
+        for i in range(len(other._scalars)):
+            self._scalars.append(other._scalars[i])
+
+        # Copy other's nodes with offset adjustments
+        var b_node_offset = len(self._nodes)
+        for i in range(len(other._nodes)):
+            var node = other._nodes[i]
+            if node.tensor_idx >= 0:
+                node.tensor_idx += b_offset
+            if node.left_idx >= 0:
+                node.left_idx += b_node_offset
+            if node.right_idx >= 0:
+                node.right_idx += b_node_offset
+            if node.scalar_idx >= 0:
+                node.scalar_idx += b_scalar_offset
+            self._nodes.append(node)
+
+        # Create binary operation node
+        var self_root = self._root_idx
+        var add_node = ExprNode(OP_ADD)
+        add_node.left_idx = self_root
+        add_node.right_idx = b_node_offset + other._root_idx
+        self._root_idx = len(self._nodes)
+        self._nodes.append(add_node)
+
+        return self^
+
+    fn __sub__(var self, other: TensorExpr) raises -> TensorExpr:
+        """Subtract two lazy expressions element-wise."""
+        var new_shape = broadcast_shapes(
+            self._result_shape, other._result_shape
+        )
+        self._result_shape = new_shape^
+
+        var b_offset = len(self._tensors)
+        var b_scalar_offset = len(self._scalars)
+        for i in range(len(other._tensors)):
+            self._tensors.append(other._tensors[i])
+        for i in range(len(other._scalars)):
+            self._scalars.append(other._scalars[i])
+
+        var b_node_offset = len(self._nodes)
+        for i in range(len(other._nodes)):
+            var node = other._nodes[i]
+            if node.tensor_idx >= 0:
+                node.tensor_idx += b_offset
+            if node.left_idx >= 0:
+                node.left_idx += b_node_offset
+            if node.right_idx >= 0:
+                node.right_idx += b_node_offset
+            if node.scalar_idx >= 0:
+                node.scalar_idx += b_scalar_offset
+            self._nodes.append(node)
+
+        var self_root = self._root_idx
+        var sub_node = ExprNode(OP_SUB)
+        sub_node.left_idx = self_root
+        sub_node.right_idx = b_node_offset + other._root_idx
+        self._root_idx = len(self._nodes)
+        self._nodes.append(sub_node)
+
+        return self^
+
+    fn __mul__(var self, other: TensorExpr) raises -> TensorExpr:
+        """Multiply two lazy expressions element-wise."""
+        var new_shape = broadcast_shapes(
+            self._result_shape, other._result_shape
+        )
+        self._result_shape = new_shape^
+
+        var b_offset = len(self._tensors)
+        var b_scalar_offset = len(self._scalars)
+        for i in range(len(other._tensors)):
+            self._tensors.append(other._tensors[i])
+        for i in range(len(other._scalars)):
+            self._scalars.append(other._scalars[i])
+
+        var b_node_offset = len(self._nodes)
+        for i in range(len(other._nodes)):
+            var node = other._nodes[i]
+            if node.tensor_idx >= 0:
+                node.tensor_idx += b_offset
+            if node.left_idx >= 0:
+                node.left_idx += b_node_offset
+            if node.right_idx >= 0:
+                node.right_idx += b_node_offset
+            if node.scalar_idx >= 0:
+                node.scalar_idx += b_scalar_offset
+            self._nodes.append(node)
+
+        var self_root = self._root_idx
+        var mul_node = ExprNode(OP_MUL)
+        mul_node.left_idx = self_root
+        mul_node.right_idx = b_node_offset + other._root_idx
+        self._root_idx = len(self._nodes)
+        self._nodes.append(mul_node)
+
+        return self^
+
+    fn __mul__(var self, scalar: Float64) -> TensorExpr:
+        """Multiply lazy expression by scalar."""
+        var scalar_mul_node = ExprNode(OP_SCALAR_MUL)
+        scalar_mul_node.left_idx = self._root_idx
+        scalar_mul_node.scalar_idx = len(self._scalars)
+        self._root_idx = len(self._nodes)
+        self._nodes.append(scalar_mul_node)
+        self._scalars.append(scalar)
+        return self^
+
+    fn __truediv__(var self, other: TensorExpr) raises -> TensorExpr:
+        """Divide two lazy expressions element-wise."""
+        var new_shape = broadcast_shapes(
+            self._result_shape, other._result_shape
+        )
+        self._result_shape = new_shape^
+
+        var b_offset = len(self._tensors)
+        var b_scalar_offset = len(self._scalars)
+        for i in range(len(other._tensors)):
+            self._tensors.append(other._tensors[i])
+        for i in range(len(other._scalars)):
+            self._scalars.append(other._scalars[i])
+
+        var b_node_offset = len(self._nodes)
+        for i in range(len(other._nodes)):
+            var node = other._nodes[i]
+            if node.tensor_idx >= 0:
+                node.tensor_idx += b_offset
+            if node.left_idx >= 0:
+                node.left_idx += b_node_offset
+            if node.right_idx >= 0:
+                node.right_idx += b_node_offset
+            if node.scalar_idx >= 0:
+                node.scalar_idx += b_scalar_offset
+            self._nodes.append(node)
+
+        var self_root = self._root_idx
+        var div_node = ExprNode(OP_DIV)
+        div_node.left_idx = self_root
+        div_node.right_idx = b_node_offset + other._root_idx
+        self._root_idx = len(self._nodes)
+        self._nodes.append(div_node)
+
+        return self^
+
+    fn __truediv__(var self, scalar: Float64) -> TensorExpr:
+        """Divide lazy expression by scalar."""
+        var scalar_div_node = ExprNode(OP_SCALAR_DIV)
+        scalar_div_node.left_idx = self._root_idx
+        scalar_div_node.scalar_idx = len(self._scalars)
+        self._root_idx = len(self._nodes)
+        self._nodes.append(scalar_div_node)
+        self._scalars.append(scalar)
+        return self^
+
+    fn __neg__(var self) -> TensorExpr:
+        """Negate a lazy expression element-wise."""
+        var neg_node = ExprNode(OP_NEG)
+        neg_node.left_idx = self._root_idx
+        self._root_idx = len(self._nodes)
+        self._nodes.append(neg_node)
+        return self^
+
 
 # ============================================================================
 # Expression Entry Point
@@ -299,406 +475,4 @@ fn expr(tensor: ExTensor) raises -> TensorExpr:
     return TensorExpr(tensor)
 
 
-# ============================================================================
-# Operator Overloading - Binary Operations
-# ============================================================================
-
-
-fn __add__(a: TensorExpr, b: TensorExpr) raises -> TensorExpr:
-    """Add two lazy expressions element-wise.
-
-    Args:
-        a: First expression.
-        b: Second expression.
-
-    Returns:
-        New expression representing a + b.
-
-    Raises:
-        Error: If shapes are not broadcast-compatible.
-    """
-    var result = a
-    # Compute new broadcast shape
-    result._result_shape = broadcast_shapes(a._result_shape, b._result_shape)
-
-    # Add b's tensors and nodes to result
-    var b_offset = len(result._tensors)
-    var b_scalar_offset = len(result._scalars)
-    for i in range(len(b._tensors)):
-        result._tensors.append(b._tensors[i])
-    for i in range(len(b._scalars)):
-        result._scalars.append(b._scalars[i])
-
-    # Copy b's nodes with offset adjustments
-    var b_node_offset = len(result._nodes)
-    for i in range(len(b._nodes)):
-        var node = b._nodes[i]
-        if node.tensor_idx >= 0:
-            node.tensor_idx += b_offset
-        if node.left_idx >= 0:
-            node.left_idx += b_node_offset
-        if node.right_idx >= 0:
-            node.right_idx += b_node_offset
-        if node.scalar_idx >= 0:
-            node.scalar_idx += b_scalar_offset
-        result._nodes.append(node)
-
-    # Create binary operation node
-    var add_node = ExprNode(OP_ADD)
-    add_node.left_idx = a._root_idx
-    add_node.right_idx = b_node_offset + b._root_idx
-    result._root_idx = len(result._nodes)
-    result._nodes.append(add_node)
-
-    return result
-
-
-fn __add__(a: TensorExpr, b: ExTensor) raises -> TensorExpr:
-    """Add tensor to lazy expression.
-
-    Args:
-        a: Expression.
-        b: Tensor.
-
-    Returns:
-        New expression representing a + b.
-
-    Raises:
-        Error: If shapes are not broadcast-compatible.
-    """
-    var b_expr = expr(b)
-    return __add__(a, b_expr)
-
-
-fn __add__(a: ExTensor, b: TensorExpr) raises -> TensorExpr:
-    """Add lazy expression to tensor.
-
-    Args:
-        a: Tensor.
-        b: Expression.
-
-    Returns:
-        New expression representing a + b.
-
-    Raises:
-        Error: If shapes are not broadcast-compatible.
-    """
-    var a_expr = expr(a)
-    return __add__(a_expr, b)
-
-
-fn __sub__(a: TensorExpr, b: TensorExpr) raises -> TensorExpr:
-    """Subtract two lazy expressions element-wise.
-
-    Args:
-        a: First expression.
-        b: Second expression.
-
-    Returns:
-        New expression representing a - b.
-
-    Raises:
-        Error: If shapes are not broadcast-compatible.
-    """
-    var result = a
-    result._result_shape = broadcast_shapes(a._result_shape, b._result_shape)
-
-    var b_offset = len(result._tensors)
-    var b_scalar_offset = len(result._scalars)
-    for i in range(len(b._tensors)):
-        result._tensors.append(b._tensors[i])
-    for i in range(len(b._scalars)):
-        result._scalars.append(b._scalars[i])
-
-    var b_node_offset = len(result._nodes)
-    for i in range(len(b._nodes)):
-        var node = b._nodes[i]
-        if node.tensor_idx >= 0:
-            node.tensor_idx += b_offset
-        if node.left_idx >= 0:
-            node.left_idx += b_node_offset
-        if node.right_idx >= 0:
-            node.right_idx += b_node_offset
-        if node.scalar_idx >= 0:
-            node.scalar_idx += b_scalar_offset
-        result._nodes.append(node)
-
-    var sub_node = ExprNode(OP_SUB)
-    sub_node.left_idx = a._root_idx
-    sub_node.right_idx = b_node_offset + b._root_idx
-    result._root_idx = len(result._nodes)
-    result._nodes.append(sub_node)
-
-    return result
-
-
-fn __sub__(a: TensorExpr, b: ExTensor) raises -> TensorExpr:
-    """Subtract tensor from lazy expression.
-
-    Args:
-        a: Expression.
-        b: Tensor.
-
-    Returns:
-        New expression representing a - b.
-
-    Raises:
-        Error: If shapes are not broadcast-compatible.
-    """
-    var b_expr = expr(b)
-    return __sub__(a, b_expr)
-
-
-fn __sub__(a: ExTensor, b: TensorExpr) raises -> TensorExpr:
-    """Subtract lazy expression from tensor.
-
-    Args:
-        a: Tensor.
-        b: Expression.
-
-    Returns:
-        New expression representing a - b.
-
-    Raises:
-        Error: If shapes are not broadcast-compatible.
-    """
-    var a_expr = expr(a)
-    return __sub__(a_expr, b)
-
-
-fn __mul__(a: TensorExpr, b: TensorExpr) raises -> TensorExpr:
-    """Multiply two lazy expressions element-wise.
-
-    Args:
-        a: First expression.
-        b: Second expression.
-
-    Returns:
-        New expression representing a * b.
-
-    Raises:
-        Error: If shapes are not broadcast-compatible.
-    """
-    var result = a
-    result._result_shape = broadcast_shapes(a._result_shape, b._result_shape)
-
-    var b_offset = len(result._tensors)
-    var b_scalar_offset = len(result._scalars)
-    for i in range(len(b._tensors)):
-        result._tensors.append(b._tensors[i])
-    for i in range(len(b._scalars)):
-        result._scalars.append(b._scalars[i])
-
-    var b_node_offset = len(result._nodes)
-    for i in range(len(b._nodes)):
-        var node = b._nodes[i]
-        if node.tensor_idx >= 0:
-            node.tensor_idx += b_offset
-        if node.left_idx >= 0:
-            node.left_idx += b_node_offset
-        if node.right_idx >= 0:
-            node.right_idx += b_node_offset
-        if node.scalar_idx >= 0:
-            node.scalar_idx += b_scalar_offset
-        result._nodes.append(node)
-
-    var mul_node = ExprNode(OP_MUL)
-    mul_node.left_idx = a._root_idx
-    mul_node.right_idx = b_node_offset + b._root_idx
-    result._root_idx = len(result._nodes)
-    result._nodes.append(mul_node)
-
-    return result
-
-
-fn __mul__(a: TensorExpr, b: ExTensor) raises -> TensorExpr:
-    """Multiply lazy expression by tensor.
-
-    Args:
-        a: Expression.
-        b: Tensor.
-
-    Returns:
-        New expression representing a * b.
-
-    Raises:
-        Error: If shapes are not broadcast-compatible.
-    """
-    var b_expr = expr(b)
-    return __mul__(a, b_expr)
-
-
-fn __mul__(a: ExTensor, b: TensorExpr) raises -> TensorExpr:
-    """Multiply tensor by lazy expression.
-
-    Args:
-        a: Tensor.
-        b: Expression.
-
-    Returns:
-        New expression representing a * b.
-
-    Raises:
-        Error: If shapes are not broadcast-compatible.
-    """
-    var a_expr = expr(a)
-    return __mul__(a_expr, b)
-
-
-fn __truediv__(a: TensorExpr, b: TensorExpr) raises -> TensorExpr:
-    """Divide two lazy expressions element-wise.
-
-    Args:
-        a: First expression (dividend).
-        b: Second expression (divisor).
-
-    Returns:
-        New expression representing a / b.
-
-    Raises:
-        Error: If shapes are not broadcast-compatible.
-    """
-    var result = a
-    result._result_shape = broadcast_shapes(a._result_shape, b._result_shape)
-
-    var b_offset = len(result._tensors)
-    var b_scalar_offset = len(result._scalars)
-    for i in range(len(b._tensors)):
-        result._tensors.append(b._tensors[i])
-    for i in range(len(b._scalars)):
-        result._scalars.append(b._scalars[i])
-
-    var b_node_offset = len(result._nodes)
-    for i in range(len(b._nodes)):
-        var node = b._nodes[i]
-        if node.tensor_idx >= 0:
-            node.tensor_idx += b_offset
-        if node.left_idx >= 0:
-            node.left_idx += b_node_offset
-        if node.right_idx >= 0:
-            node.right_idx += b_node_offset
-        if node.scalar_idx >= 0:
-            node.scalar_idx += b_scalar_offset
-        result._nodes.append(node)
-
-    var div_node = ExprNode(OP_DIV)
-    div_node.left_idx = a._root_idx
-    div_node.right_idx = b_node_offset + b._root_idx
-    result._root_idx = len(result._nodes)
-    result._nodes.append(div_node)
-
-    return result
-
-
-fn __truediv__(a: TensorExpr, b: ExTensor) raises -> TensorExpr:
-    """Divide lazy expression by tensor.
-
-    Args:
-        a: Expression.
-        b: Tensor.
-
-    Returns:
-        New expression representing a / b.
-
-    Raises:
-        Error: If shapes are not broadcast-compatible.
-    """
-    var b_expr = expr(b)
-    return __truediv__(a, b_expr)
-
-
-fn __truediv__(a: ExTensor, b: TensorExpr) raises -> TensorExpr:
-    """Divide tensor by lazy expression.
-
-    Args:
-        a: Tensor.
-        b: Expression.
-
-    Returns:
-        New expression representing a / b.
-
-    Raises:
-        Error: If shapes are not broadcast-compatible.
-    """
-    var a_expr = expr(a)
-    return __truediv__(a_expr, b)
-
-
-# ============================================================================
-# Operator Overloading - Unary Operations
-# ============================================================================
-
-
-fn __neg__(a: TensorExpr) -> TensorExpr:
-    """Negate a lazy expression element-wise.
-
-    Args:
-        a: Expression to negate.
-
-    Returns:
-        New expression representing -a.
-    """
-    var result = a
-    var neg_node = ExprNode(OP_NEG)
-    neg_node.left_idx = a._root_idx
-    result._root_idx = len(result._nodes)
-    result._nodes.append(neg_node)
-    return result
-
-
-# ============================================================================
-# Operator Overloading - Scalar Operations
-# ============================================================================
-
-
-fn __mul__(a: TensorExpr, scalar: Float64) -> TensorExpr:
-    """Multiply lazy expression by scalar.
-
-    Args:
-        a: Expression.
-        scalar: Scalar value.
-
-    Returns:
-        New expression representing a * scalar.
-    """
-    var result = a
-    var scalar_mul_node = ExprNode(OP_SCALAR_MUL)
-    scalar_mul_node.left_idx = a._root_idx
-    scalar_mul_node.scalar_idx = len(result._scalars)
-    result._root_idx = len(result._nodes)
-    result._nodes.append(scalar_mul_node)
-    result._scalars.append(scalar)
-    return result
-
-
-fn __mul__(scalar: Float64, a: TensorExpr) -> TensorExpr:
-    """Multiply scalar by lazy expression.
-
-    Args:
-        scalar: Scalar value.
-        a: Expression.
-
-    Returns:
-        New expression representing scalar * a.
-    """
-    return __mul__(a, scalar)
-
-
-fn __truediv__(a: TensorExpr, scalar: Float64) -> TensorExpr:
-    """Divide lazy expression by scalar.
-
-    Args:
-        a: Expression.
-        scalar: Scalar divisor.
-
-    Returns:
-        New expression representing a / scalar.
-    """
-    var result = a
-    var scalar_div_node = ExprNode(OP_SCALAR_DIV)
-    scalar_div_node.left_idx = a._root_idx
-    scalar_div_node.scalar_idx = len(result._scalars)
-    result._root_idx = len(result._nodes)
-    result._nodes.append(scalar_div_node)
-    result._scalars.append(scalar)
-    return result
+# End of TensorExpr struct and operators
