@@ -37,6 +37,11 @@ from sys.info import simd_width_of
 from memory import memset_zero
 from shared.core.extensor import ExTensor, zeros
 from shared.core.error_utils import format_dtype, format_matmul_error
+from shared.core.strassen import (
+    matmul_strassen,
+    STRASSEN_ENABLED,
+    STRASSEN_THRESHOLD,
+)
 
 
 # ============================================================================
@@ -719,6 +724,9 @@ fn matmul_optimized(a: ExTensor, b: ExTensor, mut c: ExTensor) raises:
     Selects the optimized matmul kernel for large matrices, falling back to simpler
     implementations for small matrices where overhead outweighs benefits.
 
+    For large square matrices (>= STRASSEN_THRESHOLD), uses Strassen's algorithm
+    which reduces complexity from O(n³) to O(n^2.807).
+
     Args:
         a: First matrix (M x K).
         b: Second matrix (K x N).
@@ -731,6 +739,24 @@ fn matmul_optimized(a: ExTensor, b: ExTensor, mut c: ExTensor) raises:
         This is the recommended entry point for optimized matrix multiplication.
         It automatically selects the best kernel based on matrix dimensions.
     """
+
+    # Check if we should use Strassen for large square matrices
+    @parameter
+    if STRASSEN_ENABLED:
+        var a_shape = a.shape()
+        var b_shape = b.shape()
+
+        # Strassen only applies to square matrices
+        if (
+            len(a_shape) == 2
+            and len(b_shape) == 2
+            and a_shape[0] == a_shape[1]
+            and b_shape[0] == b_shape[1]
+            and a_shape[0] >= STRASSEN_THRESHOLD
+        ):
+            matmul_strassen(a, b, c)
+            return
+
     matmul(a, b, c)
 
 
