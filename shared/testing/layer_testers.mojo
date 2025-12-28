@@ -785,11 +785,15 @@ struct LayerTester:
                 # Use wider tolerance (10%) for matrix operations due to accumulated errors
                 # Large linear layers (e.g., FC1: 9216→4096) accumulate significant
                 # floating-point errors in matmul, requiring looser tolerance. See #2704.
-                var wide_tolerance = 0.10  # 10% tolerance
+                var wide_tolerance = 0.10  # 10% relative tolerance
+                var abs_tolerance = (
+                    1e-3  # 0.001 absolute tolerance for small gradients
+                )
                 assert_sampled_gradients_close(
                     analytical_grad,
                     sampled_gradients,
                     rtol=wide_tolerance,
+                    atol=abs_tolerance,
                     message=(
                         "Linear analytical gradient doesn't match sampled"
                         " numerical"
