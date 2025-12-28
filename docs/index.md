@@ -33,6 +33,7 @@ Understand the fundamentals:
 
 Deep dives for experienced users:
 
+- **[Performance Benchmarking](advanced/benchmarking.md)** - Benchmarking and profiling guide
 - **[Performance Optimization](advanced/performance.md)** - SIMD optimization and profiling
 - **[Custom Layers](advanced/custom-layers.md)** - Creating custom neural network layers
 - **[Distributed Training](advanced/distributed-training.md)** - Multi-device training (coming soon)
