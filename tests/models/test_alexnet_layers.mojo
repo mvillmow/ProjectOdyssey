@@ -1117,10 +1117,10 @@ fn main() raises:
     # See: https://github.com/mvillmow/ProjectOdyssey/issues/2701
     print("  test_conv2_forward_float16... FIXME(#2701)")
 
-    # FIXME: test_conv2_backward_float32 disabled - gradient accuracy issue (194% error)
-    # Sampled gradient checking reveals analytical gradient doesn't match numerical.
-    # This is a separate issue from #2704 (timeout) - needs investigation.
-    print("  test_conv2_backward_float32... FIXME (gradient accuracy)")
+    # Conv2 backward - uses sampled gradient checking (200 samples)
+    print("  test_conv2_backward_float32...", end="")
+    test_conv2_backward_float32()
+    print(" OK")
 
     # Conv3 tests
     print("  test_conv3_forward_float32...", end="")
@@ -1132,33 +1132,30 @@ fn main() raises:
     # See: https://github.com/mvillmow/ProjectOdyssey/issues/2701
     print("  test_conv3_forward_float16... FIXME(#2701)")
 
-    # FIXME: test_conv3_backward_float32 disabled - gradient accuracy issue (183% error)
-    # Sampled gradient checking reveals analytical gradient doesn't match numerical.
-    print("  test_conv3_backward_float32... FIXME (gradient accuracy)")
+    # Conv3 backward - uses sampled gradient checking (100 samples)
+    print("  test_conv3_backward_float32...", end="")
+    test_conv3_backward_float32()
+    print(" OK")
 
     # Conv4 tests
     print("  test_conv4_forward_float32...", end="")
     test_conv4_forward_float32()
     print(" OK")
 
-    # FIXME: test_conv4_backward_float32 disabled - likely has gradient accuracy issue
-    # Conv2 and Conv3 backward have gradient bugs, Conv4 likely similar.
-    print(
-        "  test_conv4_backward_float32... FIXME (gradient accuracy - not"
-        " tested)"
-    )
+    # Conv4 backward - uses sampled gradient checking (100 samples)
+    print("  test_conv4_backward_float32...", end="")
+    test_conv4_backward_float32()
+    print(" OK")
 
     # Conv5 tests
     print("  test_conv5_forward_float32...", end="")
     test_conv5_forward_float32()
     print(" OK")
 
-    # FIXME: test_conv5_backward_float32 disabled - likely has gradient accuracy issue
-    # Conv2 and Conv3 backward have gradient bugs, Conv5 likely similar.
-    print(
-        "  test_conv5_backward_float32... FIXME (gradient accuracy - not"
-        " tested)"
-    )
+    # Conv5 backward - uses sampled gradient checking (100 samples)
+    print("  test_conv5_backward_float32...", end="")
+    test_conv5_backward_float32()
+    print(" OK")
 
     # ReLU tests
     print("  test_relu_forward_float32...", end="")
@@ -1207,7 +1204,7 @@ fn main() raises:
     test_fc1_forward_float16()
     print(" OK")
 
-    # Fixed #2704: Epsilon was too small (1e-5) for Float32, now using 1e-4
+    # FC1 backward - uses sampled gradient checking (30 samples)
     print("  test_fc1_backward_float32...", end="")
     test_fc1_backward_float32()
     print(" OK")
@@ -1221,7 +1218,7 @@ fn main() raises:
     test_fc2_forward_float16()
     print(" OK")
 
-    # Fixed #2704: Epsilon was too small (1e-5) for Float32, now using 1e-4
+    # FC2 backward - uses sampled gradient checking (30 samples)
     print("  test_fc2_backward_float32...", end="")
     test_fc2_backward_float32()
     print(" OK")
@@ -1235,7 +1232,7 @@ fn main() raises:
     test_fc3_forward_float16()
     print(" OK")
 
-    # Fixed #2704: Epsilon was too small (1e-5) for Float32, now using 1e-4
+    # FC3 backward - uses sampled gradient checking (30 samples)
     print("  test_fc3_backward_float32...", end="")
     test_fc3_backward_float32()
     print(" OK")
