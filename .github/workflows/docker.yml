@@ -83,7 +83,7 @@ jobs:
           context: .
           file: ./Dockerfile.ci
           target: ${{ matrix.target }}
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: ${{ (github.event_name != 'pull_request' || github.event.inputs.push == 'true') && matrix.target != 'ci' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
