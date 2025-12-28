@@ -532,6 +532,7 @@ fn assert_sampled_gradients_close(
     """
     var max_error: Float64 = 0.0
     var worst_idx: Int = -1
+    var any_failed = False
 
     for sample in sampled_numerical:
         var idx = sample.index
@@ -552,18 +553,15 @@ fn assert_sampled_gradients_close(
         var tolerance = atol + rtol * max_magnitude
         var rel_error = abs_diff / (max_magnitude + 1e-8)  # For reporting only
 
-        if abs_diff > tolerance and rel_error > max_error:
-            max_error = rel_error
-            worst_idx = idx
+        # Check if this sample fails the combined tolerance
+        if abs_diff > tolerance:
+            any_failed = True
+            if rel_error > max_error:
+                max_error = rel_error
+                worst_idx = idx
 
-    # Check if any sample exceeded combined tolerance
-    var worst_analytical = analytical_grad._get_float64(worst_idx)
-    var abs_worst = (
-        worst_analytical if worst_analytical >= 0.0 else -worst_analytical
-    )
-    var worst_tolerance = atol + rtol * abs_worst
-
-    if max_error > rtol and abs_worst > atol:  # Only fail if both exceeded
+    # Fail if any sample exceeded the combined tolerance
+    if any_failed:
         var analytical_val = analytical_grad._get_float64(worst_idx)
         var msg = (
             message
