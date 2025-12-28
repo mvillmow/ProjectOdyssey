@@ -895,6 +895,8 @@ class StatusTracker:
         self._update_event = threading.Event()
         self._completed_count = 0
         self._total_count = 0
+        # Track cleanup phase (after slot release but before future completes)
+        self._cleanup_items: dict[int, tuple[int, float]] = {}  # item_id -> (worker_id, start_time)
 
     def set_total(self, total: int) -> None:
         """Set the total number of items to process."""
@@ -937,7 +939,8 @@ class StatusTracker:
                         self._slots[slot] = (item_id, "Starting", "", time.time())
                         self._slot_to_item[slot] = item_id
                         self._update_event.set()
-                        log("DEBUG", f"Item #{item_id} acquired slot {slot}")
+                        wait_time = time.time() - (deadline - timeout)
+                        log("DEBUG", f"Item #{item_id} acquired slot {slot} (waited {wait_time:.1f}s)")
                         return slot
 
                 # No slots available - wait for one to be released
@@ -947,7 +950,11 @@ class StatusTracker:
                         f"Timeout waiting for slot (item #{item_id}). All {self._max_workers} slots occupied."
                     )
 
-                log("DEBUG", f"Item #{item_id} waiting for slot (timeout in {remaining:.0f}s)")
+                occupied_items = list(self._slot_to_item.values())
+                log(
+                    "DEBUG",
+                    f"Item #{item_id} waiting for slot (timeout in {remaining:.0f}s, occupied: {occupied_items})",
+                )
                 self._slot_available.wait(timeout=min(remaining, 5.0))
 
     def update(self, slot: int, item_id: int, stage: str, info: str = "") -> None:
@@ -970,6 +977,36 @@ class StatusTracker:
             self._slots[slot] = (item_id, stage, info, time.time())
             self._update_event.set()
 
+    def set_cleanup(self, item_id: int, worker_id: int) -> None:
+        """Mark an item as in cleanup phase.
+
+        Call this after releasing the slot but before cleanup completes.
+        Allows UI to show cleanup status instead of "Idle".
+
+        Args:
+            item_id: ID of item being cleaned up
+            worker_id: Worker slot number (for UI display)
+        """
+        with self._lock:
+            self._cleanup_items[item_id] = (worker_id, time.time())
+            self._update_event.set()
+            log("DEBUG", f"Item #{item_id} entered cleanup phase (worker {worker_id})")
+
+    def clear_cleanup(self, item_id: int) -> None:
+        """Clear cleanup status when item is fully complete.
+
+        Call this in main loop after future.result() completes.
+
+        Args:
+            item_id: ID of item to clear
+        """
+        with self._lock:
+            if item_id in self._cleanup_items:
+                worker_id, _ = self._cleanup_items[item_id]
+                del self._cleanup_items[item_id]
+                self._update_event.set()
+                log("DEBUG", f"Item #{item_id} cleanup complete (was worker {worker_id})")
+
     def release_slot(self, slot: int) -> None:
         """Release a slot when done."""
         with self._slot_available:  # Uses condition variable
@@ -980,7 +1017,7 @@ class StatusTracker:
                 if slot in self._slot_to_item:
                     del self._slot_to_item[slot]
                 self._update_event.set()
-                self._slot_available.notify()  # Wake up waiters
+                self._slot_available.notify_all()  # Wake ALL waiting threads
             else:
                 log("WARN", f"Attempted to release unoccupied slot {slot}")
 
@@ -1003,7 +1040,7 @@ class StatusTracker:
                         del self._slots[slot]
                     del self._slot_to_item[slot]
                     self._update_event.set()
-                    self._slot_available.notify()
+                    self._slot_available.notify_all()  # Wake ALL waiting threads
                     return True
 
             log("WARN", f"No slot found for item #{item_id}")
@@ -1015,12 +1052,22 @@ class StatusTracker:
             # Detect slot leaks (exclude MAIN_THREAD which doesn't use slot_to_item tracking)
             leaked_slots = set(self._slots.keys()) - set(self._slot_to_item.keys()) - {self.MAIN_THREAD}
             if leaked_slots:
+                leaked_details = {slot: self._slots[slot] for slot in leaked_slots}
                 log("ERROR", f"Slot leak detected! Slots without owners: {leaked_slots}")
+                log("ERROR", f"Leaked slot details: {leaked_details}")
+
+            # Detect orphaned ownership (slot_to_item without corresponding slot)
+            orphaned_items = set(self._slot_to_item.keys()) - set(self._slots.keys())
+            if orphaned_items:
+                orphaned_details = {slot: self._slot_to_item[slot] for slot in orphaned_items}
+                log("ERROR", f"Orphaned ownership detected! Tracked items without slots: {orphaned_items}")
+                log("ERROR", f"Orphaned details: {orphaned_details}")
 
             return {
                 "completed": self._completed_count,
                 "total": self._total_count,
                 "slots": dict(self._slots),
+                "cleanup_items": dict(self._cleanup_items),  # NEW: Track cleanup phase
                 "max_workers": self._max_workers,
             }
 
@@ -1178,13 +1225,27 @@ class CursesUI:
         for slot in range(data["max_workers"]):
             row = log_height + 3 + slot
             color = curses.color_pair(self.COLOR_WORKER_BASE + (slot % 8))
+
             if slot in data["slots"]:
+                # Worker has active slot
                 item_id, stage, info, start = data["slots"][slot]
                 elapsed = self._format_elapsed(start)
                 info_str = f" - {info}" if info else ""
                 line = f"  Worker {slot}: [{stage:12}] #{item_id} ({elapsed}){info_str}"[: width - 1]
             else:
-                line = f"  Worker {slot}: [Idle        ]"
+                # Check if any item is in cleanup and was using this worker
+                cleanup_line = None
+                for item_id, (worker_id, start) in data.get("cleanup_items", {}).items():
+                    if worker_id == slot:
+                        elapsed = self._format_elapsed(start)
+                        cleanup_line = f"  Worker {slot}: [Cleanup     ] #{item_id} ({elapsed})"[: width - 1]
+                        break
+
+                if cleanup_line:
+                    line = cleanup_line
+                else:
+                    line = f"  Worker {slot}: [Idle        ]"
+
             try:
                 self._screen.addstr(row, 0, line, color)
             except curses.error:
@@ -2850,10 +2911,12 @@ You are on branch: {worktree.name}
             if not has_uncommitted and not has_new_commits:
                 log("WARN", f"  No changes made for #{issue}")
 
-                # Release slot before cleanup
+                # Release slot before cleanup, then mark as cleaning up
                 log("DEBUG", f"  Releasing slot {slot} for #{issue} (no changes)")
                 if self.status_tracker:
+                    worker_id = slot  # Save for cleanup tracking
                     self.status_tracker.release_slot(slot)
+                    self.status_tracker.set_cleanup(issue, worker_id)
                     slot = -1
 
                 self.worktree_manager.remove(issue)
@@ -2952,12 +3015,13 @@ DO NOT describe what you're doing - just run the commands to commit.
             # Cleanup can happen in parallel with other work
             log("DEBUG", f"  Releasing slot {slot} for #{issue} before cleanup")
             if self.status_tracker:
+                worker_id = slot  # Save for cleanup tracking
                 self.status_tracker.release_slot(slot)
+                self.status_tracker.set_cleanup(issue, worker_id)
                 slot = -1  # Mark as released to prevent double-release in main loop
 
             # 10. Cleanup worktree and move to next issue
             # NOTE: PR creation removed - commits are pushed to branches only
-            # NOTE: No status update for cleanup since slot is released
             log("DEBUG", f"  Cleaning up worktree for #{issue}")
             self.worktree_manager.remove(issue)
             # Update state with synchronization, then save (save() handles its own locking)
@@ -3444,25 +3508,34 @@ Examples:
                     # Filter out issues already in progress (in futures)
                     ready = [n for n in ready if n not in futures.values()]
 
-                    # Spawn new tasks up to max_parallel + buffer
-                    # Keep buffer of work queued so workers don't sit idle between poll cycles
+                    # Spawn new tasks up to max_workers only
+                    # We have exactly max_workers slots, don't try to exceed that
                     spawned_this_iteration = 0
-                    queue_buffer = actual_workers  # Pre-queue one extra item per worker
-                    max_queued = actual_workers + queue_buffer
-                    available = max_queued - active_count
+                    available_slots = actual_workers - active_count
 
                     log(
                         "DEBUG",
-                        f"Loop: ready={len(ready)} futures={len(futures)} active={active_count} avail={available} done={len(results)}",
+                        f"Loop: ready={len(ready)} futures={len(futures)} active={active_count} avail_slots={available_slots} done={len(results)}",
                     )
-                    for issue_num in ready[:available]:
-                        slot = status_tracker.acquire_slot(issue_num)
-                        resolver.mark_in_progress(issue_num)
-                        future = executor.submit(implementer.implement_issue, issue_num, slot)
-                        futures[future] = issue_num
-                        active_count += 1
-                        spawned_this_iteration += 1
-                        status_tracker.update_main("Spawning", f"#{issue_num}")
+
+                    # Only spawn if we have both ready issues AND available slots
+                    if available_slots > 0 and ready:
+                        for issue_num in ready[:available_slots]:
+                            # Try to acquire slot with timeout
+                            try:
+                                slot = status_tracker.acquire_slot(issue_num, timeout=5.0)
+                            except RuntimeError as e:
+                                # Slot acquisition failed - this shouldn't happen with our calculation
+                                log("ERROR", f"Failed to acquire slot for #{issue_num}: {e}")
+                                # Don't mark as in_progress if we couldn't get a slot
+                                continue
+
+                            resolver.mark_in_progress(issue_num)
+                            future = executor.submit(implementer.implement_issue, issue_num, slot)
+                            futures[future] = issue_num
+                            active_count += 1
+                            spawned_this_iteration += 1
+                            status_tracker.update_main("Spawning", f"#{issue_num}")
 
                     # Check termination conditions
                     if not futures and not ready:
@@ -3510,6 +3583,9 @@ Examples:
                         results.append(result)
                         status_tracker.increment_completed()
 
+                        # Clear cleanup status now that future is complete
+                        status_tracker.clear_cleanup(issue_num)
+
                         if result.status == "completed":
                             resolver.mark_completed(issue_num)
                             log("DEBUG", f"Main loop: marked #{issue_num} as completed")
@@ -3520,8 +3596,8 @@ Examples:
                                 f"Main loop: marked #{issue_num} as paused ({result.status})",
                             )
 
-                        # Release slot for this issue
-                        status_tracker.release_by_item(issue_num)
+                        # NOTE: Slot already released by worker - no release needed here
+                        # Workers release at lines 2856, 2955, 2978, 3001, 3029
 
         finally:
             # Save state even if interrupted
