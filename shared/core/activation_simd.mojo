@@ -34,7 +34,7 @@ Related:
 - Issue #2623: Add Vectorized Implementations for Common Activations
 """
 
-from algorithm import vectorize
+from algorithm import vectorize, select
 from sys.info import simd_width_of
 from math import exp as math_exp
 from shared.core.extensor import ExTensor
