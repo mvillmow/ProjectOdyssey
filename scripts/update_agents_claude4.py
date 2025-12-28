@@ -14,10 +14,11 @@ Usage:
 
 import re
 from pathlib import Path
+from typing import Any, Dict
 
 
 # Agent role categories for customization
-AGENT_ROLES = {
+AGENT_ROLES: Dict[str, Dict[str, Any]] = {
     # Level 0: Chief Architect
     "chief-architect": {
         "level": 0,

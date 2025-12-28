@@ -36,7 +36,7 @@ try:
     HAS_NUMPY = True
 except ImportError:
     HAS_NUMPY = False
-    np = None
+    np = None  # type: ignore[assignment]
 
 # EMNIST download URLs (with fallbacks)
 # Primary URL (NIST official - may have availability issues from GitHub Actions)

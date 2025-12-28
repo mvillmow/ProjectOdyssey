@@ -18,7 +18,7 @@ import argparse
 import re
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Type
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from common import get_agents_dir, get_repo_root
@@ -33,7 +33,7 @@ except ImportError:
 
 
 # Required fields and their expected types
-REQUIRED_FIELDS = {
+REQUIRED_FIELDS: Dict[str, Type[Any]] = {
     "name": str,
     "description": str,
     "tools": str,
@@ -41,7 +41,7 @@ REQUIRED_FIELDS = {
 }
 
 # Optional fields and their expected types
-OPTIONAL_FIELDS = {
+OPTIONAL_FIELDS: Dict[str, Type[Any]] = {
     "level": int,
     "section": str,
     "workflow_phase": str,

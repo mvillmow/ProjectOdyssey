@@ -132,7 +132,7 @@ def validate_readme(readme_path: Path, verbose: bool = False) -> Dict[str, Any]:
     Returns:
         Dictionary with validation results
     """
-    result = {
+    result: Dict[str, Any] = {
         "path": str(readme_path),
         "passed": True,
         "issues": [],
@@ -168,9 +168,9 @@ def validate_readme(readme_path: Path, verbose: bool = False) -> Dict[str, Any]:
     return result
 
 
-def validate_all_readmes(directory: Path, verbose: bool = False) -> Dict[str, List]:
+def validate_all_readmes(directory: Path, verbose: bool = False) -> Dict[str, Any]:
     """Validate all READMEs in directory tree"""
-    results = {"passed": [], "failed": []}
+    results: Dict[str, Any] = {"passed": [], "failed": []}
 
     readmes = find_readmes(directory)
 

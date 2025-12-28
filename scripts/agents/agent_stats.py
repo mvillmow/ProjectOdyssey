@@ -36,7 +36,7 @@ import re
 import sys
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List
+from typing import Any, Dict, List, Optional
 
 
 class AgentAnalyzer:
@@ -63,7 +63,7 @@ class AgentAnalyzer:
             if agent_data:
                 self.agents.append(agent_data)
 
-    def _parse_agent_file(self, file_path: Path) -> Dict:
+    def _parse_agent_file(self, file_path: Path) -> Optional[Dict[str, Any]]:
         """Parse a single agent configuration file.
 
         Args:

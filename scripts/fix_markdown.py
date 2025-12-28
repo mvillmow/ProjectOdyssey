@@ -36,7 +36,7 @@ import argparse
 import re
 import sys
 from pathlib import Path
-from typing import Tuple
+from typing import List, Tuple
 
 
 class MarkdownFixer:
@@ -160,7 +160,7 @@ class MarkdownFixer:
         - MD036: Bold text as headings
         """
         lines = content.split("\n")
-        fixed_lines = []
+        fixed_lines: List[str] = []
         fixes = 0
         i = 0
 

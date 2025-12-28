@@ -17,7 +17,7 @@ Exit Codes:
 import argparse
 import sys
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from common import get_agents_dir
@@ -91,7 +91,7 @@ def check_for_duplicates(agents: List[AgentInfo]) -> List[Tuple[str, List[Path]]
     Returns:
         List of (name, file_paths) for each duplicate name
     """
-    name_to_files = {}
+    name_to_files: Dict[str, Any] = {}
     for agent in agents:
         if agent.name not in name_to_files:
             name_to_files[agent.name] = []

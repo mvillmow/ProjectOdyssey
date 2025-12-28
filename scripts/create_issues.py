@@ -36,7 +36,7 @@ import tempfile
 import time
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
@@ -152,14 +152,8 @@ class Statistics:
 
     total_files: int = 0
     total_issues: int = 0
-    by_section: Dict[str, int] = None
-    by_type: Dict[str, int] = None
-
-    def __post_init__(self):
-        if self.by_section is None:
-            self.by_section = {}
-        if self.by_type is None:
-            self.by_type = {}
+    by_section: Dict[str, int] = field(default_factory=dict)
+    by_type: Dict[str, int] = field(default_factory=dict)
 
 
 class IssueParser:

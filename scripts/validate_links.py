@@ -108,7 +108,7 @@ def validate_links(file_path: Path, repo_root: Path, verbose: bool = False) -> D
         # File is not under repo_root, use absolute path
         rel_path = str(file_path.resolve())
 
-    result = {
+    result: Dict[str, Any] = {
         "path": rel_path,
         "total_links": 0,
         "valid_links": 0,
@@ -148,9 +148,9 @@ def validate_links(file_path: Path, repo_root: Path, verbose: bool = False) -> D
     return result
 
 
-def validate_all_links(directory: Path, verbose: bool = False) -> Dict[str, List]:
+def validate_all_links(directory: Path, verbose: bool = False) -> Dict[str, Any]:
     """Validate links in all markdown files"""
-    results = {"passed": [], "failed": [], "total_links": 0, "broken_links": 0}
+    results: Dict[str, Any] = {"passed": [], "failed": [], "total_links": 0, "broken_links": 0}
 
     repo_root = get_repo_root()
 
@@ -185,7 +185,7 @@ def validate_all_links(directory: Path, verbose: bool = False) -> Dict[str, List
     return results
 
 
-def print_summary(results: Dict[str, any]) -> None:
+def print_summary(results: Dict[str, Any]) -> None:
     """Print validation summary"""
     total_files = len(results["passed"]) + len(results["failed"])
     passed_files = len(results["passed"])

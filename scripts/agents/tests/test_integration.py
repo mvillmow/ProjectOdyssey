@@ -95,7 +95,7 @@ class TestAgentFrontmatter:
             frontmatter, _ = parse_frontmatter(content)
 
             required_keys = ["name", "description", "tools", "model"]
-            optional_keys = []  # Add optional keys if needed
+            optional_keys: List[str] = []  # Add optional keys if needed
 
             errors = validate_frontmatter_keys(frontmatter, required_keys, optional_keys)
 

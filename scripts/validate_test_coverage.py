@@ -21,7 +21,7 @@ import re
 import sys
 import subprocess
 from pathlib import Path
-from typing import List, Dict, Set, Tuple
+from typing import Any, Dict, List, Set, Tuple
 import yaml
 
 
@@ -258,7 +258,7 @@ def generate_report(
         report_lines.append("")
 
         # Suggest groups based on uncovered paths
-        suggestions = {}
+        suggestions: Dict[str, Any] = {}
         for test_file in sorted(uncovered):
             parts = test_file.parts
             if len(parts) >= 2:
@@ -374,7 +374,7 @@ def main():
         print()
 
         # Suggest groups based on uncovered paths
-        suggestions = {}
+        suggestions: Dict[str, Any] = {}
         for test_file in sorted(uncovered):
             parts = test_file.parts
             if len(parts) >= 2:

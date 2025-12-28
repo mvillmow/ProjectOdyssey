@@ -31,7 +31,7 @@ import argparse
 import sys
 import re
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 
 class ConfigLinter:
@@ -199,7 +199,7 @@ class ConfigLinter:
         """
         try:
             # Simple YAML parser
-            result = {}
+            result: Dict[str, Any] = {}
             current_section = None
             lines = content.split("\n")
 

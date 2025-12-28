@@ -11,7 +11,7 @@ Usage:
 import json
 import re
 from pathlib import Path
-from typing import Dict
+from typing import Any, Dict
 import sys
 
 
@@ -33,9 +33,9 @@ def count_lines(file_path: Path) -> int:
         return 0
 
 
-def generate_metrics(repo_root: Path) -> Dict:
+def generate_metrics(repo_root: Path) -> Dict[str, Any]:
     """Generate comprehensive test metrics."""
-    metrics = {"total_test_files": 0, "total_test_functions": 0, "total_test_lines": 0, "by_module": {}}
+    metrics: Dict[str, Any] = {"total_test_files": 0, "total_test_functions": 0, "total_test_lines": 0, "by_module": {}}
 
     # Scan test directories
     test_dirs = ["tests/shared", "tests/models", "tests/configs", "examples"]
@@ -77,7 +77,7 @@ def generate_metrics(repo_root: Path) -> Dict:
     return metrics
 
 
-def format_markdown(metrics: Dict) -> str:
+def format_markdown(metrics: Dict[str, Any]) -> str:
     """Format metrics as markdown."""
     lines = []
 
@@ -117,7 +117,7 @@ def format_markdown(metrics: Dict) -> str:
     return "\n".join(lines)
 
 
-def format_json(metrics: Dict) -> str:
+def format_json(metrics: Dict[str, Any]) -> str:
     """Format metrics as JSON."""
     return json.dumps(metrics, indent=2)
 

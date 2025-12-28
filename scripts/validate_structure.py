@@ -15,7 +15,7 @@ Exit codes:
 
 import sys
 from pathlib import Path
-from typing import List, Tuple, Dict
+from typing import Any, Dict, List, Tuple
 
 from common import get_repo_root
 
@@ -100,7 +100,7 @@ def validate_structure(repo_root: Path, verbose: bool = False) -> Dict[str, List
     Returns:
         Dictionary with 'passed' and 'failed' lists of validation messages
     """
-    results = {"passed": [], "failed": []}
+    results: Dict[str, Any] = {"passed": [], "failed": []}
 
     print("Validating ML Odyssey directory structure...\n")
 

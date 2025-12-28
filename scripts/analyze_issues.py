@@ -32,10 +32,16 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import redirect_stderr, redirect_stdout
-from typing import TYPE_CHECKING
+from datetime import timezone
+from typing import TYPE_CHECKING, Optional
+
+try:
+    from zoneinfo import ZoneInfo
+except ImportError:
+    from backports.zoneinfo import ZoneInfo  # type: ignore[import,no-redef]
 
 if TYPE_CHECKING:
-    pass
+    from types import FrameType
 
 # ---------------------------------------------------------------------
 # Constants
@@ -341,7 +347,7 @@ def log(level: str, msg: str) -> None:
 # ---------------------------------------------------------------------
 
 
-def run(cmd: list[str], *, timeout: int | None = None) -> subprocess.CompletedProcess[str]:
+def run(cmd: list[str], *, timeout: Optional[int] = None) -> subprocess.CompletedProcess[str]:
     """Run a command and capture output."""
     return subprocess.run(
         cmd,
@@ -362,8 +368,8 @@ def parse_reset_epoch(time_str: str, tz: str) -> int:
     if tz not in ALLOWED_TIMEZONES:
         tz = "America/Los_Angeles"
 
-    now_utc = dt.datetime.now(dt.UTC)
-    today = now_utc.astimezone(dt.ZoneInfo(tz)).date()
+    now_utc = dt.datetime.now(timezone.utc)
+    today = now_utc.astimezone(ZoneInfo(tz)).date()
 
     m = re.match(r"^(\d{1,2})(?::(\d{2}))?(am|pm)?$", time_str, re.IGNORECASE)
     if not m:
@@ -383,10 +389,10 @@ def parse_reset_epoch(time_str: str, tz: str) -> int:
     local = dt.datetime.combine(
         today,
         dt.time(hour, minute),
-        tzinfo=dt.ZoneInfo(tz),
+        tzinfo=ZoneInfo(tz),
     )
 
-    if local < now_utc.astimezone(dt.ZoneInfo(tz)):
+    if local < now_utc.astimezone(ZoneInfo(tz)):
         local += dt.timedelta(days=1)
 
     return int(local.timestamp())
@@ -1224,6 +1230,7 @@ Examples:
             status_tracker.start_display()
 
             def process_with_status(batch_file: pathlib.Path, idx: int) -> tuple[Result, str, int]:
+                assert status_tracker is not None  # Already checked above
                 batch_num = int(batch_file.stem.split("_")[1])
                 slot = status_tracker.acquire_slot(batch_num)
                 buffer = io.StringIO()
@@ -1232,6 +1239,7 @@ Examples:
                         result = analyzer.analyze_batch(batch_num, batch_file, reference_file, slot)
                     return (result, buffer.getvalue(), slot)
                 finally:
+                    assert status_tracker is not None  # Already checked above
                     status_tracker.release_slot(slot)
                     status_tracker.increment_completed()
 
@@ -1295,6 +1303,7 @@ Examples:
             status_tracker.start_display()
 
             def apply_with_status(issue_num: int, idx: int) -> tuple[Result, str, int]:
+                assert status_tracker is not None  # Already checked above
                 analysis = analyzer.state.analyses[issue_num]
                 slot = status_tracker.acquire_slot(issue_num)
                 buffer = io.StringIO()
@@ -1303,6 +1312,7 @@ Examples:
                         result = analyzer.apply_comment(issue_num, analysis, slot)
                     return (result, buffer.getvalue(), slot)
                 finally:
+                    assert status_tracker is not None  # Already checked above
                     status_tracker.release_slot(slot)
                     status_tracker.increment_completed()
 
@@ -1315,17 +1325,17 @@ Examples:
                         status_tracker.update_main("Spawning", f"#{issue_num}")
 
                     status_tracker.update_main("Processing")
-                    indexed_results: dict[int, tuple[Result, str]] = {}
+                    indexed_apply_results: dict[int, tuple[Result, str]] = {}
                     for f in as_completed(futures):
                         idx = futures[f]
                         result, output, _slot = f.result()
-                        indexed_results[idx] = (result, output)
+                        indexed_apply_results[idx] = (result, output)
 
                     status_tracker.update_main("Collecting", "results")
                     status_tracker.stop_display()
 
                     for i in range(len(issues)):
-                        result, output = indexed_results[i]
+                        result, output = indexed_apply_results[i]
                         print(output, end="")
                         results.append(result)
             except Exception:

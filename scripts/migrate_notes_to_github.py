@@ -321,9 +321,9 @@ def migrate_notes(
         content = readme_path.read_text()
         formatted = format_migration_comment(content, f"notes/issues/{issue_dir.name}/README.md")
 
-        issue_number = create_issue_for_dir(issue_dir.name, formatted, dry_run=dry_run)
-        if issue_number:
-            state.created_issues[issue_dir.name] = issue_number
+        created_issue_number = create_issue_for_dir(issue_dir.name, formatted, dry_run=dry_run)
+        if created_issue_number:
+            state.created_issues[issue_dir.name] = created_issue_number
         else:
             state.failed_dirs[issue_dir.name] = "Failed to create issue"
 

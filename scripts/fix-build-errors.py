@@ -33,6 +33,7 @@ import threading
 import time
 from pathlib import Path
 from datetime import datetime, timezone
+from typing import Any, Dict
 
 # Add scripts/utils to path for retry module
 sys.path.insert(0, str(Path(__file__).parent))
@@ -60,7 +61,7 @@ verbose = False  # Set via --verbose flag
 
 # Metrics tracking
 metrics_lock = threading.Lock()
-metrics = {
+metrics: Dict[str, Any] = {
     "start_time": None,
     "end_time": None,
     "files_processed": 0,

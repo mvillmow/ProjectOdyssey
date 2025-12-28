@@ -37,7 +37,13 @@ import tempfile
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
-from typing import TYPE_CHECKING, Callable, NamedTuple
+from types import FrameType
+from typing import TYPE_CHECKING, Callable, NamedTuple, Optional, TextIO
+
+try:
+    from zoneinfo import ZoneInfo
+except ImportError:
+    from backports.zoneinfo import ZoneInfo  # type: ignore[import,no-redef]
 
 if TYPE_CHECKING:
     pass
@@ -433,11 +439,11 @@ class LogBuffer:
     Supports context manager protocol for automatic resource cleanup.
     """
 
-    def __init__(self, max_lines: int = 1000, log_file: pathlib.Path | None = None) -> None:
+    def __init__(self, max_lines: int = 1000, log_file: Optional[pathlib.Path] = None) -> None:
         self._lock = threading.Lock()
         self._messages: collections.deque[tuple[str, str, str]] = collections.deque(maxlen=max_lines)
         self._log_file = log_file
-        self._file_handle: object = None
+        self._file_handle: Optional[TextIO] = None
         if log_file:
             log_file.parent.mkdir(parents=True, exist_ok=True)
             self._file_handle = open(log_file, "a", encoding="utf-8")
@@ -596,10 +602,10 @@ class ThreadLogManager:
 
 
 # Global log buffer for curses mode (deprecated - use thread log manager)
-_log_buffer: LogBuffer | None = None
+_log_buffer: Optional[LogBuffer] = None
 
 # Global thread log manager for per-thread logging
-_thread_log_manager: ThreadLogManager | None = None
+_thread_log_manager: Optional[ThreadLogManager] = None
 
 # Thread-local storage to track which worker slot the current thread is using
 _thread_local = threading.local()
@@ -1085,8 +1091,8 @@ def parse_reset_epoch(time_str: str, tz: str) -> int:
         log("WARN", f"Unknown timezone '{tz}', falling back to America/Los_Angeles")
         tz = "America/Los_Angeles"
 
-    now_utc = dt.datetime.now(dt.UTC)
-    today = now_utc.astimezone(dt.ZoneInfo(tz)).date()
+    now_utc = dt.datetime.now(dt.timezone.utc)
+    today = now_utc.astimezone(ZoneInfo(tz)).date()
 
     m = re.match(r"^(\d{1,2})(?::(\d{2}))?(am|pm)?$", time_str, re.IGNORECASE)
     if not m:
@@ -1116,13 +1122,13 @@ def parse_reset_epoch(time_str: str, tz: str) -> int:
         local = dt.datetime.combine(
             today,
             dt.time(hour, minute),
-            tzinfo=dt.ZoneInfo(tz),
+            tzinfo=ZoneInfo(tz),
         )
     except (ValueError, KeyError) as e:
         log("ERROR", f"Failed to construct datetime for '{time_str}' in {tz}: {e}")
         return int(time.time()) + 43200
 
-    if local < now_utc.astimezone(dt.ZoneInfo(tz)):
+    if local < now_utc.astimezone(ZoneInfo(tz)):
         local += dt.timedelta(days=1)
 
     return int(local.timestamp())
@@ -1464,11 +1470,11 @@ class CursesUI:
         self._screen: curses.window | None = None
 
         # Support both ThreadLogManager (new) and LogBuffer (deprecated)
+        self._thread_log_manager: Optional[ThreadLogManager] = None
         if isinstance(log_manager, ThreadLogManager):
             self._thread_log_manager = log_manager
             self._log_buffer = log_manager.get_buffer(ThreadLogManager.MAIN_THREAD_ID)
         else:
-            self._thread_log_manager = None
             self._log_buffer = log_manager
 
         # View cycling state for Tab key
@@ -2348,9 +2354,9 @@ class IssueImplementer:
         tempdir: pathlib.Path,
         opts: Options,
         state: ImplementationState,
-        resolver: DependencyResolver,
-        worktree_manager: WorktreeManager,
-        status_tracker: StatusTracker | None = None,
+        resolver: Optional["DependencyResolver"],
+        worktree_manager: "WorktreeManager",
+        status_tracker: Optional["StatusTracker"] = None,
     ) -> None:
         """Initialize the implementer."""
         self.repo_root = repo_root
@@ -2735,7 +2741,7 @@ class IssueImplementer:
 
                     readable, _, _ = select.select([proc.stdout], [], [], 0.5)
 
-                    if readable:
+                    if readable and proc.stdout is not None:
                         line = proc.stdout.readline()
                         if not line:  # EOF
                             break
@@ -3843,7 +3849,7 @@ Examples:
     # Track signal count for force-exit on repeated Ctrl+C
     signal_count = [0]
 
-    def signal_handler(signum: int, _frame: object) -> None:
+    def signal_handler(signum: int, _frame: Optional["FrameType"]) -> None:
         import traceback
 
         signal_count[0] += 1
@@ -4011,8 +4017,8 @@ Examples:
             implementer.fetch_titles_for_issues(ready[:10])
             print(f"\n[DRY RUN] Would start with {len(ready)} ready issues:")
             for issue_num in ready[:10]:
-                info = state.issues.get(issue_num)
-                print(f"  #{issue_num} - {info.title if info else 'Unknown'}")
+                issue_info = state.issues.get(issue_num)
+                print(f"  #{issue_num} - {issue_info.title if issue_info else 'Unknown'}")
             if len(ready) > 10:
                 print(f"  ... ({len(ready) - 10} more)")
         return 0

@@ -12,6 +12,7 @@ Fixes:
 import re
 import sys
 from pathlib import Path
+from typing import List
 
 
 def fix_code_block_languages(content: str) -> str:
@@ -25,7 +26,7 @@ def fix_code_block_languages(content: str) -> str:
 def fix_blank_lines_around_headings(content: str) -> str:
     """Add blank lines before and after headings."""
     lines = content.split("\n")
-    result = []
+    result: List[str] = []
 
     for i, line in enumerate(lines):
         # Check if current line is a heading
@@ -48,7 +49,7 @@ def fix_blank_lines_around_headings(content: str) -> str:
 def fix_blank_lines_around_code_blocks(content: str) -> str:
     """Add blank lines before and after code blocks."""
     lines = content.split("\n")
-    result = []
+    result: List[str] = []
     in_code_block = False
 
     for i, line in enumerate(lines):
@@ -76,7 +77,7 @@ def fix_blank_lines_around_code_blocks(content: str) -> str:
 def fix_blank_lines_around_lists(content: str) -> str:
     """Add blank lines before and after lists."""
     lines = content.split("\n")
-    result = []
+    result: List[str] = []
     in_list = False
 
     for i, line in enumerate(lines):

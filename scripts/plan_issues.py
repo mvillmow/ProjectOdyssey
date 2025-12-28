@@ -28,7 +28,13 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import redirect_stderr, redirect_stdout
+from datetime import timezone
 from typing import TYPE_CHECKING
+
+try:
+    from zoneinfo import ZoneInfo
+except ImportError:
+    from backports.zoneinfo import ZoneInfo  # type: ignore[import,no-redef]
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -348,8 +354,8 @@ def parse_reset_epoch(time_str: str, tz: str) -> int:
     if tz not in ALLOWED_TIMEZONES:
         tz = "America/Los_Angeles"
 
-    now_utc = dt.datetime.now(dt.UTC)
-    today = now_utc.astimezone(dt.ZoneInfo(tz)).date()
+    now_utc = dt.datetime.now(timezone.utc)
+    today = now_utc.astimezone(ZoneInfo(tz)).date()
 
     m = re.match(r"^(\d{1,2})(?::(\d{2}))?(am|pm)?$", time_str, re.IGNORECASE)
     if not m:
@@ -369,10 +375,10 @@ def parse_reset_epoch(time_str: str, tz: str) -> int:
     local = dt.datetime.combine(
         today,
         dt.time(hour, minute),
-        tzinfo=dt.ZoneInfo(tz),
+        tzinfo=ZoneInfo(tz),
     )
 
-    if local < now_utc.astimezone(dt.ZoneInfo(tz)):
+    if local < now_utc.astimezone(ZoneInfo(tz)):
         local += dt.timedelta(days=1)
 
     return int(local.timestamp())

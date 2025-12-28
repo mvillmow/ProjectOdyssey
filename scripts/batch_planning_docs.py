@@ -10,10 +10,10 @@ import sys
 import subprocess
 import json
 from pathlib import Path
-from typing import Dict
+from typing import Any, Dict, Optional
 
 
-def get_issue_details(issue_number: int) -> Dict:
+def get_issue_details(issue_number: int) -> Optional[Dict[str, Any]]:
     """Get issue title and body using gh CLI."""
     try:
         result = subprocess.run(

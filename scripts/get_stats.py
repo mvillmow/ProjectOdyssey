@@ -31,7 +31,7 @@ repo = gh.get_repo(REPO_NAME)
 # --- 1 & 2) Issues created/closed ---
 issues_created = 0
 issues_closed = 0
-for issue in repo.get_issues(state="all", creator=AUTHOR, since=START):
+for issue in repo.get_issues(state="all", creator=AUTHOR, since=START):  # type: ignore[arg-type]
     if START <= issue.created_at <= END:
         issues_created += 1
     if issue.closed_at and START <= issue.closed_at <= END:
