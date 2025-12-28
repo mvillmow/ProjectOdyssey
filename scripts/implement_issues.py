@@ -478,14 +478,161 @@ class LogBuffer:
                     self._file_handle = None
 
 
-# Global log buffer for curses mode
+class ThreadLogManager:
+    """Manages per-thread log buffers for parallel execution."""
+
+    MAIN_THREAD_ID = -1  # Special ID for main/orchestrator thread
+
+    def __init__(self, log_dir: pathlib.Path, log_prefix: str, max_workers: int) -> None:
+        """Initialize thread log manager.
+
+        Args:
+            log_dir: Directory to store log files
+            log_prefix: Prefix for log filenames (e.g., "implement-epic-2784-20250127-120000")
+            max_workers: Number of worker threads (determines number of buffers to create)
+        """
+        self._lock = threading.Lock()
+        self._buffers: dict[int, LogBuffer] = {}
+        self._log_dir = log_dir
+        self._log_prefix = log_prefix
+        self._max_workers = max_workers
+
+        # Create log directory
+        log_dir.mkdir(parents=True, exist_ok=True)
+
+        # Create buffer for main thread
+        main_log_file = log_dir / f"{log_prefix}-main.log"
+        self._buffers[self.MAIN_THREAD_ID] = LogBuffer(log_file=main_log_file)
+
+        # Create buffers for worker threads
+        for worker_id in range(max_workers):
+            worker_log_file = log_dir / f"{log_prefix}-worker-{worker_id}.log"
+            self._buffers[worker_id] = LogBuffer(log_file=worker_log_file)
+
+    def get_buffer(self, worker_id: int) -> LogBuffer:
+        """Get the log buffer for a specific worker ID.
+
+        Args:
+            worker_id: Worker ID (0 to max_workers-1) or MAIN_THREAD_ID for main thread
+
+        Returns:
+            LogBuffer for the specified worker
+        """
+        with self._lock:
+            return self._buffers.get(worker_id, self._buffers[self.MAIN_THREAD_ID])
+
+    def get_all_buffers(self) -> dict[int, LogBuffer]:
+        """Get all log buffers indexed by worker ID."""
+        with self._lock:
+            return dict(self._buffers)
+
+    def get_all_messages_merged(self, n: int) -> list[tuple[str, str, str]]:
+        """Get the last n messages from all buffers, merged chronologically.
+
+        Args:
+            n: Number of messages to retrieve
+
+        Returns:
+            List of (timestamp, level, message) tuples, sorted chronologically
+        """
+        with self._lock:
+            all_messages = []
+            for buffer in self._buffers.values():
+                all_messages.extend(buffer.get_messages(10000))  # Get many messages
+
+            # Sort by timestamp (first element of tuple)
+            all_messages.sort(key=lambda x: x[0])
+
+            # Return last n messages
+            return all_messages[-n:] if len(all_messages) > n else all_messages
+
+    def close_all(self) -> None:
+        """Close all log file handles."""
+        with self._lock:
+            for buffer in self._buffers.values():
+                buffer.close()
+
+    def merge_logs_on_success(self, output_file: pathlib.Path) -> None:
+        """Merge all per-thread logs into a single chronological log file.
+
+        This should only be called on successful completion with no errors.
+        After merging, individual thread log files are deleted.
+
+        Args:
+            output_file: Path to the merged output log file
+        """
+        with self._lock:
+            # Collect all log lines with timestamps
+            all_lines: list[tuple[str, str]] = []  # (timestamp_sortable, line)
+
+            for worker_id, buffer in self._buffers.items():
+                log_file = buffer._log_file
+                if log_file and log_file.exists():
+                    with open(log_file, "r", encoding="utf-8") as f:
+                        for line in f:
+                            # Extract timestamp from line format: [LEVEL] HH:MM:SS message
+                            if line.startswith("[") and "]" in line:
+                                # Extract HH:MM:SS timestamp
+                                parts = line.split("]", 1)
+                                if len(parts) == 2:
+                                    timestamp_part = parts[1].strip().split(" ", 1)
+                                    if timestamp_part:
+                                        timestamp = timestamp_part[0]
+                                        all_lines.append((timestamp, line))
+
+            # Sort by timestamp
+            all_lines.sort(key=lambda x: x[0])
+
+            # Write merged log
+            with open(output_file, "w", encoding="utf-8") as f:
+                for _, line in all_lines:
+                    f.write(line)
+
+            # Delete individual log files
+            for worker_id, buffer in self._buffers.items():
+                log_file = buffer._log_file
+                if log_file and log_file.exists():
+                    log_file.unlink()
+
+
+# Global log buffer for curses mode (deprecated - use thread log manager)
 _log_buffer: LogBuffer | None = None
+
+# Global thread log manager for per-thread logging
+_thread_log_manager: ThreadLogManager | None = None
+
+# Thread-local storage to track which worker slot the current thread is using
+_thread_local = threading.local()
 
 
 def set_log_buffer(buffer: LogBuffer | None) -> None:
-    """Set the global log buffer for curses mode."""
+    """Set the global log buffer for curses mode (deprecated)."""
     global _log_buffer
     _log_buffer = buffer
+
+
+def set_thread_log_manager(manager: ThreadLogManager | None) -> None:
+    """Set the global thread log manager."""
+    global _thread_log_manager
+    _thread_log_manager = manager
+
+
+def set_worker_slot(slot: int) -> None:
+    """Set the worker slot ID for the current thread.
+
+    Args:
+        slot: Worker slot ID (0 to max_workers-1) or ThreadLogManager.MAIN_THREAD_ID for main thread
+    """
+    _thread_local.worker_slot = slot
+
+
+def get_worker_slot() -> int:
+    """Get the worker slot ID for the current thread.
+
+    Returns:
+        Worker slot ID, or MAIN_THREAD_ID if not set
+    """
+    return getattr(_thread_local, "worker_slot", ThreadLogManager.MAIN_THREAD_ID)
 
 
 # ---------------------------------------------------------------------
@@ -500,6 +647,37 @@ _debug_mode = False
 # Global lock for stdout/stderr to prevent output races
 _output_lock = threading.Lock()
 
+# Global shutdown flag for graceful termination
+_shutdown_requested = False
+_shutdown_lock = threading.Lock()
+
+
+def set_shutdown_requested() -> None:
+    """Set the global shutdown flag to request graceful termination."""
+    global _shutdown_requested
+    with _shutdown_lock:
+        _shutdown_requested = True
+
+
+def is_shutdown_requested() -> bool:
+    """Check if shutdown has been requested."""
+    global _shutdown_requested
+    with _shutdown_lock:
+        return _shutdown_requested
+
+
+class DaemonThreadPoolExecutor(ThreadPoolExecutor):
+    """ThreadPoolExecutor with more aggressive shutdown behavior.
+
+    Uses wait=False and cancels futures to allow faster shutdown,
+    even if worker threads are stuck in subprocess calls.
+    """
+
+    def shutdown(self, wait=True, *, cancel_futures=False):
+        """Shutdown with default cancel_futures=True for faster exit."""
+        # Always use cancel_futures=True for aggressive shutdown
+        super().shutdown(wait=False, cancel_futures=True)
+
 
 def set_verbose(verbose: bool, debug: bool = False) -> None:
     """Set the global verbose and debug modes."""
@@ -509,14 +687,27 @@ def set_verbose(verbose: bool, debug: bool = False) -> None:
 
 
 def log(level: str, msg: str) -> None:
-    """Log a message with timestamp and level prefix."""
+    """Log a message with timestamp and level prefix.
+
+    Routes messages to the appropriate per-thread log buffer based on the current
+    thread's worker slot ID.
+    """
     if level == "DEBUG" and not _debug_mode:
         return
-    # Route to log buffer if in curses mode
+
+    # Route to thread-specific buffer if thread log manager is available
+    if _thread_log_manager is not None:
+        worker_slot = get_worker_slot()
+        buffer = _thread_log_manager.get_buffer(worker_slot)
+        buffer.append(level, msg)
+        return
+
+    # Fallback: Route to single log buffer if in curses mode (deprecated path)
     if _log_buffer is not None:
         _log_buffer.append(level, msg)
         return
-    # Fallback for non-curses mode
+
+    # Fallback for non-curses mode: print to stdout/stderr
     ts = time.strftime("%H:%M:%S")
     out = sys.stderr if level in {"WARN", "ERROR"} else sys.stdout
     with _output_lock:
@@ -548,6 +739,111 @@ def run(
         check=False,
         cwd=cwd,
     )
+
+
+def clean_stale_git_locks(repo_root: pathlib.Path, ref_pattern: str = "*") -> int:
+    """Clean up stale git lock files.
+
+    Args:
+        repo_root: Path to the git repository root
+        ref_pattern: Pattern to match ref lock files (e.g., "fix-test-issues-*")
+
+    Returns:
+        Number of stale lock files removed
+    """
+    git_dir = repo_root / ".git"
+    refs_dir = git_dir / "refs" / "remotes" / "origin"
+
+    if not refs_dir.exists():
+        return 0
+
+    stale_threshold = 300  # 5 minutes in seconds
+    current_time = time.time()
+    removed_count = 0
+
+    # Find all .lock files matching pattern
+    for lock_file in refs_dir.glob(f"{ref_pattern}.lock"):
+        try:
+            # Check file age
+            file_age = current_time - lock_file.stat().st_mtime
+            if file_age > stale_threshold:
+                log("DEBUG", f"  Removing stale lock file: {lock_file.name} (age: {file_age:.0f}s)")
+                lock_file.unlink()
+                removed_count += 1
+        except (OSError, FileNotFoundError):
+            # File may have been removed by another process
+            pass
+
+    if removed_count > 0:
+        log("INFO", f"  Cleaned {removed_count} stale git lock file(s)")
+
+    return removed_count
+
+
+def safe_git_fetch(
+    repo_root: pathlib.Path,
+    branch: str,
+    max_retries: int = 3,
+) -> tuple[bool, str]:
+    """Safely fetch a git branch with retry logic and lock cleanup.
+
+    Implements exponential backoff: 1s, 2s, 4s delays between retries.
+    Cleans stale lock files before each retry.
+
+    Args:
+        repo_root: Path to the git repository root
+        branch: Branch name to fetch
+        max_retries: Maximum number of retry attempts (default: 3)
+
+    Returns:
+        Tuple of (success: bool, error_msg: str)
+        - success: True if fetch succeeded, False otherwise
+        - error_msg: Error message if fetch failed, empty string on success
+    """
+    delays = [1, 2, 4]  # Exponential backoff delays in seconds
+
+    for attempt in range(max_retries + 1):  # +1 for initial attempt
+        # Clean stale locks before attempting fetch (except on first attempt)
+        if attempt > 0:
+            clean_stale_git_locks(repo_root, branch)
+            delay = delays[attempt - 1] if attempt - 1 < len(delays) else delays[-1]
+            log("INFO", f"  Retrying git fetch after {delay}s delay (attempt {attempt + 1}/{max_retries + 1})")
+            time.sleep(delay)
+
+        # Attempt git fetch
+        try:
+            cp = run(
+                ["git", "fetch", "origin", f"{branch}:refs/remotes/origin/{branch}"],
+                timeout=60,
+                cwd=repo_root,
+            )
+
+            if cp.returncode == 0:
+                if attempt > 0:
+                    log("INFO", f"  Git fetch succeeded on attempt {attempt + 1}")
+                return (True, "")
+
+            # Fetch failed, check if it's a lock error
+            error_output = cp.stderr + cp.stdout
+            is_lock_error = "cannot lock ref" in error_output or ".lock" in error_output
+
+            if is_lock_error:
+                log("WARN", f"  Git fetch failed (lock error, attempt {attempt + 1}/{max_retries + 1})")
+                if attempt >= max_retries:
+                    # Final attempt failed
+                    return (False, f"git fetch failed after {max_retries + 1} attempts: {error_output[:200]}")
+                # Continue to next retry
+            else:
+                # Non-lock error, fail immediately
+                return (False, f"git fetch failed: {error_output[:200]}")
+
+        except subprocess.TimeoutExpired:
+            return (False, "git fetch timed out after 60 seconds")
+        except Exception as e:
+            return (False, f"git fetch exception: {str(e)}")
+
+    # Should not reach here, but just in case
+    return (False, "git fetch failed: unknown error")
 
 
 class CachedIssueState(NamedTuple):
@@ -1149,13 +1445,35 @@ class CursesUI:
         curses.COLOR_GREEN,
     ]
 
-    def __init__(self, status_tracker: StatusTracker, log_buffer: LogBuffer, max_workers: int) -> None:
-        """Initialize the curses UI."""
+    def __init__(
+        self,
+        status_tracker: StatusTracker,
+        log_manager: ThreadLogManager | LogBuffer,
+        max_workers: int,
+    ) -> None:
+        """Initialize the curses UI.
+
+        Args:
+            status_tracker: Status tracker for worker progress
+            log_manager: ThreadLogManager for per-thread logs or LogBuffer for single log (deprecated)
+            max_workers: Number of worker threads
+        """
         self._status_tracker = status_tracker
-        self._log_buffer = log_buffer
         self._max_workers = max_workers
         self._stop_event = threading.Event()
         self._screen: curses.window | None = None
+
+        # Support both ThreadLogManager (new) and LogBuffer (deprecated)
+        if isinstance(log_manager, ThreadLogManager):
+            self._thread_log_manager = log_manager
+            self._log_buffer = log_manager.get_buffer(ThreadLogManager.MAIN_THREAD_ID)
+        else:
+            self._thread_log_manager = None
+            self._log_buffer = log_manager
+
+        # View cycling state for Tab key
+        self._current_view_index = 0
+        self._build_view_list()
 
     def run(self, main_func: Callable[[], int]) -> int:
         """Run UI with curses.wrapper, executing main_func in background thread."""
@@ -1172,16 +1490,39 @@ class CursesUI:
         result_holder = [0]
 
         def run_main() -> None:
-            result_holder[0] = main_func()
-            self._stop_event.set()
+            try:
+                log("DEBUG", "Background thread: Starting main_func")
+                result_holder[0] = main_func()
+                log("DEBUG", "Background thread: main_func completed")
+            except Exception as e:
+                log("ERROR", f"Background thread: Exception in main_func: {e}")
+                result_holder[0] = 1
+            finally:
+                log("DEBUG", "Background thread: Setting stop event")
+                self._stop_event.set()
+                set_shutdown_requested()  # Signal shutdown when background thread completes
+                log("DEBUG", "Background thread: Exiting run_main")
 
-        main_thread = threading.Thread(target=run_main)
+        main_thread = threading.Thread(target=run_main, name="MainWorker")
         main_thread.start()
 
         # Render loop on main thread (curses requirement)
+        log("DEBUG", "Curses UI: Starting render loop")
         self._render_loop()
+        log("DEBUG", "Curses UI: Render loop exited")
 
-        main_thread.join()
+        # Wait for background thread with timeout
+        log("DEBUG", "Curses UI: Waiting for background thread to complete")
+        main_thread.join(timeout=5.0)
+        if main_thread.is_alive():
+            log("WARN", "Curses UI: Background thread still alive after 5s timeout")
+            # Give it a bit more time
+            main_thread.join(timeout=5.0)
+            if main_thread.is_alive():
+                log("ERROR", "Curses UI: Background thread failed to exit after 10s, forcing exit")
+        else:
+            log("DEBUG", "Curses UI: Background thread completed successfully")
+
         return result_holder[0]
 
     def _setup_colors(self) -> None:
@@ -1197,13 +1538,18 @@ class CursesUI:
 
     def _render_loop(self) -> None:
         """Main render loop running on the main thread."""
-        while not self._stop_event.is_set():
+        while not self._stop_event.is_set() and not is_shutdown_requested():
             try:
+                # Handle keyboard input (non-blocking)
+                self._handle_keyboard_input()
+
                 # Check for resize
                 if self._screen is not None:
                     new_size = self._screen.getmaxyx()
                     if curses.is_term_resized(*new_size):
                         curses.resizeterm(*new_size)
+
+                # Render UI
                 self._render()
             except curses.error:
                 pass
@@ -1221,8 +1567,8 @@ class CursesUI:
 
         self._screen.erase()
 
-        # Render logs (top section)
-        messages = self._log_buffer.get_messages(log_height)
+        # Render logs (top section) using current view
+        messages = self._get_messages_for_current_view(log_height)
         for i, (ts, level, msg) in enumerate(messages):
             color = self._get_log_color(level)
             line = f"[{level:5}] {ts} {msg}"[: width - 1]
@@ -1239,12 +1585,13 @@ class CursesUI:
 
         # Status panel (bottom section)
         data = self._status_tracker.get_status_data()
-        header = f" Progress: [{data['completed']}/{data['total']}]"
+        view_name = self._get_current_view_name()
+        header = f" Progress: [{data['completed']}/{data['total']}] | View: {view_name} | Tab: cycle views"
         try:
             self._screen.addstr(
                 log_height + 1,
                 0,
-                header,
+                header[: width - 1],  # Truncate to screen width
                 curses.color_pair(self.COLOR_HEADER) | curses.A_BOLD,
             )
         except curses.error:
@@ -1316,6 +1663,107 @@ class CursesUI:
         elapsed = max(0, int(time.time() - start_time))
         m, s = divmod(elapsed, 60)
         return f"{m:02d}:{s:02d}"
+
+    def _build_view_list(self) -> None:
+        """Build the list of available views based on configuration."""
+        self._view_list = ["ALL", "MAIN"]
+
+        # Add worker views if thread log manager is available
+        if self._thread_log_manager:
+            for worker_id in range(self._max_workers):
+                self._view_list.append(f"WORKER-{worker_id}")
+
+        # Add filter views
+        self._view_list.extend(["ERRORS", "DEBUG"])
+
+    def _get_current_view_name(self) -> str:
+        """Get the name of the current view."""
+        if self._current_view_index < len(self._view_list):
+            return self._view_list[self._current_view_index]
+        return "ALL"
+
+    def _cycle_view(self) -> None:
+        """Cycle to the next view."""
+        self._current_view_index = (self._current_view_index + 1) % len(self._view_list)
+        self._status_tracker._update_event.set()  # Trigger immediate re-render
+
+    def _get_messages_for_current_view(self, n: int) -> list[tuple[str, str, str]]:
+        """Get log messages for the currently selected view.
+
+        Args:
+            n: Number of messages to retrieve
+
+        Returns:
+            List of (timestamp, level, message) tuples
+        """
+        view_name = self._get_current_view_name()
+
+        if view_name == "ALL":
+            # Merged view from all threads
+            if self._thread_log_manager:
+                return self._thread_log_manager.get_all_messages_merged(n)
+            else:
+                return self._log_buffer.get_messages(n)
+
+        elif view_name == "MAIN":
+            # Main thread only
+            if self._thread_log_manager:
+                buffer = self._thread_log_manager.get_buffer(ThreadLogManager.MAIN_THREAD_ID)
+                return buffer.get_messages(n)
+            else:
+                return self._log_buffer.get_messages(n)
+
+        elif view_name.startswith("WORKER-"):
+            # Specific worker thread
+            if self._thread_log_manager:
+                worker_id = int(view_name.split("-")[1])
+                buffer = self._thread_log_manager.get_buffer(worker_id)
+                return buffer.get_messages(n)
+            else:
+                return self._log_buffer.get_messages(n)
+
+        elif view_name == "ERRORS":
+            # Filter to ERROR level only
+            if self._thread_log_manager:
+                all_messages = self._thread_log_manager.get_all_messages_merged(10000)
+            else:
+                all_messages = self._log_buffer.get_messages(10000)
+            filtered = [m for m in all_messages if m[1] == "ERROR"]
+            return filtered[-n:] if len(filtered) > n else filtered
+
+        elif view_name == "DEBUG":
+            # Filter to DEBUG level only
+            if self._thread_log_manager:
+                all_messages = self._thread_log_manager.get_all_messages_merged(10000)
+            else:
+                all_messages = self._log_buffer.get_messages(10000)
+            filtered = [m for m in all_messages if m[1] == "DEBUG"]
+            return filtered[-n:] if len(filtered) > n else filtered
+
+        # Default fallback
+        return self._log_buffer.get_messages(n)
+
+    def _handle_keyboard_input(self) -> None:
+        """Process keyboard input (non-blocking)."""
+        if self._screen is None:
+            return
+
+        try:
+            ch = self._screen.getch()
+            if ch == -1:
+                # No key pressed
+                return
+
+            # Tab key: cycle views
+            if ch == ord("\t") or ch == 9:
+                self._cycle_view()
+
+            # 'q' key: quit (optional - could be disabled to prevent accidental quits)
+            # elif ch == ord('q'):
+            #     self._stop_event.set()
+
+        except curses.error:
+            pass
 
     def stop(self) -> None:
         """Signal the UI to stop."""
@@ -1795,25 +2243,33 @@ class WorktreeManager:
                             f"Found existing worktree for branch {remote_branch}: {existing_path}",
                         )
                         # Update it to latest
-                        run(["git", "fetch", "origin", remote_branch], cwd=existing_path)
-                        run(
-                            ["git", "reset", "--hard", f"origin/{remote_branch}"],
-                            cwd=existing_path,
-                        )
+                        success, error_msg = safe_git_fetch(self.repo_root, remote_branch)
+                        if not success:
+                            log("WARN", f"Failed to fetch branch {remote_branch}: {error_msg}")
+                        else:
+                            run(
+                                ["git", "reset", "--hard", f"origin/{remote_branch}"],
+                                cwd=existing_path,
+                            )
                         return existing_path
 
             if worktree_path.exists():
                 log("DEBUG", f"Worktree path exists: {worktree_path}")
                 # Make sure it's on the right branch and up to date
-                run(["git", "fetch", "origin", remote_branch], cwd=worktree_path)
-                run(
-                    ["git", "reset", "--hard", f"origin/{remote_branch}"],
-                    cwd=worktree_path,
-                )
+                success, error_msg = safe_git_fetch(self.repo_root, remote_branch)
+                if not success:
+                    log("WARN", f"Failed to fetch branch {remote_branch}: {error_msg}")
+                else:
+                    run(
+                        ["git", "reset", "--hard", f"origin/{remote_branch}"],
+                        cwd=worktree_path,
+                    )
                 return worktree_path
 
             # Fetch the remote branch first
-            run(["git", "fetch", "origin", remote_branch], cwd=self.repo_root)
+            success, error_msg = safe_git_fetch(self.repo_root, remote_branch)
+            if not success:
+                raise RuntimeError(f"Failed to fetch branch {remote_branch}: {error_msg}")
 
             # Create worktree tracking the remote branch
             cp = run(
@@ -2215,6 +2671,7 @@ class IssueImplementer:
         issue: int,
     ) -> tuple[bool, str]:
         """Spawn a Claude haiku agent to implement the issue."""
+        log("DEBUG", f"  _spawn_claude_agent: Starting for issue #{issue}, shutdown_flag={is_shutdown_requested()}")
         self._update_status(slot, issue, "Claude", "starting")
 
         cmd = [
@@ -2259,6 +2716,13 @@ class IssueImplementer:
             with log_file.open("w") as log_handle:
                 # Read output line-by-line, streaming to file (not memory)
                 while True:
+                    # Check shutdown flag first - allow graceful exit
+                    if is_shutdown_requested():
+                        log("DEBUG", "  Shutdown requested, killing Claude subprocess")
+                        proc.kill()
+                        proc.wait(timeout=5)
+                        return False, "Shutdown requested"
+
                     # Check timeout
                     remaining = deadline - time.time()
                     if remaining <= 0:
@@ -2759,6 +3223,11 @@ DO NOT describe what you're doing - just run the commands to commit.
         MAX_PASSED_POLLS = 5  # If passed 5 times but not merged, give up
 
         while time.time() - start < max_wait:
+            # Check shutdown during polling
+            if is_shutdown_requested():
+                log("INFO", f"Shutdown requested, stopping PR poll for #{pr_number}")
+                return "timeout"
+
             self._update_status(slot, issue, "PR", "checking")
 
             cp = run(
@@ -2833,10 +3302,18 @@ DO NOT describe what you're doing - just run the commands to commit.
 
     def implement_issue(self, issue: int, slot: int) -> WorkerResult:
         """Full workflow for implementing a single issue."""
+        # Set worker slot for this thread so logs go to the right file
+        set_worker_slot(slot)
+
         start_time = time.time()
         worktree: pathlib.Path | None = None
 
         try:
+            # Check shutdown flag at start
+            if is_shutdown_requested():
+                log("INFO", f"Shutdown requested, exiting worker for #{issue}")
+                return WorkerResult(issue, "paused", None, "Shutdown requested", time.time() - start_time)
+
             issue_info = self.state.issues.get(issue)
             if not issue_info:
                 return WorkerResult(issue, "error", None, "Issue not found in state", 0)
@@ -2876,11 +3353,10 @@ DO NOT describe what you're doing - just run the commands to commit.
 
             # 3. Fetch and rebase
             self._update_status(slot, issue, "Git", "fetch & rebase")
-            log("DEBUG", f"  Running git fetch for #{issue}")
-            cp = run(["git", "fetch", "origin"], cwd=worktree, timeout=30)
-            log("DEBUG", f"  Git fetch completed for #{issue}: returncode={cp.returncode}")
-            if cp.returncode != 0:
-                raise RuntimeError(f"git fetch failed: {cp.stderr}")
+            log("DEBUG", f"  Running safe git fetch for #{issue}")
+            success, error_msg = safe_git_fetch(self.repo_root, "main")
+            if not success:
+                raise RuntimeError(f"git fetch failed: {error_msg}")
 
             cp = run(["git", "rebase", "origin/main"], cwd=worktree)
             if cp.returncode != 0:
@@ -3364,12 +3840,40 @@ Examples:
 
     atexit.register(cleanup_handler)
 
-    def signal_handler(signum: int, _frame: object) -> None:
-        cleanup_handler()
-        sys.exit(128 + signum)
+    # Track signal count for force-exit on repeated Ctrl+C
+    signal_count = [0]
 
+    def signal_handler(signum: int, _frame: object) -> None:
+        import traceback
+
+        signal_count[0] += 1
+
+        # Log detailed information about the signal
+        signal_name = (
+            "SIGINT" if signum == signal.SIGINT else "SIGTERM" if signum == signal.SIGTERM else f"Signal {signum}"
+        )
+        stack_trace = "".join(traceback.format_stack(_frame))
+
+        if signal_count[0] == 1:
+            # First signal: request graceful shutdown
+            log("WARN", f"Shutdown signal received: {signal_name} (signal {signum})")
+            log("DEBUG", f"Signal stack trace:\n{stack_trace}")
+            log("INFO", "Press Ctrl+C again to force exit")
+            set_shutdown_requested()
+        elif signal_count[0] == 2:
+            # Second signal: warn about data loss
+            log("WARN", "Second shutdown signal received!")
+            log("WARN", "Press Ctrl+C one more time to force exit (may lose data)")
+        else:
+            # Third signal: force exit immediately
+            log("ERROR", "Force exit requested, terminating immediately...")
+            cleanup_handler()
+            sys.exit(128 + signum)
+
+    log("DEBUG", "Registering signal handlers for SIGINT and SIGTERM")
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
+    log("DEBUG", f"Signal handlers registered. Current shutdown_flag={is_shutdown_requested()}")
 
     # Initialize managers
     worktree_manager = WorktreeManager(repo_root)
@@ -3513,18 +4017,21 @@ Examples:
                 print(f"  ... ({len(ready) - 10} more)")
         return 0
 
-    # Create log file for persistent logging
-    log("DEBUG", "Creating log file...")
+    # Create log files for persistent per-thread logging
+    log("DEBUG", "Creating thread log manager...")
     log_dir = repo_root / "logs"
-    log_file = log_dir / f"implement-epic-{opts.epic}-{time.strftime('%Y%m%d-%H%M%S')}.log"
-    log("DEBUG", f"Log file: {log_file}")
+    log_prefix = f"implement-epic-{opts.epic}-{time.strftime('%Y%m%d-%H%M%S')}"
+    merged_log_file = log_dir / f"{log_prefix}.log"  # For merged output on success
+    log("DEBUG", f"Log prefix: {log_prefix}")
 
-    # Create log buffer for curses UI with file output
-    log("DEBUG", "Creating log buffer...")
-    log_buffer = LogBuffer(log_file=log_file)
-    log("DEBUG", "Setting log buffer...")
-    set_log_buffer(log_buffer)
-    log("DEBUG", "Log buffer set")
+    # Create thread log manager for per-thread logging
+    thread_log_manager = ThreadLogManager(log_dir, log_prefix, actual_workers)
+    set_thread_log_manager(thread_log_manager)
+    log("DEBUG", "Thread log manager initialized")
+
+    # Set main thread's worker slot
+    set_worker_slot(ThreadLogManager.MAIN_THREAD_ID)
+    log("DEBUG", "Main thread worker slot set")
 
     # Results container (shared with run_implementation)
     results: list[WorkerResult] = []
@@ -3534,138 +4041,199 @@ Examples:
         """Run the main implementation loop. Called by CursesUI in background thread."""
         nonlocal results
 
+        # Create executor with daemon threads so they don't block process exit
+        # This allows clean shutdown even if workers are stuck in subprocess calls
+        executor = DaemonThreadPoolExecutor(max_workers=actual_workers, thread_name_prefix="Worker")
+        log("DEBUG", f"Created DaemonThreadPoolExecutor with {actual_workers} daemon worker threads")
+
         try:
-            with ThreadPoolExecutor(max_workers=actual_workers) as executor:
-                futures: dict = {}
-                active_count = 0
-                stall_count = 0  # Track iterations without progress
+            futures: dict = {}
+            active_count = 0
+            stall_count = 0  # Track iterations without progress
 
-                while True:
-                    status_tracker.update_main("Processing", f"{len(results)} done")
+            while True:
+                # Check shutdown flag FIRST - exit gracefully if requested
+                if is_shutdown_requested():
+                    log("INFO", f"Shutdown requested, breaking main loop (active futures: {len(futures)})")
+                    # Cancel any pending futures
+                    if futures:
+                        log("INFO", f"Cancelling {len(futures)} pending futures")
+                        for future in list(futures.keys()):
+                            if not future.done():
+                                cancelled = future.cancel()
+                                log("DEBUG", f"  Cancelled future for #{futures.get(future)}: {cancelled}")
+                    break
 
-                    # Get ready issues (dependencies satisfied)
-                    ready = resolver.get_ready_issues()
+                status_tracker.update_main("Processing", f"{len(results)} done")
 
-                    # NOTE: PR creation removed - no longer checking for existing PRs with CI failures
+                # Get ready issues (dependencies satisfied)
+                ready = resolver.get_ready_issues()
 
-                    # Filter out issues already in progress (in futures)
-                    ready = [n for n in ready if n not in futures.values()]
+                # NOTE: PR creation removed - no longer checking for existing PRs with CI failures
 
-                    # Spawn new tasks up to max_workers only
-                    # We have exactly max_workers slots, don't try to exceed that
-                    spawned_this_iteration = 0
-                    available_slots = actual_workers - active_count
+                # Filter out issues already in progress (in futures)
+                ready = [n for n in ready if n not in futures.values()]
 
-                    log(
-                        "DEBUG",
-                        f"Loop: ready={len(ready)} futures={len(futures)} active={active_count} avail_slots={available_slots} done={len(results)}",
-                    )
+                # Spawn new tasks up to max_workers only
+                # We have exactly max_workers slots, don't try to exceed that
+                spawned_this_iteration = 0
+                available_slots = actual_workers - active_count
 
-                    # Only spawn if we have both ready issues AND available slots
-                    if available_slots > 0 and ready:
-                        for issue_num in ready[:available_slots]:
-                            # Try to acquire slot with timeout
-                            try:
-                                slot = status_tracker.acquire_slot(issue_num, timeout=5.0)
-                            except RuntimeError as e:
-                                # Slot acquisition failed - this shouldn't happen with our calculation
-                                log("ERROR", f"Failed to acquire slot for #{issue_num}: {e}")
-                                # Don't mark as in_progress if we couldn't get a slot
-                                continue
+                log(
+                    "DEBUG",
+                    f"Loop: ready={len(ready)} futures={len(futures)} active={active_count} avail_slots={available_slots} done={len(results)}",
+                )
 
-                            resolver.mark_in_progress(issue_num)
-                            future = executor.submit(implementer.implement_issue, issue_num, slot)
-                            futures[future] = issue_num
-                            active_count += 1
-                            spawned_this_iteration += 1
-                            status_tracker.update_main("Spawning", f"#{issue_num}")
-
-                    # Check termination conditions
-                    if not futures and not ready:
-                        # Nothing running and nothing ready - we're done or blocked
-                        log("INFO", "All processable issues completed or blocked")
-                        break
-
-                    if not futures and ready and spawned_this_iteration == 0:
-                        # Ready issues exist but we couldn't spawn any - something's wrong
-                        stall_count += 1
-                        if stall_count > 5:
-                            log(
-                                "WARN",
-                                f"Stalled with {len(ready)} ready issues but cannot spawn. Exiting.",
-                            )
-                            break
-                        time.sleep(1)
-                        continue
-                    else:
-                        stall_count = 0
-
-                    # Wait for at least one completion
-                    done_futures = []
-                    for future in list(futures.keys()):
-                        if future.done():
-                            done_futures.append(future)
-
-                    if not done_futures:
-                        time.sleep(1.0)  # Poll interval
-                        continue
-
-                    for future in done_futures:
-                        issue_num = futures.pop(future)
-                        active_count -= 1
-
+                # Only spawn if we have both ready issues AND available slots
+                if available_slots > 0 and ready:
+                    for issue_num in ready[:available_slots]:
+                        # Try to acquire slot with timeout
                         try:
-                            result = future.result()
-                        except Exception as e:
-                            log(
-                                "ERROR",
-                                f"Future for #{issue_num} raised exception: {e}",
-                            )
-                            result = WorkerResult(issue_num, "paused", None, str(e), 0)
+                            slot = status_tracker.acquire_slot(issue_num, timeout=5.0)
+                        except RuntimeError as e:
+                            # Slot acquisition failed - this shouldn't happen with our calculation
+                            log("ERROR", f"Failed to acquire slot for #{issue_num}: {e}")
+                            # Don't mark as in_progress if we couldn't get a slot
+                            continue
 
-                        results.append(result)
-                        status_tracker.increment_completed()
+                        resolver.mark_in_progress(issue_num)
+                        future = executor.submit(implementer.implement_issue, issue_num, slot)
+                        futures[future] = issue_num
+                        active_count += 1
+                        spawned_this_iteration += 1
+                        status_tracker.update_main("Spawning", f"#{issue_num}")
 
-                        # Clear cleanup status now that future is complete
-                        status_tracker.clear_cleanup(issue_num)
+                # Check termination conditions
+                if not futures and not ready:
+                    # Nothing running and nothing ready - we're done or blocked
+                    log("INFO", "All processable issues completed or blocked")
+                    break
 
-                        if result.status == "completed":
-                            resolver.mark_completed(issue_num)
-                            log("DEBUG", f"Main loop: marked #{issue_num} as completed")
-                        else:
-                            resolver.mark_paused(issue_num)
-                            log(
-                                "DEBUG",
-                                f"Main loop: marked #{issue_num} as paused ({result.status})",
-                            )
+                if not futures and ready and spawned_this_iteration == 0:
+                    # Ready issues exist but we couldn't spawn any - something's wrong
+                    stall_count += 1
+                    if stall_count > 5:
+                        log(
+                            "WARN",
+                            f"Stalled with {len(ready)} ready issues but cannot spawn. Exiting.",
+                        )
+                        break
+                    time.sleep(1)
+                    continue
+                else:
+                    stall_count = 0
 
-                        # NOTE: Slot already released by worker - no release needed here
-                        # Workers release at lines 2856, 2955, 2978, 3001, 3029
+                # Wait for at least one completion
+                done_futures = []
+                for future in list(futures.keys()):
+                    if future.done():
+                        done_futures.append(future)
 
+                if not done_futures:
+                    time.sleep(1.0)  # Poll interval
+                    continue
+
+                for future in done_futures:
+                    issue_num = futures.pop(future)
+                    active_count -= 1
+
+                    try:
+                        result = future.result()
+                    except Exception as e:
+                        log(
+                            "ERROR",
+                            f"Future for #{issue_num} raised exception: {e}",
+                        )
+                        result = WorkerResult(issue_num, "paused", None, str(e), 0)
+
+                    results.append(result)
+                    status_tracker.increment_completed()
+
+                    # Clear cleanup status now that future is complete
+                    status_tracker.clear_cleanup(issue_num)
+
+                    if result.status == "completed":
+                        resolver.mark_completed(issue_num)
+                        log("DEBUG", f"Main loop: marked #{issue_num} as completed")
+                    else:
+                        resolver.mark_paused(issue_num)
+                        log(
+                            "DEBUG",
+                            f"Main loop: marked #{issue_num} as paused ({result.status})",
+                        )
+
+                    # NOTE: Slot already released by worker - no release needed here
+                    # Workers release at lines 2856, 2955, 2978, 3001, 3029
+
+        except (KeyboardInterrupt, SystemExit):
+            log("WARN", "Caught interrupt exception, shutting down executor")
+            log("DEBUG", f"Executor state before shutdown: pending futures={len(futures)}")
+            executor.shutdown(wait=False, cancel_futures=True)
+            log("DEBUG", "Executor shutdown (from except) completed")
+            raise
+        except Exception as e:
+            log("ERROR", f"Unexpected exception in main loop: {e}")
+            log("DEBUG", f"Executor state before shutdown: pending futures={len(futures)}")
+            executor.shutdown(wait=False, cancel_futures=True)
+            log("DEBUG", "Executor shutdown (from except) completed")
+            raise
         finally:
-            # Save state even if interrupted
-            state.save(state_file)
+            # Ensure executor is always shutdown
+            log("DEBUG", "Entering finally block")
+            log("DEBUG", f"Executor state: pending futures={len(futures)}")
 
-        return 1 if any(r.status == "error" for r in results) else 0
+            # Count active futures for logging
+            active_futures = sum(1 for f in futures.keys() if not f.done())
+            if active_futures > 0:
+                log("INFO", f"Shutting down executor (abandoning {active_futures} active daemon threads)...")
+            else:
+                log("INFO", "Shutting down executor...")
+
+            executor.shutdown(wait=False, cancel_futures=False)
+            log("INFO", "Executor shutdown completed")
+
+            # Save state even if interrupted
+            log("INFO", "Saving state...")
+            state.save(state_file)
+            log("INFO", "State saved")
+
+        exit_code = 1 if any(r.status == "error" for r in results) else 0
+        log("DEBUG", f"run_implementation returning with exit_code={exit_code}")
+        return exit_code
 
     # Run with curses UI if TTY available, otherwise run directly
-    if sys.stdout.isatty() and sys.stdin.isatty():
-        curses_ui = CursesUI(status_tracker, log_buffer, actual_workers)
+    stdout_tty = sys.stdout.isatty()
+    stdin_tty = sys.stdin.isatty()
+    log("DEBUG", f"TTY detection: stdout={stdout_tty}, stdin={stdin_tty}")
+
+    if stdout_tty and stdin_tty:
+        log("DEBUG", "Starting curses UI")
+        curses_ui = CursesUI(status_tracker, thread_log_manager, actual_workers)
         exit_code = curses_ui.run(run_implementation)
+        log("DEBUG", f"Curses UI completed with exit_code={exit_code}")
     else:
         # Non-TTY mode: run directly without curses
-        log("INFO", "Non-TTY mode: running without curses UI")
+        log("INFO", f"Non-TTY mode: running without curses UI (stdout_tty={stdout_tty}, stdin_tty={stdin_tty})")
         exit_code = run_implementation()
+        log("DEBUG", f"Non-TTY mode completed with exit_code={exit_code}")
 
-    # Close and clear log buffer after curses exits
-    log_buffer.close()
-    set_log_buffer(None)
-
+    log("DEBUG", "Preparing to print summary")
     # Print summary
     completed = sum(1 for r in results if r.status == "completed")
     paused = sum(1 for r in results if r.status == "paused")
     skipped = sum(1 for r in results if r.status == "skipped")
     errors = sum(1 for r in results if r.status == "error")
+
+    # Merge logs on success (no errors), otherwise keep individual logs for debugging
+    merged_logs = False
+    if errors == 0 and len(results) > 0:
+        log("INFO", f"All tasks completed successfully, merging logs into {merged_log_file}")
+        thread_log_manager.merge_logs_on_success(merged_log_file)
+        merged_logs = True
+
+    # Close all thread log buffers after execution
+    thread_log_manager.close_all()
+    set_thread_log_manager(None)
 
     print()
     print("==========================================")
@@ -3676,7 +4244,16 @@ Examples:
     print(f"  Errors:    {errors}")
     print(f"  Total:     {len(results)}")
     print()
-    print(f"  Log file: {log_file}")
+
+    # Print log file locations
+    if merged_logs:
+        print(f"  Log file: {merged_log_file} (merged from all threads)")
+    else:
+        print("  Log files:")
+        print(f"    Main:     {log_dir / f'{log_prefix}-main.log'}")
+        for worker_id in range(actual_workers):
+            print(f"    Worker {worker_id}: {log_dir / f'{log_prefix}-worker-{worker_id}.log'}")
+
     if opts.state_dir:
         print(f"  State file: {state_file}")
     print("==========================================")
