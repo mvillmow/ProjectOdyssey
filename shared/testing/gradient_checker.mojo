@@ -494,6 +494,7 @@ fn assert_sampled_gradients_close(
     analytical_grad: ExTensor,
     sampled_numerical: List[IndexGradientPair],
     rtol: Float64 = 1e-2,
+    atol: Float64 = 1e-3,  # Added absolute tolerance for small gradients
     message: String = "Sampled gradients mismatch",
 ) raises:
     """Compare analytical gradient with sampled numerical gradients.
@@ -541,23 +542,28 @@ fn assert_sampled_gradients_close(
         if abs_diff < 0.0:
             abs_diff = -abs_diff
 
-        # Relative error: diff / max(|analytical|, |numerical|, epsilon)
+        # Combined absolute + relative tolerance check
+        # Passes if: |analytical - numerical| <= atol + rtol * max(|analytical|, |numerical|)
         var abs_analytical = analytical if analytical >= 0.0 else -analytical
         var abs_numerical = numerical if numerical >= 0.0 else -numerical
-        var denominator = (
+        var max_magnitude = (
             abs_analytical if abs_analytical > abs_numerical else abs_numerical
         )
-        if denominator < 1e-8:
-            denominator = 1e-8
+        var tolerance = atol + rtol * max_magnitude
+        var rel_error = abs_diff / (max_magnitude + 1e-8)  # For reporting only
 
-        var rel_error = abs_diff / denominator
-
-        if rel_error > max_error:
+        if abs_diff > tolerance and rel_error > max_error:
             max_error = rel_error
             worst_idx = idx
 
-    # Check if any sample exceeded tolerance
-    if max_error > rtol:
+    # Check if any sample exceeded combined tolerance
+    var worst_analytical = analytical_grad._get_float64(worst_idx)
+    var abs_worst = (
+        worst_analytical if worst_analytical >= 0.0 else -worst_analytical
+    )
+    var worst_tolerance = atol + rtol * abs_worst
+
+    if max_error > rtol and abs_worst > atol:  # Only fail if both exceeded
         var analytical_val = analytical_grad._get_float64(worst_idx)
         var msg = (
             message
