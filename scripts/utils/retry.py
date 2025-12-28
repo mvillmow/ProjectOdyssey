@@ -9,7 +9,7 @@ Provides automatic retry logic with configurable parameters:
 
 import functools
 import time
-from typing import Any, Callable, TypeVar, cast
+from typing import Any, Callable, Optional, TypeVar, cast
 
 # Type variable for generic function decoration
 F = TypeVar("F", bound=Callable[..., Any])
@@ -49,7 +49,7 @@ def retry_with_backoff(
     initial_delay: float = 1.0,
     backoff_factor: int = 2,
     retry_on: tuple[type[Exception], ...] = (Exception,),
-    logger: Callable[[str], None] | None = None,
+    logger: Optional[Callable[[str], None]] = None,
 ) -> Callable[[F], F]:
     """Decorator to retry function with exponential backoff.
 
@@ -113,7 +113,7 @@ def retry_with_backoff(
     return decorator
 
 
-def retry_on_network_error(max_retries: int = 3, logger: Callable[[str], None] | None = None) -> Callable[[F], F]:
+def retry_on_network_error(max_retries: int = 3, logger: Optional[Callable[[str], None]] = None) -> Callable[[F], F]:
     """Convenience decorator for retrying on network errors only.
 
     Args:

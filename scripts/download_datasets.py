@@ -23,6 +23,7 @@ import argparse
 import sys
 import subprocess
 from pathlib import Path
+from typing import Optional
 
 # Available datasets and their download scripts
 DATASETS = {
@@ -60,7 +61,7 @@ def list_datasets() -> None:
     print()
 
 
-def download_dataset(name: str, output_dir: str | None = None) -> int:
+def download_dataset(name: str, output_dir: Optional[str] = None) -> int:
     """
     Download a single dataset.
 

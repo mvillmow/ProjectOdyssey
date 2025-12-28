@@ -15,7 +15,7 @@ import platform
 import subprocess
 import sys
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Any, Callable, Optional, Tuple
 
 
 def run_command(cmd: list, capture_output: bool = True) -> Tuple[bool, str]:
@@ -92,7 +92,7 @@ def get_os_info() -> str:
 def get_tool_info(
     tool_name: str,
     version_flag: str = "--version",
-    version_extract: Optional[callable] = None,
+    version_extract: Optional[Callable[[str], str]] = None,
 ) -> Tuple[str, str]:
     """
     Get version and path information for a tool.

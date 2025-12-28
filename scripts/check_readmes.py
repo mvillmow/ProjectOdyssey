@@ -15,7 +15,7 @@ Exit codes:
 import sys
 import re
 from pathlib import Path
-from typing import List, Tuple, Dict
+from typing import Any, Dict, List, Tuple
 
 from common import get_repo_root
 
@@ -125,7 +125,7 @@ def check_markdown_formatting(content: str) -> List[str]:
     return issues
 
 
-def validate_readme(readme_path: Path, verbose: bool = False) -> Dict[str, any]:
+def validate_readme(readme_path: Path, verbose: bool = False) -> Dict[str, Any]:
     """
     Validate a single README file
 

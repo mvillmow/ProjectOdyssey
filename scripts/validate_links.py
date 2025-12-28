@@ -16,7 +16,7 @@ import logging
 import re
 import sys
 from pathlib import Path
-from typing import List, Tuple, Dict
+from typing import Any, Dict, List, Tuple
 from urllib.parse import urlparse
 
 from common import get_repo_root
@@ -94,7 +94,7 @@ def validate_internal_link(link: str, source_file: Path, repo_root: Path) -> Tup
     return True, ""
 
 
-def validate_links(file_path: Path, repo_root: Path, verbose: bool = False) -> Dict[str, any]:
+def validate_links(file_path: Path, repo_root: Path, verbose: bool = False) -> Dict[str, Any]:
     """
     Validate all links in a markdown file
 

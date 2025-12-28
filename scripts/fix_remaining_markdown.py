@@ -18,7 +18,7 @@ from typing import List, Tuple
 
 def fix_heading_punctuation(lines: List[str]) -> List[str]:
     """Remove trailing punctuation from headings (MD026)."""
-    fixed = []
+    fixed: List[str] = []
     for line in lines:
         if line.strip().startswith("#"):
             # Remove trailing punctuation from headings (except '?')
@@ -29,7 +29,7 @@ def fix_heading_punctuation(lines: List[str]) -> List[str]:
 
 def fix_blank_lines_around_headings(lines: List[str]) -> List[str]:
     """Ensure blank lines around headings (MD022)."""
-    fixed = []
+    fixed: List[str] = []
     for i, line in enumerate(lines):
         # Check if this is a heading
         if line.strip().startswith("#"):
@@ -47,7 +47,7 @@ def fix_blank_lines_around_headings(lines: List[str]) -> List[str]:
 
 def fix_blank_lines_around_fences(lines: List[str]) -> List[str]:
     """Ensure blank lines around code fences (MD031)."""
-    fixed = []
+    fixed: List[str] = []
     in_fence = False
 
     for i, line in enumerate(lines):
@@ -74,7 +74,7 @@ def fix_blank_lines_around_fences(lines: List[str]) -> List[str]:
 
 def fix_blank_lines_around_lists(lines: List[str]) -> List[str]:
     """Ensure blank lines around lists (MD032)."""
-    fixed = []
+    fixed: List[str] = []
     in_list = False
 
     for i, line in enumerate(lines):
