@@ -41,7 +41,7 @@ except ImportError:
     from backports.zoneinfo import ZoneInfo  # type: ignore[import,no-redef]
 
 if TYPE_CHECKING:
-    from types import FrameType
+    pass
 
 # ---------------------------------------------------------------------
 # Constants

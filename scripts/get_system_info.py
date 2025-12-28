@@ -15,7 +15,7 @@ import platform
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, Callable, Optional, Tuple
+from typing import Callable, Optional, Tuple
 
 
 def run_command(cmd: list, capture_output: bool = True) -> Tuple[bool, str]:
