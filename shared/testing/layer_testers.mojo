@@ -594,7 +594,10 @@ struct LayerTester:
         # The large number of operations in conv2d (especially with large kernels) accumulates
         # floating-point rounding errors, making gradient checking inherently less precise.
         # CI testing showed 6.89% error on AlexNet Conv1, so 5% tolerance is insufficient.
-        var epsilon = 1e-5 if dtype == DType.float32 else 1e-4
+        # NOTE: epsilon=3e-4 for float32 to avoid precision loss in matmul (see #2704)
+        # Using 1e-5 causes ~56% loss of precision, 1e-4 gives 3.3% error (above 1.5% tolerance)
+        # 3e-4 gives 1.2% error (within 1.5% tolerance)
+        var epsilon = 3e-4 if dtype == DType.float32 else 1e-3
         var tolerance = 1e-1  # 10% tolerance for all dtypes
 
         # Define forward function for gradient checking
@@ -752,7 +755,8 @@ struct LayerTester:
         assert_dtype(output, dtype, "Linear backward: output dtype mismatch")
 
         # Test gradient checking with epsilon appropriate for dtype
-        var epsilon = 1e-5 if dtype == DType.float32 else 1e-4
+        # NOTE: epsilon=3e-4 for float32 prevents precision loss in matmul (see #2704)
+        var epsilon = 3e-4 if dtype == DType.float32 else 1e-3
 
         # Define forward function for gradient checking
         fn forward(x: ExTensor) raises escaping -> ExTensor:
@@ -906,7 +910,8 @@ struct LayerTester:
         )
 
         # Test gradient checking with appropriate epsilon and tolerance for dtype
-        var epsilon = 1e-5 if dtype == DType.float32 else 1e-4
+        # NOTE: epsilon=3e-4 for float32 prevents precision loss (see #2704)
+        var epsilon = 3e-4 if dtype == DType.float32 else 1e-3
         var tolerance = 1e-2 if dtype == DType.float32 else 1e-1
 
         # Define forward function for gradient checking

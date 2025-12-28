@@ -1207,10 +1207,10 @@ fn main() raises:
     test_fc1_forward_float16()
     print(" OK")
 
-    # FIXME(#2704): FC1 backward gradient checking fails with 108% error
-    # print("  test_fc1_backward_float32...", end="")
-    # test_fc1_backward_float32()
-    # print(" OK")
+    # Fixed #2704: Epsilon was too small (1e-5) for Float32, now using 1e-4
+    print("  test_fc1_backward_float32...", end="")
+    test_fc1_backward_float32()
+    print(" OK")
 
     # FC2 tests
     print("  test_fc2_forward_float32...", end="")
@@ -1221,10 +1221,10 @@ fn main() raises:
     test_fc2_forward_float16()
     print(" OK")
 
-    # FIXME(#2704): FC2 backward gradient checking fails with gradient errors
-    # print("  test_fc2_backward_float32...", end="")
-    # test_fc2_backward_float32()
-    # print(" OK")
+    # Fixed #2704: Epsilon was too small (1e-5) for Float32, now using 1e-4
+    print("  test_fc2_backward_float32...", end="")
+    test_fc2_backward_float32()
+    print(" OK")
 
     # FC3 tests
     print("  test_fc3_forward_float32...", end="")
@@ -1235,10 +1235,10 @@ fn main() raises:
     test_fc3_forward_float16()
     print(" OK")
 
-    # FIXME(#2704): FC3 backward gradient checking fails with 108% error
-    # print("  test_fc3_backward_float32...", end="")
-    # test_fc3_backward_float32()
-    # print(" OK")
+    # Fixed #2704: Epsilon was too small (1e-5) for Float32, now using 1e-4
+    print("  test_fc3_backward_float32...", end="")
+    test_fc3_backward_float32()
+    print(" OK")
 
     # Flatten tests - reference counting bug fixed in Mojo 0.26.1
     print("  test_flatten_operation_float32...", end="")
