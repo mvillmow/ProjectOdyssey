@@ -1,0 +1,66 @@
+# coverage.toml - Coverage configuration for ML Odyssey
+# Note: Full coverage metrics blocked until Mojo provides tooling (ADR-008)
+
+[coverage]
+# Overall project target (when available)
+target = 90.0
+minimum = 80.0
+
+[coverage.modules]
+# Per-module targets based on criticality
+
+[coverage.modules."shared/core"]
+# Critical path - tensor operations, layers, losses
+target = 95
+minimum = 90
+priority = "critical"
+
+[coverage.modules."shared/autograd"]
+# Gradient computation - must be correct
+target = 95
+minimum = 90
+priority = "critical"
+
+[coverage.modules."shared/nn"]
+# Neural network layers
+target = 90
+minimum = 85
+priority = "high"
+
+[coverage.modules."shared/data"]
+# Data loading and transforms
+target = 85
+minimum = 80
+priority = "high"
+
+[coverage.modules."shared/training"]
+# Training loops and optimizers
+target = 90
+minimum = 85
+priority = "high"
+
+[coverage.modules."shared/ops"]
+# Mathematical operations
+target = 90
+minimum = 85
+priority = "high"
+
+[coverage.modules."examples"]
+# Demonstration code
+target = 70
+minimum = 60
+priority = "low"
+
+[coverage.modules."scripts"]
+# Python automation scripts (coverage available now)
+target = 80
+minimum = 70
+priority = "medium"
+
+[coverage.exclude]
+# Files excluded from coverage
+patterns = [
+    "*/__init__.mojo",
+    "*/test_*.mojo",
+    "examples/*/run_*.mojo",
+]

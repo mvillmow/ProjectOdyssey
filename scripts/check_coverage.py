@@ -6,12 +6,69 @@ Used in CI to enforce coverage requirements.
 
 Usage:
     python scripts/check_coverage.py --threshold 90 --path shared/
+    python scripts/check_coverage.py --config coverage.toml --path shared/core
 """
 
 import sys
 import argparse
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Dict
+
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib  # type: ignore
+
+
+def load_coverage_config(config_file: Optional[Path] = None) -> Dict:
+    """Load coverage configuration from coverage.toml.
+
+    Args:
+        config_file: Path to coverage.toml. If None, looks for coverage.toml in repo root.
+
+    Returns:
+        Dictionary with coverage configuration, or empty dict if file not found.
+    """
+    if config_file is None:
+        # Try to find coverage.toml in repo root
+        repo_root = Path(__file__).parent.parent
+        config_file = repo_root / "coverage.toml"
+
+    if not config_file.exists():
+        return {"coverage": {"target": 90.0, "minimum": 80.0}}
+
+    try:
+        with open(config_file, "rb") as f:
+            config = tomllib.load(f)
+        return config
+    except Exception as e:
+        print(f"⚠️  Warning: Failed to load config from {config_file}: {e}", file=sys.stderr)
+        return {"coverage": {"target": 90.0, "minimum": 80.0}}
+
+
+def get_module_threshold(path: str, config: Dict) -> float:
+    """Get coverage threshold for a specific module.
+
+    Args:
+        path: Module path (e.g., "shared/core")
+        config: Configuration dictionary from load_coverage_config()
+
+    Returns:
+        Minimum coverage threshold for the module.
+    """
+    modules = config.get("coverage", {}).get("modules", {})
+
+    # Try exact match first
+    if path in modules:
+        return modules[path].get("minimum", 90.0)
+
+    # Try prefix match
+    for module_path in sorted(modules.keys(), key=len, reverse=True):
+        if path.startswith(module_path):
+            return modules[module_path].get("minimum", 90.0)
+
+    # Default to overall minimum
+    return config.get("coverage", {}).get("minimum", 80.0)
 
 
 def parse_coverage_report(coverage_file: Path) -> Optional[float]:
@@ -129,8 +186,8 @@ def main():
     parser.add_argument(
         "--threshold",
         type=float,
-        default=90.0,
-        help="Minimum required coverage percentage (default: 90.0)",
+        default=None,
+        help="Minimum required coverage percentage (overrides config)",
     )
     parser.add_argument(
         "--path",
@@ -144,15 +201,31 @@ def main():
         default=Path("coverage.xml"),
         help="Path to coverage report file (default: coverage.xml)",
     )
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=None,
+        help="Path to coverage.toml config file",
+    )
     parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
 
     args = parser.parse_args()
 
+    # Load configuration
+    config = load_coverage_config(args.config)
+
+    # Determine threshold: use --threshold flag if provided, else get from config
+    if args.threshold is not None:
+        threshold = args.threshold
+    else:
+        threshold = get_module_threshold(args.path, config)
+
     if args.verbose:
         print("Checking coverage with settings:")
-        print(f"  Threshold: {args.threshold}%")
+        print(f"  Threshold: {threshold}%")
         print(f"  Path: {args.path}")
         print(f"  Coverage file: {args.coverage_file}")
+        print(f"  Config file: {args.config or 'default (coverage.toml)'}")
 
     # Check if coverage file exists
     if not args.coverage_file.exists():
@@ -174,7 +247,7 @@ def main():
         sys.exit(0)  # Don't fail CI until Mojo coverage is available
 
     # Check coverage
-    success = check_coverage(args.threshold, args.path, args.coverage_file)
+    success = check_coverage(threshold, args.path, args.coverage_file)
 
     if not success:
         print("\n💡 Tips for improving coverage:")
