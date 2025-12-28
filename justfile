@@ -348,6 +348,58 @@ list-models:
     @ls -d examples/*/ 2>/dev/null | xargs -I{} basename {} | sed 's/-.*//g' | sort -u || echo "No models found"
 
 # ==============================================================================
+# Jupyter Notebooks
+# ==============================================================================
+
+# Launch Jupyter Lab
+jupyter:
+    @pixi run jupyter lab --no-browser --ip=127.0.0.1
+
+# Launch Jupyter Notebook (classic)
+jupyter-notebook:
+    @pixi run jupyter notebook --no-browser --ip=127.0.0.1
+
+# Execute all notebooks (for CI validation)
+jupyter-validate:
+    #!/usr/bin/env bash
+    set -e
+    NOTEBOOK_COUNT=0
+    PASSED=0
+    FAILED=0
+    for notebook in notebooks/*.ipynb; do
+        if [ -f "$notebook" ]; then
+            echo "Validating: $notebook"
+            NOTEBOOK_COUNT=$((NOTEBOOK_COUNT + 1))
+            if pixi run jupyter nbconvert --execute --to notebook --inplace "$notebook" 2>&1; then
+                PASSED=$((PASSED + 1))
+            else
+                echo "❌ Failed to validate: $notebook"
+                FAILED=$((FAILED + 1))
+            fi
+        fi
+    done
+    echo ""
+    echo "Validated $PASSED/$NOTEBOOK_COUNT notebooks"
+    if [ $FAILED -gt 0 ]; then
+        echo "❌ $FAILED notebooks failed validation"
+        exit 1
+    fi
+
+# Clear all notebook outputs
+jupyter-clear:
+    #!/usr/bin/env bash
+    set -e
+    NOTEBOOK_COUNT=0
+    for notebook in notebooks/*.ipynb; do
+        if [ -f "$notebook" ]; then
+            echo "Clearing: $notebook"
+            NOTEBOOK_COUNT=$((NOTEBOOK_COUNT + 1))
+            pixi run jupyter nbconvert --clear-output --inplace "$notebook"
+        fi
+    done
+    echo "Cleared outputs from $NOTEBOOK_COUNT notebooks"
+
+# ==============================================================================
 # Development
 # ==============================================================================
 
@@ -516,7 +568,8 @@ help:
     @echo "           list-models, infer-image [model] [checkpoint] [image_path]"
     @echo "Build:     build [mode], build-debug, build-release"
     @echo "Package:   package [mode], package-debug, package-release"
-    @echo "Test:      test, test-python, test-group, test-mojo,"
+    @echo "Test:      test, test-python, test-group, test-mojo"
+    @echo "Jupyter:   jupyter, jupyter-notebook, jupyter-validate, jupyter-clear"
     @echo "Docker:    docker-up, docker-down, docker-logs"
     @echo "Dev:       dev, shell, docs, docs-serve, pre-commit, validate"
     @echo "Utility:   help, status, clean, clean-all"
@@ -525,7 +578,8 @@ help:
     @echo "  just train                          # Train LeNet-5 with defaults"
     @echo "  just train lenet5 fp16 20           # Train with FP16, 20 epochs"
     @echo "  just infer lenet5 ./weights         # Evaluate on test set"
-    @echo "  just cvalidate                      # Run validation locally"
+    @echo "  just jupyter                        # Launch Jupyter Lab"
+    @echo "  just validate                       # Run validation locally"
     @echo ""
     @echo "For more: just --list"
 

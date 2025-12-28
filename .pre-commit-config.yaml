@@ -73,6 +73,16 @@ repos:
         exclude: ^notes/(plan|issues|review|blog)/
         args: ['--config', '.markdownlint.json']
 
+  # Jupyter notebook output stripping
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.7.1
+    hooks:
+      - id: nbstripout
+        name: Strip Notebook Outputs
+        description: Remove outputs from Jupyter notebooks before commit
+        files: \.ipynb$
+        args: ['--extra-keys', 'metadata.kernelspec']
+
   # General file checks
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
