@@ -73,7 +73,9 @@ fn bench_linear_forward() raises -> List[BenchmarkResult]:
     var avg_time_ms = Float64(avg_time_ns) / 1_000_000.0
 
     # Throughput: samples per second
-    var samples_per_sec = Float64(batch_size * n_iters) / (Float64(total_ns) / 1e9)
+    var samples_per_sec = Float64(batch_size * n_iters) / (
+        Float64(total_ns) / 1e9
+    )
 
     results.append(
         BenchmarkResult(
@@ -129,7 +131,9 @@ fn bench_linear_backward() raises -> BenchmarkResult:
     var total_ns = end_ns - start_ns
     var avg_time_ns = total_ns // n_iters
     var avg_time_ms = Float64(avg_time_ns) / 1_000_000.0
-    var samples_per_sec = Float64(batch_size * n_iters) / (Float64(total_ns) / 1e9)
+    var samples_per_sec = Float64(batch_size * n_iters) / (
+        Float64(total_ns) / 1e9
+    )
 
     return BenchmarkResult(
         name="LinearBackward-784-128-batch32",

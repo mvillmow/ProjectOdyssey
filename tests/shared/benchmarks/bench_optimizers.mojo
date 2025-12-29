@@ -70,7 +70,9 @@ fn bench_sgd_update_speed() raises -> List[BenchmarkResult]:
 
         var total_ns = end_ns - start_ns
         var avg_time_ms = Float64(total_ns) / Float64(n_iters) / 1_000_000.0
-        var params_per_sec = Float64(n_params[] * n_iters) / (Float64(total_ns) / 1e9)
+        var params_per_sec = Float64(n_params[] * n_iters) / (
+            Float64(total_ns) / 1e9
+        )
 
         results.append(
             BenchmarkResult(
@@ -127,7 +129,9 @@ fn bench_sgd_momentum_overhead() raises -> BenchmarkResult:
     var time_momentum = Float64(end_ns - start_ns)
 
     # Calculate overhead
-    var overhead_percent = (time_momentum - time_no_momentum) / time_no_momentum * 100.0
+    var overhead_percent = (
+        (time_momentum - time_no_momentum) / time_no_momentum * 100.0
+    )
 
     return BenchmarkResult(
         name="SGD-momentum-overhead",
@@ -181,12 +185,16 @@ fn bench_adam_update_speed() raises -> List[BenchmarkResult]:
         # Benchmark (100 iterations)
         var start_ns = perf_counter_ns()
         for i in range(n_iters):
-            adam_step(params, grads, m, v, lr, beta1, beta2, epsilon, t + 10 + i)
+            adam_step(
+                params, grads, m, v, lr, beta1, beta2, epsilon, t + 10 + i
+            )
         var end_ns = perf_counter_ns()
 
         var total_ns = end_ns - start_ns
         var avg_time_ms = Float64(total_ns) / Float64(n_iters) / 1_000_000.0
-        var params_per_sec = Float64(n_params[] * n_iters) / (Float64(total_ns) / 1e9)
+        var params_per_sec = Float64(n_params[] * n_iters) / (
+            Float64(total_ns) / 1e9
+        )
 
         results.append(
             BenchmarkResult(
@@ -295,10 +303,30 @@ fn bench_optimizer_comparison() raises -> List[BenchmarkResult]:
     var m = zeros_like(params)
     var v = zeros_like(params)
     for i in range(10):
-        adam_step(params, grads, m, v, Float64(0.001), Float64(0.9), Float64(0.999), Float64(1e-8), i + 1)
+        adam_step(
+            params,
+            grads,
+            m,
+            v,
+            Float64(0.001),
+            Float64(0.9),
+            Float64(0.999),
+            Float64(1e-8),
+            i + 1,
+        )
     start_ns = perf_counter_ns()
     for i in range(n_iters):
-        adam_step(params, grads, m, v, Float64(0.001), Float64(0.9), Float64(0.999), Float64(1e-8), i + 11)
+        adam_step(
+            params,
+            grads,
+            m,
+            v,
+            Float64(0.001),
+            Float64(0.9),
+            Float64(0.999),
+            Float64(1e-8),
+            i + 11,
+        )
     end_ns = perf_counter_ns()
     total_ns = end_ns - start_ns
     throughput = Float64(n_params * n_iters) / (Float64(total_ns) / 1e9)
