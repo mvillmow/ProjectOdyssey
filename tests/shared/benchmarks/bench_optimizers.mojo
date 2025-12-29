@@ -46,7 +46,8 @@ fn bench_sgd_update_speed() raises -> List[BenchmarkResult]:
     var n_iters = 100
 
     # Test different parameter counts
-    for n_params in List[Int](10000, 100000, 1000000):
+    var param_counts: List[Int] = [10000, 100000, 1000000]
+    for n_params in param_counts:
         var param_shape = List[Int]()
         param_shape.append(n_params[])
 
@@ -157,7 +158,8 @@ fn bench_adam_update_speed() raises -> List[BenchmarkResult]:
     var n_iters = 100
 
     # Test different parameter counts
-    for n_params in List[Int](10000, 100000, 1000000):
+    var param_counts: List[Int] = [10000, 100000, 1000000]
+    for n_params in param_counts:
         var param_shape = List[Int]()
         param_shape.append(n_params[])
 
