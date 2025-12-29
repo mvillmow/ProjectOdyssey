@@ -142,15 +142,15 @@ How will we know the implementation is successful?
 
 ### Related ADRs
 
-- [ADR-NNN](ADR-NNN-title.md): Brief description of relationship
+- `ADR-NNN`: Brief description of relationship (replace with actual ADR link)
 
 ### Related Issues
 
-- Issue #NNN: Description
+- Issue #NNN: Description (replace with actual issue link)
 
 ### External Documentation
 
-- [Link Title](URL): Description
+- Link Title: Description (replace with actual URL)
 
 ## Revision History
 
