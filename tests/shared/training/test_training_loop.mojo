@@ -584,7 +584,9 @@ fn test_training_loop_property_loss_decreases_on_simple_problem() raises:
         assert_greater(Float64(loss_val), Float64(-1000.0))
 
     # Training completed without error
-    print("  test_training_loop_property_loss_decreases_on_simple_problem: PASSED")
+    print(
+        "  test_training_loop_property_loss_decreases_on_simple_problem: PASSED"
+    )
 
 
 # ============================================================================
