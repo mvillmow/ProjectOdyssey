@@ -7,6 +7,7 @@ Provides tools for validating neural network implementations:
 - Consolidated test models and fixtures
 - Data type utilities for comprehensive multi-dtype testing
 - Fuzzing infrastructure for property-based testing
+- Property-based testing for finding edge cases
 
 Modules:
     assertions: Comprehensive assertion functions for testing
@@ -20,6 +21,7 @@ Modules:
     fuzz_core: Core fuzzing infrastructure (FuzzConfig, FuzzResult, random tensor generators)
     fuzz_shapes: Shape fuzzing utilities (random shapes, edge cases, broadcast pairs)
     fuzz_dtypes: DType fuzzing utilities (random dtypes, edge values, type classification)
+    property_testing: Property-based testing framework (random shapes, property test runner)
 
 Test Models:
     SimpleCNN: Minimal CNN for image processing tests
@@ -192,4 +194,15 @@ from shared.testing.fuzz_dtypes import (
     get_dtype_size_bytes,
     get_dtype_precision_bits,
     dtype_to_string as fuzz_dtype_to_string,
+)
+
+# Property-based testing
+from shared.testing.property_testing import (
+    random_shape,
+    random_compatible_shape,
+    random_broadcastable_shapes,
+    run_property_test,
+    run_property_test_with_seed,
+    assert_tensors_close,
+    tensors_equal,
 )
