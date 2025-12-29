@@ -7,6 +7,7 @@ Includes:
 - Accuracy (Classification accuracy - top-1, top-k, per-class)
 - LossTracker (Loss tracking and averaging)
 - ConfusionMatrix (Confusion matrix for classification)
+- CSVMetricsLogger (CSV-based training metrics logging)
 - Precision (Precision metric)
 - Recall (Recall metric)
 
@@ -51,6 +52,9 @@ from shared.training.metrics.results_printer import (
     print_training_progress,
     print_training_summary,
 )
+
+# CSV-based training metrics logging
+from shared.training.metrics.csv_metrics_logger import CSVMetricsLogger
 
 # Future exports (to be implemented):
 # from .precision import Precision
