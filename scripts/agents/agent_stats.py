@@ -40,7 +40,7 @@ from typing import Any, Dict, List, Optional
 
 # Enable importing from scripts/common.py
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from common import get_agents_dir, get_repo_root
+from common import get_agents_dir
 
 
 class AgentAnalyzer:
