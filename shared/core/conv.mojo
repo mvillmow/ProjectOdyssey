@@ -287,7 +287,7 @@ fn conv2d(
         raise Error("Kernel in_channels must match input in_channels")
 
     # Compute output dimensions using shape computation helper
-    var out_h, var out_w = conv2d_output_shape(
+    var (out_h, out_w) = conv2d_output_shape(
         in_height, in_width, kH, kW, stride, padding
     )
     var out_height = out_h
@@ -808,7 +808,7 @@ fn depthwise_conv2d(
         )
 
     # Compute output dimensions
-    var out_h, var out_w = conv2d_output_shape(
+    var (out_h, out_w) = conv2d_output_shape(
         in_height, in_width, kH, kW, stride, padding
     )
     var out_height = out_h

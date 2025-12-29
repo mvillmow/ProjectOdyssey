@@ -71,7 +71,7 @@ fn maxpool2d(
     var actual_stride = stride if stride > 0 else kernel_size
 
     # Compute output dimensions using shape computation helper
-    var out_h, var out_w = pool_output_shape(
+    var (out_h, out_w) = pool_output_shape(
         in_height, in_width, kernel_size, actual_stride, padding
     )
     var out_height = out_h
@@ -330,7 +330,7 @@ fn avgpool2d(
     var actual_stride = stride if stride > 0 else kernel_size
 
     # Compute output dimensions using shape computation helper
-    var out_h, var out_w = pool_output_shape(
+    var (out_h, out_w) = pool_output_shape(
         in_height, in_width, kernel_size, actual_stride, padding
     )
     var out_height = out_h

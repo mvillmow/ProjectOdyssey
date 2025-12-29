@@ -26,7 +26,6 @@ from shared.core.activation import relu, relu_backward
 from shared.core.dropout import dropout, dropout_backward
 from shared.core.loss import cross_entropy, cross_entropy_backward
 from shared.training.schedulers import step_lr
-from shared.training.loops import TrainingLoop
 from shared.utils.arg_parser import create_training_parser
 from shared.training.metrics import evaluate_with_predict
 from shared.data import DatasetInfo
@@ -351,7 +350,10 @@ fn train_epoch(
     total_epochs: Int,
     mut velocities: List[ExTensor],
 ) raises -> Float32:
-    """Train for one epoch using TrainingLoop.
+    """Train for one epoch with manual batch iteration.
+
+    Note: Uses manual batch iteration instead of closures to avoid capturing
+    non-copyable AlexNet struct in a closure (Mojo limitation).
 
     Args:
         model: AlexNet model.
@@ -367,32 +369,46 @@ fn train_epoch(
     Returns:
         Average loss for the epoch.
     """
-    # Create training loop with progress logging every 100 batches
-    var loop = TrainingLoop(log_interval=100)
+    var num_samples = train_images.shape()[0]
+    var num_batches = (num_samples + batch_size - 1) // batch_size
+    var total_loss = Float32(0.0)
+    var log_interval = 100
 
-    # Define compute_batch_loss closure that processes batches
-    fn compute_batch_loss(
-        batch_images: ExTensor, batch_labels: ExTensor
-    ) raises -> Float32:
+    print("Epoch [", epoch, "/", total_epochs, "]")
+
+    for batch_idx in range(num_batches):
+        var start_idx = batch_idx * batch_size
+        var end_idx = min(start_idx + batch_size, num_samples)
+
+        # Extract batch slice
+        var batch_data = train_images.slice(start_idx, end_idx, axis=0)
+        var batch_labels = train_labels.slice(start_idx, end_idx, axis=0)
+
         # Compute gradients and update parameters
-        return compute_gradients(
+        var batch_loss = compute_gradients(
             model,
-            batch_images,
+            batch_data,
             batch_labels,
             learning_rate,
             momentum,
             velocities,
         )
+        total_loss += batch_loss
 
-    # Run one epoch using the consolidated training loop
-    var avg_loss = loop.run_epoch_manual(
-        train_images,
-        train_labels,
-        batch_size=batch_size,
-        compute_batch_loss=compute_batch_loss,
-        epoch=epoch,
-        total_epochs=total_epochs,
-    )
+        # Print progress every log_interval batches
+        if (batch_idx + 1) % log_interval == 0:
+            var avg_loss = total_loss / Float32(batch_idx + 1)
+            print(
+                "  Batch [",
+                batch_idx + 1,
+                "/",
+                num_batches,
+                "] - Loss: ",
+                avg_loss,
+            )
+
+    var avg_loss = total_loss / Float32(num_batches)
+    print("  Average Loss: ", avg_loss)
 
     return avg_loss
 
