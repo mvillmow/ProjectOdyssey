@@ -47,9 +47,10 @@ fn bench_sgd_update_speed() raises -> List[BenchmarkResult]:
 
     # Test different parameter counts
     var param_counts: List[Int] = [10000, 100000, 1000000]
-    for n_params in param_counts:
+    for idx in range(len(param_counts)):
+        var n_params = param_counts[idx]
         var param_shape = List[Int]()
-        param_shape.append(n_params[])
+        param_shape.append(n_params)
 
         # Create parameters and gradients
         var params = randn(param_shape, DType.float32)
@@ -70,13 +71,13 @@ fn bench_sgd_update_speed() raises -> List[BenchmarkResult]:
 
         var total_ns = end_ns - start_ns
         var avg_time_ms = Float64(total_ns) / Float64(n_iters) / 1_000_000.0
-        var params_per_sec = Float64(n_params[] * n_iters) / (
+        var params_per_sec = Float64(n_params * n_iters) / (
             Float64(total_ns) / 1e9
         )
 
         results.append(
             BenchmarkResult(
-                name="SGD-" + str(n_params[]) + "-params",
+                name="SGD-" + String(n_params) + "-params",
                 duration_ms=avg_time_ms,
                 throughput=params_per_sec,
                 memory_mb=0.0,
@@ -163,9 +164,10 @@ fn bench_adam_update_speed() raises -> List[BenchmarkResult]:
 
     # Test different parameter counts
     var param_counts: List[Int] = [10000, 100000, 1000000]
-    for n_params in param_counts:
+    for idx in range(len(param_counts)):
+        var n_params = param_counts[idx]
         var param_shape = List[Int]()
-        param_shape.append(n_params[])
+        param_shape.append(n_params)
 
         # Create parameters and optimizer states
         var params = randn(param_shape, DType.float32)
@@ -180,25 +182,25 @@ fn bench_adam_update_speed() raises -> List[BenchmarkResult]:
 
         # Warmup (10 iterations)
         for i in range(10):
-            adam_step(params, grads, m, v, lr, beta1, beta2, epsilon, t + i)
+            adam_step(params, grads, m, v, t + i, lr, beta1, beta2, epsilon)
 
         # Benchmark (100 iterations)
         var start_ns = perf_counter_ns()
         for i in range(n_iters):
             adam_step(
-                params, grads, m, v, lr, beta1, beta2, epsilon, t + 10 + i
+                params, grads, m, v, t + 10 + i, lr, beta1, beta2, epsilon
             )
         var end_ns = perf_counter_ns()
 
         var total_ns = end_ns - start_ns
         var avg_time_ms = Float64(total_ns) / Float64(n_iters) / 1_000_000.0
-        var params_per_sec = Float64(n_params[] * n_iters) / (
+        var params_per_sec = Float64(n_params * n_iters) / (
             Float64(total_ns) / 1e9
         )
 
         results.append(
             BenchmarkResult(
-                name="Adam-" + str(n_params[]) + "-params",
+                name="Adam-" + String(n_params) + "-params",
                 duration_ms=avg_time_ms,
                 throughput=params_per_sec,
                 memory_mb=0.0,
@@ -308,11 +310,11 @@ fn bench_optimizer_comparison() raises -> List[BenchmarkResult]:
             grads,
             m,
             v,
+            i + 1,
             Float64(0.001),
             Float64(0.9),
             Float64(0.999),
             Float64(1e-8),
-            i + 1,
         )
     start_ns = perf_counter_ns()
     for i in range(n_iters):
@@ -321,11 +323,11 @@ fn bench_optimizer_comparison() raises -> List[BenchmarkResult]:
             grads,
             m,
             v,
+            i + 11,
             Float64(0.001),
             Float64(0.9),
             Float64(0.999),
             Float64(1e-8),
-            i + 11,
         )
     end_ns = perf_counter_ns()
     total_ns = end_ns - start_ns

@@ -69,7 +69,7 @@ fn bench_linear_forward() raises -> List[BenchmarkResult]:
 
     # Calculate metrics
     var total_ns = end_ns - start_ns
-    var avg_time_ns = total_ns // n_iters
+    var avg_time_ns = Int(total_ns) // n_iters
     var avg_time_ms = Float64(avg_time_ns) / 1_000_000.0
 
     # Throughput: samples per second
@@ -129,7 +129,7 @@ fn bench_linear_backward() raises -> BenchmarkResult:
     var end_ns = perf_counter_ns()
 
     var total_ns = end_ns - start_ns
-    var avg_time_ns = total_ns // n_iters
+    var avg_time_ns = Int(total_ns) // n_iters
     var avg_time_ms = Float64(avg_time_ns) / 1_000_000.0
     var samples_per_sec = Float64(batch_size * n_iters) / (
         Float64(total_ns) / 1e9

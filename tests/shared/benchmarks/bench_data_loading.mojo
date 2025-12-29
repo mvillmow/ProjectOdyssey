@@ -46,13 +46,14 @@ fn bench_batch_loading_speed() raises -> List[BenchmarkResult]:
     # Benchmark batch creation (simulates data loading)
     # Test different batch sizes
     var batch_sizes: List[Int] = [16, 32, 64, 128]
-    for batch_size in batch_sizes:
+    for idx in range(len(batch_sizes)):
+        var batch_size = batch_sizes[idx]
         var data_shape = List[Int]()
-        data_shape.append(batch_size[])
+        data_shape.append(batch_size)
         data_shape.append(784)  # MNIST-like feature size
 
         var label_shape = List[Int]()
-        label_shape.append(batch_size[])
+        label_shape.append(batch_size)
 
         # Warmup
         for _ in range(10):
@@ -76,7 +77,7 @@ fn bench_batch_loading_speed() raises -> List[BenchmarkResult]:
 
         results.append(
             BenchmarkResult(
-                name="BatchLoad-" + str(batch_size[]) + "-784",
+                name="BatchLoad-" + String(batch_size) + "-784",
                 duration_ms=avg_time_ms,
                 throughput=batches_per_sec,
                 memory_mb=0.0,
