@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+"""
+Convenience wrapper for the code generator CLI.
+
+Usage:
+    ./scripts/mojo-gen model ResNet18 --type classification -o models/
+    ./scripts/mojo-gen layer Attention --inputs "q,k,v" -o shared/nn/
+    ./scripts/mojo-gen dataset CIFAR10 --format image -o datasets/
+    ./scripts/mojo-gen training --model LeNet5 --dataset MNIST -o examples/
+    ./scripts/mojo-gen tests --module shared.nn.linear --type layer -o tests/
+    ./scripts/mojo-gen list
+"""
+
+import sys
+from pathlib import Path
+
+# Add project root to path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+from scripts.generators.mojo_gen import main
+
+if __name__ == "__main__":
+    sys.exit(main())
