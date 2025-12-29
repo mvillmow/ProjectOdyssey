@@ -35,7 +35,7 @@ from memory import UnsafePointer, memset_zero, alloc
 from sys.info import simd_width_of
 from math import ceildiv, sqrt, log, cos, sin
 from utils.numerics import inf as numeric_inf, neg_inf as numeric_neg_inf
-from random import random_float64
+from random import random_float64, seed as random_seed
 from .memory_pool import pooled_alloc, pooled_free
 
 # Memory safety constants
@@ -3294,6 +3294,10 @@ fn randn(shape: List[Int], dtype: DType, seed: Int = 0) raises -> ExTensor:
             "Warning: randn() is designed for floating-point types, got",
             String(dtype),
         )
+
+    # Set random seed if provided (0 uses system randomness)
+    if seed > 0:
+        random_seed(seed)
 
     var tensor = ExTensor(shape, dtype)
 
