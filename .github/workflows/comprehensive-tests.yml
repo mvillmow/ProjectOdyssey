@@ -283,6 +283,9 @@ jobs:
           - name: "Benchmark Framework"
             path: "benchmarks"
             pattern: "test_*.mojo"
+          - name: "Fuzz Tests"
+            path: "tests/shared/fuzz"
+            pattern: "test_*.mojo"
 
     name: "${{ matrix.test-group.name }}"
 
