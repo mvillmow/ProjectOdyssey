@@ -90,7 +90,7 @@ fn __init__(mut self, value: Int):
 fn __init__(out self, value: Int):
 ```
 
-**Violates**: Mojo v0.25.7+ constructor convention (must use `out self`)
+**Violates**: Mojo v0.26.1+ constructor convention (must use `out self`)
 
 ## Critical Production Failure Patterns
 

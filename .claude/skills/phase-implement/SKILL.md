@@ -81,7 +81,7 @@ fn process(owned data: Tensor) -> Tensor:
 fn analyze(borrowed data: Tensor):
     pass
 
-# Mutable access (Mojo v0.25.7+)
+# Mutable access (Mojo v0.26.1+)
 fn modify(mut data: Tensor):
     pass
 ```
@@ -97,7 +97,7 @@ Before code review approval:
 - [ ] Docstrings complete
 - [ ] No TODOs/FIXMEs (or documented)
 - [ ] Performance meets requirements
-- [ ] Follows Mojo syntax standards (Mojo v0.25.7+)
+- [ ] Follows Mojo syntax standards (Mojo v0.26.1+)
 
 ## Phase Dependencies
 
@@ -123,7 +123,7 @@ Before code review approval:
 
 ## References
 
-- `CLAUDE.md` - "Mojo Syntax Standards" (current v0.25.7+ patterns)
+- `CLAUDE.md` - "Mojo Syntax Standards" (current v0.26.1+ patterns)
 - `CLAUDE.md` - "Critical Pre-Flight Checklist" (before committing)
 - `CLAUDE.md` - "Common Mistakes to Avoid" (64+ test failure learnings)
 - `notes/review/mojo-test-failure-learnings.md` - Real implementation patterns

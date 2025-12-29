@@ -9,7 +9,7 @@ across different precision levels:
 - BFloat16 (bfloat16): Alternate lower precision
 - Int8 (int8): Integer quantization
 
-Custom types (FP4, FP8, BF8) are not available in Mojo stdlib v0.25.7 and are
+Custom types (FP4, FP8, BF8) are not available in Mojo stdlib v0.26.1 and are
 not included. When support is added, extend get_test_dtypes() to include them.
 
 Usage:
@@ -50,7 +50,7 @@ fn get_test_dtypes() -> List[DType]:
         [FP16, BFloat16, Int8, FP32]
 
     Notes:
-        - These are the dtypes available in Mojo stdlib v0.25.7
+        - These are the dtypes available in Mojo stdlib v0.26.1
         - FP4, FP8, BF8 are documented in requirements but not available yet
         - Custom dtypes should be added here once implemented
         - See shared/types/ for future custom dtype implementations

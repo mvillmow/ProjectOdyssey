@@ -330,7 +330,7 @@ Agents reference shared files to avoid duplication:
 | `.claude/shared/common-constraints.md`   | Minimal changes principle  |
 | `.claude/shared/documentation-rules.md`  | Output locations           |
 | `.claude/shared/pr-workflow.md`          | PR creation, review        |
-| `.claude/shared/mojo-guidelines.md`      | Mojo v0.25.7+ syntax       |
+| `.claude/shared/mojo-guidelines.md`      | Mojo v0.26.1+ syntax       |
 | `.claude/shared/mojo-anti-patterns.md`   | 64+ failure patterns       |
 | `.claude/shared/error-handling.md`       | Retry, timeout, escalation |
 

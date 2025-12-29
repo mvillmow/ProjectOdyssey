@@ -102,7 +102,7 @@ fn export_json_simple(
 ) raises:
     """Export results to JSON file.
 
-    Uses Python interop for file I/O (Mojo v0.25.7 limitation).
+    Uses Python interop for file I/O (Mojo v0.26.1 limitation).
 
     Args:
         results: List of benchmark results.

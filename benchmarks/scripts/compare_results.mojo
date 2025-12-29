@@ -423,7 +423,7 @@ fn compare_benchmarks(
     var comparisons = List[ComparisonResult](capacity=len(baseline_results))
 
     # Create dictionary (hash map) of current results by name for O(1) lookup
-    # Use Python dict since Mojo v0.25.7 doesn't have native Dict with custom types
+    # Use Python dict since Mojo v0.26.1 doesn't have native Dict with custom types
     var builtins = Python.import_module("builtins")
     var current_dict = builtins.dict()
 

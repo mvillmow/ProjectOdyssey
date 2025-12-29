@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide documents common patterns and fixes discovered during comprehensive test suite migration to Mojo v0.25.7+.
+This guide documents common patterns and fixes discovered during comprehensive test suite migration to Mojo v0.26.1+.
 Use these patterns when writing new tests or fixing existing test failures.
 
 ## Test Entry Points
@@ -259,7 +259,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
 
 ### Pattern: StringSlice to String Conversion
 
-**Problem**: String methods like `split()` and `strip()` return `StringSlice` in Mojo v0.25.7+.
+**Problem**: String methods like `split()` and `strip()` return `StringSlice` in Mojo v0.26.1+.
 
 **Wrong**:
 
@@ -400,5 +400,5 @@ When fixing test files, check these items:
 ---
 
 **Last Updated**: 2025-11-24
-**Migration Version**: Mojo v0.25.7+
+**Migration Version**: Mojo v0.26.1+
 **Files Fixed**: 287 Mojo files, 17 test files, 1884 markdown files

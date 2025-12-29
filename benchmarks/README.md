@@ -97,7 +97,7 @@ See `.github/workflows/benchmarks.yml` for CI configuration.
   "environment": {
     "os": "linux",
     "cpu": "x86_64",
-    "mojo_version": "0.25.7"
+    "mojo_version": "0.26.1"
   },
   "benchmarks": [
     {

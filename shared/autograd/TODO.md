@@ -6,7 +6,7 @@ The autograd module follows **YAGNI** (You Aren't Gonna Need It) and **KISS** (K
 
 - **Practical helpers** for common gradient patterns rather than full computation graph autograd
 - **Simple function calls** rather than complex graph management
-- **Works today** with current Mojo v0.25.7+ constraints
+- **Works today** with current Mojo v0.26.1+ constraints
 - **Covers 90% of use cases** while keeping implementation maintainable
 
 ## Current Status (Issue #2196)

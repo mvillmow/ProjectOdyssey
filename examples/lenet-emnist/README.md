@@ -11,7 +11,7 @@ LeNet-5 architecture on the EMNIST dataset.
 
 **Dataset**: EMNIST Balanced (47 classes: digits 0-9, uppercase A-Z, and select lowercase letters)
 
-**Status**: ✅ **Fully Functional** - Complete implementation working on Mojo 0.25.7 with training and inference
+**Status**: ✅ **Fully Functional** - Complete implementation working on Mojo 0.26.1 with training and inference
 achieving 81% test accuracy on EMNIST Balanced (47 classes).
 
 ## Quick Start
@@ -186,11 +186,11 @@ pixi run mojo run -I . examples/lenet-emnist/inference.mojo \
 - [ ] Learning rate scheduling
 - [ ] Data augmentation
 
-### Mojo 0.25.7 Migration
+### Mojo 0.26.1 Migration
 
-All code has been successfully migrated to Mojo 0.25.7 and is fully functional:
+All code has been successfully migrated to Mojo 0.26.1 and is fully functional:
 
-- ✅ All 61 files updated for Mojo 0.25.7 compatibility
+- ✅ All 61 files updated for Mojo 0.26.1 compatibility
 - ✅ Fixed parameter conventions (`inout` → `mut`/`out`)
 - ✅ Updated collections API (`DynamicVector` → `List`)
 - ✅ Fixed memory management (`UnsafePointer`, ownership)

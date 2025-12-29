@@ -14,7 +14,7 @@
 # Requirements:
 #   - Bash 4.0+ (for associative arrays)
 #   - tar command available
-#   - Mojo v0.25.7+
+#   - Mojo v0.26.1+
 #
 # Prerequisites:
 #   - All benchmark files in place

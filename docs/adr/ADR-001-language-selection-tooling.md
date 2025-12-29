@@ -11,7 +11,7 @@
 ## Executive Summary
 
 This ADR establishes a **Pragmatic Hybrid Language Approach** for the ML Odyssey project, resolving the conflict
-between the project's "Mojo First" philosophy and the practical limitations of Mojo v0.25.7 for automation and
+between the project's "Mojo First" philosophy and the practical limitations of Mojo v0.26.1 for automation and
 tooling tasks.
 
 **Core Decision**: Use the right tool for the job. Mojo for ML/AI implementations and performance-critical code;
@@ -152,7 +152,7 @@ Issue #8's comprehensive testing revealed:
 1. **Project Velocity**: Converting working scripts would delay ML implementation by 2-3 months
 1. **Risk Management**: High probability of introducing bugs into critical automation
 1. **Resource Efficiency**: 7-9 weeks of effort for zero functional benefit
-1. **Technical Maturity**: Mojo v0.25.7 is not ready for systems scripting
+1. **Technical Maturity**: Mojo v0.26.1 is not ready for systems scripting
 1. **Pragmatic Engineering**: Use the right tool for each job
 
 ## Decision
@@ -247,7 +247,7 @@ Purpose: Automate GitHub issue creation via gh CLI
 Language: Python
 Justification:
   - Requires subprocess stdout capture to get issue URLs from gh CLI
-  - Mojo v0.25.7 subprocess module cannot capture output (blocking limitation)
+  - Mojo v0.26.1 subprocess module cannot capture output (blocking limitation)
   - Uses 15+ regex patterns for markdown parsing (no Mojo regex support)
 
 Conversion Plan:
@@ -287,7 +287,7 @@ The "Language Preference" section in CLAUDE.md will be updated to reflect this d
 
 **Use Python for Automation** when technical limitations require it:
 
-- ✅ Subprocess output capture (Mojo limitation in v0.25.7)
+- ✅ Subprocess output capture (Mojo limitation in v0.26.1)
 - ✅ Regex-heavy text processing (no Mojo regex support)
 - ✅ GitHub API interaction via Python libraries
 - ⚠️ Must document justification (see ADR-001)
@@ -317,7 +317,7 @@ The "Language Selection Strategy" section in chief-architect.md will be updated:
 
 **Python Allowed**:
 
-- Automation requiring subprocess output capture (Mojo v0.25.7 limitation)
+- Automation requiring subprocess output capture (Mojo v0.26.1 limitation)
 - Text processing requiring regex (no Mojo stdlib support)
 - GitHub API interaction via Python libraries
 - Must document justification per ADR-001
@@ -337,7 +337,7 @@ The "Language Selection Strategy" section in chief-architect.md will be updated:
 
 ### Technical Feasibility
 
-- Mojo v0.25.7 cannot capture subprocess output (confirmed by Issue #8 testing)
+- Mojo v0.26.1 cannot capture subprocess output (confirmed by Issue #8 testing)
 - No Mojo stdlib regex support (confirmed by documentation review)
 - Workarounds (Python interop) defeat the purpose of conversion
 - Manual parsing alternatives are high-risk and time-consuming
@@ -748,7 +748,7 @@ This implementation is successful when:
 
 ### Appendix A: Mojo Maturity Assessment
 
-Based on Issue #8 testing with Mojo v0.25.7:
+Based on Issue #8 testing with Mojo v0.26.1:
 
 ### Mature for Production
 

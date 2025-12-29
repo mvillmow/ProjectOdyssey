@@ -484,7 +484,7 @@ struct TensorMemoryPool(Copyable, Movable):
 
 
 # Global memory pool singleton
-# Since Mojo v0.25.7+ doesn't support global vars, we implement pooled_alloc
+# Since Mojo v0.26.1+ doesn't support global vars, we implement pooled_alloc
 # and pooled_free to bypass the global pool and go directly to system allocator
 # for now. This is a temporary workaround until Mojo adds proper global state support.
 
@@ -533,7 +533,7 @@ fn pooled_free(ptr: UnsafePointer[UInt8, origin=MutAnyOrigin], size: Int):
 fn get_global_pool() -> TensorMemoryPool:
     """Get a new memory pool instance.
 
-    Note: This returns a new instance since Mojo v0.25.7+ doesn't support
+    Note: This returns a new instance since Mojo v0.26.1+ doesn't support
     global mutable state. The pool infrastructure is fully implemented but
     not used until Mojo v0.26+ adds support for global vars.
 

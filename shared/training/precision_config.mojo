@@ -212,7 +212,7 @@ struct PrecisionConfig(Copyable, Movable):
             PrecisionConfig with BF16 settings.
 
         Note:
-            Currently uses FP16 as BF16 is not natively supported in Mojo v0.25.7.
+            Currently uses FP16 as BF16 is not natively supported in Mojo v0.26.1.
             When Mojo adds native BF16 support, this will automatically use it
             via the bfloat16_dtype comptime in dtype_utils.mojo.
 

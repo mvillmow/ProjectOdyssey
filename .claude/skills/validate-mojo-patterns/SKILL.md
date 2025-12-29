@@ -139,7 +139,7 @@ Report validation results with:
 | False positives | Verify context manually, may need refinement |
 | Mixed patterns | Process each pattern type separately |
 | Large codebase | Use grep filters to focus on specific patterns |
-| Version issues | Verify code is v0.25.7+ compatible |
+| Version issues | Verify code is v0.26.1+ compatible |
 
 ## References
 

@@ -138,7 +138,7 @@ comptime LICENSE = "MIT"
 # This allows users to do: from shared import core, training, data, utils
 # Then access via: shared.core.layers.Linear, shared.training.optimizers.SGD
 #
-# NOTE: Mojo v0.25.7+ does not support __all__ module-level assignments.
+# NOTE: Mojo v0.26.1+ does not support __all__ module-level assignments.
 # In Mojo, all public symbols (those not prefixed with _) are automatically
 # exported when the module is imported. The public API documentation below
 # describes what should be exposed at this package level:

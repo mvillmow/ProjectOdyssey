@@ -553,7 +553,7 @@ Store baseline results for comparison:
   "environment": {
     "os": "linux",
     "cpu": "x86_64",
-    "mojo_version": "0.25.7"
+    "mojo_version": "0.26.1"
   },
   "benchmarks": [
     {

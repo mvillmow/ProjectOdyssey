@@ -442,7 +442,7 @@ Pattern: `✓ test_name` for passes, `✗ test_name` for fails
 
 ---
 
-## Reference: Key Mojo v0.25.7+ Syntax
+## Reference: Key Mojo v0.26.1+ Syntax
 
 ### `__init__` Method
 
@@ -451,7 +451,7 @@ Pattern: `✓ test_name` for passes, `✗ test_name` for fails
 fn __init__(mut self, arg: Type):
     self.field = arg
 
-# CORRECT (v0.25.7+)
+# CORRECT (v0.26.1+)
 fn __init__(mut self, arg: Type) -> Self:
     return Self(field=arg)
 ```text
@@ -533,6 +533,6 @@ All fixes complete when:
 ## Notes
 
 - These are systematic, low-risk fixes
-- All changes follow Mojo v0.25.7+ best practices
+- All changes follow Mojo v0.26.1+ best practices
 - No logic changes required
 - Estimated total time: 80 minutes for all 5 priority levels

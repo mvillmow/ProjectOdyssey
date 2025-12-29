@@ -22,7 +22,7 @@ Test strategy:
 - Cover scalar, empty, and N-D tensor cases
 - Test all supported dtypes
 
-Note: These tests work around Mojo v0.25.7 limitations:
+Note: These tests work around Mojo v0.26.1 limitations:
 - No runtime memory introspection APIs
 - `memory_usage()` returns stub values
 - Tests use reference count as proxy for memory safety

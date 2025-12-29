@@ -1,13 +1,13 @@
 ---
 name: mojo-lint-syntax
-description: "Validate Mojo syntax against current v0.25.7+ standards. Use to catch syntax errors before compilation."
+description: "Validate Mojo syntax against current v0.26.1+ standards. Use to catch syntax errors before compilation."
 category: mojo
 mcp_fallback: none
 ---
 
 # Lint Mojo Syntax
 
-Validate Mojo code against v0.25.7+ syntax standards.
+Validate Mojo code against v0.26.1+ syntax standards.
 
 ## When to Use
 
@@ -93,7 +93,7 @@ Report syntax issues with:
 | Compiler not found | Verify mojo is installed and in PATH |
 | Module not found | Add `-I .` flag to include current directory |
 | Encoding issues | Convert file to UTF-8 |
-| Version mismatch | Check mojo version against v0.25.7+ |
+| Version mismatch | Check mojo version against v0.26.1+ |
 | Large files | Process one file at a time |
 
 ## Validation Checklist
@@ -110,6 +110,6 @@ Before committing Mojo code:
 
 ## References
 
-- See CLAUDE.md for v0.25.7+ syntax standards
+- See CLAUDE.md for v0.26.1+ syntax standards
 - See validate-mojo-patterns for pattern validation
 - See mojo-format skill for code formatting

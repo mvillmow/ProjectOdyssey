@@ -15,7 +15,7 @@ causes fall into three groups:
 3. **API Design Issues** (25% of errors) - Missing constructors, incorrect signatures,
    uninitialized data
 
-**Key Finding**: Most errors stem from misunderstanding Mojo v0.25.7+ ownership semantics and
+**Key Finding**: Most errors stem from misunderstanding Mojo v0.26.1+ ownership semantics and
 constructor conventions. The `out self` vs `mut self` distinction is critical.
 
 ---
@@ -193,7 +193,7 @@ error: 'mut self' is not valid in constructor '__init__'
 note: use 'out self' for constructors
 ```
 
-**Root Cause**: Mojo v0.25.7+ distinguishes between:
+**Root Cause**: Mojo v0.26.1+ distinguishes between:
 
 - `out self` - Creates a new instance (constructors)
 - `mut self` - Mutates an existing instance (methods)

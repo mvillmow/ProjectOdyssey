@@ -2,7 +2,7 @@
 """
 Unified dataset downloader for ML Odyssey.
 
-Justification: Python is used for HTTP downloads and archive extraction (Mojo v0.25.7
+Justification: Python is used for HTTP downloads and archive extraction (Mojo v0.26.1
 limitation: subprocess API lacks proper exit code and output capture).
 See: docs/adr/ADR-001-language-selection-tooling.md
 

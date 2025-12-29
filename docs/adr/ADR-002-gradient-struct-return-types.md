@@ -6,7 +6,7 @@ ACCEPTED
 
 ## Context
 
-The Mojo compiler (v0.25.7) does not fully support tuple return types in all contexts, causing
+The Mojo compiler (v0.26.1) does not fully support tuple return types in all contexts, causing
 compilation failures in backward pass functions that needed to return multiple gradients.
 
 ### Problem
@@ -121,7 +121,7 @@ fn add_backward(grad_output, a_shape, b_shape, inout grad_a, inout grad_b) raise
 fn add_backward(...) raises -> (ExTensor, ExTensor)
 ```
 
-**Rejected**: Does not compile reliably in Mojo v0.25.7.
+**Rejected**: Does not compile reliably in Mojo v0.26.1.
 
 ## Implementation Details
 

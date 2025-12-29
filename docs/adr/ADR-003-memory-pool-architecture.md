@@ -96,7 +96,7 @@ struct FreeList:
 
 ### Current Limitation
 
-Mojo v0.25.7+ does not support global mutable state. The pool infrastructure is fully
+Mojo v0.26.1+ does not support global mutable state. The pool infrastructure is fully
 implemented, but `pooled_alloc()` and `pooled_free()` currently bypass the pool and use
 direct malloc/free. This will be enabled when Mojo v0.26+ adds global variable support.
 

@@ -66,7 +66,7 @@ gh pr diff <pr> --name-only | sed 's/.*\.//' | sort | uniq -c
 
 **Mojo Implementation Checklist**:
 
-- [ ] v0.25.7+ syntax (no inout, @value, DynamicVector)
+- [ ] v0.26.1+ syntax (no inout, @value, DynamicVector)
 - [ ] All `__init__` use `out self`
 - [ ] Non-copyable returns use `^`
 - [ ] Traits conformance correct (Copyable, Movable)

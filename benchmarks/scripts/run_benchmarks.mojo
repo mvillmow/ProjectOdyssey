@@ -328,7 +328,7 @@ fn generate_json_output(benchmarks: List[BenchmarkMetrics]) raises -> String:
     json += '  "environment": {\n'
     json += '    "os": "linux",\n'
     json += '    "cpu": "x86_64",\n'
-    json += '    "mojo_version": "0.25.7",\n'
+    json += '    "mojo_version": "0.26.1",\n'
     json += '    "git_commit": "placeholder"\n'
     json += "  },\n"
     json += '  "benchmarks": [\n'

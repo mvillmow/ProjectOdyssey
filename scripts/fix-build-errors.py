@@ -877,7 +877,7 @@ Commit message:
 fix(layers): update constructor to use out self parameter
 
 - Root cause: Constructor used deprecated mut self convention
-- Solution: Changed to out self per Mojo v0.25.7+ guidelines
+- Solution: Changed to out self per Mojo v0.26.1+ guidelines
 - Pattern: All __init__ methods must use out self
 </example_2>
 </examples>

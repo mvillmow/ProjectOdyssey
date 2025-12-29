@@ -65,7 +65,7 @@ gh pr view <pr> --json body
 
 **Standards Compliance**:
 
-- [ ] Mojo code uses v0.25.7+ syntax
+- [ ] Mojo code uses v0.26.1+ syntax
 - [ ] No deprecated patterns (inout, @value, DynamicVector)
 - [ ] Zero compiler warnings
 - [ ] Proper indentation and formatting

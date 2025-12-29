@@ -3091,7 +3091,7 @@ PR #{pr_number} has failing CI checks:
 - You MUST edit files to fix the issues - do not just describe what to do
 - You MUST commit your changes before finishing - branches with uncommitted changes are not acceptable
 - Use absolute paths starting with {worktree}
-- Follow Mojo v0.25.7+ syntax (out self for constructors, mut self for mutating methods)
+- Follow Mojo v0.26.1+ syntax (out self for constructors, mut self for mutating methods)
 - If logs are empty, run `pixi run mojo test` to see the actual errors
 """
 
@@ -3404,7 +3404,7 @@ You are on branch: {worktree.name}
 - You MUST create or modify files - do not just describe what to do
 - You MUST commit your changes before finishing - branches with uncommitted changes are not acceptable
 - Use absolute paths starting with {worktree}
-- Follow Mojo v0.25.7+ syntax (out self for constructors, mut self for mutating methods)
+- Follow Mojo v0.26.1+ syntax (out self for constructors, mut self for mutating methods)
 - Check existing code patterns before implementing
 """
 

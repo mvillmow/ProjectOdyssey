@@ -215,7 +215,7 @@ fn test_paper_implementation_pattern() raises:
 # ============================================================================
 
 
-# SKIPPED: Mojo v0.25.7 doesn't support __all__
+# SKIPPED: Mojo v0.26.1 doesn't support __all__
 # See shared/__init__.mojo lines 138-141 for explanation
 # fn test_public_api_exports() raises:
 #     """Test that __all__ exports are consistent."""
@@ -311,7 +311,7 @@ fn main() raises:
 
     # API stability
     print("\nTesting API Stability...")
-    # test_public_api_exports()  # SKIPPED: Mojo v0.25.7 doesn't support __all__
+    # test_public_api_exports()  # SKIPPED: Mojo v0.26.1 doesn't support __all__
     test_no_private_exports()
 
     # Backward compatibility

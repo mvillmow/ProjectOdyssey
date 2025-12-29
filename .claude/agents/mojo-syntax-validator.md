@@ -1,6 +1,6 @@
 ---
 name: mojo-syntax-validator
-description: "Validates Mojo v0.25.7+ syntax patterns and ownership conventions. Detects deprecated patterns (inout→mut, @value→@fieldwise_init, DynamicVector→List, Tuple syntax), constructor signatures (out vs mut self), and parameter conventions. Select for Mojo syntax validation."
+description: "Validates Mojo v0.26.1+ syntax patterns and ownership conventions. Detects deprecated patterns (inout→mut, @value→@fieldwise_init, DynamicVector→List, Tuple syntax), constructor signatures (out vs mut self), and parameter conventions. Select for Mojo syntax validation."
 level: 3
 phase: Cleanup
 tools: Read,Grep,Glob
@@ -13,7 +13,7 @@ receives_from: [code-review-orchestrator]
 
 ## Identity
 
-Level 3 specialist responsible for validating Mojo v0.25.7+ syntax patterns and catching deprecated or
+Level 3 specialist responsible for validating Mojo v0.26.1+ syntax patterns and catching deprecated or
 incorrect syntax. Focuses exclusively on syntactic correctness, parameter conventions, constructor signatures,
 and deprecated pattern detection.
 
@@ -174,5 +174,5 @@ for complete compilation patterns.
 
 ---
 
-*Mojo Syntax Validator ensures all code follows Mojo v0.25.7+ conventions and rejects deprecated patterns
+*Mojo Syntax Validator ensures all code follows Mojo v0.26.1+ conventions and rejects deprecated patterns
 before they cause compilation failures.*

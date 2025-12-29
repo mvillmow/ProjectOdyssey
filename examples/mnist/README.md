@@ -12,7 +12,7 @@ with a classic CNN architecture on the MNIST dataset.
 
 **Dataset**: MNIST (10 classes: digits 0-9)
 
-**Status**: ✅ **Fully Functional** - Complete implementation working on Mojo 0.25.7 with training
+**Status**: ✅ **Fully Functional** - Complete implementation working on Mojo 0.26.1 with training
 and inference achieving high accuracy on MNIST digits.
 
 ## Quick Start

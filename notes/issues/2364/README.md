@@ -17,7 +17,7 @@ Both schedulers are fully implemented with comprehensive test coverage. All test
 - [x] Comprehensive unit tests exist and pass
 - [x] Proper exports configured
 - [x] Zero compilation warnings
-- [x] Mojo v0.25.7+ syntax compliance
+- [x] Mojo v0.26.1+ syntax compliance
 
 ## Implementations
 
@@ -184,7 +184,7 @@ from shared.training.schedulers import CosineAnnealingLR, WarmupLR
 
 ## Code Quality Compliance
 
-### Mojo v0.25.7+ Syntax
+### Mojo v0.26.1+ Syntax
 
 - [x] Correct constructor signature: `fn __init__(out self, ...)`
 - [x] Correct method signature: `fn get_lr(self, ...)` (read-only)
@@ -246,11 +246,11 @@ The implementation provides simple linear warmup with constant learning rate aft
 - [x] Unit tests exist for both schedulers
 - [x] All tests pass locally with zero errors
 - [x] Mojo compiler accepts all code with zero warnings
-- [x] Code follows Mojo v0.25.7+ conventions
+- [x] Code follows Mojo v0.26.1+ conventions
 - [x] Test coverage includes edge cases and properties
 
 ## Conclusion
 
-Issue #2364 is **VERIFIED COMPLETE**. Both CosineAnnealingLR and WarmupLR schedulers are fully implemented with comprehensive test coverage (24 total test functions). All tests pass locally with zero compilation warnings. The implementations follow Mojo v0.25.7+ syntax conventions and proper software engineering practices.
+Issue #2364 is **VERIFIED COMPLETE**. Both CosineAnnealingLR and WarmupLR schedulers are fully implemented with comprehensive test coverage (24 total test functions). All tests pass locally with zero compilation warnings. The implementations follow Mojo v0.26.1+ syntax conventions and proper software engineering practices.
 
 The schedulers are production-ready and can be used in training pipelines for learning rate scheduling.

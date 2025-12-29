@@ -7,7 +7,7 @@ containing 40+ comprehensive backward gradient tests into main.
 
 ADR-001 Justification: Python for Automation
 - Reason: subprocess output capture (git commands require output parsing)
-- Mojo limitation: Cannot capture stdout/stderr in v0.25.7
+- Mojo limitation: Cannot capture stdout/stderr in v0.26.1
 - Technical requirement: Need to check git command results and parse output
 
 Usage:

@@ -271,7 +271,7 @@ fn convert_to_fp32_master(params: ExTensor) raises -> ExTensor:
     if params.dtype() == DType.float16:
         # TODO(#2731): Implement SIMD FP16→FP32 vectorization
         #
-        # Current Limitation: Mojo v0.25.7+ does not support SIMD vectorization for
+        # Current Limitation: Mojo v0.26.1+ does not support SIMD vectorization for
         # FP16 load operations. This prevents efficient bulk conversion from FP16 to FP32.
         #
         # Compiler Limitation Details:

@@ -47,6 +47,6 @@ pytest tests/
 
 **File**: `BUILD_INSTRUCTIONS.md`, `EXECUTE_BUILD.md`: pixi.toml deps, mojo package steps.
 
-**Troubleshooting**: Docker perms, pixi cache rm, mojo version 0.25.7+.
+**Troubleshooting**: Docker perms, pixi cache rm, mojo version 0.26.1+.
 
 Updated: 2025-11-24

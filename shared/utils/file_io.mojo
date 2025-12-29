@@ -573,7 +573,7 @@ fn safe_write_file(filepath: String, content: String) -> Bool:
 
         Writes to temporary file first, then atomically renames to destination.
         Prevents corruption if write is interrupted. Uses Python interop for
-        os.rename() since Mojo v0.25.7 lacks this functionality.
+        os.rename() since Mojo v0.26.1 lacks this functionality.
 
     Args:
             filepath: Output file path.
@@ -591,7 +591,7 @@ fn safe_write_file(filepath: String, content: String) -> Bool:
             f.write(content)
 
         # Rename temp file to final destination (atomic operation on Unix)
-        # Use Python interop since Mojo v0.25.7 doesn't have os.rename()
+        # Use Python interop since Mojo v0.26.1 doesn't have os.rename()
         try:
             var python = Python.import_module("os")
             python.rename(temp_filepath, filepath)
@@ -668,7 +668,7 @@ fn remove_safely(filepath: String) -> Bool:
     Returns:
             True if removed, False if error.
     """
-    # NOTE: Mojo v0.25.7 doesn't have os.remove() or file system operations
+    # NOTE: Mojo v0.26.1 doesn't have os.remove() or file system operations
     # In production, this would move file to trash/trash directory
     # For now, this is a placeholder that simulates successful removal
     if not file_exists(filepath):

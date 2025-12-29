@@ -1,4 +1,4 @@
-# Mojo v0.25.7+ Migration - Comprehensive Error Summary
+# Mojo v0.26.1+ Migration - Comprehensive Error Summary
 
 **Date**: 2025-01-23
 **Context**: Post-rebase compilation fixes for PR #1922
@@ -6,7 +6,7 @@
 
 ## Executive Summary
 
-After rebasing against main, discovered 1,143 compilation errors due to Mojo v0.25.7+ breaking
+After rebasing against main, discovered 1,143 compilation errors due to Mojo v0.26.1+ breaking
 changes. Systematically fixed 1,013 errors (88.6%) across 10 batches. This document catalogs
 all error patterns to prevent recurrence and guide agent updates.
 
@@ -16,7 +16,7 @@ all error patterns to prevent recurrence and guide agent updates.
 
 #### 1.1 `inout` → `mut` Parameter Convention (8 errors)
 
-**Pattern**: Mojo v0.25.7+ renamed `inout` to `mut` for mutable parameters.
+**Pattern**: Mojo v0.26.1+ renamed `inout` to `mut` for mutable parameters.
 
 **Error**:
 
@@ -784,7 +784,7 @@ if len(shape_vec) == 2:
 
 ## Lessons Learned
 
-1. **Breaking changes are pervasive**: v0.25.7+ affected every major subsystem
+1. **Breaking changes are pervasive**: v0.26.1+ affected every major subsystem
 2. **Ownership is explicit**: No more implicit copies - forces better design
 3. **Type safety increased**: More explicit trait requirements, generics
 4. **Stdlib consolidation**: Builtins reduce import boilerplate

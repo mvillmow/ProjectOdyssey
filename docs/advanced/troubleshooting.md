@@ -990,7 +990,7 @@ EOF
 | -------- | ------- |
 | `mojo-test-failure-patterns.md` | Comprehensive failure analysis |
 | `mojo-anti-patterns.md` | Common mistakes to avoid |
-| `mojo-guidelines.md` | Mojo v0.25.7+ syntax and patterns |
+| `mojo-guidelines.md` | Mojo v0.26.1+ syntax and patterns |
 | `CLAUDE.md` | Agent system and development workflow |
 | `docs/dev/build.md` | Build and package instructions |
 
