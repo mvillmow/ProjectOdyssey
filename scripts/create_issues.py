@@ -41,6 +41,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
 
+# Enable importing from scripts/common.py
+sys.path.insert(0, str(Path(__file__).parent))
+from common import get_repo_root
+
 # Try to import tqdm for progress bars, fall back to simple counter if not available
 try:
     from tqdm import tqdm
@@ -840,8 +844,7 @@ def main():
         Colors.disable()
 
     # Setup paths
-    script_dir = Path(__file__).parent
-    repo_root = script_dir.parent  # Go up one level from scripts/ to repo root
+    repo_root = get_repo_root()
     plan_dir = repo_root / "notes" / "plan"
     log_dir = repo_root / "logs"
 

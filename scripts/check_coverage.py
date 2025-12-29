@@ -14,6 +14,10 @@ import argparse
 from pathlib import Path
 from typing import Optional, Dict
 
+# Enable importing from scripts/common.py
+sys.path.insert(0, str(Path(__file__).parent))
+from common import get_repo_root
+
 try:
     import tomllib
 except ImportError:
@@ -31,7 +35,7 @@ def load_coverage_config(config_file: Optional[Path] = None) -> Dict:
     """
     if config_file is None:
         # Try to find coverage.toml in repo root
-        repo_root = Path(__file__).parent.parent
+        repo_root = get_repo_root()
         config_file = repo_root / "coverage.toml"
 
     if not config_file.exists():

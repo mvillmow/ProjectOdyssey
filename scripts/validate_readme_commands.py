@@ -27,6 +27,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional
 
+# Enable importing from scripts/common.py
+sys.path.insert(0, str(Path(__file__).parent))
+from common import get_repo_root
+
 
 # Command classification by language tag
 EXECUTE_LANGUAGES = {"bash", "shell", "sh"}
@@ -305,7 +309,7 @@ def validate_execution(command: str, timeout: int = 60) -> ValidationResult:
             capture_output=True,
             text=True,
             timeout=timeout,
-            cwd=Path(__file__).parent.parent,  # Run from repo root
+            cwd=get_repo_root(),  # Run from repo root
         )
         return ValidationResult(
             command=command,

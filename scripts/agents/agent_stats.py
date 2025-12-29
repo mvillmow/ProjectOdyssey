@@ -38,6 +38,10 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+# Enable importing from scripts/common.py
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from common import get_agents_dir, get_repo_root
+
 
 class AgentAnalyzer:
     """Analyze agent configuration files and generate statistics."""
@@ -366,9 +370,7 @@ Examples:
     args = parser.parse_args()
 
     # Find repository root and agents directory
-    script_dir = Path(__file__).parent
-    repo_root = script_dir.parent.parent
-    agents_dir = repo_root / ".claude" / "agents"
+    agents_dir = get_agents_dir()
 
     if not agents_dir.exists():
         print(f"Error: Agents directory not found: {agents_dir}", file=sys.stderr)

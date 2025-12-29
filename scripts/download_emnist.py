@@ -28,6 +28,10 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+
+# Enable importing from scripts/common.py
+sys.path.insert(0, str(Path(__file__).parent))
+from common import get_repo_root
 from typing import Optional, Tuple
 
 try:
@@ -243,7 +247,7 @@ def main():
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=Path(__file__).parent.parent / "datasets" / "emnist",
+        default=get_repo_root() / "datasets" / "emnist",
         help="Output directory for dataset (default: datasets/emnist/)",
     )
 

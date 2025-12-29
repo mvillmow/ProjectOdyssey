@@ -6,11 +6,16 @@ This module provides common fixtures, helpers, and configuration for all agent t
 """
 
 import re
+import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import pytest
 import yaml
+
+# Enable importing from scripts/common.py
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from common import get_repo_root
 
 
 # ============================================================================
@@ -21,7 +26,7 @@ import yaml
 @pytest.fixture(scope="session")
 def repo_root() -> Path:
     """Get repository root directory."""
-    return Path(__file__).parent.parent.parent.parent.resolve()
+    return get_repo_root()
 
 
 @pytest.fixture(scope="session")

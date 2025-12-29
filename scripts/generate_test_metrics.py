@@ -14,6 +14,10 @@ from pathlib import Path
 from typing import Any, Dict
 import sys
 
+# Enable importing from scripts/common.py
+sys.path.insert(0, str(Path(__file__).parent))
+from common import get_repo_root
+
 
 def count_test_functions(file_path: Path) -> int:
     """Count fn test_* functions in Mojo test file."""
@@ -135,8 +139,7 @@ def main():
     args = parser.parse_args()
 
     # Determine repo root
-    script_dir = Path(__file__).parent
-    repo_root = script_dir.parent
+    repo_root = get_repo_root()
 
     # Generate metrics
     metrics = generate_metrics(repo_root)

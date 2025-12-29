@@ -24,6 +24,10 @@ import signal
 import subprocess
 import sys
 import tempfile
+
+# Enable importing from scripts/common.py
+sys.path.insert(0, str(pathlib.Path(__file__).parent))
+from common import get_repo_root
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -1256,7 +1260,7 @@ Examples:
         json_output=args.json,
     )
 
-    repo_root = pathlib.Path(__file__).resolve().parents[1]
+    repo_root = get_repo_root()
     tempdir = pathlib.Path(tempfile.mkdtemp(prefix="plan-issues-"))
     tempdir.chmod(0o700)  # Restrict to owner only
 

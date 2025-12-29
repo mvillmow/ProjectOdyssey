@@ -13,8 +13,13 @@ Usage:
 """
 
 import re
+import sys
 from pathlib import Path
 from typing import Any, Dict
+
+# Enable importing from scripts/common.py
+sys.path.insert(0, str(Path(__file__).parent))
+from common import get_agents_dir
 
 
 # Agent role categories for customization
@@ -543,7 +548,7 @@ def update_agent_file(agent_path: Path) -> bool:
 
 def main():
     """Main entry point."""
-    agents_dir = Path(__file__).parent.parent / ".claude" / "agents"
+    agents_dir = get_agents_dir()
 
     if not agents_dir.exists():
         print(f"Error: Agents directory not found: {agents_dir}")

@@ -24,6 +24,10 @@ from pathlib import Path
 from typing import Any, Dict, List, Set, Tuple
 import yaml
 
+# Enable importing from scripts/common.py
+sys.path.insert(0, str(Path(__file__).parent))
+from common import get_repo_root
+
 
 def find_test_files(root_dir: Path) -> List[Path]:
     """Find all test_*.mojo files, excluding build artifacts and examples."""
@@ -332,9 +336,8 @@ def main():
     # Parse arguments
     post_pr = "--post-pr" in sys.argv
 
-    # Determine repository root (script is in scripts/)
-    script_dir = Path(__file__).parent
-    repo_root = script_dir.parent
+    # Determine repository root
+    repo_root = get_repo_root()
 
     # Find all test files (quietly)
     test_files = find_test_files(repo_root)
