@@ -19,7 +19,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  # Docker image names must be lowercase - github.repository preserves case
+  IMAGE_NAME: mvillmow/projectodyssey
 
 permissions:
   contents: read
