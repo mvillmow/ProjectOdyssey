@@ -288,16 +288,33 @@ fn test_bool_single_element() raises:
 
 
 fn test_bool_requires_single_element() raises:
-    """Test that __bool__ requires single-element tensor."""
+    """Test that item() requires single-element tensor.
+
+    Note: Since __bool__ is not yet implemented, we test item() which
+    has the same single-element requirement and is used for scalar extraction.
+    """
     var shape = List[Int]()
     shape.append(5)
     var t = ones(shape, DType.float32)
 
-    # if t:  # Should raise error for multi-element tensor
-    #     pass
+    var error_raised = False
+    try:
+        var val = item(t)  # Should raise error for multi-element tensor
+        _ = val  # Suppress unused warning
+    except e:
+        error_raised = True
+        var error_msg = String(e)
+        # Verify error message mentions single-element requirement
+        if (
+            "single" not in error_msg.lower()
+            and "element" not in error_msg.lower()
+        ):
+            raise Error(
+                "Error message should mention single-element requirement"
+            )
 
-    # TODO(#2732): Verify error handling
-    pass  # Placeholder
+    if not error_raised:
+        raise Error("item() on multi-element tensor should raise error")
 
 
 # ============================================================================

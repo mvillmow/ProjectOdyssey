@@ -190,6 +190,7 @@ from shared.core.shape import (
     transposed_conv2d_output_shape,
     global_avgpool_output_shape,
     linear_output_shape,
+    broadcast_to,
 )
 
 # ============================================================================

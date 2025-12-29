@@ -20,6 +20,7 @@ from shared.core import (
     concatenate,
     stack,
     flatten_to_2d,
+    broadcast_to,
 )
 
 # Import test helpers
@@ -53,16 +54,29 @@ fn test_reshape_valid() raises:
 
 fn test_reshape_invalid_size() raises:
     """Test that reshape with incompatible size raises error."""
-    var shape = List[Int]()
-    shape.append(12)
-    var a = arange(0.0, 12.0, 1.0, DType.float32)
-    # var new_shape = List[Int]()
-    # new_shape[0] = 3
-    # new_shape[1] = 5  # 15 elements, incompatible with 12
-    # varb = reshape(a, new_shape)  # Should raise error
+    var a = arange(0.0, 12.0, 1.0, DType.float32)  # 12 elements
+    var new_shape = List[Int]()
+    new_shape.append(3)
+    new_shape.append(5)  # 15 elements, incompatible with 12
 
-    # TODO(#2732): Verify error handling
-    pass  # Placeholder
+    var error_raised = False
+    try:
+        var b = reshape(a, new_shape)
+        _ = b  # Suppress unused warning
+    except e:
+        error_raised = True
+        var error_msg = String(e)
+        # Verify error message mentions element count mismatch
+        if (
+            "element count mismatch" not in error_msg
+            and "reshape" not in error_msg.lower()
+        ):
+            raise Error(
+                "Error message should mention reshape or element count mismatch"
+            )
+
+    if not error_raised:
+        raise Error("reshape with incompatible size should raise error")
 
 
 fn test_reshape_infer_dimension() raises:
@@ -379,13 +393,26 @@ fn test_broadcast_to_incompatible() raises:
     """Test that broadcasting to incompatible shape raises error."""
     var shape_orig = List[Int]()
     shape_orig.append(3)
-    var a = arange(0.0, 3.0, 1.0, DType.float32)
-    # var target_shape = List[Int]()
-    # target_shape[0] = 5  # Incompatible: 3 != 5
-    # varb = broadcast_to(a, target_shape)  # Should raise error
+    var a = arange(0.0, 3.0, 1.0, DType.float32)  # Shape (3,)
+    var target_shape = List[Int]()
+    target_shape.append(5)  # Incompatible: 3 != 5 and neither is 1
 
-    # TODO(#2732): Verify error handling
-    pass  # Placeholder
+    var error_raised = False
+    try:
+        var b = broadcast_to(a, target_shape)
+        _ = b  # Suppress unused warning
+    except e:
+        error_raised = True
+        var error_msg = String(e)
+        # Verify error message mentions broadcast compatibility
+        if (
+            "broadcast" not in error_msg.lower()
+            and "compatible" not in error_msg.lower()
+        ):
+            raise Error("Error message should mention broadcast compatibility")
+
+    if not error_raised:
+        raise Error("broadcast_to with incompatible shape should raise error")
 
 
 # ============================================================================

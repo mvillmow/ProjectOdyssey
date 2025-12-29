@@ -960,15 +960,26 @@ fn test_add_mismatched_shapes_raises_error() raises:
     var a = ones(shape_a, DType.float32)
     var b = ones(shape_b, DType.float32)
 
-    # This should raise an error
-    # For now, we expect it to return zeros or error
-    # TODO(#2732): Verify proper error handling once implemented
-    # try:
-    #     var c = add(a, b)
-    #     raise Error("Should have raised error for mismatched shapes")
-    # except:
-    #     pass  # Expected
-    pass  # Placeholder until error handling is implemented
+    var error_raised = False
+    try:
+        var c = add(a, b)
+        _ = c  # Suppress unused warning
+    except e:
+        error_raised = True
+        var error_msg = String(e)
+        # Verify error message mentions shape/broadcast incompatibility
+        if (
+            "broadcast" not in error_msg.lower()
+            and "shape" not in error_msg.lower()
+        ):
+            raise Error(
+                "Error message should mention shape or broadcast compatibility"
+            )
+
+    if not error_raised:
+        raise Error(
+            "add with mismatched non-broadcastable shapes should raise error"
+        )
 
 
 fn test_multiply_mismatched_shapes_raises_error() raises:
@@ -983,9 +994,27 @@ fn test_multiply_mismatched_shapes_raises_error() raises:
     var a = ones(shape_a, DType.float32)
     var b = ones(shape_b, DType.float32)
 
-    # This should raise an error
-    # TODO(#2732): Verify proper error handling once implemented
-    pass  # Placeholder until error handling is implemented
+    var error_raised = False
+    try:
+        var c = multiply(a, b)
+        _ = c  # Suppress unused warning
+    except e:
+        error_raised = True
+        var error_msg = String(e)
+        # Verify error message mentions shape/broadcast incompatibility
+        if (
+            "broadcast" not in error_msg.lower()
+            and "shape" not in error_msg.lower()
+        ):
+            raise Error(
+                "Error message should mention shape or broadcast compatibility"
+            )
+
+    if not error_raised:
+        raise Error(
+            "multiply with mismatched non-broadcastable shapes should raise"
+            " error"
+        )
 
 
 fn test_add_mismatched_dtypes_raises_error() raises:
@@ -996,9 +1025,19 @@ fn test_add_mismatched_dtypes_raises_error() raises:
     var a = ones(shape, DType.float32)
     var b = ones(shape, DType.float64)
 
-    # This should raise an error
-    # TODO(#2732): Verify proper error handling once implemented
-    pass  # Placeholder until error handling is implemented
+    var error_raised = False
+    try:
+        var c = add(a, b)
+        _ = c  # Suppress unused warning
+    except e:
+        error_raised = True
+        var error_msg = String(e)
+        # Verify error message mentions dtype mismatch
+        if "dtype" not in error_msg.lower():
+            raise Error("Error message should mention dtype mismatch")
+
+    if not error_raised:
+        raise Error("add with mismatched dtypes should raise error")
 
 
 # ============================================================================
