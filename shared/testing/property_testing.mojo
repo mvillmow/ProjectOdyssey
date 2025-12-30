@@ -439,30 +439,3 @@ fn test_multiplication_identity() raises:
     run_property_test(
         property_fn, num_tests=50, test_name="multiplication_identity"
     )
-
-
-# ============================================================================
-# Main Test Runner
-# ============================================================================
-
-
-fn main() raises:
-    """Run all property tests."""
-    print("Running property-based tests...")
-
-    print("  Testing reshape preserves numel...")
-    test_reshape_preserves_numel()
-
-    print("  Testing addition commutative...")
-    test_addition_commutative()
-
-    print("  Testing multiplication commutative...")
-    test_multiplication_commutative()
-
-    print("  Testing addition identity...")
-    test_addition_identity()
-
-    print("  Testing multiplication identity...")
-    test_multiplication_identity()
-
-    print("All property-based tests passed!")
