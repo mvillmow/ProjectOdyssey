@@ -22,5 +22,8 @@
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "skills-registry-commands@ProjectMnemosyne": true
   }
 }
