@@ -248,9 +248,9 @@ For significant releases, include:
 Thanks to @contributor1, @contributor2!
 ```
 
-## See Also
+## Related Files
 
-- [VERSION file](../../VERSION) - Current version
-- [Release workflow](../../.github/workflows/release.yml) - Automation
-- [Changelog generator](../../scripts/generate_changelog.py) - Script
-- [Version bump script](../../scripts/bump_version.sh) - Script
+- `VERSION` - Current version file
+- `.github/workflows/release.yml` - Release automation workflow
+- `scripts/generate_changelog.py` - Changelog generation script
+- `scripts/bump_version.sh` - Version bump script
