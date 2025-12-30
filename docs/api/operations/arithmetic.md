@@ -246,5 +246,4 @@ var z = x + y  # Raises: "DType mismatch: float32 vs int32"
 ## See Also
 
 - [Reduction Operations](reduction.md) - Sum, mean, max, min
-- [Element-wise Math](math.md) - exp, log, sqrt, sin, cos
 - [ExTensor Reference](../tensor.md) - Core tensor class
