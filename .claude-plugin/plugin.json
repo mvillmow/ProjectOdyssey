@@ -1,0 +1,11 @@
+{
+  "name": "verify-issue-before-work",
+  "version": "1.0.0",
+  "category": "tooling",
+  "description": "Verify GitHub issue state and existing implementation before starting work to avoid duplicate effort",
+  "author": "ML Odyssey Team",
+  "created": "2025-12-29",
+  "tags": ["workflow", "github", "productivity", "verification"],
+  "skillPath": "skills/verify-issue-before-work/SKILL.md",
+  "referencesPath": "skills/verify-issue-before-work/references/notes.md"
+}
