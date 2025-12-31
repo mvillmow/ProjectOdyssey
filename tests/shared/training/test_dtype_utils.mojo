@@ -29,11 +29,11 @@ fn test_dtype_aliases() raises:
         float64_dtype, DType.float64, "float64_dtype should be DType.float64"
     )
 
-    # BFloat16 currently aliases to float16
+    # BFloat16 now uses native DType.bfloat16
     assert_equal(
         bfloat16_dtype,
-        DType.float16,
-        "bfloat16_dtype should currently comptime to DType.float16",
+        DType.bfloat16,
+        "bfloat16_dtype should be DType.bfloat16",
     )
 
     print("✓ DType aliases test passed")
