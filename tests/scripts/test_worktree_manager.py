@@ -36,6 +36,7 @@ class TestWorktreeManager:
     def teardown_method(self):
         """Clean up test fixtures."""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     @mock.patch("implement_issues.run")
@@ -184,6 +185,7 @@ class TestWorktreeManagerThreadSafety:
     def teardown_method(self):
         """Clean up test fixtures."""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     @mock.patch("implement_issues.run")
@@ -204,10 +206,7 @@ class TestWorktreeManagerThreadSafety:
             except Exception as e:
                 errors.append(e)
 
-        threads = [
-            threading.Thread(target=create_worktree, args=(i,))
-            for i in range(100, 110)
-        ]
+        threads = [threading.Thread(target=create_worktree, args=(i,)) for i in range(100, 110)]
 
         for t in threads:
             t.start()

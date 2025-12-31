@@ -72,7 +72,9 @@ fn _e4m3_from_float32(scale: Float32) -> Scalar[FP8]:
 
     if isinf(scale) or scale >= 240.0:
         # Return maximum positive FP8 value
-        return bitcast[FP8, 1](SIMD[DType.uint8, 1](0x7E))  # Max finite positive
+        return bitcast[FP8, 1](
+            SIMD[DType.uint8, 1](0x7E)
+        )  # Max finite positive
 
     # Use native FP8 conversion (always use absolute value for scale)
     var abs_scale = scale if scale > 0 else -scale
@@ -376,9 +378,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         return NVFP4(fp4_bits, scale)
 
     @staticmethod
-    fn _fp4_stochastic_round(
-        x: Float32, scale: Float32, seed: UInt64
-    ) -> UInt8:
+    fn _fp4_stochastic_round(x: Float32, scale: Float32, seed: UInt64) -> UInt8:
         """Internal: Stochastic rounding helper using simple LCG.
 
         Args:

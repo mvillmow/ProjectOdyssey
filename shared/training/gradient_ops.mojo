@@ -181,7 +181,9 @@ fn _scale_float16(mut gradient: ExTensor, scale: Float16, size: Int) raises:
         grad_ptr[i] = grad_ptr[i] * scale
 
 
-fn _scale_bfloat16(mut gradient: ExTensor, scale: Scalar[BF16], size: Int) raises:
+fn _scale_bfloat16(
+    mut gradient: ExTensor, scale: Scalar[BF16], size: Int
+) raises:
     """Direct bfloat16 scaling using pointer operations."""
     var grad_ptr = gradient._data.bitcast[Scalar[BF16]]()
 

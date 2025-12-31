@@ -2107,9 +2107,9 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
             for i in range(16):
                 result._data.bitcast[UInt8]()[block_offset + i] = block.data[i]
             # Extract exponent bits from E8M0 scale via bitcast
-            result._data.bitcast[UInt8]()[
-                block_offset + 16
-            ] = bitcast[DType.uint8, 1](block.scale)[0]
+            result._data.bitcast[UInt8]()[block_offset + 16] = bitcast[
+                DType.uint8, 1
+            ](block.scale)[0]
 
         return result^
 

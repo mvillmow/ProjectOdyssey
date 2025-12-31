@@ -32,6 +32,7 @@ class TestDashboardServer(TestCase):
     def tearDown(self):
         """Clean up test fixtures."""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def create_test_run(self, run_id: str, metrics: dict):
@@ -79,11 +80,14 @@ class TestDashboardServer(TestCase):
 
     def test_read_all_metrics(self):
         """Test reading all metrics for a run."""
-        self.create_test_run("multi_metric", {
-            "loss": [1.0, 0.5],
-            "accuracy": [0.5, 0.8],
-            "lr": [0.01, 0.001],
-        })
+        self.create_test_run(
+            "multi_metric",
+            {
+                "loss": [1.0, 0.5],
+                "accuracy": [0.5, 0.8],
+                "lr": [0.01, 0.001],
+            },
+        )
 
         metrics = read_all_metrics("multi_metric")
         self.assertEqual(len(metrics), 3)

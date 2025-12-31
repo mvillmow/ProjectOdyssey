@@ -286,7 +286,9 @@ struct MXFP4(Copyable, Movable, Representable, Stringable):
     var scale: Scalar[E8M0]
     """8-bit E8M0 scale factor."""
 
-    fn __init__(out self, value: UInt8 = 0, scale: Scalar[E8M0] = Scalar[E8M0](1.0)):
+    fn __init__(
+        out self, value: UInt8 = 0, scale: Scalar[E8M0] = Scalar[E8M0](1.0)
+    ):
         """Initialize MXFP4 from E2M1 value and E8M0 scale.
 
         Args:
@@ -548,10 +550,9 @@ struct MXFP4(Copyable, Movable, Representable, Stringable):
         Returns:
             True if equal.
         """
-        return (
-            self.value == other.value
-            and _e8m0_get_exponent(self.scale) == _e8m0_get_exponent(other.scale)
-        )
+        return self.value == other.value and _e8m0_get_exponent(
+            self.scale
+        ) == _e8m0_get_exponent(other.scale)
 
     fn __ne__(self, other: MXFP4) -> Bool:
         """Check inequality.
@@ -812,7 +813,9 @@ struct MXFP4Block(Copyable, Movable, Representable, Stringable):
 
         # Re-encode value with block's scale
         var float_val = value.to_float32()
-        var fp4_bits = _fp4_from_float32(float_val, _e8m0_to_float32(self.scale))
+        var fp4_bits = _fp4_from_float32(
+            float_val, _e8m0_to_float32(self.scale)
+        )
 
         var byte_idx = index // 2
         var is_upper = (index % 2) == 0

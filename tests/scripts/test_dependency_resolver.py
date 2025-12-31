@@ -188,6 +188,7 @@ class TestDependencyResolver:
                 self.resolver.mark_in_progress(issue_num)
                 # Small delay to increase chance of race conditions
                 import time
+
                 time.sleep(0.01)
                 self.resolver.mark_completed(issue_num)
                 results.append(issue_num)
