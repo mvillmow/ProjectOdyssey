@@ -574,7 +574,9 @@ fn stack(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
 # ============================================================================
 
 
-fn split(tensor: ExTensor, num_splits: Int, axis: Int = 0) raises -> List[ExTensor]:
+fn split(
+    tensor: ExTensor, num_splits: Int, axis: Int = 0
+) raises -> List[ExTensor]:
     """Split tensor into equal parts along an axis.
 
     Divides tensor into num_splits equal parts along the specified axis.
@@ -698,7 +700,9 @@ fn split_with_indices(
         if split_indices[i] >= size_along_axis:
             raise Error("split_with_indices: index out of bounds")
         if i > 0 and split_indices[i] <= split_indices[i - 1]:
-            raise Error("split_with_indices: indices must be strictly increasing")
+            raise Error(
+                "split_with_indices: indices must be strictly increasing"
+            )
 
     # Create slices based on indices
     var results: List[ExTensor] = []
