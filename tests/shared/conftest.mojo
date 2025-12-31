@@ -77,7 +77,7 @@ struct TestFixtures:
         Example:
             ```mojo
             var t = TestFixtures.small_tensor()
-            assert_shape(t, List[Int](3, 3))
+            assert_shape(t, [3, 3])
             ```
         """
         return ExTensor.full([3, 3], 0.1)
@@ -99,7 +99,7 @@ struct TestFixtures:
         Example:
             ```mojo
             var t = TestFixtures.random_tensor(5, 10)
-            assert_shape(t, List[Int](5, 10))
+            assert_shape(t, [5, 10])
             ```
         """
         Self.set_seed()

@@ -9,11 +9,9 @@ Addresses Issue #2953: Phase 3 Code Quality Improvements
 
 from __future__ import annotations
 
-import dataclasses
 import sys
 import threading
 from pathlib import Path
-from typing import TYPE_CHECKING
 from unittest import mock
 
 import pytest

@@ -72,7 +72,7 @@ class TestWorktreeManager:
         ]
 
         manager = WorktreeManager(self.repo_root)
-        path = manager.create(789, "existing-branch")
+        _ = manager.create(789, "existing-branch")
 
         # Should use existing branch, not create new one
         assert mock_run.call_count == 2
@@ -190,7 +190,6 @@ class TestWorktreeManagerThreadSafety:
     def test_concurrent_creates(self, mock_run):
         """Test that concurrent creates don't conflict."""
         import threading
-        import time
 
         mock_run.return_value = mock.Mock(returncode=0, stdout="", stderr="")
         manager = WorktreeManager(self.repo_root)
