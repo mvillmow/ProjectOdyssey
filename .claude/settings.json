@@ -24,6 +24,7 @@
     ]
   },
   "enabledPlugins": {
-    "skills-registry-commands@ProjectMnemosyne": true
+    "skills-registry-commands@ProjectMnemosyne": true,
+    "safety-net@cc-marketplace": true
   }
 }
