@@ -18,8 +18,25 @@ import sys
 import tempfile
 from pathlib import Path
 
-# Get the repo root
-REPO_ROOT = Path(__file__).parent.parent
+# Get the repo root - use environment variable or find it from git
+def get_repo_root():
+    """Get the repository root directory."""
+    if "REPO_ROOT" in os.environ:
+        return Path(os.environ["REPO_ROOT"])
+    # Try to find it from git
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            capture_output=True, text=True
+        )
+        if result.returncode == 0:
+            return Path(result.stdout.strip())
+    except Exception:
+        pass
+    # Fallback to hardcoded path
+    return Path("/home/mvillmow/ProjectOdyssey")
+
+REPO_ROOT = get_repo_root()
 
 # Combined test file content - runs 24 tests in one file
 TEST_FILE_CONTENT = '''"""Combined test to detect heap corruption bug #2942.
