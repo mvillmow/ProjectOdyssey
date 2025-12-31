@@ -52,13 +52,12 @@ Example:
     var a1 = relu(h1)
     ```
 
-FIXME(#2715): Placeholder import tests in tests/shared/test_imports.mojo require:
-- test_core_imports (line 17)
-- test_core_layers_imports (line 31)
-- test_core_activations_imports (line 46)
-- test_core_types_imports (line 60)
-All tests marked as "(placeholder - awaiting implementation)" and require module
-imports to be uncommented as Issue #49 progresses. See Issue #49 for details
+RESOLVED(#3010): All core import tests in tests/shared/test_imports.mojo now use
+actual implemented imports from this module:
+- test_core_imports (line 17-23): ExTensor, zeros, ones, randn, relu, sigmoid, tanh, softmax, gelu
+- test_core_layers_imports (line 26-31): linear, conv2d, flatten, pool2d_max, pool2d_avg
+- test_core_activations_imports (line 34-49): All activation functions
+- test_core_types_imports (line 52-56): ExTensor, FP8, BF8
 """
 
 # Package version
