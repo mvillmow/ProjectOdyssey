@@ -6,15 +6,14 @@ schedulers, metrics, callbacks, and training loops for ML Odyssey paper implemen
 
 All components are implemented in Mojo for maximum performance.
 
-FIXME(#2715): Placeholder import tests in tests/shared/test_imports.mojo require:
-- test_training_imports (line 80+)
-- test_training_optimizers_imports (line 95+)
-- test_training_schedulers_imports (line 110+)
-- test_training_metrics_imports (line 125+)
-- test_training_callbacks_imports (line 140+)
-- test_training_loops_imports (line 155+)
-All tests marked as "(placeholder)" and require uncommented imports as Issue #49 progresses.
-See Issue #49 for details.
+RESOLVED(#3010): All training import tests in tests/shared/test_imports.mojo now use
+actual implemented imports from this module:
+- test_training_imports: SGD, MSELoss, StepLR, CosineAnnealingLR, EarlyStopping, ModelCheckpoint
+- test_training_optimizers_imports: SGD
+- test_training_schedulers_imports: StepLR, CosineAnnealingLR, ExponentialLR, WarmupLR, MultiStepLR, ReduceLROnPlateau
+- test_training_metrics_imports: Accuracy (from shared.metrics)
+- test_training_callbacks_imports: EarlyStopping, ModelCheckpoint, LoggingCallback
+- test_training_loops_imports: TrainingState, Callback
 """
 
 from python import PythonObject

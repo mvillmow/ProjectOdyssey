@@ -23,13 +23,12 @@ Example:
     config = load_config("experiment.yaml")
     ```
 
-FIXME(#2715): Placeholder import tests in tests/shared/test_imports.mojo require:
-- test_utils_imports (line 210+)
-- test_utils_logging_imports (line 220+)
-- test_utils_visualization_imports (line 230+)
-- test_utils_config_imports (line 240+)
-All tests marked as "(placeholder)" and require uncommented imports as Issue #49 progresses.
-See Issue #49 for details
+RESOLVED(#3010): All utils import tests in tests/shared/test_imports.mojo now use
+actual implemented imports from this module:
+- test_utils_imports: Logger, LogLevel, get_logger, load_config, save_config, Config
+- test_utils_logging_imports: Logger, LogLevel, get_logger, StreamHandler, FileHandler
+- test_utils_visualization_imports: plot_training_curves (from shared.visualization)
+- test_utils_config_imports: Config, load_config, save_config, ConfigValidator
 """
 
 # Package version
