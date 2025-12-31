@@ -30,6 +30,7 @@ fn _matmul_2d_1d_impl[
     This matches NVIDIA TensorCores, PyTorch, and TensorFlow behavior.
     See GitHub issue #3009 for rationale.
     """
+
     @parameter
     if dtype == DType.float16:
         var a_ptr = a._data.bitcast[Scalar[DType.float16]]()
@@ -82,6 +83,7 @@ fn _matmul_1d_2d_impl[
     This matches NVIDIA TensorCores, PyTorch, and TensorFlow behavior.
     See GitHub issue #3009 for rationale.
     """
+
     @parameter
     if dtype == DType.float16:
         var a_ptr = a._data.bitcast[Scalar[DType.float16]]()
@@ -141,6 +143,7 @@ fn _matmul_2d_2d_impl[
     This matches NVIDIA TensorCores, PyTorch, and TensorFlow behavior.
     See GitHub issue #3009 for rationale.
     """
+
     @parameter
     if dtype == DType.float16:
         var a_ptr = a._data.bitcast[Scalar[DType.float16]]()
@@ -151,7 +154,9 @@ fn _matmul_2d_2d_impl[
             for j in range(b_cols):
                 var sum_val = Float32(0.0)
                 for k in range(a_cols):
-                    sum_val += Float32(a_ptr[i * a_cols + k]) * Float32(b_ptr[k * b_cols + j])
+                    sum_val += Float32(a_ptr[i * a_cols + k]) * Float32(
+                        b_ptr[k * b_cols + j]
+                    )
                 out_ptr[i * b_cols + j] = Float16(sum_val)
     else:
         var a_ptr = a._data.bitcast[Scalar[dtype]]()
@@ -211,6 +216,7 @@ fn _matmul_batched_impl[
     This matches NVIDIA TensorCores, PyTorch, and TensorFlow behavior.
     See GitHub issue #3009 for rationale.
     """
+
     @parameter
     if dtype == DType.float16:
         var a_ptr = a._data.bitcast[Scalar[DType.float16]]()
