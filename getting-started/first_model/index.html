@@ -1,0 +1,2082 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Mojo-based AI research platform for reproducing classic research papers">
+      
+      
+      
+        <link rel="canonical" href="https://github.com/mvillmow/ProjectOdyssey/getting-started/first_model/">
+      
+      
+        <link rel="prev" href="../quickstart/">
+      
+      
+        <link rel="next" href="../repository-structure/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>First Model - ML Odyssey</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#building-your-first-model" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="ML Odyssey" class="md-header__button md-logo" aria-label="ML Odyssey" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ML Odyssey
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              First Model
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/mvillmow/ProjectOdyssey" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mvillmow/ProjectOdyssey
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../glossary/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Glossary
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../installation/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../core/project-structure/" class="md-tabs__link">
+          
+  
+  
+  Core
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../advanced/performance/" class="md-tabs__link">
+          
+  
+  
+  Advanced
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../dev/architecture/" class="md-tabs__link">
+          
+  
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../integration/supporting-directories/" class="md-tabs__link">
+          
+  
+  
+  Integration
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="ML Odyssey" class="md-nav__button md-logo" aria-label="ML Odyssey" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ML Odyssey
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/mvillmow/ProjectOdyssey" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mvillmow/ProjectOdyssey
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Model
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-project-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Project Setup
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-prepare-the-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Prepare the Data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-define-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Define the Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../repository-structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repository Structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/project-structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/shared-library/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shared Library
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/testing-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/agent-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/mojo-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mojo Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/paper-implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Paper Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/custom-layers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Layers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/distributed-training/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed Training
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/release-process/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Process
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Integration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integration/supporting-directories/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supporting Directories
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integration/papers-shared-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Shared Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integration/quick-start-new-paper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start New Paper
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-project-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Project Setup
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-prepare-the-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Prepare the Data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-define-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Define the Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="building-your-first-model">Building Your First Model</h1>
+<p>Complete tutorial for creating, training, and evaluating your first neural network with ML Odyssey.</p>
+<h2 id="overview">Overview</h2>
+<p>This tutorial walks you through building a simple handwritten digit classifier using the MNIST dataset. You'll learn
+how to use ML Odyssey's shared library to create a neural network, train it, and evaluate its performance.</p>
+<p><strong>What you'll build</strong>: A 3-layer neural network that classifies handwritten digits (0-9) with ~95% accuracy.</p>
+<p><strong>Time required</strong>: 30-45 minutes</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>Before starting, ensure you have:</p>
+<ul>
+<li>Completed the <a href="../quickstart/">Quickstart Guide</a></li>
+<li>ML Odyssey installed and working (<code>pixi run mojo --version</code>)</li>
+<li>Basic understanding of neural networks (helpful but not required)</li>
+</ul>
+<h2 id="step-1-project-setup">Step 1: Project Setup</h2>
+<p>Create a new directory for your first model:</p>
+<p><code>bash</code>bash</p>
+<p>cd ProjectOdyssey
+mkdir -p examples/first_model
+cd examples/first_model</p>
+<p>```text</p>
+<h2 id="step-2-prepare-the-data">Step 2: Prepare the Data</h2>
+<p>Create <code>prepare_data.mojo</code> to load and preprocess the MNIST dataset:</p>
+<p>```mojo</p>
+<p>```mojo</p>
+<p>from shared.data import TensorDataset, BatchLoader
+from shared.utils import download_mnist, normalize_images</p>
+<p>fn prepare_mnist() raises -&gt; (TensorDataset, TensorDataset):
+    """Load and prepare MNIST data for training."""</p>
+<div class="highlight"><pre><span></span><code># Download MNIST dataset (cached after first run)
+print(&quot;Loading MNIST dataset...&quot;)
+var train_images, train_labels = download_mnist(train=True)
+var test_images, test_labels = download_mnist(train=False)
+
+# Normalize images to [0, 1] range
+train_images = normalize_images(train_images)
+test_images = normalize_images(test_images)
+
+# Flatten images from 28x28 to 784
+train_images = train_images.reshape(-1, 784)
+test_images = test_images.reshape(-1, 784)
+
+# Create datasets
+var train_data = TensorDataset(train_images, train_labels)
+var test_data = TensorDataset(test_images, test_labels)
+
+print(&quot;Data loaded: &quot;, train_data.size(), &quot; training examples&quot;)
+print(&quot;Data loaded: &quot;, test_data.size(), &quot; test examples&quot;)
+
+return train_data, test_data
+</code></pre></div>
+<p>```text</p>
+<h2 id="step-3-define-the-model">Step 3: Define the Model</h2>
+<p>Create <code>model.mojo</code> with your neural network architecture.</p>
+<p>See <code>examples/getting-started/first_model_model.mojo</code></p>
+<p>Key architecture:</p>
+<p><code>mojo</code>mojo</p>
+<h1 id="3-layer-network-784-128-64-10">3-layer network: 784 -&gt; 128 -&gt; 64 -&gt; 10</h1>
+<p>self.model = Sequential([
+    Layer("linear", input_size=784, output_size=128),
+    ReLU(),
+    Layer("linear", input_size=128, output_size=64),
+    ReLU(),
+    Layer("linear", input_size=64, output_size=10),
+    Softmax(),
+])</p>
+<p>```text</p>
+<p>Full example: <code>examples/getting-started/first_model_model.mojo</code></p>
+<h2 id="step-4-training-script">Step 4: Training Script</h2>
+<p>Create <code>train.mojo</code> to train your model.</p>
+<p>See <code>examples/getting-started/first_model_train.mojo</code></p>
+<p>Key training steps:</p>
+<p>```mojo</p>
+<p>```mojo</p>
+<h1 id="configure-training">Configure training</h1>
+<p>var optimizer = SGD(learning_rate=0.01, momentum=0.9)
+var loss_fn = CrossEntropyLoss()
+var trainer = Trainer(model=model, optimizer=optimizer, loss_fn=loss_fn)</p>
+<h1 id="add-callbacks">Add callbacks</h1>
+<p>trainer.add_callback(EarlyStopping(patience=3, min_delta=0.001))
+trainer.add_callback(ModelCheckpoint(filepath="best_model.mojo", save_best_only=True))</p>
+<h1 id="train">Train</h1>
+<p>trainer.train(train_loader, val_loader, epochs=10, verbose=True)</p>
+<p>```text</p>
+<p>Full example: <code>examples/getting-started/first_model_train.mojo</code></p>
+<h2 id="step-5-run-training">Step 5: Run Training</h2>
+<p>Execute your training script:</p>
+<p><code>bash</code>bash</p>
+<p>pixi run mojo run train.mojo</p>
+<p>```text</p>
+<p>You should see output like:</p>
+<p>```text</p>
+<p>```text</p>
+<p>==================================================
+Training Digit Classifier
+==================================================
+Loading MNIST dataset...
+Data loaded: 60000 training examples
+Data loaded: 10000 test examples</p>
+<p>Model architecture:
+Sequential(
+  Linear(784 -&gt; 128)
+  ReLU()
+  Linear(128 -&gt; 64)
+  ReLU()
+  Linear(64 -&gt; 10)
+  Softmax()
+)
+Total parameters: 109,386</p>
+<p>Starting training...
+Epoch 1/10: 100%|████████| 1875/1875 [00:12&lt;00:00, 156.25it/s, loss=0.523]
+Validation: loss=0.321, accuracy=0.912
+Epoch 2/10: 100%|████████| 1875/1875 [00:11&lt;00:00, 162.50it/s, loss=0.287]
+Validation: loss=0.245, accuracy=0.934
+...
+Epoch 8/10: 100%|████████| 1875/1875 [00:11&lt;00:00, 165.00it/s, loss=0.142]
+Validation: loss=0.189, accuracy=0.951
+Model checkpoint saved: best_model.mojo</p>
+<p>Training complete!</p>
+<p>```text</p>
+<h2 id="step-6-evaluate-the-model">Step 6: Evaluate the Model</h2>
+<p>Create <code>evaluate.mojo</code> to test your trained model:</p>
+<p><code>mojo</code>mojo</p>
+<p>from shared.training import evaluate_model
+from shared.utils import load_model, plot_confusion_matrix
+from prepare_data import prepare_mnist
+from model import DigitClassifier</p>
+<p>fn main() raises:
+    """Evaluate the trained model."""</p>
+<div class="highlight"><pre><span></span><code>print(&quot;Evaluating model...&quot;)
+
+# Load test data
+var _, test_data = prepare_mnist()
+
+# Load trained model
+var model = load_model[DigitClassifier](&quot;best_model.mojo&quot;)
+
+# Evaluate
+var metrics = evaluate_model(model, test_data)
+
+print(&quot;\nTest Results:&quot;)
+print(&quot;  Accuracy:  {:.2f}%&quot;.format(metrics.accuracy * 100))
+print(&quot;  Precision: {:.2f}%&quot;.format(metrics.precision * 100))
+print(&quot;  Recall:    {:.2f}%&quot;.format(metrics.recall * 100))
+print(&quot;  F1 Score:  {:.2f}&quot;.format(metrics.f1_score))
+
+# Plot confusion matrix
+plot_confusion_matrix(
+    metrics.confusion_matrix,
+    class_names=[&quot;0&quot;, &quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;7&quot;, &quot;8&quot;, &quot;9&quot;],
+    save_path=&quot;confusion_matrix.png&quot;
+)
+
+print(&quot;\nConfusion matrix saved to confusion_matrix.png&quot;)
+</code></pre></div>
+<p>```text</p>
+<p>Run evaluation:</p>
+<p>```bash</p>
+<p>```bash</p>
+<p>pixi run mojo run evaluate.mojo</p>
+<p>```text</p>
+<p>Expected output:</p>
+<p><code>text</code>text</p>
+<p>Evaluating model...</p>
+<p>Test Results:
+  Accuracy:  95.12%
+  Precision: 95.08%
+  Recall:    95.12%
+  F1 Score:  95.10</p>
+<p>Confusion matrix saved to confusion_matrix.png</p>
+<p>```text</p>
+<h2 id="step-7-make-predictions">Step 7: Make Predictions</h2>
+<p>Create <code>predict.mojo</code> to classify individual images:</p>
+<p>```mojo</p>
+<p>```mojo</p>
+<p>from shared.utils import load_model, load_image, plot_image
+from model import DigitClassifier</p>
+<p>fn predict_digit(image_path: String) raises:
+    """Predict the digit in an image."""</p>
+<div class="highlight"><pre><span></span><code># Load model
+var model = load_model[DigitClassifier](&quot;best_model.mojo&quot;)
+
+# Load and preprocess image
+var image = load_image(image_path)
+image = image.resize(28, 28).grayscale()
+image = image.normalize().flatten()
+
+# Make prediction
+var output = model.forward(image)
+var predicted_digit = output.argmax()
+var confidence = output[predicted_digit]
+
+print(&quot;Predicted digit: &quot;, predicted_digit)
+print(&quot;Confidence: {:.2f}%&quot;.format(confidence * 100))
+
+# Visualize
+plot_image(image.reshape(28, 28), title=&quot;Input Image&quot;)
+</code></pre></div>
+<p>fn main() raises:
+    predict_digit("my_digit.png")</p>
+<p>```text</p>
+<h2 id="understanding-the-code">Understanding the Code</h2>
+<h3 id="data-preparation">Data Preparation</h3>
+<ul>
+<li><strong>Normalization</strong>: Scales pixel values to [0, 1] for better training</li>
+<li><strong>Flattening</strong>: Converts 28x28 images to 784-element vectors</li>
+<li><strong>Batching</strong>: Groups examples for efficient GPU processing</li>
+</ul>
+<h3 id="model-architecture">Model Architecture</h3>
+<p><code>text</code>text</p>
+<p>Input (784)
+    ↓
+Linear Layer (784 → 128)
+    ↓
+ReLU Activation
+    ↓
+Linear Layer (128 → 64)
+    ↓
+ReLU Activation
+    ↓
+Linear Layer (64 → 10)
+    ↓
+Softmax (Output Probabilities)</p>
+<p>```text</p>
+<h3 id="training-process">Training Process</h3>
+<ol>
+<li><strong>Forward Pass</strong>: Input flows through network to produce predictions</li>
+<li><strong>Loss Calculation</strong>: Compare predictions to true labels</li>
+<li><strong>Backward Pass</strong>: Compute gradients using backpropagation</li>
+<li><strong>Parameter Update</strong>: Adjust weights using optimizer (SGD)</li>
+<li><strong>Validation</strong>: Evaluate on test set to monitor progress</li>
+</ol>
+<h2 id="common-issues">Common Issues</h2>
+<h3 id="low-accuracy-80">Low Accuracy (&lt; 80%)</h3>
+<p><strong>Possible causes</strong>:</p>
+<ul>
+<li>Data not normalized properly</li>
+<li>Learning rate too high or too low</li>
+<li>Not enough training epochs</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<p>```mojo</p>
+<p>```mojo</p>
+<h1 id="try-adjusting-learning-rate">Try adjusting learning rate</h1>
+<p>var optimizer = SGD(learning_rate=0.001)  # Lower LR</p>
+<h1 id="train-for-more-epochs">Train for more epochs</h1>
+<p>trainer.train(train_loader, val_loader, epochs=20)</p>
+<h1 id="verify-data-normalization">Verify data normalization</h1>
+<p>print("Data range: ", train_images.min(), " to ", train_images.max())</p>
+<h1 id="should-be-00-10">Should be [0.0, 1.0]</h1>
+<p>```text</p>
+<h3 id="training-too-slow">Training Too Slow</h3>
+<h3 id="solutions">Solutions</h3>
+<p><code>mojo</code>mojo</p>
+<h1 id="increase-batch-size">Increase batch size</h1>
+<p>var train_loader = BatchLoader(train_data, batch_size=128)</p>
+<h1 id="use-release-build-for-better-performance">Use release build for better performance</h1>
+<p>```text</p>
+<p>```bash</p>
+<p>```bash</p>
+<p>pixi run mojo build --release train.mojo
+./train</p>
+<p>```text</p>
+<h3 id="out-of-memory">Out of Memory</h3>
+<h3 id="solutions_1">Solutions</h3>
+<p><code>mojo</code>mojo</p>
+<h1 id="reduce-batch-size">Reduce batch size</h1>
+<p>var train_loader = BatchLoader(train_data, batch_size=16)</p>
+<h1 id="use-smaller-model">Use smaller model</h1>
+<p>self.model = Sequential([
+    Layer("linear", input_size=784, output_size=64),  # Smaller
+    ReLU(),
+    Layer("linear", input_size=64, output_size=10),
+])</p>
+<p>```python</p>
+<h3 id="import-errors">Import Errors</h3>
+<p>```bash</p>
+<p>```bash</p>
+<h1 id="ensure-youre-in-the-right-directory">Ensure you're in the right directory</h1>
+<p>cd ProjectOdyssey/examples/first_model</p>
+<h1 id="verify-shared-library-is-accessible">Verify shared library is accessible</h1>
+<p>ls ../../shared/</p>
+<h1 id="run-from-repository-root">Run from repository root</h1>
+<p>cd ../..
+pixi run mojo run examples/first_model/train.mojo</p>
+<p>```text</p>
+<h2 id="improving-your-model">Improving Your Model</h2>
+<h3 id="1-deeper-network">1. Deeper Network</h3>
+<p><code>mojo</code>mojo</p>
+<p>self.model = Sequential([
+    Layer("linear", input_size=784, output_size=256),
+    ReLU(),
+    Layer("linear", input_size=256, output_size=128),
+    ReLU(),
+    Layer("linear", input_size=128, output_size=64),
+    ReLU(),
+    Layer("linear", input_size=64, output_size=10),
+    Softmax(),
+])</p>
+<p>```text</p>
+<h3 id="2-different-optimizer">2. Different Optimizer</h3>
+<p>```mojo</p>
+<p>```mojo</p>
+<p>from shared.training import Adam</p>
+<p>var optimizer = Adam(learning_rate=0.001, beta1=0.9, beta2=0.999)</p>
+<p>```text</p>
+<h3 id="3-learning-rate-scheduling">3. Learning Rate Scheduling</h3>
+<p><code>mojo</code>mojo</p>
+<p>from shared.training.schedulers import StepLR</p>
+<p>var scheduler = StepLR(initial_lr=0.01, step_size=5, gamma=0.5)
+trainer.add_scheduler(scheduler)</p>
+<p>```text</p>
+<h3 id="4-data-augmentation">4. Data Augmentation</h3>
+<p>```mojo</p>
+<p>```mojo</p>
+<p>from shared.data.transforms import RandomRotation, RandomShift</p>
+<p>var train_loader = BatchLoader(
+    train_data,
+    batch_size=32,
+    transforms=[
+        RandomRotation(degrees=15),
+        RandomShift(max_shift=2),
+    ]
+)</p>
+<p>```text</p>
+<h2 id="next-steps">Next Steps</h2>
+<p>Congratulations! You've built, trained, and evaluated your first neural network with ML Odyssey.</p>
+<h3 id="learn-more">Learn More</h3>
+<ul>
+<li><strong><a href="../../core/shared-library/">Shared Library Guide</a></strong> - Explore available components</li>
+<li><strong><a href="../../core/mojo-patterns/">Mojo Patterns</a></strong> - Learn Mojo-specific ML patterns</li>
+<li><strong><a href="../../advanced/performance/">Performance Guide</a></strong> - Optimize your models</li>
+<li><strong><a href="../../advanced/custom-layers/">Custom Layers</a></strong> - Build custom components</li>
+</ul>
+<h3 id="try-more-examples">Try More Examples</h3>
+<ul>
+<li><strong>LeNet-5</strong>: Classic CNN for digit recognition (<code>papers/lenet5/</code>)</li>
+<li><strong>Custom Dataset</strong>: Use your own data with <code>TensorDataset</code></li>
+<li><strong>Different Architectures</strong>: Experiment with convolutions, dropout, batch normalization</li>
+</ul>
+<h3 id="contribute">Contribute</h3>
+<p>Found this tutorial helpful? Consider contributing:</p>
+<ul>
+<li>Share your experiments in GitHub Discussions</li>
+<li>Report bugs or suggest improvements via GitHub Issues</li>
+<li>Submit your own tutorial or example</li>
+</ul>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="../quickstart/">Quickstart Guide</a> - 5-minute introduction</li>
+<li><a href="../installation/">Installation Guide</a> - Detailed setup</li>
+<li><a href="../../core/project-structure/">Project Structure</a> - Repository organization</li>
+<li><a href="../../core/testing-strategy/">Testing Strategy</a> - Writing tests for your models</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
