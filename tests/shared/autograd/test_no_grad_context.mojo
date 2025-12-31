@@ -51,7 +51,8 @@ fn test_no_grad_context_exit_restores_enabled() raises:
 
 
 fn test_no_grad_context_exit_restores_disabled() raises:
-    """Test that NoGradContext.exit() preserves disabled state if it was disabled."""
+    """Test that NoGradContext.exit() preserves disabled state if it was disabled.
+    """
     var tape = GradientTape()
     tape.disable()
     assert_true(not tape.enabled, "Tape should be disabled initially")
@@ -77,15 +78,21 @@ fn test_no_grad_context_nested_contexts() raises:
     # Second context: disabled -> disabled (but remembers disabled state)
     var ctx2 = NoGradContext()
     ctx2.enter(tape)
-    assert_true(not tape.enabled, "Tape should still be disabled in second context")
+    assert_true(
+        not tape.enabled, "Tape should still be disabled in second context"
+    )
 
     # Exit second context: should restore to disabled
     ctx2.exit(tape)
-    assert_true(not tape.enabled, "Tape should be disabled after exiting second context")
+    assert_true(
+        not tape.enabled, "Tape should be disabled after exiting second context"
+    )
 
     # Exit first context: should restore to enabled
     ctx1.exit(tape)
-    assert_true(tape.enabled, "Tape should be re-enabled after exiting first context")
+    assert_true(
+        tape.enabled, "Tape should be re-enabled after exiting first context"
+    )
 
 
 # ============================================================================
@@ -128,7 +135,9 @@ fn test_restore_gradient_tracking_keeps_disabled() raises:
     tape.enable()
 
     restore_gradient_tracking(tape, False)
-    assert_true(not tape.enabled, "Tape should be disabled after restore with False")
+    assert_true(
+        not tape.enabled, "Tape should be disabled after restore with False"
+    )
 
 
 fn test_disable_restore_roundtrip() raises:
@@ -182,7 +191,9 @@ fn test_operations_not_recorded_when_disabled() raises:
 
     # Operations should not be recorded (manually verify via tape state)
     assert_true(not tape.enabled, "Tape should be disabled")
-    assert_equal(len(tape.nodes), initial_node_count, "No nodes should be recorded")
+    assert_equal(
+        len(tape.nodes), initial_node_count, "No nodes should be recorded"
+    )
 
 
 fn test_operations_recorded_when_enabled() raises:

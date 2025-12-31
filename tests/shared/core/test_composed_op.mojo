@@ -40,7 +40,7 @@ fn make_shape_list(numel: Int) -> List[Int]:
 # ============================================================================
 
 
-struct ScaleMul(Differentiable, Copyable, Movable):
+struct ScaleMul(Copyable, Differentiable, Movable):
     """Mock operation that multiplies input by a scalar.
 
     Used for testing composition logic with predictable behavior.
@@ -74,7 +74,7 @@ struct ScaleMul(Differentiable, Copyable, Movable):
         return grad_input
 
 
-struct ScaleAdd(Differentiable, Copyable, Movable):
+struct ScaleAdd(Copyable, Differentiable, Movable):
     """Mock operation that adds a scalar to input.
 
     Used for testing composition logic with predictable behavior.
@@ -181,7 +181,9 @@ fn test_composed_op_forward_caches_intermediate() raises:
 
     # Intermediate should be cached (10.0 in this case)
     # We can verify by checking the numel
-    assert_equal(composed._intermediate.numel(), 1, "Intermediate should have 1 element")
+    assert_equal(
+        composed._intermediate.numel(), 1, "Intermediate should have 1 element"
+    )
 
 
 fn test_composed_op_forward_shape_preservation() raises:
