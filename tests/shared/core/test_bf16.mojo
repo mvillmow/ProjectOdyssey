@@ -12,7 +12,7 @@ Tests cover:
 - Bit pattern verification
 """
 
-from shared.core.types.bf16 import BF16, BFloat16, print_bf16_bits
+from shared.core.types.bf16 import BF16, print_bf16_bits
 from testing import assert_equal, assert_true, assert_false
 from math import isnan, isinf
 
@@ -474,26 +474,6 @@ fn test_bf16_string_representation() raises:
 
 
 # ============================================================================
-# Backward Compatibility Tests
-# ============================================================================
-
-
-fn test_bfloat16_alias() raises:
-    """Test that BFloat16 alias works correctly."""
-    print("Testing BFloat16 alias...")
-
-    # BFloat16 should be an alias for BF16
-    var bf16_val = BF16.from_float32(3.14)
-    var bfloat16_val = BFloat16.from_float32(3.14)
-
-    assert_equal(
-        bf16_val.value, bfloat16_val.value, "BFloat16 alias should work"
-    )
-
-    print("✓ BFloat16 alias")
-
-
-# ============================================================================
 # Main Test Runner
 # ============================================================================
 
@@ -535,9 +515,6 @@ fn main() raises:
     test_bf16_roundtrip_exact_values()
     test_bf16_roundtrip_general_values()
     test_bf16_string_representation()
-
-    print("\n=== Backward Compatibility Tests ===")
-    test_bfloat16_alias()
 
     print()
     print("=" * 70)

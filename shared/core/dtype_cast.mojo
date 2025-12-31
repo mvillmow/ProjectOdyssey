@@ -5,7 +5,7 @@ for common conversions (FP32 <-> FP16, FP32 <-> BF16).
 """
 
 from shared.core.extensor import ExTensor
-from shared.core.types.bf16 import BF16, BFloat16
+from shared.core.types.bf16 import BF16
 
 
 fn cast_tensor(tensor: ExTensor, target_dtype: DType) raises -> ExTensor:
@@ -94,16 +94,16 @@ fn cast_tensor(tensor: ExTensor, target_dtype: DType) raises -> ExTensor:
 
 
 fn cast_to_bfloat16(tensor: ExTensor) raises -> ExTensor:
-    """Convert tensor to BFloat16 storage (stored as uint16).
+    """Convert tensor to BF16 storage (stored as uint16).
 
-    Creates new tensor with BFloat16 values stored as uint16.
+    Creates new tensor with BF16 values stored as uint16.
     Use this for storing model parameters in BF16 format.
 
     Args:
         tensor: Source tensor (any floating point dtype).
 
     Returns:
-        Tensor with uint16 storage containing BFloat16 values.
+        Tensor with uint16 storage containing BF16 values.
 
     Raises:
         Error: If tensor is empty.
@@ -116,7 +116,7 @@ fn cast_to_bfloat16(tensor: ExTensor) raises -> ExTensor:
         ```
     """
     if tensor._numel == 0:
-        raise Error("Cannot convert empty tensor to BFloat16")
+        raise Error("Cannot convert empty tensor to BF16")
 
     # Create uint16 tensor for BF16 storage
     var result = ExTensor(tensor.shape(), DType.uint16)
@@ -125,7 +125,7 @@ fn cast_to_bfloat16(tensor: ExTensor) raises -> ExTensor:
     # Convert each element
     for i in range(size):
         var f32_val = Float32(tensor._get_float64(i))
-        var bf16_val = BFloat16.from_float32(f32_val)
+        var bf16_val = BF16.from_float32(f32_val)
         result._data.bitcast[UInt16]()[i] = bf16_val.bits
 
     return result
@@ -134,12 +134,12 @@ fn cast_to_bfloat16(tensor: ExTensor) raises -> ExTensor:
 fn cast_from_bfloat16(
     tensor: ExTensor, target_dtype: DType = DType.float32
 ) raises -> ExTensor:
-    """Convert tensor from BFloat16 storage to floating point.
+    """Convert tensor from BF16 storage to floating point.
 
-    Assumes input tensor stores BFloat16 values as uint16.
+    Assumes input tensor stores BF16 values as uint16.
 
     Args:
-        tensor: Source tensor with uint16 BFloat16 storage.
+        tensor: Source tensor with uint16 BF16 storage.
         target_dtype: Target floating point dtype (default: float32).
 
     Returns:
@@ -156,7 +156,7 @@ fn cast_from_bfloat16(
     """
     if tensor.dtype() != DType.uint16:
         raise Error(
-            "Expected uint16 tensor for BFloat16 storage, got: "
+            "Expected uint16 tensor for BF16 storage, got: "
             + String(tensor.dtype())
         )
 
@@ -173,7 +173,7 @@ fn cast_from_bfloat16(
     # Convert each element
     for i in range(size):
         var bf16_bits = tensor._data.bitcast[UInt16]()[i]
-        var bf16_val = BFloat16(bf16_bits)
+        var bf16_val = BF16(bf16_bits)
         var f32_val = bf16_val.to_float32()
 
         if target_dtype == DType.float32:

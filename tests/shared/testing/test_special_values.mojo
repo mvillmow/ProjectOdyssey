@@ -7,7 +7,7 @@ Tests FP-representable test value utilities:
 - Value invariant verification
 - Seeded random tensor generation for gradient checking
 
-Ensures special values work correctly across all dtypes: FP4, FP8, FP16, FP32, BFloat16, Int8
+Ensures special values work correctly across all dtypes: FP4, FP8, FP16, FP32, BF16, Int8
 """
 
 from shared.testing.special_values import (
@@ -240,16 +240,16 @@ fn test_dtypes_float16() raises:
 fn test_dtypes_bfloat16() raises:
     """Test special values work with bfloat16.
 
-    NOTE: BFloat16 is a custom type in shared.core.bfloat16 but is not
+    NOTE: BF16 is a custom type in shared.core.types.bf16 but is not
     yet integrated with Mojo's runtime DType system. This test is skipped
     until DType.bfloat16 is added to Mojo or we implement custom dtype handling.
 
-    TODO(#2731): Enable BFloat16 DType support testing
+    TODO(#3015): Enable BF16 DType support testing
 
     Current Status:
-    - BFloat16 struct exists in shared.core.bfloat16
+    - BF16 struct exists in shared.core.types.bf16
     - Mojo's DType enum does not include DType.bfloat16
-    - Cannot create tensors with BFloat16 dtype through standard ExTensor API
+    - Cannot create tensors with BF16 dtype through standard ExTensor API
 
     Implementation Requirements:
     - Wait for Mojo to add DType.bfloat16 to the DType enum
@@ -259,12 +259,12 @@ fn test_dtypes_bfloat16() raises:
     Once Available:
     1. Uncomment the test code below
     2. Verify special values (0.5, 1.0, 1.5, -0.5, -1.0) are representable
-    3. Add BFloat16 SIMD operations similar to FP32 paths
-    4. Test mixed precision training with BFloat16 parameters
+    3. Add BF16 SIMD operations similar to FP32 paths
+    4. Test mixed precision training with BF16 parameters
 
-    Reference: shared.core.bfloat16 module for current BFloat16 implementation
+    Reference: shared.core.types.bf16 module for current BF16 implementation
     """
-    # TODO(#2731): Uncomment when Mojo adds DType.bfloat16
+    # TODO(#3015): Uncomment when Mojo adds DType.bfloat16
     # var tensor = create_special_value_tensor([2, 2], DType.bfloat16, 1.0)
     # assert_dtype(tensor, DType.bfloat16, "Should be bfloat16")
     # verify_special_value_invariants(tensor, 1.0)
@@ -482,7 +482,7 @@ fn main() raises:
     test_dtypes_float16()
     print("✓ test_dtypes_float16")
 
-    # BFloat16 dtype not yet supported in Mojo
+    # BF16 dtype not yet supported in Mojo
     test_dtypes_bfloat16()
     print("✓ test_dtypes_bfloat16 (skipped - DType.bfloat16 not supported)")
 

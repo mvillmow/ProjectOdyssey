@@ -1,7 +1,7 @@
 """Special FP-Representable Test Values
 
 Provides test values that are exactly representable in all float dtypes:
-- FP4, FP8, FP16, FP32, BFloat16
+- FP4, FP8, FP16, FP32, BF16
 
 These values are chosen for:
 1. Exact representation (no rounding errors)
@@ -82,7 +82,7 @@ fn create_special_value_tensor(
 
     Args:
         shape: Tensor dimensions.
-        dtype: Data type (FP4, FP8, FP16, FP32, BFloat16, or Int8).
+        dtype: Data type (FP4, FP8, FP16, FP32, BF16, or Int8).
         value: Special value to fill (must be -1.0, -0.5, 0.0, 0.5, 1.0, or 1.5).
 
     Returns:
@@ -102,7 +102,7 @@ fn create_special_value_tensor(
         # Create 4x4 tensor filled with negative ones (for ReLU testing)
         var neg_ones = create_special_value_tensor([4, 4], DType.float32, -1.0)
 
-        # Create 2x2 tensor filled with zeros (BFloat16)
+        # Create 2x2 tensor filled with zeros (BF16)
         var zeros_bf16 = create_special_value_tensor([2, 2], DType.bfloat16, 0.0)
         ```
     """
@@ -152,7 +152,7 @@ fn create_alternating_pattern_tensor(
 
     Args:
         shape: Tensor dimensions.
-        dtype: Data type (FP4, FP8, FP16, FP32, BFloat16, or Int8).
+        dtype: Data type (FP4, FP8, FP16, FP32, BF16, or Int8).
 
     Returns:
         ExTensor with alternating special value pattern.
@@ -267,7 +267,7 @@ fn create_seeded_random_tensor(
 
     Args:
         shape: Tensor dimensions.
-        dtype: Data type (FP4, FP8, FP16, FP32, BFloat16, or Int8).
+        dtype: Data type (FP4, FP8, FP16, FP32, BF16, or Int8).
         seed: Random seed for reproducibility (default: 42).
         low: Minimum value for random range (default: -1.0).
         high: Maximum value for random range (default: 1.0).

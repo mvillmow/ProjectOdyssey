@@ -18,7 +18,7 @@ Supported Dtypes:
 - Float64 (FP64) ✓ - High precision
 - Int8, Int16, Int32, Int64 ✓ - Integer types
 - UInt8, UInt16, UInt32, UInt64 ✓ - Unsigned integer types
-- BFloat16 (BF16) ⚠ - Not yet available in Mojo (add when supported)
+- BF16 ⚠ - Not yet available in Mojo (add when supported)
 
 Example usage:
     # Before (40+ lines):
