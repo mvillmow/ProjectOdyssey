@@ -139,7 +139,9 @@ fn _conv2d_kernel[
                                                 Scalar[dtype]
                                             ]()[k_idx]
 
-                                            sum_val += Float32(in_val) * Float32(k_val)
+                                            sum_val += Float32(
+                                                in_val
+                                            ) * Float32(k_val)
 
                             # Add bias
                             var b_val = bias._data.bitcast[Scalar[dtype]]()[oc]
@@ -152,7 +154,9 @@ fn _conv2d_kernel[
                                 + oh * out_width
                                 + ow
                             )
-                            output._data.bitcast[Scalar[DType.float16]]()[out_idx] = Float16(sum_val)
+                            output._data.bitcast[Scalar[DType.float16]]()[
+                                out_idx
+                            ] = Float16(sum_val)
                         else:
                             var sum_val = Scalar[dtype](0.0)
 
@@ -214,7 +218,9 @@ fn _conv2d_kernel[
                                 + oh * out_width
                                 + ow
                             )
-                            output._data.bitcast[Scalar[dtype]]()[out_idx] = sum_val
+                            output._data.bitcast[Scalar[dtype]]()[
+                                out_idx
+                            ] = sum_val
 
         parallelize[conv_batch](batch)
     else:
@@ -275,7 +281,9 @@ fn _conv2d_kernel[
                                                 Scalar[dtype]
                                             ]()[k_idx]
 
-                                            sum_val += Float32(in_val) * Float32(k_val)
+                                            sum_val += Float32(
+                                                in_val
+                                            ) * Float32(k_val)
 
                             # Add bias
                             var b_val = bias._data.bitcast[Scalar[dtype]]()[oc]
@@ -288,7 +296,9 @@ fn _conv2d_kernel[
                                 + oh * out_width
                                 + ow
                             )
-                            output._data.bitcast[Scalar[DType.float16]]()[out_idx] = Float16(sum_val)
+                            output._data.bitcast[Scalar[DType.float16]]()[
+                                out_idx
+                            ] = Float16(sum_val)
                         else:
                             var sum_val = Scalar[dtype](0.0)
 
@@ -350,7 +360,9 @@ fn _conv2d_kernel[
                                 + oh * out_width
                                 + ow
                             )
-                            output._data.bitcast[Scalar[dtype]]()[out_idx] = sum_val
+                            output._data.bitcast[Scalar[dtype]]()[
+                                out_idx
+                            ] = sum_val
 
     return output^
 
