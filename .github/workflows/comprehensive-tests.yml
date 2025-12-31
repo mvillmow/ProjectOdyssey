@@ -207,7 +207,7 @@ jobs:
             pattern: "test_initializers.mojo test_initializers_validation.mojo"
           - name: "Core NN Modules"
             path: "tests/shared/core"
-            pattern: "test_layers.mojo test_linear.mojo test_conv.mojo test_normalization.mojo test_dropout.mojo test_module.mojo"
+            pattern: "test_layers.mojo test_linear.mojo test_conv.mojo test_normalization.mojo test_dropout.mojo test_module.mojo test_composed_op.mojo"
           - name: "Core Elementwise"
             path: "tests/shared/core"
             pattern: "test_elementwise.mojo test_elementwise_dispatch.mojo test_elementwise_forward.mojo test_elementwise_edge_cases.mojo test_comparison_ops.mojo test_edge_cases.mojo"

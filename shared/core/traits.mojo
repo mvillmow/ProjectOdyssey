@@ -304,9 +304,10 @@ trait Composable(Differentiable):
         raise Error("Use ComposedOp[F, S](first, second) directly for now")
 
 
-struct ComposedOp[F: Differentiable & Copyable & Movable, S: Differentiable & Copyable & Movable](
-    Differentiable, Composable
-):
+struct ComposedOp[
+    F: Differentiable & Copyable & Movable,
+    S: Differentiable & Copyable & Movable,
+](Composable, Differentiable):
     """Composition of two differentiable operations.
 
     Chains two differentiable operations together (first.forward → second.forward)
