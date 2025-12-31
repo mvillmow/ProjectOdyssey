@@ -5,7 +5,8 @@ for common conversions (FP32 <-> FP16, FP32 <-> BF16).
 """
 
 from shared.core.extensor import ExTensor
-from shared.core.types.bf16 import BF16
+from shared.core.types.dtype_aliases import BF16
+from memory import bitcast
 
 
 fn cast_tensor(tensor: ExTensor, target_dtype: DType) raises -> ExTensor:
@@ -122,11 +123,13 @@ fn cast_to_bfloat16(tensor: ExTensor) raises -> ExTensor:
     var result = ExTensor(tensor.shape(), DType.uint16)
     var size = tensor._numel
 
-    # Convert each element
+    # Convert each element using native SIMD conversion
     for i in range(size):
         var f32_val = Float32(tensor._get_float64(i))
-        var bf16_val = BF16.from_float32(f32_val)
-        result._data.bitcast[UInt16]()[i] = bf16_val.bits
+        # Convert to bfloat16 using native SIMD, then bitcast to uint16 for storage
+        var bf16_val = SIMD[BF16, 1](f32_val)
+        var bf16_bits = bitcast[DType.uint16, 1](bf16_val)[0]
+        result._data.bitcast[UInt16]()[i] = bf16_bits
 
     return result
 
@@ -170,11 +173,12 @@ fn cast_from_bfloat16(
     var result = ExTensor(tensor.shape(), target_dtype)
     var size = tensor._numel
 
-    # Convert each element
+    # Convert each element using native SIMD conversion
     for i in range(size):
         var bf16_bits = tensor._data.bitcast[UInt16]()[i]
-        var bf16_val = BF16(bf16_bits)
-        var f32_val = bf16_val.to_float32()
+        # Bitcast uint16 to bfloat16, then convert to float32
+        var bf16_val = bitcast[BF16, 1](SIMD[DType.uint16, 1](bf16_bits))
+        var f32_val = Float32(bf16_val[0])
 
         if target_dtype == DType.float32:
             result._data.bitcast[Float32]()[i] = f32_val
@@ -238,6 +242,7 @@ fn is_floating_dtype(dtype: DType) -> Bool:
         dtype == DType.float16
         or dtype == DType.float32
         or dtype == DType.float64
+        or dtype == DType.bfloat16
     )
 
 

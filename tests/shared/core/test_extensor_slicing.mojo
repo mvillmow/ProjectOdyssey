@@ -1,4 +1,4 @@
-"""Unit tests for ExTensor slicing and indexing operations (#2721).
+"""Unit tests for ExTensor slicing and indexing operations (#3013).
 
 Tests cover:
 - Basic 1D slicing (tensor[start:end])

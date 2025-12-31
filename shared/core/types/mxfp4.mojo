@@ -39,116 +39,233 @@ Reference:
 """
 
 from math import isnan, isinf
-from shared.core.types.fp4 import FP4_E2M1
+from memory import bitcast
+from shared.core.types.dtype_aliases import FP4, E8M0
 
 
-struct E8M0Scale(Copyable, Movable, Representable, Stringable):
-    """8-bit exponent-only scale factor for MXFP4 blocks.
+# ============================================================================
+# E8M0 Scale Helper Functions (using native Scalar[E8M0])
+# ============================================================================
 
-    Memory layout (1 byte):
-    - Bits 7-0: Exponent (8 bits, bias = 127, same as Float32)
-    - No sign bit (always positive)
-    - No mantissa bits (implicit mantissa = 1.0)
 
-    Represents: 2^(exponent - 127).
+fn _e8m0_from_float32(scale: Float32) -> Scalar[E8M0]:
+    """Convert Float32 scale to E8M0 format using manual exponent extraction.
 
-    Valid range: 2^-127 to 2^128.
+    Args:
+        scale: Positive Float32 scale value.
+
+    Returns:
+        Scalar[E8M0] representation (power of 2 closest to scale).
+
+    Note:
+        E8M0 is exponent-only (no mantissa), so it can only represent powers of 2.
+        The conversion extracts the Float32 exponent and rounds to nearest power of 2.
+        Scale must be positive. Negative or zero values return minimum scale.
     """
+    if scale <= 0.0 or isnan(scale):
+        # Return minimum scale by bitcasting exponent 0
+        return bitcast[E8M0, 1](SIMD[DType.uint8, 1](0))
 
-    var exponent: UInt8
-    """8-bit exponent with bias of 127."""
+    if isinf(scale):
+        # Return maximum scale by bitcasting exponent 255
+        return bitcast[E8M0, 1](SIMD[DType.uint8, 1](255))
 
-    fn __init__(out self, exponent: UInt8 = 127):
-        """Initialize E8M0 scale from raw exponent.
+    # E8M0 can only represent powers of 2, so we extract the exponent from Float32
+    # Float32 format: 1 sign + 8 exponent + 23 mantissa, exponent bias = 127
+    var bits = bitcast[DType.uint32, 1](SIMD[DType.float32, 1](scale))
+    var float_exp = ((bits[0] >> 23) & 0xFF).cast[DType.uint8]()
 
-        Args:
-            exponent: 8-bit exponent value (bias = 127).
-        """
-        self.exponent = exponent
+    # Adjust for mantissa: if mantissa >= 0.5, round exponent up
+    var mantissa = bits[0] & 0x7FFFFF  # 23-bit mantissa
+    if mantissa >= 0x400000:  # >= 0.5 in binary fraction
+        if float_exp < 255:
+            float_exp += 1
 
-    @staticmethod
-    fn from_float32(scale: Float32) -> Self:
-        """Compute E8M0 scale from Float32 value.
+    return bitcast[E8M0, 1](SIMD[DType.uint8, 1](float_exp))
 
-        Args:
-            scale: Positive Float32 scale value.
 
-        Returns:
-            E8M0 representation.
+fn _e8m0_to_float32(e8m0_val: Scalar[E8M0]) -> Float32:
+    """Convert E8M0 to Float32 using manual exponent reconstruction.
 
-        Note:
-            Scale must be positive. Negative or zero values return minimum scale.
-        """
-        if scale <= 0.0 or isnan(scale):
-            return E8M0Scale(0)  # Minimum scale (2^-127)
+    Args:
+        e8m0_val: E8M0 scale value.
 
-        if isinf(scale):
-            return E8M0Scale(255)  # Maximum scale (2^128)
+    Returns:
+        Float32 representation (power of 2).
 
-        # Find exponent: scale = 2^exp
-        var exp_val = 0
-        var s = scale
+    Note:
+        E8M0 is exponent-only, so the result is always a power of 2.
+        Constructs Float32 with the E8M0 exponent and zero mantissa.
+    """
+    # Get the 8-bit exponent from E8M0
+    var exp = bitcast[DType.uint8, 1](e8m0_val)[0]
 
-        # Scale to find the exponent
-        while s >= 2.0 and exp_val < 128:
-            s /= 2.0
-            exp_val += 1
+    # Handle special cases
+    if exp == 0:
+        return Float32(0.0)  # Minimum scale (or could return subnormal)
+    if exp == 255:
+        return Float32(1.0) / Float32(0.0)  # Infinity
 
-        while s < 1.0 and exp_val > -127:
-            s *= 2.0
-            exp_val -= 1
+    # Construct Float32: sign=0, exponent=exp, mantissa=0
+    # Float32 bits: 0 (sign) | exp (8 bits) | 0...0 (23 bits mantissa)
+    var float_bits = exp.cast[DType.uint32]() << 23
+    return bitcast[DType.float32, 1](SIMD[DType.uint32, 1](float_bits))[0]
 
-        # Apply bias (127)
-        var biased_exp = exp_val + 127
 
-        # Clamp to [0, 255]
-        if biased_exp < 0:
-            biased_exp = 0
-        elif biased_exp > 255:
-            biased_exp = 255
+fn _e8m0_get_exponent(e8m0_val: Scalar[E8M0]) -> UInt8:
+    """Get raw exponent bits from E8M0 value.
 
-        return E8M0Scale(UInt8(biased_exp))
+    Args:
+        e8m0_val: E8M0 scale value.
 
-    fn to_float32(self) -> Float32:
-        """Convert E8M0 scale to Float32.
+    Returns:
+        8-bit exponent value.
+    """
+    return bitcast[DType.uint8, 1](e8m0_val)[0]
 
-        Returns:
-            Float32 representation: 2^(exponent - 127).
-        """
-        var exponent = self.exponent.cast[DType.int32]() - 127
 
-        # Compute 2^exponent
-        var result = Float32(1.0)
-        if exponent > 0:
-            for _ in range(exponent):
-                result *= 2.0
-        elif exponent < 0:
-            for _ in range(-exponent):
-                result /= 2.0
+fn _e8m0_from_exponent(exponent: UInt8) -> Scalar[E8M0]:
+    """Create E8M0 from raw exponent bits.
 
-        return result
+    Args:
+        exponent: 8-bit exponent value (bias = 127).
 
-    fn __str__(self) -> String:
-        """String representation showing scale value.
+    Returns:
+        Scalar[E8M0] value.
+    """
+    return bitcast[E8M0, 1](SIMD[DType.uint8, 1](exponent))
 
-        Returns:
-            String representation.
-        """
-        return (
-            "E8M0(exp="
-            + String(self.exponent)
-            + ", scale="
-            + String(self.to_float32())
-            + ")"
-        )
 
-    fn __repr__(self) -> String:
-        """Detailed representation.
+# ============================================================================
+# FP4 E2M1 Helper Functions (using native Scalar[FP4])
+# ============================================================================
 
-        Returns:
-            Detailed string representation.
-        """
-        return self.__str__()
+
+fn _fp4_from_float32(x: Float32, scale: Float32) -> UInt8:
+    """Convert Float32 to FP4 E2M1 format with given scale.
+
+    Args:
+        x: Float32 value to convert.
+        scale: Block-level scale factor.
+
+    Returns:
+        4-bit FP4 value stored in lower 4 bits of UInt8.
+
+    Note:
+        The value is divided by scale before encoding.
+        Values outside representable range are clamped.
+    """
+    # Handle special cases
+    if isnan(x):
+        return 0b0111  # Max value as NaN representation
+
+    if isinf(x):
+        if x > 0:
+            return 0b0111  # Max positive value
+        else:
+            return 0b1111  # Max negative value
+
+    # Scale the input
+    var scaled = x / scale
+
+    if scaled == 0.0:
+        return 0  # +0
+
+    # Extract sign
+    var sign: UInt8 = 0
+    var abs_scaled = scaled
+    if scaled < 0:
+        sign = 1
+        abs_scaled = -scaled
+
+    # E2M1 representable values (before scaling):
+    # exp=0, mantissa=0: 0
+    # exp=1, mantissa=0: 1.0
+    # exp=1, mantissa=1: 1.5
+    # exp=2, mantissa=0: 2.0
+    # exp=2, mantissa=1: 3.0
+    # exp=3, mantissa=0: 4.0
+    # exp=3, mantissa=1: 6.0 (max)
+
+    # Clamp to representable range [0, 6.0]
+    if abs_scaled >= 6.0:
+        # Return max value: sign=s, exp=3, mantissa=1
+        return (sign << 3) | 0b111
+
+    if abs_scaled < 0.5:
+        # Return zero (subnormals not well-defined for E2M1)
+        return sign << 3
+
+    # Find best representation
+    # Quantize to nearest representable value
+    # Representable values: 0, 1.0, 1.5, 2.0, 3.0, 4.0, 6.0
+    var exp: UInt8
+    var mantissa: UInt8
+    if abs_scaled < 1.25:
+        exp = 1
+        mantissa = 0  # 1.0
+    elif abs_scaled < 1.75:
+        exp = 1
+        mantissa = 1  # 1.5
+    elif abs_scaled < 2.5:
+        exp = 2
+        mantissa = 0  # 2.0
+    elif abs_scaled < 3.5:
+        exp = 2
+        mantissa = 1  # 3.0
+    elif abs_scaled < 5.0:
+        exp = 3
+        mantissa = 0  # 4.0
+    else:
+        exp = 3
+        mantissa = 1  # 6.0
+
+    # Combine: sign(1) | exponent(2) | mantissa(1)
+    return (sign << 3) | (exp << 1) | mantissa
+
+
+fn _fp4_to_float32(fp4_bits: UInt8, scale: Float32) -> Float32:
+    """Convert FP4 E2M1 bits to Float32 with given scale.
+
+    Args:
+        fp4_bits: 4-bit FP4 value in lower 4 bits.
+        scale: Block-level scale factor.
+
+    Returns:
+        Float32 representation of the scaled E2M1 value.
+    """
+    # Extract components (4 bits total)
+    var sign = (fp4_bits >> 3) & 0x1
+    var exp = (fp4_bits >> 1) & 0x3  # 2 bits
+    var mantissa = fp4_bits & 0x1  # 1 bit
+
+    # Handle zero
+    if exp == 0:
+        return Float32(0.0) if sign == 0 else Float32(-0.0)
+
+    # Compute unscaled value
+    # E2M1: value = 2^(exp-1) * (1 + mantissa/2)
+    # With 1-bit mantissa, the fractional part is mantissa * 0.5
+    var exponent = exp.cast[DType.int32]() - 1
+    var base = Float32(1.0) + Float32(mantissa.cast[DType.float32]()) * Float32(
+        0.5
+    )
+
+    # Compute 2^exponent
+    var unscaled = base
+    if exponent > 0:
+        for _ in range(exponent):
+            unscaled *= 2.0
+    elif exponent < 0:
+        for _ in range(-exponent):
+            unscaled /= 2.0
+
+    # Apply sign and scale
+    var result = unscaled * scale
+    if sign == 1:
+        result = -result
+
+    return result
 
 
 struct MXFP4(Copyable, Movable, Representable, Stringable):
@@ -160,26 +277,24 @@ struct MXFP4(Copyable, Movable, Representable, Stringable):
     For efficient storage, use MXFP4Block which amortizes the scale across 32 values.
 
     Attributes:
-        value: 4-bit E2M1 encoded value.
-        scale: 8-bit E8M0 scale factor.
+        value: 4-bit E2M1 encoded value (stored in lower 4 bits of UInt8).
+        scale: 8-bit E8M0 scale factor (native Scalar[E8M0]).
     """
 
-    var value: FP4_E2M1
-    """4-bit E2M1 encoded value."""
-    var scale: E8M0Scale
+    var value: UInt8
+    """4-bit E2M1 encoded value (lower 4 bits)."""
+    var scale: Scalar[E8M0]
     """8-bit E8M0 scale factor."""
 
-    fn __init__(
-        out self, value: FP4_E2M1 = FP4_E2M1(), scale: E8M0Scale = E8M0Scale()
-    ):
+    fn __init__(out self, value: UInt8 = 0, scale: Scalar[E8M0] = Scalar[E8M0](1.0)):
         """Initialize MXFP4 from E2M1 value and E8M0 scale.
 
         Args:
-            value: E2M1 encoded value.
+            value: E2M1 encoded value (4-bit value in lower bits).
             scale: E8M0 scale factor.
         """
-        self.value = value.copy()
-        self.scale = scale.copy()
+        self.value = value & 0xF  # Mask to 4 bits
+        self.scale = scale
 
     @staticmethod
     fn from_float32(x: Float32) -> Self:
@@ -195,10 +310,10 @@ struct MXFP4(Copyable, Movable, Representable, Stringable):
         """
         # Handle special cases
         if isnan(x) or isinf(x):
-            return MXFP4(FP4_E2M1.from_float32(x, scale=1.0), E8M0Scale(127))
+            return MXFP4(_fp4_from_float32(x, 1.0), _e8m0_from_exponent(127))
 
         if x == 0.0:
-            return MXFP4(FP4_E2M1(0), E8M0Scale(127))
+            return MXFP4(0, _e8m0_from_exponent(127))
 
         # Compute scale: find 2^k such that |x| / 2^k is in E2M1 range [0, 6]
         var abs_x = x if x > 0 else -x
@@ -215,10 +330,10 @@ struct MXFP4(Copyable, Movable, Representable, Stringable):
             exp_val -= 1
 
         # Create E8M0 scale
-        var scale = E8M0Scale.from_float32(scale_val)
+        var scale = _e8m0_from_float32(scale_val)
 
         # Encode E2M1 value
-        var value = FP4_E2M1.from_float32(x, scale=scale.to_float32())
+        var value = _fp4_from_float32(x, _e8m0_to_float32(scale))
 
         return MXFP4(value, scale)
 
@@ -250,10 +365,10 @@ struct MXFP4(Copyable, Movable, Representable, Stringable):
         """
         # Handle special cases
         if isnan(x) or isinf(x):
-            return MXFP4(FP4_E2M1.from_float32(x, scale=1.0), E8M0Scale(127))
+            return MXFP4(_fp4_from_float32(x, 1.0), _e8m0_from_exponent(127))
 
         if x == 0.0:
-            return MXFP4(FP4_E2M1(0), E8M0Scale(127))
+            return MXFP4(0, _e8m0_from_exponent(127))
 
         # Compute scale same as deterministic version
         var abs_x = x if x > 0 else -x
@@ -268,8 +383,8 @@ struct MXFP4(Copyable, Movable, Representable, Stringable):
             scale_val /= 2.0
             exp_val -= 1
 
-        var scale = E8M0Scale.from_float32(scale_val)
-        var scale_f32 = scale.to_float32()
+        var scale = _e8m0_from_float32(scale_val)
+        var scale_f32 = _e8m0_to_float32(scale)
 
         # Stochastic rounding for E2M1 encoding
         var value = MXFP4._fp4_stochastic_round(x, scale_f32, seed)
@@ -277,9 +392,7 @@ struct MXFP4(Copyable, Movable, Representable, Stringable):
         return MXFP4(value, scale)
 
     @staticmethod
-    fn _fp4_stochastic_round(
-        x: Float32, scale: Float32, seed: UInt64
-    ) -> FP4_E2M1:
+    fn _fp4_stochastic_round(x: Float32, scale: Float32, seed: UInt64) -> UInt8:
         """Internal: Stochastic rounding helper using simple LCG.
 
         Args:
@@ -288,7 +401,7 @@ struct MXFP4(Copyable, Movable, Representable, Stringable):
             seed: Random seed.
 
         Returns:
-            FP4_E2M1 value with stochastic rounding.
+            4-bit FP4 value with stochastic rounding (stored in lower 4 bits of UInt8).
         """
         var scaled = x / scale
         var sign: UInt8 = 0
@@ -309,7 +422,7 @@ struct MXFP4(Copyable, Movable, Representable, Stringable):
         # Boundaries use actual representable values to determine bucket
         if abs_scaled < 0.5:
             # Close to zero - round to 0
-            return FP4_E2M1(sign << 3)
+            return sign << 3
         elif abs_scaled < 1.0:
             # Between 0 and 1.0 - stochastic round between them
             lower = 0.0
@@ -343,7 +456,7 @@ struct MXFP4(Copyable, Movable, Representable, Stringable):
             upper_bits = 0b111  # exp=3, mantissa=1
         else:
             # At or above max
-            return FP4_E2M1((sign << 3) | 0b111)
+            return (sign << 3) | 0b111
 
         # Compute probability of rounding up
         var distance = abs_scaled - lower
@@ -362,7 +475,7 @@ struct MXFP4(Copyable, Movable, Representable, Stringable):
         else:
             result_bits = lower_bits
 
-        return FP4_E2M1((sign << 3) | result_bits)
+        return (sign << 3) | result_bits
 
     fn to_float32(self) -> Float32:
         """Convert MXFP4 to Float32.
@@ -370,7 +483,7 @@ struct MXFP4(Copyable, Movable, Representable, Stringable):
         Returns:
             Float32 representation.
         """
-        return self.value.to_float32(scale=self.scale.to_float32())
+        return _fp4_to_float32(self.value, _e8m0_to_float32(self.scale))
 
     fn __add__(self, other: MXFP4) -> MXFP4:
         """Add two MXFP4 values (via Float32).
@@ -423,7 +536,7 @@ struct MXFP4(Copyable, Movable, Representable, Stringable):
             Negated value.
         """
         # Flip sign bit in E2M1 value
-        var neg_value = FP4_E2M1(self.value.value ^ 0b1000)
+        var neg_value = self.value ^ 0b1000
         return MXFP4(neg_value, self.scale)
 
     fn __eq__(self, other: MXFP4) -> Bool:
@@ -437,7 +550,7 @@ struct MXFP4(Copyable, Movable, Representable, Stringable):
         """
         return (
             self.value == other.value
-            and self.scale.exponent == other.scale.exponent
+            and _e8m0_get_exponent(self.scale) == _e8m0_get_exponent(other.scale)
         )
 
     fn __ne__(self, other: MXFP4) -> Bool:
@@ -510,10 +623,10 @@ struct MXFP4(Copyable, Movable, Representable, Stringable):
             Representation string.
         """
         return (
-            "MXFP4(value="
-            + repr(self.value)
+            "MXFP4(value=0x"
+            + hex(self.value)
             + ", scale="
-            + repr(self.scale)
+            + String(_e8m0_to_float32(self.scale))
             + ")"
         )
 
@@ -548,15 +661,15 @@ struct MXFP4Block(Copyable, Movable, Representable, Stringable):
 
     var data: SIMD[DType.uint8, 16]
     """16 bytes containing 32 packed E2M1 values (2 per byte)."""
-    var scale: E8M0Scale
+    var scale: Scalar[E8M0]
     """Shared E8M0 scale factor for all 32 values."""
 
     fn __init__(out self):
         """Initialize MXFP4Block with zeros."""
         self.data = SIMD[DType.uint8, 16](0)
-        self.scale = E8M0Scale(127)  # Scale = 1.0
+        self.scale = _e8m0_from_exponent(127)  # Scale = 1.0
 
-    fn __init__(out self, data: SIMD[DType.uint8, 16], scale: E8M0Scale):
+    fn __init__(out self, data: SIMD[DType.uint8, 16], scale: Scalar[E8M0]):
         """Initialize MXFP4Block from packed data and scale.
 
         Args:
@@ -564,7 +677,7 @@ struct MXFP4Block(Copyable, Movable, Representable, Stringable):
             scale: E8M0 scale factor for the block.
         """
         self.data = data
-        self.scale = scale.copy()
+        self.scale = scale
 
     @staticmethod
     fn from_float32_array(values: List[Float32]) raises -> Self:
@@ -599,39 +712,33 @@ struct MXFP4Block(Copyable, Movable, Representable, Stringable):
                 max_abs = abs_val
 
         # Compute scale (avoid division by zero)
-        # TEST-002 RESOLVED: Scale = 0 edge case fully tested
-        # Coverage verified in:
-        #   - tests/shared/core/test_mxfp4.mojo (8 edge case tests at lines 320-519)
-        #   - tests/core/types/test_mxfp4_block.mojo (TEST-002 section at lines 364-412)
-        #
-        # Test cases covered:
-        #   1. Block with all zeros
-        #   2. Block with values < 1e-10
-        #   3. E8M0Scale.from_float32(0.0) direct behavior
-        #   4. Round-trip conversion: zeros -> MXFP4 -> zeros
-        #   5. Near-threshold values (around 1e-10)
-        #   6. Mixed zeros and tiny values
-        #   7. Zero fallback behavior (scale_val = 1.0)
-        #   8. No division by zero or NaN production
-        #
-        # See: Issue #3008 for verification details
+        # **FIXME (#3008 - TEST-002 - P0 CRITICAL)**: Scale = 0 edge case untested
+        # When all values in block are zero or near-zero (< 1e-10), we fallback to scale=1.0
+        # This behavior is COMPLETELY UNTESTED. Missing test cases:
+        #   1. Block with all zeros (should encode as scale=1.0, all E2M1 values = 0)
+        #   2. Block with values < 1e-10 (should trigger fallback)
+        #   3. _e8m0_from_float32(0.0) direct behavior
+        #   4. Round-trip conversion: zeros -> MXFP4 -> zeros (verify lossless)
+        # Impact: Zero blocks are common in ML (dead neurons, zero gradients)
+        # Severity: BLOCKING - edge case must be tested before production use
+        # See: COMPREHENSIVE_REVIEW_FINDINGS.md (TEST-002)
         var scale_val = max_abs / 6.0
         if scale_val < 1e-10:
             scale_val = 1.0
 
-        var scale = E8M0Scale.from_float32(scale_val)
-        var scale_f32 = scale.to_float32()
+        var scale = _e8m0_from_float32(scale_val)
+        var scale_f32 = _e8m0_to_float32(scale)
 
         # Pack E2M1 values (2 per byte)
         var data = SIMD[DType.uint8, 16](0)
         for i in range(16):
             # First value (upper 4 bits)
-            var val1 = FP4_E2M1.from_float32(values[i * 2], scale=scale_f32)
+            var val1 = _fp4_from_float32(values[i * 2], scale_f32)
             # Second value (lower 4 bits)
-            var val2 = FP4_E2M1.from_float32(values[i * 2 + 1], scale=scale_f32)
+            var val2 = _fp4_from_float32(values[i * 2 + 1], scale_f32)
 
             # Pack: upper 4 bits = val1, lower 4 bits = val2
-            data[i] = ((val1.value & 0xF) << 4) | (val2.value & 0xF)
+            data[i] = ((val1 & 0xF) << 4) | (val2 & 0xF)
 
         return MXFP4Block(data, scale)
 
@@ -645,17 +752,17 @@ struct MXFP4Block(Copyable, Movable, Representable, Stringable):
             Decoding is lossless given the quantization that occurred during encoding.
         """
         var result = List[Float32]()
-        var scale_f32 = self.scale.to_float32()
+        var scale_f32 = _e8m0_to_float32(self.scale)
 
         for i in range(16):
             var byte = self.data[i]
             # Extract upper 4 bits (first value)
-            var val1 = FP4_E2M1((byte >> 4) & 0xF)
-            result.append(val1.to_float32(scale=scale_f32))
+            var val1_bits = (byte >> 4) & 0xF
+            result.append(_fp4_to_float32(val1_bits, scale_f32))
 
             # Extract lower 4 bits (second value)
-            var val2 = FP4_E2M1(byte & 0xF)
-            result.append(val2.to_float32(scale=scale_f32))
+            var val2_bits = byte & 0xF
+            result.append(_fp4_to_float32(val2_bits, scale_f32))
 
         return result^
 
@@ -678,13 +785,13 @@ struct MXFP4Block(Copyable, Movable, Representable, Stringable):
         var is_upper = (index % 2) == 0
 
         var byte = self.data[byte_idx]
-        var fp4_val: FP4_E2M1
+        var fp4_bits: UInt8
         if is_upper:
-            fp4_val = FP4_E2M1((byte >> 4) & 0xF)
+            fp4_bits = (byte >> 4) & 0xF
         else:
-            fp4_val = FP4_E2M1(byte & 0xF)
+            fp4_bits = byte & 0xF
 
-        return MXFP4(fp4_val, self.scale)
+        return MXFP4(fp4_bits, self.scale)
 
     fn set(mut self, index: Int, value: MXFP4) raises -> None:
         """Set MXFP4 value at index (0-31).
@@ -705,9 +812,7 @@ struct MXFP4Block(Copyable, Movable, Representable, Stringable):
 
         # Re-encode value with block's scale
         var float_val = value.to_float32()
-        var fp4_val = FP4_E2M1.from_float32(
-            float_val, scale=self.scale.to_float32()
-        )
+        var fp4_bits = _fp4_from_float32(float_val, _e8m0_to_float32(self.scale))
 
         var byte_idx = index // 2
         var is_upper = (index % 2) == 0
@@ -715,10 +820,10 @@ struct MXFP4Block(Copyable, Movable, Representable, Stringable):
         var byte = self.data[byte_idx]
         if is_upper:
             # Update upper 4 bits
-            byte = (byte & 0x0F) | ((fp4_val.value & 0xF) << 4)
+            byte = (byte & 0x0F) | ((fp4_bits & 0xF) << 4)
         else:
             # Update lower 4 bits
-            byte = (byte & 0xF0) | (fp4_val.value & 0xF)
+            byte = (byte & 0xF0) | (fp4_bits & 0xF)
 
         self.data[byte_idx] = byte
 
@@ -730,7 +835,7 @@ struct MXFP4Block(Copyable, Movable, Representable, Stringable):
         """
         return (
             "MXFP4Block(32 values, scale="
-            + String(self.scale.to_float32())
+            + String(_e8m0_to_float32(self.scale))
             + ")"
         )
 
@@ -740,4 +845,8 @@ struct MXFP4Block(Copyable, Movable, Representable, Stringable):
         Returns:
             Detailed string representation.
         """
-        return "MXFP4Block(scale=" + repr(self.scale) + ", data=16 bytes)"
+        return (
+            "MXFP4Block(scale="
+            + String(_e8m0_to_float32(self.scale))
+            + ", data=16 bytes)"
+        )

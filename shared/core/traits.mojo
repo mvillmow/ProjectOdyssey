@@ -280,7 +280,7 @@ trait Composable(Differentiable):
 
         NOTE: Full implementation blocked by Mojo language limitation
         Generic types F and S require Movable constraint which cannot
-        be expressed in the current Mojo type system. See issue #2401.
+        be expressed in the current Mojo type system. See issue #3014.
 
         Args:
             other: The component to compose with this one.
@@ -311,7 +311,7 @@ trait Composable(Differentiable):
         )
 
 
-# TODO(#2401): ComposedOp struct blocked by Mojo type system limitation
+# TODO(#3014): ComposedOp struct blocked by Mojo type system limitation
 #
 # Issue: ComposedOp requires Movable constraint on generic types F and S,
 # but Mojo does not support trait intersection syntax needed to express:
@@ -336,7 +336,7 @@ trait Composable(Differentiable):
 #         return self.first.backward(grad_intermediate)
 #
 # See: https://docs.modular.com/mojo/manual/traits/
-# See: GitHub issue #2401 for limitation details
+# See: GitHub issue #3014 for limitation details
 
 
 trait Trainable:

@@ -13,7 +13,7 @@ Architecture:
 
 Modules:
     extensor: Core tensor type and creation functions
-    types: Custom data types (FP8 for E4M3, BF8 for E5M2 8-bit floating point)
+    types: Custom data types (type aliases for FP8/BF8/BF16/FP4, MXFP4/NVFP4 blocked formats)
     arithmetic: Element-wise arithmetic operations (add, subtract, multiply, divide)
     matrix: Matrix operations (matmul, transpose, dot, outer)
     activation: Activation functions (relu, sigmoid, tanh, softmax, gelu)
@@ -52,12 +52,13 @@ Example:
     var a1 = relu(h1)
     ```
 
-RESOLVED(#3010): All core import tests in tests/shared/test_imports.mojo now use
-actual implemented imports from this module:
-- test_core_imports (line 17-23): ExTensor, zeros, ones, randn, relu, sigmoid, tanh, softmax, gelu
-- test_core_layers_imports (line 26-31): linear, conv2d, flatten, pool2d_max, pool2d_avg
-- test_core_activations_imports (line 34-49): All activation functions
-- test_core_types_imports (line 52-56): ExTensor, FP8, BF8
+FIXME(#3010): Placeholder import tests in tests/shared/test_imports.mojo require:
+- test_core_imports (line 17)
+- test_core_layers_imports (line 31)
+- test_core_activations_imports (line 46)
+- test_core_types_imports (line 60)
+All tests marked as "(placeholder - awaiting implementation)" and require module
+imports to be uncommented as Issue #49 progresses. See Issue #49 for details
 """
 
 # Package version
@@ -195,11 +196,10 @@ from shared.core.shape import (
 )
 
 # ============================================================================
-# Custom Data Types
+# Custom Data Types (Type Aliases)
 # ============================================================================
 
-from shared.core.types.fp8 import FP8
-from shared.core.types.bf8 import BF8
+from shared.core.types.dtype_aliases import BF16, FP8, BF8, FP4, E8M0
 
 # ============================================================================
 # Gradient Container Types

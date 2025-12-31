@@ -25,7 +25,7 @@ Example:
 """
 
 from shared.core.extensor import ExTensor
-from shared.core.types.bf16 import BF16
+from shared.core.types.dtype_aliases import BF16
 
 
 fn accumulate_gradient_inplace(
@@ -109,8 +109,8 @@ fn _accumulate_bfloat16(
     mut accumulated: ExTensor, new_grad: ExTensor, size: Int
 ) raises:
     """Direct bfloat16 accumulation using pointer operations."""
-    var acc_ptr = accumulated._data.bitcast[BF16]()
-    var grad_ptr = new_grad._data.bitcast[BF16]()
+    var acc_ptr = accumulated._data.bitcast[Scalar[BF16]]()
+    var grad_ptr = new_grad._data.bitcast[Scalar[BF16]]()
 
     for i in range(size):
         acc_ptr[i] = acc_ptr[i] + grad_ptr[i]
@@ -159,7 +159,7 @@ fn scale_gradient_inplace(mut gradient: ExTensor, scale: Float32) raises:
     elif dtype == DType.float16:
         _scale_float16(gradient, Float16(scale), size)
     elif dtype == DType.bfloat16:
-        _scale_bfloat16(gradient, BF16(scale), size)
+        _scale_bfloat16(gradient, Scalar[BF16](scale), size)
     else:
         # Fallback for unsupported dtypes
         _scale_fallback(gradient, Float64(scale), size)
@@ -181,9 +181,9 @@ fn _scale_float16(mut gradient: ExTensor, scale: Float16, size: Int) raises:
         grad_ptr[i] = grad_ptr[i] * scale
 
 
-fn _scale_bfloat16(mut gradient: ExTensor, scale: BF16, size: Int) raises:
+fn _scale_bfloat16(mut gradient: ExTensor, scale: Scalar[BF16], size: Int) raises:
     """Direct bfloat16 scaling using pointer operations."""
-    var grad_ptr = gradient._data.bitcast[BF16]()
+    var grad_ptr = gradient._data.bitcast[Scalar[BF16]]()
 
     for i in range(size):
         grad_ptr[i] = grad_ptr[i] * scale
@@ -252,7 +252,7 @@ fn _zero_float16(mut gradient: ExTensor, size: Int) raises:
 
 fn _zero_bfloat16(mut gradient: ExTensor, size: Int) raises:
     """Direct bfloat16 zeroing using pointer operations."""
-    var grad_ptr = gradient._data.bitcast[BF16]()
+    var grad_ptr = gradient._data.bitcast[Scalar[BF16]]()
 
     for i in range(size):
         grad_ptr[i] = 0.0

@@ -183,10 +183,11 @@ fn test_fc3_forward_float32() raises:
 fn test_fc3_forward_float16() raises:
     """Test FC3 (84→10) forward pass with float16.
 
-    RESOLVED(#3009): This test now uses FP32 accumulation internally
-    for improved precision, matching industry-standard mixed precision
-    (NVIDIA TensorCores, PyTorch, TensorFlow behavior).
-    See: https://github.com/mvillmow/ProjectOdyssey/issues/3009
+    FIXME(#3009): This test may fail due to float16 precision limitations.
+    FC3 performs 84 multiplications per output, which can cause accumulation
+    errors in float16 (limited to ~3.3 decimal digits precision).
+
+    If this test fails, we need to implement float32 accumulation in linear().
     """
     var dtype = DType.float16
     var _result = create_fc3_parameters(dtype)

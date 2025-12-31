@@ -20,18 +20,18 @@ Array API Categories:
 - Arithmetic: add, subtract, multiply, divide, floor_divide, modulo, power ✓
 - Comparison: equal, not_equal, less, less_equal, greater, greater_equal ✓
 - Reduction: sum, mean, max, min (all-elements only) ✓
-- Matrix: matmul, transpose, dot, outer, inner, tensordot ✓
-- Shape manipulation: reshape, squeeze, unsqueeze, concatenate, stack, tile, repeat, broadcast_to, permute ✓
-- Broadcasting: Full support for different-shape operations ✓
-- Element-wise math: exp, log, sqrt, sin, cos, tanh, ceil, floor, round, abs, sign ✓
-- Statistical: var, std, median, percentile ✓
-- Indexing: slicing, advanced indexing ✓
+- Matrix: matmul, transpose, dot, outer (TODO(#3013))
+- Shape manipulation: reshape, squeeze, unsqueeze, concatenate (TODO(#3013))
+- Broadcasting: Full support for different-shape operations (TODO(#3013))
+- Element-wise math: exp, log, sqrt, sin, cos, tanh (TODO(#3013))
+- Statistical: var, std, median, percentile (TODO(#3013))
+- Indexing: slicing, advanced indexing (TODO(#3013))
 
 Reference: https://data-apis.org/array-api/latest/API_specification/index.html
 """
 
 from collections import List
-from memory import UnsafePointer, memset_zero, alloc
+from memory import UnsafePointer, memset_zero, alloc, bitcast
 from sys.info import simd_width_of
 from math import ceildiv, sqrt, log, cos, sin
 from utils.numerics import inf as numeric_inf, neg_inf as numeric_neg_inf
@@ -1349,7 +1349,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
             are clamped. This is useful for memory-efficient training/inference.
             FP16 inputs are converted to FP32 before quantization.
         """
-        from shared.core.types.fp8 import FP8
+        from shared.core.types.dtype_aliases import FP8
+        from memory import bitcast
 
         # Verify source is floating point
         if not (
@@ -1381,9 +1382,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
                 # Defensive re-validation (fixes DATA-003)
                 raise Error("Invalid dtype for FP8 conversion")
 
-            # Convert to FP8 and store
-            var fp8_val = FP8.from_float32(val)
-            result._data.bitcast[UInt8]()[i] = fp8_val.value
+            # Convert to FP8 using native SIMD and store as uint8
+            var fp8_val = SIMD[FP8, 1](val)
+            var fp8_bits = bitcast[DType.uint8, 1](fp8_val)[0]
+            result._data.bitcast[UInt8]()[i] = fp8_bits
 
         return result^
 
@@ -1407,7 +1409,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
             This assumes the uint8 tensor contains valid FP8 E4M3 encoded values.
             Use this to decode tensors created by to_fp8().
         """
-        from shared.core.types.fp8 import FP8
+        from shared.core.types.dtype_aliases import FP8
+        from memory import bitcast
 
         # Verify source is uint8
         if self._dtype != DType.uint8:
@@ -1416,11 +1419,12 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
         # Create output tensor with float32 dtype
         var result = ExTensor(self._shape, DType.float32)
 
-        # Convert each element from FP8 to Float32
+        # Convert each element from FP8 to Float32 using native SIMD
         for i in range(self._numel):
             var fp8_bits = self._data.bitcast[UInt8]()[i]
-            var fp8_val = FP8(fp8_bits)
-            var float_val = fp8_val.to_float32()
+            # Bitcast uint8 to FP8, then convert to float32
+            var fp8_val = bitcast[FP8, 1](SIMD[DType.uint8, 1](fp8_bits))
+            var float_val = Float32(fp8_val[0])
             result._data.bitcast[Float32]()[i] = float_val
 
         return result^
@@ -1900,7 +1904,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
             training/inference where range is more important than precision.
             FP16 inputs are converted to FP32 before quantization.
         """
-        from shared.core.types.bf8 import BF8
+        from shared.core.types.dtype_aliases import BF8
+        from memory import bitcast
 
         # Verify source is floating point
         if not (
@@ -1928,8 +1933,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
             else:
                 raise Error("Invalid dtype for BF8 conversion")
 
-            var bf8_val = BF8.from_float32(val)
-            result._data.bitcast[UInt8]()[i] = bf8_val.value
+            # Convert to BF8 using native SIMD and store as uint8
+            var bf8_val = SIMD[BF8, 1](val)
+            var bf8_bits = bitcast[DType.uint8, 1](bf8_val)[0]
+            result._data.bitcast[UInt8]()[i] = bf8_bits
 
         return result^
 
@@ -1953,7 +1960,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
             This assumes the uint8 tensor contains valid BF8 E5M2 encoded values.
             Use this to decode tensors created by to_bf8().
         """
-        from shared.core.types.bf8 import BF8
+        from shared.core.types.dtype_aliases import BF8
+        from memory import bitcast
 
         # Verify source is uint8
         if self._dtype != DType.uint8:
@@ -1962,11 +1970,12 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
         # Create output tensor with float32 dtype
         var result = ExTensor(self._shape, DType.float32)
 
-        # Convert each element from BF8 to Float32
+        # Convert each element from BF8 to Float32 using native SIMD
         for i in range(self._numel):
             var bf8_bits = self._data.bitcast[UInt8]()[i]
-            var bf8_val = BF8(bf8_bits)
-            var float_val = bf8_val.to_float32()
+            # Bitcast uint8 to BF8, then convert to float32
+            var bf8_val = bitcast[BF8, 1](SIMD[DType.uint8, 1](bf8_bits))
+            var float_val = Float32(bf8_val[0])
             result._data.bitcast[Float32]()[i] = float_val
 
         return result^
@@ -2097,9 +2106,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
             var block_offset = block_idx * 17
             for i in range(16):
                 result._data.bitcast[UInt8]()[block_offset + i] = block.data[i]
+            # Extract exponent bits from E8M0 scale via bitcast
             result._data.bitcast[UInt8]()[
                 block_offset + 16
-            ] = block.scale.exponent
+            ] = bitcast[DType.uint8, 1](block.scale)[0]
 
         return result^
 
@@ -2124,7 +2134,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
             Use this to decode tensors created by to_mxfp4().
             Original tensor size is restored from metadata if available.
         """
-        from shared.core.types.mxfp4 import MXFP4Block, E8M0Scale
+        from shared.core.types.mxfp4 import MXFP4Block
+        from shared.core.types.dtype_aliases import E8M0
 
         # Verify source is uint8
         if self._dtype != DType.uint8:
@@ -2157,9 +2168,9 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
             var data = SIMD[DType.uint8, 16](0)
             for i in range(16):
                 data[i] = self._data.bitcast[UInt8]()[block_offset + i]
-            var scale = E8M0Scale(
-                self._data.bitcast[UInt8]()[block_offset + 16]
-            )
+            # Reconstruct E8M0 scale from raw exponent byte
+            var scale_byte = self._data.bitcast[UInt8]()[block_offset + 16]
+            var scale = bitcast[E8M0, 1](SIMD[DType.uint8, 1](scale_byte))
 
             var block = MXFP4Block(data, scale)
 
@@ -2310,7 +2321,10 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
             var block_offset = block_idx * 9
             for i in range(8):
                 result._data.bitcast[UInt8]()[block_offset + i] = block.data[i]
-            result._data.bitcast[UInt8]()[block_offset + 8] = block.scale.value
+            # Extract raw FP8 bits from scale via bitcast
+            result._data.bitcast[UInt8]()[block_offset + 8] = bitcast[
+                DType.uint8, 1
+            ](block.scale)[0]
 
         return result^
 
@@ -2337,7 +2351,8 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
                 Use this to decode tensors created by to_nvfp4().
                 Original tensor size is restored from metadata if available.
         """
-        from shared.core.types.nvfp4 import NVFP4Block, E4M3Scale
+        from shared.core.types.nvfp4 import NVFP4Block
+        from shared.core.types.dtype_aliases import FP8
 
         # Verify source is uint8
         if self._dtype != DType.uint8:
@@ -2370,7 +2385,9 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
             var data = SIMD[DType.uint8, 8](0)
             for i in range(8):
                 data[i] = self._data.bitcast[UInt8]()[block_offset + i]
-            var scale = E4M3Scale(self._data.bitcast[UInt8]()[block_offset + 8])
+            # Reconstruct FP8 (E4M3) scale from raw byte
+            var scale_byte = self._data.bitcast[UInt8]()[block_offset + 8]
+            var scale = bitcast[FP8, 1](SIMD[DType.uint8, 1](scale_byte))
 
             var block = NVFP4Block(data, scale)
 

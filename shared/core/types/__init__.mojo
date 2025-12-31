@@ -1,35 +1,38 @@
 """
 Types and Data Structures Module.
 
-This module contains custom types and data structures optimized for ML workloads
+This module contains custom types and data structures optimized for ML workloads.
 All types are implemented using Mojo's struct system for memory safety and performance.
 
 Components:
-    - FP8: 8-bit floating point type (E4M3 format)
-    - BF8: 8-bit floating point type (E5M2 format)
-    - BF16: 16-bit brain floating point type (same range as Float32)
-    - FP4_E2M1: 4-bit floating point base type (E2M1 format)
+    - BF16: Type alias for DType.bfloat16
+    - FP8: Type alias for DType.float8_e4m3fn (E4M3 format)
+    - BF8: Type alias for DType.float8_e5m2 (E5M2 format)
+    - FP4: Type alias for DType.float4_e2m1fn (E2M1 format)
+    - E8M0: Type alias for DType.float8_e8m0fnu (exponent-only scale)
     - MXFP4: Microscaling FP4 with E8M0 scaling (32-element blocks)
     - NVFP4: NVIDIA FP4 with E4M3 scaling (16-element blocks)
 
 Note:
     For integer types, use Mojo's built-in types (Int8, Int16, etc.)
+    The type aliases (BF16, FP8, BF8, FP4, E8M0) are DType values, not structs.
+    Use Scalar[BF16], Scalar[FP8], etc. for scalar values.
 
 Example:
     ```mojo
-    from shared.core.types import FP8, BF8, BF16, FP4_E2M1, MXFP4, NVFP4
+    from shared.core.types import BF16, FP8, BF8, FP4, MXFP4, NVFP4
 
-    # Work with FP8 values
-    var fp8_val = FP8.from_float32(3.14159)
-    var float_val = fp8_val.to_float32()
+    # Work with FP8 values using native SIMD
+    var fp8_val = Scalar[FP8](3.14159)
+    var float_val = Float32(fp8_val)
 
     # Work with BF8 values
-    var bf8_val = BF8.from_float32(100.0)
-    var float_val2 = bf8_val.to_float32()
+    var bf8_val = Scalar[BF8](100.0)
+    var float_val2 = Float32(bf8_val)
 
     # Work with BF16 values (brain floating point)
-    var bf16_val = BF16.from_float32(1e30)
-    var float_val3 = bf16_val.to_float32()
+    var bf16_val = Scalar[BF16](1e30)
+    var float_val3 = Float32(bf16_val)
 
     # Work with blocked FP4 values
     var mxfp4_val = MXFP4.from_float32(2.718)
@@ -38,13 +41,12 @@ Example:
     ```
 """
 
-# Type exports
-from shared.core.types.fp8 import FP8
-from shared.core.types.bf8 import BF8
-from shared.core.types.bf16 import BF16
-from shared.core.types.fp4 import FP4_E2M1
-from shared.core.types.mxfp4 import MXFP4, E8M0Scale
-from shared.core.types.nvfp4 import NVFP4, E4M3Scale
+# Type alias exports (DType aliases for native Mojo types)
+from shared.core.types.dtype_aliases import BF16, FP8, BF8, FP4, E8M0
+
+# Blocked FP4 format exports (custom structs for microscaling)
+from shared.core.types.mxfp4 import MXFP4, MXFP4Block
+from shared.core.types.nvfp4 import NVFP4, NVFP4Block
 
 # FP type constants
 from shared.core.types.fp_constants import (

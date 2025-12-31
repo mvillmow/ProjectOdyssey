@@ -431,12 +431,12 @@ fn evaluate(
 
     print("Evaluating...")
 
-    # Tensor slicing is now implemented (Issue #3013)
-    # Process in batches for better efficiency
+    # TODO(#3013): Process in batches when slicing is implemented
+    # For now, evaluate on first 100 samples
     var eval_samples = min(100, num_samples)
 
     for i in range(eval_samples):
-        # Tensor slicing works via slice() or __getitem__()
+        # TODO(#3013): Extract single sample when slicing works
         # For demonstration, we'll use the first image repeatedly
         var pred_class = model.predict(test_images)
         var true_label = Int(test_labels[i])

@@ -6,14 +6,15 @@ schedulers, metrics, callbacks, and training loops for ML Odyssey paper implemen
 
 All components are implemented in Mojo for maximum performance.
 
-RESOLVED(#3010): All training import tests in tests/shared/test_imports.mojo now use
-actual implemented imports from this module:
-- test_training_imports: SGD, MSELoss, StepLR, CosineAnnealingLR, EarlyStopping, ModelCheckpoint
-- test_training_optimizers_imports: SGD
-- test_training_schedulers_imports: StepLR, CosineAnnealingLR, ExponentialLR, WarmupLR, MultiStepLR, ReduceLROnPlateau
-- test_training_metrics_imports: Accuracy (from shared.metrics)
-- test_training_callbacks_imports: EarlyStopping, ModelCheckpoint, LoggingCallback
-- test_training_loops_imports: TrainingState, Callback
+FIXME(#3010): Placeholder import tests in tests/shared/test_imports.mojo require:
+- test_training_imports (line 80+)
+- test_training_optimizers_imports (line 95+)
+- test_training_schedulers_imports (line 110+)
+- test_training_metrics_imports (line 125+)
+- test_training_callbacks_imports (line 140+)
+- test_training_loops_imports (line 155+)
+All tests marked as "(placeholder)" and require uncommented imports as Issue #49 progresses.
+See Issue #49 for details.
 """
 
 from python import PythonObject
@@ -413,7 +414,7 @@ struct TrainingLoop[
         var total_loss = Float64(0.0)
         var num_batches = Int(0)
 
-        # Tensor slicing is implemented (Issue #3013: split(), reshape(), etc.)
+        # TODO(#3013): Iterate through batches when Python integration is complete
         # The data_loader is currently a PythonObject, but step() requires ExTensor.
         # Real blocker: Python↔Mojo interop for data loading (Track 4 initiative)
         # Once data loading infrastructure is ready, integrate batching here.

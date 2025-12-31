@@ -67,112 +67,29 @@ struct TestFixtures:
         """Set random seed for deterministic test execution."""
         seed(Self.deterministic_seed())
 
-    @staticmethod
-    fn small_tensor() -> ExTensor:
-        """Create small 3x3 tensor for unit tests.
+    # FIXME(#3010): Placeholder tensor fixture methods in tests/shared/conftest.mojo
+    # TODO(#1538): Add tensor fixture methods when Tensor type is implemented
+    # @staticmethod
+    # fn small_tensor() -> Tensor:
+    #     """Create small 3x3 tensor for unit tests."""
+    #     pass
 
         Returns:
             3x3 ExTensor with deterministic values (0.1).
 
-        Example:
-            ```mojo
-            var t = TestFixtures.small_tensor()
-            assert_shape(t, [3, 3])
-            ```
-        """
-        return ExTensor.full([3, 3], 0.1)
+    # FIXME(#3010): Placeholder model fixture methods in tests/shared/conftest.mojo
+    # TODO(#1538): Add model fixture methods when models are implemented
+    # @staticmethod
+    # fn simple_linear_model() -> Linear:
+    #     """Create simple Linear layer with known weights."""
+    #     pass
 
-    @staticmethod
-    fn random_tensor(rows: Int, cols: Int) -> ExTensor:
-        """Create random tensor with deterministic seed.
-
-        Args:
-            rows: Number of rows.
-            cols: Number of columns.
-
-        Returns:
-            Random ExTensor with shape [rows, cols].
-
-        Note:
-            Uses deterministic seed (42) for reproducibility.
-
-        Example:
-            ```mojo
-            var t = TestFixtures.random_tensor(5, 10)
-            assert_shape(t, [5, 10])
-            ```
-        """
-        Self.set_seed()
-        return ExTensor.randn([rows, cols])
-
-    @staticmethod
-    fn simple_linear_model() -> SimpleMLP:
-        """Create simple linear model for testing.
-
-        Returns a 2-layer MLP with:
-        - Input dimension: 10
-        - Hidden dimension: 5
-        - Output dimension: 1
-        - Uses ReLU activation
-        - Initialized with constant value 0.1
-
-        Returns:
-            SimpleMLP instance configured for unit testing.
-
-        Example:
-            ```mojo
-            var model = TestFixtures.simple_linear_model()
-            var input_vec = TestFixtures.create_test_vector(10)
-            var output = model.forward(input_vec)
-            ```
-
-        See Also:
-            - create_simple_model(): Alternative model factory
-            - SimpleMLP: Model type definition
-        """
-        return SimpleMLP(
-            input_dim=10,
-            hidden_dim=5,
-            output_dim=1,
-            num_hidden_layers=1,
-            init_value=0.1,
-        )
-
-    @staticmethod
-    fn synthetic_dataset(
-        n_samples: Int = 100,
-    ) -> List[Tuple[List[Float32], List[Float32]]]:
-        """Create synthetic dataset for testing.
-
-        Generates deterministic synthetic data with configurable sample count.
-
-        Args:
-            n_samples: Number of samples to generate (default: 100).
-
-        Returns:
-            List of (input, output) tuples for each sample.
-            Input dimension: 10
-            Output dimension: 1
-            Seed: 42 (deterministic)
-
-        Example:
-            ```mojo
-            var dataset = TestFixtures.synthetic_dataset(n_samples=50)
-            var first_sample = dataset[0]
-            var data = first_sample[0]
-            var label = first_sample[1]
-            ```
-
-        See Also:
-            - create_simple_dataset(): Full dataset creation with customization
-            - create_mock_dataloader(): Wraps dataset in data loader
-        """
-        return create_simple_dataset(
-            n_samples=n_samples,
-            input_dim=10,
-            output_dim=1,
-            seed_value=Self.deterministic_seed(),
-        )
+    # FIXME(#3010): Placeholder dataset fixture methods in tests/shared/conftest.mojo
+    # TODO(#1538): Add dataset fixture methods when datasets are implemented
+    # @staticmethod
+    # fn synthetic_dataset(n_samples: Int = 100) -> TensorDataset:
+    #     """Create synthetic dataset for testing."""
+    #     pass
 
 
 # ============================================================================

@@ -13,8 +13,7 @@ All tests use pure functional API.
 """
 
 from math import isinf, isnan
-from shared.core.types.nvfp4 import NVFP4, NVFP4Block, E4M3Scale
-from shared.core.types.fp4 import FP4_E2M1
+from shared.core.types.nvfp4 import NVFP4, NVFP4Block
 from tests.shared.conftest import (
     assert_true,
     assert_equal,
@@ -179,7 +178,7 @@ fn test_nvfp4_block_scale_computation() raises:
 
     var block1 = NVFP4Block.from_float32_array(values1)
     # Scale should be roughly max/6 = (15/16)/6 ≈ 0.16
-    var scale1 = block1.scale.to_float32()
+    var scale1 = Float32(block1.scale)
     assert_true(scale1 > 0.1 and scale1 < 0.3, "Scale 1 out of range")
 
     # Test 2: All values in [0, 10]
@@ -189,7 +188,7 @@ fn test_nvfp4_block_scale_computation() raises:
 
     var block2 = NVFP4Block.from_float32_array(values2)
     # Scale should be larger
-    var scale2 = block2.scale.to_float32()
+    var scale2 = Float32(block2.scale)
     assert_true(scale2 > scale1, "Scale 2 should be larger")
 
 
@@ -395,7 +394,7 @@ fn test_nvfp4_block_negative_scale_computation() raises:
     var block = NVFP4Block.from_float32_array(values)
 
     # Scale should be positive (computed from abs(max))
-    var scale_val = block.scale.to_float32()
+    var scale_val = Float32(block.scale)
     assert_true(scale_val > 0, "Scale should be positive")
 
     # Decoded values should preserve sign

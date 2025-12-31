@@ -99,7 +99,7 @@ fn test_training_loop_full_epoch() raises:
 
     Note:
         run_epoch() currently returns 0.0 as a placeholder until Python/Mojo
-        data loader integration is complete (TODO #2721). This test verifies
+        data loader integration is complete (TODO #3013). This test verifies
         that the method exists and returns a valid Float32.
     """
     # Create model, optimizer, and loss function
@@ -118,7 +118,7 @@ fn test_training_loop_full_epoch() raises:
 
     var py_loader = Python.none()
 
-    # Run one epoch - currently returns 0.0 as placeholder (TODO #2721)
+    # Run one epoch - currently returns 0.0 as placeholder (TODO #3013)
     var avg_loss = training_loop.run_epoch(py_loader)
 
     # Verify return type is Float32 (even if value is placeholder 0.0)
@@ -138,7 +138,7 @@ fn test_training_loop_multiple_epochs() raises:
 
     Note:
         This test uses step() directly instead of run_epoch() since the
-        data loader integration is pending (TODO #2721).
+        data loader integration is pending (TODO #3013).
     """
     # Create model, optimizer, and loss function
     var model = create_simple_model()

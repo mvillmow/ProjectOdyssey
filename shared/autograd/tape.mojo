@@ -338,7 +338,7 @@ struct NoGradContext(Copyable, Movable):
 
     WARNING: This is currently a stub implementation that does not function.
     The full context manager is blocked by Mojo's UnsafePointer limitation
-    (parametric mutability not yet supported). See issue #2400.
+    (parametric mutability not yet supported). See issue #3014.
 
     Workaround: Manually manage gradient tracking with requires_grad=False
     on Variables that shouldn't track gradients. Alternatively, use
@@ -370,10 +370,10 @@ struct NoGradContext(Copyable, Movable):
 
     fn __enter__(mut self) -> None:
         """Enter no-grad context (disable gradient tracking)."""
-        # TODO(#2400): Implement gradient tracking disable
+        # TODO(#3014): Implement gradient tracking disable
         pass
 
     fn __exit__(mut self) -> None:
         """Exit no-grad context (restore gradient tracking)."""
-        # TODO(#2400): Implement gradient tracking restore
+        # TODO(#3014): Implement gradient tracking restore
         pass

@@ -1,6 +1,6 @@
 """Test gradient validation in layer testers.
 
-Demonstrates the new validate_analytical parameter introduced in #2710.
+Demonstrates the new validate_analytical parameter introduced in #3011.
 This test file shows how to enable analytical gradient validation in layer tests.
 
 Example usage:
