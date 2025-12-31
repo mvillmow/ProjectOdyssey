@@ -570,6 +570,156 @@ fn stack(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
 
 
 # ============================================================================
+# Split Operations
+# ============================================================================
+
+
+fn split(tensor: ExTensor, num_splits: Int, axis: Int = 0) raises -> List[ExTensor]:
+    """Split tensor into equal parts along an axis.
+
+    Divides tensor into num_splits equal parts along the specified axis.
+    The tensor size along the axis must be divisible by num_splits.
+
+    Args:
+        tensor: Input tensor to split.
+        num_splits: Number of equal parts to split into.
+        axis: Axis along which to split (default: 0).
+
+    Returns:
+        List of ExTensor objects, each with same shape except along split axis.
+
+    Raises:
+        Error: If axis is invalid, num_splits <= 0, or tensor size not divisible.
+
+    Examples:
+    ```mojo
+        var a = arange(0.0, 12.0, 1.0, DType.float32)  # Shape: (12,)
+        var parts = split(a, 3)  # 3 parts of size (4,) each
+
+        # For 2D tensor along axis 0:
+        var b = ones([6, 4], DType.float32)
+        var parts = split(b, 2)  # 2 parts of shape (3, 4)
+
+        # For 2D tensor along axis 1:
+        var c = ones([4, 6], DType.float32)
+        var parts = split(c, 3, axis=1)  # 3 parts of shape (4, 2)
+    ```
+    """
+    var shape = tensor.shape()
+    var ndim = len(shape)
+
+    # Validate axis
+    var actual_axis = axis if axis >= 0 else ndim + axis
+    if actual_axis < 0 or actual_axis >= ndim:
+        raise Error("split: axis out of range")
+
+    # Validate num_splits
+    if num_splits <= 0:
+        raise Error("split: num_splits must be positive")
+
+    var split_size = shape[actual_axis]
+    if split_size % num_splits != 0:
+        raise Error(
+            "split: tensor size along axis must be divisible by num_splits"
+        )
+
+    var chunk_size = split_size // num_splits
+
+    # Create slices for each split
+    var results: List[ExTensor] = []
+
+    for i in range(num_splits):
+        var start_idx = i * chunk_size
+        var end_idx = start_idx + chunk_size
+
+        # Use slice() to extract the chunk
+        var chunk = tensor.slice(start_idx, end_idx, actual_axis)
+        results.append(chunk)
+
+    return results^
+
+
+fn split_with_indices(
+    tensor: ExTensor, split_indices: List[Int], axis: Int = 0
+) raises -> List[ExTensor]:
+    """Split tensor at specified indices along an axis.
+
+    Divides tensor at specified indices along the given axis.
+    Indices specify the starting position of each split section.
+
+    Args:
+        tensor: Input tensor to split.
+        split_indices: List of indices where to split (e.g., [3, 7] splits into 3 sections).
+        axis: Axis along which to split (default: 0).
+
+    Returns:
+        List of ExTensor objects resulting from splits.
+
+    Raises:
+        Error: If axis is invalid or indices are out of bounds/unordered.
+
+    Examples:
+    ```mojo
+        # Split [0,1,2,3,4,5,6,7,8,9] at indices [3, 7]
+        # Results in: [0-2], [3-6], [7-9]
+        var a = arange(0.0, 10.0, 1.0, DType.float32)
+        var parts = split_with_indices(a, [3, 7])
+        # parts[0].shape() = (3,)  # indices 0-2
+        # parts[1].shape() = (4,)  # indices 3-6
+        # parts[2].shape() = (3,)  # indices 7-9
+
+        # For 2D tensor:
+        var b = ones([10, 5], DType.float32)
+        var parts = split_with_indices(b, [3, 7], axis=0)
+        # parts[0].shape() = (3, 5)
+        # parts[1].shape() = (4, 5)
+        # parts[2].shape() = (3, 5)
+    ```
+    """
+    var shape = tensor.shape()
+    var ndim = len(shape)
+
+    # Validate axis
+    var actual_axis = axis if axis >= 0 else ndim + axis
+    if actual_axis < 0 or actual_axis >= ndim:
+        raise Error("split_with_indices: axis out of range")
+
+    var size_along_axis = shape[actual_axis]
+
+    # Validate indices
+    var num_indices = len(split_indices)
+    if num_indices == 0:
+        raise Error("split_with_indices: split_indices cannot be empty")
+
+    # Check that indices are ordered and within bounds
+    for i in range(num_indices):
+        if split_indices[i] <= 0:
+            raise Error("split_with_indices: indices must be positive")
+        if split_indices[i] >= size_along_axis:
+            raise Error("split_with_indices: index out of bounds")
+        if i > 0 and split_indices[i] <= split_indices[i - 1]:
+            raise Error("split_with_indices: indices must be strictly increasing")
+
+    # Create slices based on indices
+    var results: List[ExTensor] = []
+    var prev_idx = 0
+
+    for i in range(num_indices):
+        var curr_idx = split_indices[i]
+        if curr_idx > prev_idx:
+            var chunk = tensor.slice(prev_idx, curr_idx, actual_axis)
+            results.append(chunk)
+        prev_idx = curr_idx
+
+    # Add final chunk
+    if prev_idx < size_along_axis:
+        var final_chunk = tensor.slice(prev_idx, size_along_axis, actual_axis)
+        results.append(final_chunk)
+
+    return results^
+
+
+# ============================================================================
 # Shape Computation Functions for Neural Network Layers
 # ============================================================================
 

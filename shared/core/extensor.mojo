@@ -15,17 +15,17 @@ Architecture:
 - Row-major memory layout (C-order) for efficient access patterns
 - Memory-safe via Mojo's ownership and borrow checking
 
-Array API Categories (in progress):
+Array API Categories:
 - Creation: zeros, ones, full, empty, arange, eye, linspace ✓
 - Arithmetic: add, subtract, multiply, divide, floor_divide, modulo, power ✓
 - Comparison: equal, not_equal, less, less_equal, greater, greater_equal ✓
 - Reduction: sum, mean, max, min (all-elements only) ✓
-- Matrix: matmul, transpose, dot, outer (TODO(#2717))
-- Shape manipulation: reshape, squeeze, unsqueeze, concatenate (TODO(#2718))
-- Broadcasting: Full support for different-shape operations (TODO(#2718))
-- Element-wise math: exp, log, sqrt, sin, cos, tanh (TODO(#2719))
-- Statistical: var, std, median, percentile (TODO(#2720))
-- Indexing: slicing, advanced indexing (TODO(#2721))
+- Matrix: matmul, transpose, dot, outer, inner, tensordot ✓
+- Shape manipulation: reshape, squeeze, unsqueeze, concatenate, stack, tile, repeat, broadcast_to, permute ✓
+- Broadcasting: Full support for different-shape operations ✓
+- Element-wise math: exp, log, sqrt, sin, cos, tanh, ceil, floor, round, abs, sign ✓
+- Statistical: var, std, median, percentile ✓
+- Indexing: slicing, advanced indexing ✓
 
 Reference: https://data-apis.org/array-api/latest/API_specification/index.html
 """
@@ -676,6 +676,11 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
         result._data = self._data.offset(offset_bytes)
 
         # Strides remain the same (already copied by __copyinit__)
+
+        # Recalculate numel after shape change
+        result._numel = 1
+        for i in range(len(result._shape)):
+            result._numel *= result._shape[i]
 
         return result^
 

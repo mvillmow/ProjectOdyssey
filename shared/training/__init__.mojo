@@ -414,10 +414,10 @@ struct TrainingLoop[
         var total_loss = Float64(0.0)
         var num_batches = Int(0)
 
-        # TODO(#2721): Iterate through batches when Python integration is complete
+        # Tensor slicing is implemented (Issue #3013: split(), reshape(), etc.)
         # The data_loader is currently a PythonObject, but step() requires ExTensor.
-        # This will be implemented once the data loading infrastructure is ready.
-        # For now, return 0.0 as a placeholder.
+        # Real blocker: Python↔Mojo interop for data loading (Track 4 initiative)
+        # Once data loading infrastructure is ready, integrate batching here.
         _ = data_loader  # Suppress unused variable warning
 
         # Return average loss

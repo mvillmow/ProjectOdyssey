@@ -282,30 +282,38 @@ fn test_stack_axis_1() raises:
 
 fn test_split_equal() raises:
     """Test splitting into equal parts."""
+    from shared.core import split
+
     var shape = List[Int]()
     shape.append(12)
     var a = arange(0.0, 12.0, 1.0, DType.float32)
-    # varparts = split(a, 3)  # TODO(#2718): Implement split()
+    var parts = split(a, 3)
 
     # Should give 3 tensors of size 4 each
-    # assert_equal_int(len(parts), 3, "Should split into 3 parts")
-    # for i in range(3):
-    #     assert_numel(parts[i], 4, "Each part should have 4 elements")
-    pass  # Placeholder
+    if len(parts) != 3:
+        raise Error("Should split into 3 parts")
+    for i in range(3):
+        assert_numel(parts[i], 4, "Each part should have 4 elements")
 
 
 fn test_split_unequal() raises:
     """Test splitting into unequal parts."""
+    from shared.core import split_with_indices
+
     var shape = List[Int]()
     shape.append(10)
     var a = arange(0.0, 10.0, 1.0, DType.float32)
-    # varparts = split(a, [3, 5, 10])  # TODO(#2718): Implement split with indices
+    var indices = List[Int]()
+    indices.append(3)
+    indices.append(7)
+    var parts = split_with_indices(a, indices)
 
-    # Should give 3 tensors of sizes 3, 2, 5
-    # assert_numel(parts[0], 3, "First part should have 3 elements")
-    # assert_numel(parts[1], 2, "Second part should have 2 elements")
-    # assert_numel(parts[2], 5, "Third part should have 5 elements")
-    pass  # Placeholder
+    # Should give 3 tensors of sizes 3, 4, 3
+    if len(parts) != 3:
+        raise Error("Should split into 3 parts")
+    assert_numel(parts[0], 3, "First part should have 3 elements")
+    assert_numel(parts[1], 4, "Second part should have 4 elements")
+    assert_numel(parts[2], 3, "Third part should have 3 elements")
 
 
 # ============================================================================
