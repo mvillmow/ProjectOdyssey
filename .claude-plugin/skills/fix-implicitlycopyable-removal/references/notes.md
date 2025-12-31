@@ -30,26 +30,29 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable, Sized):
     var _refcount: UnsafePointer[Int]
 ```
 
-**Problem**: `ImplicitlyCopyable` on a struct with `List[Int]` fields causes Mojo to perform bitwise copies that **bypass `__copyinit__`**.
+**Problem**: `ImplicitlyCopyable` on a struct with `List[Int]` fields causes Mojo
+to perform bitwise copies that **bypass `__copyinit__`**.
 
 **Consequence**:
 
 1. Implicit copy creates bitwise duplicate (refcount pointer copied, not incremented)
 2. Refcount stays at 1 even with 2+ copies sharing the data
 3. First destructor decrements refcount to 0 and frees memory
-4. Second destructor accesses freed memory → **CRASH**
+4. Second destructor accesses freed memory - **CRASH**
 
 ### Research Validation
 
-From Mojo manual (https://docs.modular.com/mojo/manual/values/lifetimes/copy):
+From [Mojo manual on copy semantics](https://docs.modular.com/mojo/manual/values/lifetimes/copy):
 
-> "ImplicitlyCopyable should NOT be used for types that are expensive to copy or where implicit copying could mask a logic error"
+> "ImplicitlyCopyable should NOT be used for types that are expensive to copy or
+> where implicit copying could mask a logic error"
 
 From Mojo v0.25.6+ copy semantics:
 
 > "List, Dict, Set now require only explicit Copyable"
 
-**Conclusion**: Removing `ImplicitlyCopyable` is the CORRECT approach per official Mojo documentation.
+**Conclusion**: Removing `ImplicitlyCopyable` is the CORRECT approach per official
+Mojo documentation.
 
 ## Fix Implementation Timeline
 
@@ -69,13 +72,13 @@ To:
 struct ExTensor(Copyable, Movable, Sized):
 ```
 
-✅ Committed and pushed
+Committed and pushed
 
 ### Step 2: Add Explicit Copy Method
 
 Multiple iterations to get this right:
 
-#### ❌ Attempt 1: Return self
+#### Attempt 1: Return self (Failed)
 
 ```mojo
 fn copy(self) -> Self:
@@ -85,7 +88,7 @@ fn copy(self) -> Self:
 **Error**: `cannot implicitly copy 'ExTensor'`
 **Why failed**: Returning `self` still requires implicit copy
 
-#### ❌ Attempt 2: Call __copyinit__ directly
+#### Attempt 2: Call `__copyinit__` directly (Failed)
 
 ```mojo
 fn copy(self) -> Self:
@@ -95,7 +98,7 @@ fn copy(self) -> Self:
 **Error**: `__copyinit__ is not directly callable`
 **Why failed**: Mojo doesn't allow direct calls to lifecycle methods
 
-#### ✅ Final Solution: Struct literal construction
+#### Final Solution: Struct literal construction
 
 ```mojo
 fn copy(self) -> Self:
@@ -348,7 +351,7 @@ git push
 gh pr checks 2962
 ```
 
-**Result**: ✅ All 45 test jobs passing
+**Result**: All 45 test jobs passing
 
 - All core tests passing
 - All autograd tests passing
@@ -367,7 +370,7 @@ gh pr checks 2962
 
 - **DO NOT use** with structs containing List, Dict, String, or manual refcounts
 - Causes bitwise copies that bypass `__copyinit__`
-- Breaks reference counting → memory corruption
+- Breaks reference counting - memory corruption
 
 ### 2. Copy Method Implementation
 

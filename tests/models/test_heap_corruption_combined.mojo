@@ -84,8 +84,14 @@ fn test_conv1_forward_float32() raises:
     var kernel = _result[0]
     var bias = _result[1]
     LayerTester.test_conv_layer(
-        in_channels=1, out_channels=6, kernel_size=5,
-        input_h=28, input_w=28, weights=kernel, bias=bias, dtype=dtype
+        in_channels=1,
+        out_channels=6,
+        kernel_size=5,
+        input_h=28,
+        input_w=28,
+        weights=kernel,
+        bias=bias,
+        dtype=dtype,
     )
 
 
@@ -96,8 +102,14 @@ fn test_conv1_forward_float16() raises:
     var kernel = _result[0]
     var bias = _result[1]
     LayerTester.test_conv_layer(
-        in_channels=1, out_channels=6, kernel_size=5,
-        input_h=28, input_w=28, weights=kernel, bias=bias, dtype=dtype
+        in_channels=1,
+        out_channels=6,
+        kernel_size=5,
+        input_h=28,
+        input_w=28,
+        weights=kernel,
+        bias=bias,
+        dtype=dtype,
     )
 
 
@@ -108,8 +120,14 @@ fn test_conv1_backward_float32() raises:
     var kernel = _result[0]
     var bias = _result[1]
     LayerTester.test_conv_layer_backward(
-        in_channels=1, out_channels=6, kernel_size=5,
-        input_h=8, input_w=8, weights=kernel, bias=bias, dtype=dtype
+        in_channels=1,
+        out_channels=6,
+        kernel_size=5,
+        input_h=8,
+        input_w=8,
+        weights=kernel,
+        bias=bias,
+        dtype=dtype,
     )
 
 
@@ -125,8 +143,14 @@ fn test_conv2_forward_float32() raises:
     var kernel = _result[0]
     var bias = _result[1]
     LayerTester.test_conv_layer(
-        in_channels=6, out_channels=16, kernel_size=5,
-        input_h=14, input_w=14, weights=kernel, bias=bias, dtype=dtype
+        in_channels=6,
+        out_channels=16,
+        kernel_size=5,
+        input_h=14,
+        input_w=14,
+        weights=kernel,
+        bias=bias,
+        dtype=dtype,
     )
 
 
@@ -137,8 +161,14 @@ fn test_conv2_forward_float16() raises:
     var kernel = _result[0]
     var bias = _result[1]
     LayerTester.test_conv_layer(
-        in_channels=6, out_channels=16, kernel_size=5,
-        input_h=14, input_w=14, weights=kernel, bias=bias, dtype=dtype
+        in_channels=6,
+        out_channels=16,
+        kernel_size=5,
+        input_h=14,
+        input_w=14,
+        weights=kernel,
+        bias=bias,
+        dtype=dtype,
     )
 
 
@@ -149,8 +179,14 @@ fn test_conv2_backward_float32() raises:
     var kernel = _result[0]
     var bias = _result[1]
     LayerTester.test_conv_layer_backward(
-        in_channels=6, out_channels=16, kernel_size=5,
-        input_h=8, input_w=8, weights=kernel, bias=bias, dtype=dtype
+        in_channels=6,
+        out_channels=16,
+        kernel_size=5,
+        input_h=8,
+        input_w=8,
+        weights=kernel,
+        bias=bias,
+        dtype=dtype,
     )
 
 
@@ -174,7 +210,9 @@ fn test_relu_forward_float16() raises:
 fn test_relu_backward_float32() raises:
     """Test ReLU backward pass."""
     var shape: List[Int] = [1, 6, 8, 8]
-    LayerTester.test_activation_layer_backward(shape, DType.float32, activation="relu")
+    LayerTester.test_activation_layer_backward(
+        shape, DType.float32, activation="relu"
+    )
 
 
 # ============================================================================
@@ -185,32 +223,56 @@ fn test_relu_backward_float32() raises:
 fn test_maxpool1_forward_float32() raises:
     """Test MaxPool1 forward pass float32."""
     LayerTester.test_pooling_layer(
-        channels=6, input_h=24, input_w=24, pool_size=2, stride=2,
-        dtype=DType.float32, pool_type="max", padding=0
+        channels=6,
+        input_h=24,
+        input_w=24,
+        pool_size=2,
+        stride=2,
+        dtype=DType.float32,
+        pool_type="max",
+        padding=0,
     )
 
 
 fn test_maxpool1_forward_float16() raises:
     """Test MaxPool1 forward pass float16."""
     LayerTester.test_pooling_layer(
-        channels=6, input_h=24, input_w=24, pool_size=2, stride=2,
-        dtype=DType.float16, pool_type="max", padding=0
+        channels=6,
+        input_h=24,
+        input_w=24,
+        pool_size=2,
+        stride=2,
+        dtype=DType.float16,
+        pool_type="max",
+        padding=0,
     )
 
 
 fn test_maxpool2_forward_float32() raises:
     """Test MaxPool2 forward pass float32."""
     LayerTester.test_pooling_layer(
-        channels=16, input_h=10, input_w=10, pool_size=2, stride=2,
-        dtype=DType.float32, pool_type="max", padding=0
+        channels=16,
+        input_h=10,
+        input_w=10,
+        pool_size=2,
+        stride=2,
+        dtype=DType.float32,
+        pool_type="max",
+        padding=0,
     )
 
 
 fn test_maxpool2_forward_float16() raises:
     """Test MaxPool2 forward pass float16."""
     LayerTester.test_pooling_layer(
-        channels=16, input_h=10, input_w=10, pool_size=2, stride=2,
-        dtype=DType.float16, pool_type="max", padding=0
+        channels=16,
+        input_h=10,
+        input_w=10,
+        pool_size=2,
+        stride=2,
+        dtype=DType.float16,
+        pool_type="max",
+        padding=0,
     )
 
 
@@ -226,7 +288,11 @@ fn test_fc1_forward_float32() raises:
     var weights = _result[0]
     var bias = _result[1]
     LayerTester.test_linear_layer(
-        in_features=400, out_features=120, weights=weights, bias=bias, dtype=dtype
+        in_features=400,
+        out_features=120,
+        weights=weights,
+        bias=bias,
+        dtype=dtype,
     )
 
 
@@ -237,7 +303,11 @@ fn test_fc1_forward_float16() raises:
     var weights = _result[0]
     var bias = _result[1]
     LayerTester.test_linear_layer(
-        in_features=400, out_features=120, weights=weights, bias=bias, dtype=dtype
+        in_features=400,
+        out_features=120,
+        weights=weights,
+        bias=bias,
+        dtype=dtype,
     )
 
 
@@ -248,7 +318,11 @@ fn test_fc1_backward_float32() raises:
     var weights = _result[0]
     var bias = _result[1]
     LayerTester.test_linear_layer_backward(
-        in_features=400, out_features=120, weights=weights, bias=bias, dtype=dtype
+        in_features=400,
+        out_features=120,
+        weights=weights,
+        bias=bias,
+        dtype=dtype,
     )
 
 
@@ -259,7 +333,11 @@ fn test_fc2_forward_float32() raises:
     var weights = _result[0]
     var bias = _result[1]
     LayerTester.test_linear_layer(
-        in_features=120, out_features=84, weights=weights, bias=bias, dtype=dtype
+        in_features=120,
+        out_features=84,
+        weights=weights,
+        bias=bias,
+        dtype=dtype,
     )
 
 
@@ -270,7 +348,11 @@ fn test_fc2_forward_float16() raises:
     var weights = _result[0]
     var bias = _result[1]
     LayerTester.test_linear_layer(
-        in_features=120, out_features=84, weights=weights, bias=bias, dtype=dtype
+        in_features=120,
+        out_features=84,
+        weights=weights,
+        bias=bias,
+        dtype=dtype,
     )
 
 
@@ -281,7 +363,11 @@ fn test_fc2_backward_float32() raises:
     var weights = _result[0]
     var bias = _result[1]
     LayerTester.test_linear_layer_backward(
-        in_features=120, out_features=84, weights=weights, bias=bias, dtype=dtype
+        in_features=120,
+        out_features=84,
+        weights=weights,
+        bias=bias,
+        dtype=dtype,
     )
 
 
@@ -326,7 +412,9 @@ fn test_fc3_backward_float32() raises:
 fn test_flatten_operation_float32() raises:
     """Test reshape/flatten operation (16, 5, 5) -> (400,)."""
     var dtype = DType.float32
-    var input = create_special_value_tensor([1, 16, 5, 5], dtype, SPECIAL_VALUE_ONE)
+    var input = create_special_value_tensor(
+        [1, 16, 5, 5], dtype, SPECIAL_VALUE_ONE
+    )
     var flattened = input.reshape([1, 400])
     assert_shape(flattened, [1, 400], "Flatten shape mismatch")
     assert_dtype(flattened, dtype, "Flatten dtype mismatch")
@@ -340,7 +428,9 @@ fn test_flatten_operation_float32() raises:
 fn test_flatten_operation_float16() raises:
     """Test flatten with float16."""
     var dtype = DType.float16
-    var input = create_special_value_tensor([1, 16, 5, 5], dtype, SPECIAL_VALUE_ONE)
+    var input = create_special_value_tensor(
+        [1, 16, 5, 5], dtype, SPECIAL_VALUE_ONE
+    )
     var flattened = input.reshape([1, 400])
     assert_shape(flattened, [1, 400], "Flatten shape mismatch (float16)")
     assert_dtype(flattened, dtype, "Flatten dtype mismatch (float16)")
@@ -487,5 +577,8 @@ fn main() raises:
     print("=" * 60)
     print("✅ ALL 24 TESTS PASSED - NO HEAP CORRUPTION DETECTED!")
     print("")
-    print("The heap corruption bug (#2942) may be fixed or no longer reproducible.")
+    print(
+        "The heap corruption bug (#2942) may be fixed or no longer"
+        " reproducible."
+    )
     print("Mojo version: 0.26.1.0.dev2025122805")

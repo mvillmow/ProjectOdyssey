@@ -92,9 +92,7 @@ def main():
         default=DEFAULT_MAX_TESTS_PER_FILE,
         help=f"Maximum tests per file (default: {DEFAULT_MAX_TESTS_PER_FILE})",
     )
-    parser.add_argument(
-        "--verbose", "-v", action="store_true", help="Print all files checked"
-    )
+    parser.add_argument("--verbose", "-v", action="store_true", help="Print all files checked")
     parser.add_argument(
         "test_dir",
         type=Path,
@@ -108,9 +106,7 @@ def main():
         print(f"Error: Test directory not found: {args.test_dir}", file=sys.stderr)
         sys.exit(1)
 
-    passed, violations = validate_test_files(
-        args.test_dir, args.threshold, args.verbose
-    )
+    passed, violations = validate_test_files(args.test_dir, args.threshold, args.verbose)
 
     if not passed:
         print(

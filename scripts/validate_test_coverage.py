@@ -67,6 +67,8 @@ def find_test_files(root_dir: Path) -> List[Path]:
         "tests/models/test_mobilenetv1_e2e.mojo",
         "tests/models/test_resnet18_e2e.mojo",
         "tests/models/test_vgg16_e2e.mojo",
+        # Heap corruption debugging test (used with git bisect, not regular CI)
+        "tests/models/test_heap_corruption_combined.mojo",
     ]
     exclude_files.extend(exclude_e2e_patterns)
 

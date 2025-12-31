@@ -3,7 +3,7 @@
 ## Overview
 
 | Attribute | Value |
-|-----------|-------|
+| --------- | ----- |
 | **Date** | 2025-12-29 |
 | **Session Context** | PR #2962 - ExTensor ImplicitlyCopyable Bug Fix |
 | **Objective** | Remove ImplicitlyCopyable trait from struct with List fields and fix resulting compilation errors |
@@ -15,7 +15,8 @@
 
 Use this skill when you need to:
 
-1. **Remove ImplicitlyCopyable from a struct** that contains non-trivial fields (List, Dict, String, or other heap-allocated types)
+1. **Remove ImplicitlyCopyable from a struct** that contains non-trivial fields
+   (List, Dict, String, or other heap-allocated types)
 2. **Fix compilation errors** after removing ImplicitlyCopyable trait from a widely-used type
 3. **Debug memory corruption** caused by bitwise copies bypassing reference counting
 4. **Systematically refactor** a codebase to use explicit copying instead of implicit copies
@@ -31,7 +32,8 @@ Use this skill when you need to:
 
 ### The Bug
 
-`ImplicitlyCopyable` on a struct with `List[Int]` fields causes Mojo to perform **bitwise copies** that bypass `__copyinit__`. This breaks reference counting:
+`ImplicitlyCopyable` on a struct with `List[Int]` fields causes Mojo to perform
+**bitwise copies** that bypass `__copyinit__`. This breaks reference counting:
 
 1. Implicit copy creates bitwise duplicate (refcount pointer copied, not incremented)
 2. Refcount stays at 1 even with 2+ copies sharing the data
@@ -65,7 +67,7 @@ Problem: Passing `ExTensor` by value triggers bitwise copy, not `__copyinit__`, 
    struct ExTensor(Copyable, Movable, Sized):
    ```
 
-3. **Ensure __copyinit__ exists and is correct**:
+3. **Ensure `__copyinit__` exists and is correct**:
 
    ```mojo
    fn __copyinit__(out self, existing: Self):
@@ -227,9 +229,10 @@ fn copy(self) -> Self:
 
 **Error**: `cannot implicitly copy 'ExTensor'`
 
-**Why it failed**: Even though we're in a method that's supposed to copy, returning `self` still requires an implicit copy, which we just removed.
+**Why it failed**: Even though we're in a method that's supposed to copy, returning
+`self` still requires an implicit copy, which we just removed.
 
-### ❌ Attempt 2: Call __copyinit__ directly
+### Attempt 2: Call `__copyinit__` directly (Failed)
 
 ```mojo
 fn copy(self) -> Self:
@@ -238,7 +241,8 @@ fn copy(self) -> Self:
 
 **Error**: `__copyinit__ is not directly callable`
 
-**Why it failed**: Mojo doesn't allow direct calls to lifecycle methods like `__copyinit__`, `__moveinit__`, etc. These are only invoked implicitly by the compiler.
+**Why it failed**: Mojo doesn't allow direct calls to lifecycle methods like
+`__copyinit__`, `__moveinit__`, etc. These are only invoked implicitly by the compiler.
 
 ### ❌ Attempt 3: Use tuple unpacking
 
@@ -312,15 +316,15 @@ var pred_classes = predictions.copy()
 
 #### Data Pipeline
 
-4. `shared/data/formats/cifar_loader.mojo` - Fixed tuple returns
-5. `shared/data/datasets/cifar10.mojo` - Fixed tuple unpacking, added .copy()
+1. `shared/data/formats/cifar_loader.mojo` - Fixed tuple returns
+2. `shared/data/datasets/cifar10.mojo` - Fixed tuple unpacking, added .copy()
 
 #### Training/Testing
 
-6. `shared/training/metrics/accuracy.mojo` - Fixed parameter signatures
-7. `shared/training/metrics/base.mojo` - Added .copy() for returns
-8. `shared/training/metrics/confusion_matrix.mojo` - Fixed parameter signatures
-9. `shared/testing/layer_testers.mojo` - Fixed closure captures with UnsafePointer
+1. `shared/training/metrics/accuracy.mojo` - Fixed parameter signatures
+2. `shared/training/metrics/base.mojo` - Added .copy() for returns
+3. `shared/training/metrics/confusion_matrix.mojo` - Fixed parameter signatures
+4. `shared/testing/layer_testers.mojo` - Fixed closure captures with UnsafePointer
 
 #### Batch Fixes (Task Agent)
 
