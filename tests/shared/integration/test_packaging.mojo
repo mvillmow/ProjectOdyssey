@@ -171,7 +171,12 @@ fn test_paper_implementation_pattern() raises:
     # Simulates how a paper implementation would use the shared library
 
     from shared.core import ExTensor, zeros, conv2d, flatten, relu
-    from shared.training import SGD, CosineAnnealingLR, EarlyStopping, ModelCheckpoint
+    from shared.training import (
+        SGD,
+        CosineAnnealingLR,
+        EarlyStopping,
+        ModelCheckpoint,
+    )
     from shared.data import ExTensorDataset
 
     # Paper-specific tensors for conv operations
