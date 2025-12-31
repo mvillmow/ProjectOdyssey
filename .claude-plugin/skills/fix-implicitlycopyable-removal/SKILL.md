@@ -365,7 +365,7 @@ fn forward(x: ExTensor) raises escaping -> ExTensor:
 
 ## Related Documentation
 
-- [Mojo Lifetimes & Copy Semantics](https://docs.modular.com/mojo/manual/values/lifetimes/copy)
+- [Mojo Lifetimes & Copy Semantics](https://docs.modular.com/mojo/manual/lifecycle/life)
 - [Mojo Ownership & Borrowing](https://docs.modular.com/mojo/manual/values/ownership)
 - PR #2962: ExTensor ImplicitlyCopyable Removal
 

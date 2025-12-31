@@ -42,7 +42,7 @@ to perform bitwise copies that **bypass `__copyinit__`**.
 
 ### Research Validation
 
-From [Mojo manual on copy semantics](https://docs.modular.com/mojo/manual/values/lifetimes/copy):
+From [Mojo manual on copy semantics](https://docs.modular.com/mojo/manual/lifecycle/life):
 
 > "ImplicitlyCopyable should NOT be used for types that are expensive to copy or
 > where implicit copying could mask a logic error"
@@ -412,7 +412,7 @@ All fixes tested with Mojo v0.26.1+
 
 ## References
 
-- [Mojo Copy Semantics](https://docs.modular.com/mojo/manual/values/lifetimes/copy)
+- [Mojo Copy Semantics](https://docs.modular.com/mojo/manual/lifecycle/life)
 - [Mojo Ownership Guide](https://docs.modular.com/mojo/manual/values/ownership)
 - PR #2962 - ExTensor ImplicitlyCopyable Removal
 - Plan File: `/home/mvillmow/.claude/plans/purring-napping-pizza.md`
