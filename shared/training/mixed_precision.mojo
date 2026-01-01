@@ -280,8 +280,8 @@ fn convert_to_fp32_master(params: ExTensor) raises -> ExTensor:
 
     # If FP16, use SIMD-optimized conversion when available
     if params.dtype() == DType.float16:
-        # Blocked: Mojo FP16 SIMD not supported
-        # TODO: Implement SIMD FP16→FP32 vectorization when compiler adds support
+        # NOTE: FP16 SIMD vectorization is blocked by Mojo compiler limitation.
+        # Mojo does not support SIMD load/store operations for FP16 types.
         #
         # Current Limitation: Mojo v0.26.1+ does not support SIMD vectorization for
         # FP16 load operations. This prevents efficient bulk conversion from FP16 to FP32.
@@ -364,9 +364,8 @@ fn update_model_from_master(
         return
 
     # If FP16, use optimized conversion (scalar until Mojo supports FP16 SIMD)
-    # Blocked: Mojo FP16 SIMD not supported
-    # TODO: Implement SIMD FP32→FP16 vectorization when compiler adds support
-    # See convert_to_fp32_master() for detailed notes on FP16 SIMD limitations
+    # NOTE: FP16 SIMD vectorization is blocked by Mojo compiler limitation.
+    # See convert_to_fp32_master() for detailed notes on FP16 SIMD limitations.
     if model_params.dtype() == DType.float16:
         _convert_fp32_to_fp16_simd(master_params, model_params)
         return
