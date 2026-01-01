@@ -4,19 +4,41 @@
   "description": "Skills migrated to ProjectMnemosyne for cross-project reuse",
   "author": "ML Odyssey Team",
   "created": "2025-12-29",
-  "note": "All retrospective skills have been migrated to ProjectMnemosyne",
-  "migration": {
-    "target_repository": "https://github.com/HomericIntelligence/ProjectMnemosyne",
-    "migrated_skills": [
-      "verify-issue-before-work",
-      "fix-implicitlycopyable-removal",
-      "investigate-mojo-heap-corruption"
-    ],
-    "migration_prs": [
-      "https://github.com/HomericIntelligence/ProjectMnemosyne/pull/80",
-      "https://github.com/HomericIntelligence/ProjectMnemosyne/pull/81"
-    ],
-    "migration_date": "2026-01-09"
-  },
-  "skills": []
+  "skills": [
+    {
+      "name": "verify-issue-before-work",
+      "category": "tooling",
+      "description": "Verify GitHub issue state and existing implementation before starting work to avoid duplicate effort",
+      "tags": ["workflow", "github", "productivity", "verification"],
+      "skillPath": "skills/verify-issue-before-work/SKILL.md",
+      "referencesPath": "skills/verify-issue-before-work/references/notes.md"
+    },
+    {
+      "name": "fix-implicitlycopyable-removal",
+      "category": "debugging",
+      "description": "Systematic approach to removing ImplicitlyCopyable trait from Mojo structs and fixing resulting compilation errors",
+      "tags": ["mojo", "ownership", "memory-safety", "refactoring", "ci-fix"],
+      "skillPath": "skills/fix-implicitlycopyable-removal/SKILL.md",
+      "referencesPath": "skills/fix-implicitlycopyable-removal/references/notes.md",
+      "metrics": {
+        "files_fixed": 27,
+        "errors_resolved": 132,
+        "test_pass_rate": "100%"
+      }
+    },
+    {
+      "name": "fixme-todo-cleanup",
+      "category": "debugging",
+      "description": "Systematic FIXME/TODO cleanup workflow with proper branching, PRs, and CI handling",
+      "tags": ["technical-debt", "cleanup", "workflow", "github", "ci-cd"],
+      "skillPath": "skills/fixme-todo-cleanup/SKILL.md",
+      "referencesPath": "skills/fixme-todo-cleanup/references/notes.md",
+      "metrics": {
+        "prs_merged": 7,
+        "issues_closed": 3,
+        "items_resolved": 7,
+        "items_blocked": 5
+      }
+    }
+  ]
 }
