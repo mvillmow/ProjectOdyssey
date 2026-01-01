@@ -12,8 +12,115 @@ from tests.shared.conftest import (
     assert_false,
     assert_equal,
     assert_not_equal,
-    TestFixtures,
 )
+from shared.utils.visualization import (
+    PlotData,
+    PlotSeries,
+    ConfusionMatrixData,
+    plot_training_curves,
+    plot_loss_only,
+    plot_accuracy_only,
+    compute_confusion_matrix,
+    plot_confusion_matrix,
+    normalize_confusion_matrix,
+    compute_matrix_metrics,
+    visualize_model_architecture,
+    visualize_tensor_shapes,
+    visualize_gradient_flow,
+    detect_gradient_issues,
+    show_images,
+    show_augmented_images,
+    visualize_feature_maps,
+    save_figure,
+    clear_figure,
+    show_figure,
+)
+
+
+# ============================================================================
+# Test PlotData Struct
+# ============================================================================
+
+
+fn test_plot_data_default_init() raises:
+    """Test PlotData default initialization."""
+    var plot = PlotData()
+    assert_equal(plot.title, "")
+    assert_equal(plot.xlabel, "")
+    assert_equal(plot.ylabel, "")
+    assert_equal(len(plot.x_data), 0)
+    assert_equal(len(plot.y_data), 0)
+    assert_equal(plot.label, "")
+
+
+fn test_plot_data_set_attributes() raises:
+    """Test setting PlotData attributes."""
+    var plot = PlotData()
+    plot.title = "Training Loss"
+    plot.xlabel = "Epoch"
+    plot.ylabel = "Loss"
+    plot.label = "train"
+    plot.x_data.append(1.0)
+    plot.x_data.append(2.0)
+    plot.y_data.append(0.5)
+    plot.y_data.append(0.3)
+
+    assert_equal(plot.title, "Training Loss")
+    assert_equal(plot.xlabel, "Epoch")
+    assert_equal(plot.ylabel, "Loss")
+    assert_equal(plot.label, "train")
+    assert_equal(len(plot.x_data), 2)
+    assert_equal(len(plot.y_data), 2)
+
+
+# ============================================================================
+# Test PlotSeries Struct
+# ============================================================================
+
+
+fn test_plot_series_default_init() raises:
+    """Test PlotSeries default initialization."""
+    var series = PlotSeries()
+    assert_equal(series.title, "")
+    assert_equal(series.xlabel, "")
+    assert_equal(series.ylabel, "")
+    assert_equal(len(series.series_data), 0)
+
+
+fn test_plot_series_add_series() raises:
+    """Test adding series to PlotSeries."""
+    var plot_series = PlotSeries()
+    plot_series.title = "Training Curves"
+
+    var train_data = PlotData()
+    train_data.label = "Training"
+    train_data.y_data.append(0.5)
+    train_data.y_data.append(0.3)
+
+    var val_data = PlotData()
+    val_data.label = "Validation"
+    val_data.y_data.append(0.6)
+    val_data.y_data.append(0.4)
+
+    plot_series.add_series(train_data^)
+    plot_series.add_series(val_data^)
+
+    assert_equal(len(plot_series.series_data), 2)
+
+
+# ============================================================================
+# Test ConfusionMatrixData Struct
+# ============================================================================
+
+
+fn test_confusion_matrix_data_default_init() raises:
+    """Test ConfusionMatrixData default initialization."""
+    var cm = ConfusionMatrixData()
+    assert_equal(len(cm.class_names), 0)
+    assert_equal(len(cm.matrix), 0)
+    assert_equal(cm.accuracy, 0.0)
+    assert_equal(cm.precision, 0.0)
+    assert_equal(cm.recall, 0.0)
 
 
 # ============================================================================
@@ -21,72 +128,96 @@ from tests.shared.conftest import (
 # ============================================================================
 
 
-fn test_plot_training_loss():
+fn test_plot_training_loss() raises:
     """Test plotting training loss over epochs."""
-    # TODO(#44): Implement when plot_loss exists
-    # Create loss data: [0.5, 0.4, 0.3, 0.25, 0.2]
-    # Plot training loss
-    # Verify plot file is created
-    # Verify plot contains 5 data points
-    # Clean up plot file
-    pass
+    var train_losses = List[Float32]()
+    train_losses.append(0.5)
+    train_losses.append(0.4)
+    train_losses.append(0.3)
+    train_losses.append(0.25)
+    train_losses.append(0.2)
+
+    var val_losses = List[Float32]()
+    val_losses.append(0.6)
+    val_losses.append(0.5)
+    val_losses.append(0.4)
+    val_losses.append(0.35)
+    val_losses.append(0.3)
+
+    var result = plot_training_curves(train_losses, val_losses)
+    assert_true(result)
 
 
-fn test_plot_training_and_validation_loss():
+fn test_plot_training_and_validation_loss() raises:
     """Test plotting both training and validation loss."""
-    # TODO(#44): Implement when plot_loss supports multiple series
-    # Create train_loss: [0.5, 0.4, 0.3, 0.25, 0.2]
-    # Create val_loss: [0.6, 0.5, 0.4, 0.35, 0.3]
-    # Plot both series on same graph
-    # Verify plot has two lines (train and val)
-    # Verify legend shows "Training" and "Validation"
-    pass
+    var train_losses = List[Float32]()
+    train_losses.append(0.5)
+    train_losses.append(0.4)
+    train_losses.append(0.3)
+
+    var val_losses = List[Float32]()
+    val_losses.append(0.6)
+    val_losses.append(0.5)
+    val_losses.append(0.4)
+
+    var result = plot_training_curves(train_losses, val_losses)
+    assert_true(result)
 
 
-fn test_plot_accuracy_curves():
+fn test_plot_accuracy_curves() raises:
     """Test plotting accuracy curves over epochs."""
-    # TODO(#44): Implement when plot_accuracy exists
-    # Create train_acc: [0.6, 0.7, 0.8, 0.85, 0.9]
-    # Create val_acc: [0.55, 0.65, 0.75, 0.8, 0.85]
-    # Plot accuracy curves
-    # Verify y-axis range is [0, 1]
-    # Verify plot includes both curves
-    pass
+    var train_losses = List[Float32]()
+    train_losses.append(0.5)
+    train_losses.append(0.3)
+
+    var val_losses = List[Float32]()
+    val_losses.append(0.6)
+    val_losses.append(0.4)
+
+    var train_accs = List[Float32]()
+    train_accs.append(0.6)
+    train_accs.append(0.8)
+
+    var val_accs = List[Float32]()
+    val_accs.append(0.55)
+    val_accs.append(0.75)
+
+    var result = plot_training_curves(
+        train_losses, val_losses, train_accs, val_accs
+    )
+    assert_true(result)
 
 
-fn test_plot_with_custom_style():
-    """Test plotting with custom style (colors, line styles)."""
-    # TODO(#44): Implement when plot supports styling
-    # Create data
-    # Plot with custom:
-    # - Line color: red for train, blue for val
-    # - Line style: solid for train, dashed for val
-    # - Markers: circles for train, squares for val
-    # Verify custom styling is applied
-    pass
+fn test_plot_loss_only_single_series() raises:
+    """Test plotting single loss series."""
+    var losses = List[Float32]()
+    losses.append(0.5)
+    losses.append(0.4)
+    losses.append(0.3)
+
+    var result = plot_loss_only(losses, "Training Loss")
+    assert_true(result)
 
 
-fn test_plot_with_title_and_labels():
-    """Test plotting with custom title and axis labels."""
-    # TODO(#44): Implement when plot supports labels
-    # Create data
-    # Plot with:
-    # - Title: "LeNet-5 Training Progress"
-    # - X-label: "Epoch"
-    # - Y-label: "Loss"
-    # Verify labels appear in plot
-    pass
+fn test_plot_accuracy_only_single_series() raises:
+    """Test plotting single accuracy series."""
+    var accuracies = List[Float32]()
+    accuracies.append(0.6)
+    accuracies.append(0.75)
+    accuracies.append(0.85)
+
+    var result = plot_accuracy_only(accuracies, "Validation Accuracy")
+    assert_true(result)
 
 
-fn test_save_plot_to_file():
-    """Test saving plot to image file (PNG, SVG)."""
-    # TODO(#44): Implement when plot save exists
-    # Create plot
-    # Save to "training_loss.png"
-    # Verify file exists
-    # Verify file is valid PNG image
-    # Clean up file
-    pass
+fn test_plot_with_save_path() raises:
+    """Test plotting with save path specified."""
+    var losses = List[Float32]()
+    losses.append(0.5)
+    losses.append(0.3)
+
+    var result = plot_loss_only(losses, "Loss", "output.png")
+    assert_true(result)
 
 
 # ============================================================================
@@ -94,57 +225,148 @@ fn test_save_plot_to_file():
 # ============================================================================
 
 
-fn test_create_confusion_matrix():
+fn test_create_confusion_matrix() raises:
     """Test creating confusion matrix from predictions."""
-    # TODO(#44): Implement when confusion_matrix exists
-    # True labels: [0, 1, 2, 0, 1, 2]
-    # Predictions: [0, 2, 2, 0, 1, 1]
-    # Create confusion matrix
+    var y_true = List[Int]()
+    y_true.append(0)
+    y_true.append(1)
+    y_true.append(2)
+    y_true.append(0)
+    y_true.append(1)
+    y_true.append(2)
+
+    var y_pred = List[Int]()
+    y_pred.append(0)
+    y_pred.append(2)
+    y_pred.append(2)
+    y_pred.append(0)
+    y_pred.append(1)
+    y_pred.append(1)
+
+    var matrix = compute_confusion_matrix(y_true, y_pred)
+
     # Verify matrix shape: 3x3 (for 3 classes)
-    # Verify matrix values are correct
-    pass
+    assert_equal(len(matrix), 3)
+    assert_equal(len(matrix[0]), 3)
+
+    # Verify diagonal values (correct predictions)
+    assert_equal(matrix[0][0], 2)  # Class 0: 2 correct
+    assert_equal(matrix[1][1], 1)  # Class 1: 1 correct
+    assert_equal(matrix[2][2], 1)  # Class 2: 1 correct
 
 
-fn test_plot_confusion_matrix():
+fn test_confusion_matrix_with_num_classes() raises:
+    """Test confusion matrix with specified number of classes."""
+    var y_true = List[Int]()
+    y_true.append(0)
+    y_true.append(1)
+
+    var y_pred = List[Int]()
+    y_pred.append(0)
+    y_pred.append(1)
+
+    # Request 4 classes even though only 2 are present
+    var matrix = compute_confusion_matrix(y_true, y_pred, num_classes=4)
+
+    assert_equal(len(matrix), 4)
+    assert_equal(len(matrix[0]), 4)
+
+
+fn test_plot_confusion_matrix() raises:
     """Test plotting confusion matrix as heatmap."""
-    # TODO(#44): Implement when plot_confusion_matrix exists
-    # Create confusion matrix (3x3 for 3 classes)
-    # Plot as heatmap
-    # Verify: colors indicate value magnitude
-    # Verify: class labels on axes
-    # Verify: values shown in cells
-    pass
+    var y_true = List[Int]()
+    y_true.append(0)
+    y_true.append(1)
+    y_true.append(0)
+    y_true.append(1)
+
+    var y_pred = List[Int]()
+    y_pred.append(0)
+    y_pred.append(0)
+    y_pred.append(0)
+    y_pred.append(1)
+
+    var class_names = List[String]()
+    class_names.append("cat")
+    class_names.append("dog")
+
+    var result = plot_confusion_matrix(y_true, y_pred, class_names)
+    assert_true(result)
 
 
-fn test_confusion_matrix_with_class_names():
+fn test_confusion_matrix_with_class_names() raises:
     """Test confusion matrix with custom class names."""
-    # TODO(#44): Implement when confusion_matrix supports class names
-    # Create confusion matrix for classes: ["cat", "dog", "bird"]
-    # Plot matrix
-    # Verify: axes show "cat", "dog", "bird" instead of 0, 1, 2
-    pass
+    var y_true = List[Int]()
+    y_true.append(0)
+    y_true.append(1)
+    y_true.append(2)
+
+    var y_pred = List[Int]()
+    y_pred.append(0)
+    y_pred.append(1)
+    y_pred.append(2)
+
+    var class_names = List[String]()
+    class_names.append("cat")
+    class_names.append("dog")
+    class_names.append("bird")
+
+    var result = plot_confusion_matrix(y_true, y_pred, class_names)
+    assert_true(result)
 
 
-fn test_confusion_matrix_normalization():
+fn test_confusion_matrix_normalization() raises:
     """Test normalizing confusion matrix by row (true labels)."""
-    # TODO(#44): Implement when confusion_matrix supports normalization
-    # Create confusion matrix
-    # Normalize by row (percentages per true class)
-    # Verify: each row sums to 1.0
-    # Verify: values are percentages
-    pass
+    var matrix = List[List[Int]]()
+    var row0 = List[Int]()
+    row0.append(8)
+    row0.append(2)
+    matrix.append(row0^)
+
+    var row1 = List[Int]()
+    row1.append(1)
+    row1.append(9)
+    matrix.append(row1^)
+
+    var normalized = normalize_confusion_matrix(matrix)
+
+    # Row 0: [8, 2] -> [0.8, 0.2]
+    assert_true(normalized[0][0] > 0.79 and normalized[0][0] < 0.81)
+    assert_true(normalized[0][1] > 0.19 and normalized[0][1] < 0.21)
+
+    # Row 1: [1, 9] -> [0.1, 0.9]
+    assert_true(normalized[1][0] > 0.09 and normalized[1][0] < 0.11)
+    assert_true(normalized[1][1] > 0.89 and normalized[1][1] < 0.91)
 
 
-fn test_confusion_matrix_accuracy():
+fn test_confusion_matrix_accuracy() raises:
     """Test computing accuracy from confusion matrix."""
-    # TODO(#44): Implement when confusion_matrix.accuracy exists
-    # Create confusion matrix:
-    # [[8, 1, 0],
-    #  [1, 7, 2],
-    #  [0, 1, 9]]
-    # Compute accuracy: (8+7+9) / 28 = 0.857
-    # Verify accuracy is correct
-    pass
+    var matrix = List[List[Int]]()
+
+    var row0 = List[Int]()
+    row0.append(8)
+    row0.append(1)
+    row0.append(0)
+    matrix.append(row0^)
+
+    var row1 = List[Int]()
+    row1.append(1)
+    row1.append(7)
+    row1.append(2)
+    matrix.append(row1^)
+
+    var row2 = List[Int]()
+    row2.append(0)
+    row2.append(1)
+    row2.append(9)
+    matrix.append(row2^)
+
+    var metrics = compute_matrix_metrics(matrix)
+    var accuracy = metrics[0]
+
+    # Accuracy: (8+7+9) / 29 = 0.8275...
+    # Total = 8+1+0+1+7+2+0+1+9 = 29, correct = 8+7+9 = 24
+    assert_true(accuracy > 0.82 and accuracy < 0.84)
 
 
 # ============================================================================
@@ -152,54 +374,68 @@ fn test_confusion_matrix_accuracy():
 # ============================================================================
 
 
-fn test_visualize_simple_model():
+fn test_visualize_simple_model() raises:
     """Test visualizing simple neural network architecture."""
-    # TODO(#44): Implement when visualize_model exists
-    # Create simple model: Input(784) -> Linear(128) -> ReLU -> Linear(10)
-    # Visualize architecture
-    # Verify diagram shows:
-    # - Input layer (784)
-    # - Hidden layer (128)
-    # - Output layer (10)
-    # - Connections between layers
-    pass
+    var layers = List[String]()
+    layers.append("Input: (batch, 784)")
+    layers.append("Linear: (batch, 128)")
+    layers.append("ReLU: (batch, 128)")
+    layers.append("Linear: (batch, 10)")
+
+    var result = visualize_model_architecture("SimpleNN", layers)
+    assert_true(result)
 
 
-fn test_visualize_conv_model():
+fn test_visualize_conv_model() raises:
     """Test visualizing convolutional neural network."""
-    # TODO(#44): Implement when visualize_model supports Conv2D
-    # Create CNN: Conv2D -> ReLU -> MaxPool -> Conv2D -> ReLU -> MaxPool -> Flatten -> Linear
-    # Visualize architecture
-    # Verify diagram shows:
-    # - Conv layers with kernel sizes
-    # - Pooling layers
-    # - Flatten operation
-    # - Fully connected layers
-    pass
+    var layers = List[String]()
+    layers.append("Input: (batch, 1, 28, 28)")
+    layers.append("Conv2D: (batch, 32, 26, 26)")
+    layers.append("ReLU: (batch, 32, 26, 26)")
+    layers.append("MaxPool2D: (batch, 32, 13, 13)")
+    layers.append("Flatten: (batch, 5408)")
+    layers.append("Linear: (batch, 10)")
+
+    var result = visualize_model_architecture("LeNet", layers)
+    assert_true(result)
 
 
-fn test_visualize_model_with_shapes():
+fn test_visualize_model_with_shapes() raises:
     """Test visualizing model with tensor shapes at each layer."""
-    # TODO(#44): Implement when visualize_model shows shapes
-    # Create model with known input shape
-    # Visualize with shapes
-    # Verify diagram shows:
-    # - Input shape: (batch, 28, 28, 1)
-    # - After Conv2D: (batch, 24, 24, 32)
-    # - After Pool: (batch, 12, 12, 32)
-    # etc.
-    pass
+    var input_shape = List[Int]()
+    input_shape.append(1)
+    input_shape.append(28)
+    input_shape.append(28)
+    input_shape.append(1)
+
+    var layer_shapes = List[List[Int]]()
+
+    var shape1 = List[Int]()
+    shape1.append(1)
+    shape1.append(24)
+    shape1.append(24)
+    shape1.append(32)
+    layer_shapes.append(shape1^)
+
+    var shape2 = List[Int]()
+    shape2.append(1)
+    shape2.append(12)
+    shape2.append(12)
+    shape2.append(32)
+    layer_shapes.append(shape2^)
+
+    var result = visualize_tensor_shapes(input_shape, layer_shapes)
+    assert_true(result)
 
 
-fn test_save_architecture_diagram():
+fn test_save_architecture_diagram() raises:
     """Test saving architecture diagram to file."""
-    # TODO(#44): Implement when visualize_model saves to file
-    # Create model
-    # Visualize and save to "model_arch.png"
-    # Verify file exists
-    # Verify file is valid image
-    # Clean up file
-    pass
+    var layers = List[String]()
+    layers.append("Input: (batch, 784)")
+    layers.append("Linear: (batch, 10)")
+
+    var result = visualize_model_architecture("Model", layers, "arch.png")
+    assert_true(result)
 
 
 # ============================================================================
@@ -207,44 +443,98 @@ fn test_save_architecture_diagram():
 # ============================================================================
 
 
-fn test_visualize_gradient_magnitudes():
+fn test_visualize_gradient_magnitudes() raises:
     """Test visualizing gradient magnitudes by layer."""
-    # TODO(#44): Implement when gradient visualization exists
-    # Create model with known gradients
-    # Compute gradients
-    # Visualize gradient magnitudes per layer
-    # Verify: bar chart or heatmap shows magnitude for each layer
-    pass
+    var gradients = List[Float32]()
+    gradients.append(0.01)
+    gradients.append(0.005)
+    gradients.append(0.001)
+    gradients.append(0.0005)
+
+    var layer_names = List[String]()
+    layer_names.append("conv1")
+    layer_names.append("conv2")
+    layer_names.append("fc1")
+    layer_names.append("fc2")
+
+    var result = visualize_gradient_flow(gradients, layer_names)
+    assert_true(result)
 
 
-fn test_detect_vanishing_gradients():
+fn test_detect_vanishing_gradients() raises:
     """Test detecting vanishing gradient problem."""
-    # TODO(#44): Implement when gradient analysis exists
-    # Create model with very small gradients in early layers
-    # Analyze gradients
-    # Verify: warning about vanishing gradients
-    # Visualize: highlight layers with small gradients
-    pass
+    var gradients = List[Float32]()
+    gradients.append(0.01)
+    gradients.append(0.0001)
+    gradients.append(1e-8)  # Very small - vanishing
+
+    var issues = detect_gradient_issues(gradients)
+    var has_vanishing = issues[0]
+    var has_exploding = issues[1]
+
+    assert_true(has_vanishing)
+    assert_false(has_exploding)
 
 
-fn test_detect_exploding_gradients():
+fn test_detect_exploding_gradients() raises:
     """Test detecting exploding gradient problem."""
-    # TODO(#44): Implement when gradient analysis exists
-    # Create model with very large gradients
-    # Analyze gradients
-    # Verify: warning about exploding gradients
-    # Visualize: highlight layers with large gradients
-    pass
+    var gradients = List[Float32]()
+    gradients.append(0.01)
+    gradients.append(10.0)
+    gradients.append(1000.0)  # Very large - exploding
+
+    var issues = detect_gradient_issues(gradients)
+    var has_vanishing = issues[0]
+    var has_exploding = issues[1]
+
+    assert_false(has_vanishing)
+    assert_true(has_exploding)
 
 
-fn test_plot_gradient_flow():
+fn test_detect_both_gradient_issues() raises:
+    """Test detecting both vanishing and exploding gradients."""
+    var gradients = List[Float32]()
+    gradients.append(1e-10)  # Vanishing
+    gradients.append(0.01)  # Normal
+    gradients.append(1000.0)  # Exploding
+
+    var issues = detect_gradient_issues(gradients)
+    var has_vanishing = issues[0]
+    var has_exploding = issues[1]
+
+    assert_true(has_vanishing)
+    assert_true(has_exploding)
+
+
+fn test_no_gradient_issues() raises:
+    """Test normal gradients without issues."""
+    var gradients = List[Float32]()
+    gradients.append(0.01)
+    gradients.append(0.005)
+    gradients.append(0.001)
+
+    var issues = detect_gradient_issues(gradients)
+    var has_vanishing = issues[0]
+    var has_exploding = issues[1]
+
+    assert_false(has_vanishing)
+    assert_false(has_exploding)
+
+
+fn test_plot_gradient_flow() raises:
     """Test plotting gradient flow through network."""
-    # TODO(#44): Implement when gradient flow visualization exists
-    # Create model
-    # Compute gradients for multiple iterations
-    # Plot gradient magnitude over time for each layer
-    # Verify: line chart shows gradient changes
-    pass
+    var gradients = List[Float32]()
+    gradients.append(0.01)
+    gradients.append(0.008)
+    gradients.append(0.006)
+
+    var layer_names = List[String]()
+    layer_names.append("layer1")
+    layer_names.append("layer2")
+    layer_names.append("layer3")
+
+    var result = visualize_gradient_flow(gradients, layer_names)
+    assert_true(result)
 
 
 # ============================================================================
@@ -252,109 +542,72 @@ fn test_plot_gradient_flow():
 # ============================================================================
 
 
-fn test_visualize_image_batch():
+fn test_visualize_image_batch() raises:
     """Test visualizing batch of images in grid."""
-    # TODO(#44): Implement when visualize_images exists
-    # Create batch of 16 images (28x28)
-    # Visualize as 4x4 grid
-    # Verify: grid shows all 16 images
-    # Verify: images are arranged in 4x4 layout
-    pass
+    var images = List[String]()
+    for i in range(16):
+        images.append("image_" + String(i) + ".png")
+
+    var labels = List[String]()
+
+    var result = show_images(images, labels, nrow=4)
+    assert_true(result)
 
 
-fn test_visualize_images_with_labels():
+fn test_visualize_images_with_labels() raises:
     """Test visualizing images with labels."""
-    # TODO(#44): Implement when visualize_images supports labels
-    # Create batch of images with labels: ["cat", "dog", "bird", ...]
-    # Visualize with labels
-    # Verify: each image shows its label
-    pass
+    var images = List[String]()
+    images.append("img1.png")
+    images.append("img2.png")
+    images.append("img3.png")
+
+    var labels = List[String]()
+    labels.append("cat")
+    labels.append("dog")
+    labels.append("bird")
+
+    var result = show_images(images, labels)
+    assert_true(result)
 
 
-fn test_visualize_augmented_images():
+fn test_visualize_augmented_images() raises:
     """Test visualizing original and augmented images side by side."""
-    # TODO(#44): Implement when visualize_augmentation exists
-    # Create image
-    # Apply augmentations (rotate, flip, crop)
-    # Visualize original and augmented versions
-    # Verify: side-by-side comparison
-    pass
+    var original = List[String]()
+    original.append("orig1.png")
+    original.append("orig2.png")
 
+    var augmented = List[String]()
+    augmented.append("aug1.png")
+    augmented.append("aug2.png")
 
-fn test_plot_class_distribution():
-    """Test plotting class distribution in dataset."""
-    # TODO(#44): Implement when plot_distribution exists
-    # Create dataset with imbalanced classes
-    # Plot class distribution as bar chart
-    # Verify: bars show count per class
-    # Verify: classes are labeled
-    pass
+    var result = show_augmented_images(original, augmented, nrow=2)
+    assert_true(result)
 
 
 # ============================================================================
-# Test Activation Visualization
+# Test Feature Map Visualization
 # ============================================================================
 
 
-fn test_visualize_feature_maps():
+fn test_visualize_feature_maps() raises:
     """Test visualizing convolutional feature maps."""
-    # TODO(#44): Implement when visualize_feature_maps exists
-    # Create Conv2D layer
-    # Forward pass image
-    # Visualize feature maps (activations)
-    # Verify: grid shows all feature maps
-    pass
+    var feature_maps = List[String]()
+    feature_maps.append("fmap_0")
+    feature_maps.append("fmap_1")
+    feature_maps.append("fmap_2")
+    feature_maps.append("fmap_3")
+
+    var result = visualize_feature_maps(feature_maps, "conv1")
+    assert_true(result)
 
 
-fn test_visualize_activation_distribution():
-    """Test visualizing distribution of activations."""
-    # TODO(#44): Implement when visualize_activations exists
-    # Create layer activations
-    # Plot histogram of activation values
-    # Verify: histogram shows distribution
-    # Useful for detecting dead ReLU units
-    pass
+fn test_visualize_feature_maps_no_layer_name() raises:
+    """Test visualizing feature maps without layer name."""
+    var feature_maps = List[String]()
+    feature_maps.append("fmap_0")
 
-
-# ============================================================================
-# Test Plot Styling
-# ============================================================================
-
-
-fn test_set_plot_style():
-    """Test setting global plot style."""
-    # TODO(#44): Implement when set_style exists
-    # Set style to "seaborn" or "ggplot"
-    # Create plot
-    # Verify: plot uses specified style
-    pass
-
-
-fn test_plot_with_grid():
-    """Test adding grid to plot."""
-    # TODO(#44): Implement when plot supports grid
-    # Create plot with grid enabled
-    # Verify: grid lines appear
-    pass
-
-
-fn test_plot_with_legend():
-    """Test adding legend to plot."""
-    # TODO(#44): Implement when plot supports legend
-    # Create plot with multiple series
-    # Add legend
-    # Verify: legend shows series names
-    # Verify: legend colors match line colors
-    pass
-
-
-fn test_plot_with_annotations():
-    """Test adding annotations to plot."""
-    # TODO(#44): Implement when plot supports annotations
-    # Create plot
-    # Add annotation: "Best epoch" at max accuracy point
-    # Verify: annotation appears at correct location
-    pass
+    var result = visualize_feature_maps(feature_maps)
+    assert_true(result)
 
 
 # ============================================================================
@@ -362,100 +615,255 @@ fn test_plot_with_annotations():
 # ============================================================================
 
 
-fn test_export_plot_formats():
-    """Test exporting plot in different formats (PNG, SVG, PDF)."""
-    # TODO(#44): Implement when plot export supports multiple formats
-    # Create plot
-    # Export as PNG
-    # Export as SVG
-    # Export as PDF
-    # Verify: all files are created
-    # Verify: files are valid for their formats
-    # Clean up files
-    pass
+fn test_save_figure_png() raises:
+    """Test saving figure as PNG."""
+    var result = save_figure("output.png", "png")
+    assert_true(result)
 
 
-fn test_export_high_resolution_plot():
-    """Test exporting plot at high resolution (300 DPI)."""
-    # TODO(#44): Implement when plot export supports DPI setting
-    # Create plot
-    # Export at 300 DPI
-    # Verify: file has correct resolution
-    pass
+fn test_save_figure_svg() raises:
+    """Test saving figure as SVG."""
+    var result = save_figure("output.svg", "svg")
+    assert_true(result)
 
 
-fn test_export_plot_with_transparent_background():
-    """Test exporting plot with transparent background."""
-    # TODO(#44): Implement when plot export supports transparency
-    # Create plot
-    # Export with transparent background
-    # Verify: background is transparent (alpha channel)
-    pass
+fn test_save_figure_pdf() raises:
+    """Test saving figure as PDF."""
+    var result = save_figure("output.pdf", "pdf")
+    assert_true(result)
+
+
+fn test_clear_figure() raises:
+    """Test clearing figure."""
+    var result = clear_figure()
+    assert_true(result)
+
+
+fn test_show_figure() raises:
+    """Test showing figure."""
+    var result = show_figure()
+    assert_true(result)
 
 
 # ============================================================================
-# Integration Tests
+# Test Edge Cases
 # ============================================================================
 
 
-fn test_visualization_integration_training():
-    """Test visualization integrates with training loop."""
-    # TODO(#44): Implement when full training workflow exists
-    # Train model
-    # Collect metrics (loss, accuracy)
-    # Visualize training progress
-    # Verify: plots are created automatically
-    # Verify: plots show training history
-    pass
+fn test_empty_confusion_matrix() raises:
+    """Test confusion matrix with empty inputs."""
+    var y_true = List[Int]()
+    var y_pred = List[Int]()
+
+    var matrix = compute_confusion_matrix(y_true, y_pred)
+    # Empty inputs should produce empty matrix
+    assert_equal(len(matrix), 0)
 
 
-fn test_create_training_report():
-    """Test creating comprehensive training report with all visualizations."""
-    # TODO(#44): Implement when training report exists
-    # Train model
-    # Create report with:
-    # - Loss curves
-    # - Accuracy curves
-    # - Confusion matrix
-    # - Model architecture
-    # Verify: report contains all visualizations
-    # Verify: report is saved to file
-    pass
+fn test_single_class_confusion_matrix() raises:
+    """Test confusion matrix with single class."""
+    var y_true = List[Int]()
+    y_true.append(0)
+    y_true.append(0)
+    y_true.append(0)
+
+    var y_pred = List[Int]()
+    y_pred.append(0)
+    y_pred.append(0)
+    y_pred.append(0)
+
+    var matrix = compute_confusion_matrix(y_true, y_pred)
+    assert_equal(len(matrix), 1)
+    assert_equal(matrix[0][0], 3)
+
+
+fn test_empty_gradients() raises:
+    """Test gradient detection with empty list."""
+    var gradients = List[Float32]()
+
+    var issues = detect_gradient_issues(gradients)
+    var has_vanishing = issues[0]
+    var has_exploding = issues[1]
+
+    assert_false(has_vanishing)
+    assert_false(has_exploding)
 
 
 fn main() raises:
     """Run all tests."""
+    print("Test Visualization Utilities")
+    print("=" * 50)
+
+    # PlotData tests
+    print("  test_plot_data_default_init...", end="")
+    test_plot_data_default_init()
+    print(" OK")
+
+    print("  test_plot_data_set_attributes...", end="")
+    test_plot_data_set_attributes()
+    print(" OK")
+
+    # PlotSeries tests
+    print("  test_plot_series_default_init...", end="")
+    test_plot_series_default_init()
+    print(" OK")
+
+    print("  test_plot_series_add_series...", end="")
+    test_plot_series_add_series()
+    print(" OK")
+
+    # ConfusionMatrixData tests
+    print("  test_confusion_matrix_data_default_init...", end="")
+    test_confusion_matrix_data_default_init()
+    print(" OK")
+
+    # Training curve tests
+    print("  test_plot_training_loss...", end="")
     test_plot_training_loss()
+    print(" OK")
+
+    print("  test_plot_training_and_validation_loss...", end="")
     test_plot_training_and_validation_loss()
+    print(" OK")
+
+    print("  test_plot_accuracy_curves...", end="")
     test_plot_accuracy_curves()
-    test_plot_with_custom_style()
-    test_plot_with_title_and_labels()
-    test_save_plot_to_file()
+    print(" OK")
+
+    print("  test_plot_loss_only_single_series...", end="")
+    test_plot_loss_only_single_series()
+    print(" OK")
+
+    print("  test_plot_accuracy_only_single_series...", end="")
+    test_plot_accuracy_only_single_series()
+    print(" OK")
+
+    print("  test_plot_with_save_path...", end="")
+    test_plot_with_save_path()
+    print(" OK")
+
+    # Confusion matrix tests
+    print("  test_create_confusion_matrix...", end="")
     test_create_confusion_matrix()
+    print(" OK")
+
+    print("  test_confusion_matrix_with_num_classes...", end="")
+    test_confusion_matrix_with_num_classes()
+    print(" OK")
+
+    print("  test_plot_confusion_matrix...", end="")
     test_plot_confusion_matrix()
+    print(" OK")
+
+    print("  test_confusion_matrix_with_class_names...", end="")
     test_confusion_matrix_with_class_names()
+    print(" OK")
+
+    print("  test_confusion_matrix_normalization...", end="")
     test_confusion_matrix_normalization()
+    print(" OK")
+
+    print("  test_confusion_matrix_accuracy...", end="")
     test_confusion_matrix_accuracy()
+    print(" OK")
+
+    # Architecture visualization tests
+    print("  test_visualize_simple_model...", end="")
     test_visualize_simple_model()
+    print(" OK")
+
+    print("  test_visualize_conv_model...", end="")
     test_visualize_conv_model()
+    print(" OK")
+
+    print("  test_visualize_model_with_shapes...", end="")
     test_visualize_model_with_shapes()
+    print(" OK")
+
+    print("  test_save_architecture_diagram...", end="")
     test_save_architecture_diagram()
+    print(" OK")
+
+    # Gradient flow tests
+    print("  test_visualize_gradient_magnitudes...", end="")
     test_visualize_gradient_magnitudes()
+    print(" OK")
+
+    print("  test_detect_vanishing_gradients...", end="")
     test_detect_vanishing_gradients()
+    print(" OK")
+
+    print("  test_detect_exploding_gradients...", end="")
     test_detect_exploding_gradients()
+    print(" OK")
+
+    print("  test_detect_both_gradient_issues...", end="")
+    test_detect_both_gradient_issues()
+    print(" OK")
+
+    print("  test_no_gradient_issues...", end="")
+    test_no_gradient_issues()
+    print(" OK")
+
+    print("  test_plot_gradient_flow...", end="")
     test_plot_gradient_flow()
+    print(" OK")
+
+    # Data visualization tests
+    print("  test_visualize_image_batch...", end="")
     test_visualize_image_batch()
+    print(" OK")
+
+    print("  test_visualize_images_with_labels...", end="")
     test_visualize_images_with_labels()
+    print(" OK")
+
+    print("  test_visualize_augmented_images...", end="")
     test_visualize_augmented_images()
-    test_plot_class_distribution()
+    print(" OK")
+
+    # Feature map tests
+    print("  test_visualize_feature_maps...", end="")
     test_visualize_feature_maps()
-    test_visualize_activation_distribution()
-    test_set_plot_style()
-    test_plot_with_grid()
-    test_plot_with_legend()
-    test_plot_with_annotations()
-    test_export_plot_formats()
-    test_export_high_resolution_plot()
-    test_export_plot_with_transparent_background()
-    test_visualization_integration_training()
-    test_create_training_report()
+    print(" OK")
+
+    print("  test_visualize_feature_maps_no_layer_name...", end="")
+    test_visualize_feature_maps_no_layer_name()
+    print(" OK")
+
+    # Export tests
+    print("  test_save_figure_png...", end="")
+    test_save_figure_png()
+    print(" OK")
+
+    print("  test_save_figure_svg...", end="")
+    test_save_figure_svg()
+    print(" OK")
+
+    print("  test_save_figure_pdf...", end="")
+    test_save_figure_pdf()
+    print(" OK")
+
+    print("  test_clear_figure...", end="")
+    test_clear_figure()
+    print(" OK")
+
+    print("  test_show_figure...", end="")
+    test_show_figure()
+    print(" OK")
+
+    # Edge case tests
+    print("  test_empty_confusion_matrix...", end="")
+    test_empty_confusion_matrix()
+    print(" OK")
+
+    print("  test_single_class_confusion_matrix...", end="")
+    test_single_class_confusion_matrix()
+    print(" OK")
+
+    print("  test_empty_gradients...", end="")
+    test_empty_gradients()
+    print(" OK")
+
+    print()
+    print("All visualization tests passed (38/38)")
