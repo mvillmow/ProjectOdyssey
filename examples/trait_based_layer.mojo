@@ -21,7 +21,8 @@ Usage:
     mojo run examples/trait_based_layer.mojo
 """
 
-from shared.core import ExTensor, zeros, zeros_like, linear
+from shared.core import ExTensor, zeros, zeros_like
+from shared.core.linear import linear, linear_backward
 from shared.core.traits import (
     Differentiable,
     Parameterized,
@@ -188,12 +189,8 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
             Output tensor (batch_size, out_features).
         """
         self.last_input = input.copy()
-        # TODO(#2725): Use linear operation when available
-        # For now, return zeros as placeholder
-        var output_shape = List[Int]()
-        output_shape.append(input.shape()[0])  # batch_size
-        output_shape.append(self.weights.shape()[0])  # out_features
-        self.last_output = zeros(output_shape, DType.float32)
+        # Use the functional linear operation: y = xW^T + b
+        self.last_output = linear(input, self.weights, self.bias)
         return self.last_output
 
     fn backward(self, grad_output: ExTensor) raises -> ExTensor:
@@ -211,18 +208,15 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
             differentiation for training loops. This manual implementation
             demonstrates the mathematical formulation.
         """
-        from shared.core.matrix import matmul, matmul_backward
-        from shared.core.reduction import sum as tensor_sum
+        # Use the functional linear backward operation
+        # Computes: grad_input = grad_output @ W
+        #           grad_weights = grad_output^T @ input
+        #           grad_bias = sum(grad_output, axis=0)
+        var result = linear_backward(grad_output, self.last_input, self.weights)
 
-        # grad_input = grad_output @ W
-        # grad_weights = grad_output^T @ input
-        # grad_bias = sum(grad_output, axis=0)
-
-        var grad_input = zeros_like(self.last_input)
-        # TODO: Implement matmul backward when shapes match
-        # For now, return zeros as placeholder since this is just an example
-
-        return grad_input^
+        # Note: In a full implementation, we would store grad_weights and grad_bias
+        # for optimizer updates. Since this is an example, we just return grad_input.
+        return result.grad_input
 
     # Parameterized trait implementation
     fn parameters(self) raises -> List[ExTensor]:
