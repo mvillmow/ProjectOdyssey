@@ -264,8 +264,12 @@ fn compute_confusion_matrix(
     Returns:
             Confusion matrix (num_classes x num_classes).
     """
+    # Handle empty inputs - return empty matrix unless num_classes is specified
+    if len(y_true) == 0 and len(y_pred) == 0 and num_classes == 0:
+        return List[List[Int]]()
+
     # Determine number of classes
-    var max_class = 0
+    var max_class = -1
     for i in range(len(y_true)):
         if y_true[i] > max_class:
             max_class = y_true[i]
