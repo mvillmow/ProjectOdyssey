@@ -67,30 +67,96 @@ struct TestFixtures:
         """Set random seed for deterministic test execution."""
         seed(Self.deterministic_seed())
 
-    # FIXME(#3010): Placeholder tensor fixture methods in tests/shared/conftest.mojo
-    # TODO(#1538): Add tensor fixture methods when Tensor type is implemented
-    # @staticmethod
-    # fn small_tensor() -> Tensor:
-    #     """Create small 3x3 tensor for unit tests.
-    #
-    #     Returns:
-    #         3x3 ExTensor with deterministic values (0.1).
-    #     """
-    #     pass
+    @staticmethod
+    fn small_tensor() raises -> ExTensor:
+        """Create small 3x3 tensor for unit tests.
 
-    # FIXME(#3010): Placeholder model fixture methods in tests/shared/conftest.mojo
-    # TODO(#1538): Add model fixture methods when models are implemented
-    # @staticmethod
-    # fn simple_linear_model() -> Linear:
-    #     """Create simple Linear layer with known weights."""
-    #     pass
+        Returns:
+            3x3 ExTensor with deterministic values (0.1).
+        """
+        from shared.core import full
 
-    # FIXME(#3010): Placeholder dataset fixture methods in tests/shared/conftest.mojo
-    # TODO(#1538): Add dataset fixture methods when datasets are implemented
-    # @staticmethod
-    # fn synthetic_dataset(n_samples: Int = 100) -> TensorDataset:
-    #     """Create synthetic dataset for testing."""
-    #     pass
+        var shape = List[Int]()
+        shape.append(3)
+        shape.append(3)
+        return full(shape, Float32(0.1), DType.float32)
+
+    @staticmethod
+    fn medium_tensor() raises -> ExTensor:
+        """Create medium 10x10 tensor for unit tests.
+
+        Returns:
+            10x10 ExTensor with zeros.
+        """
+        from shared.core import zeros
+
+        var shape = List[Int]()
+        shape.append(10)
+        shape.append(10)
+        return zeros(shape, DType.float32)
+
+    @staticmethod
+    fn simple_weights() raises -> ExTensor:
+        """Create simple weight tensor for linear layer tests.
+
+        Returns:
+            5x3 ExTensor with deterministic small values.
+        """
+        from shared.core import full
+
+        var shape = List[Int]()
+        shape.append(5)
+        shape.append(3)
+        return full(shape, Float32(0.01), DType.float32)
+
+    @staticmethod
+    fn simple_bias() raises -> ExTensor:
+        """Create simple bias tensor for linear layer tests.
+
+        Returns:
+            5-element ExTensor with zeros.
+        """
+        from shared.core import zeros
+
+        var shape = List[Int]()
+        shape.append(5)
+        return zeros(shape, DType.float32)
+
+    @staticmethod
+    fn synthetic_data(
+        n_samples: Int = 100, n_features: Int = 10
+    ) raises -> ExTensor:
+        """Create synthetic data tensor for testing.
+
+        Args:
+            n_samples: Number of samples (rows).
+            n_features: Number of features (columns).
+
+        Returns:
+            ExTensor of shape (n_samples, n_features) with random values.
+        """
+        from shared.core import randn
+
+        var shape = List[Int]()
+        shape.append(n_samples)
+        shape.append(n_features)
+        return randn(shape, DType.float32)
+
+    @staticmethod
+    fn synthetic_labels(n_samples: Int = 100) raises -> ExTensor:
+        """Create synthetic label tensor for testing.
+
+        Args:
+            n_samples: Number of samples.
+
+        Returns:
+            ExTensor of shape (n_samples,) with binary labels (0 or 1).
+        """
+        from shared.core import zeros
+
+        var shape = List[Int]()
+        shape.append(n_samples)
+        return zeros(shape, DType.float32)
 
 
 # ============================================================================
