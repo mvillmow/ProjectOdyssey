@@ -489,17 +489,16 @@ struct CrossEntropyLoss(Loss, Movable):
 # Public API
 # ============================================================================
 
-# See Issue #3034 for tracking training script utilities export
-# TODO: Export training script utilities when script_runner module is implemented
-# from shared.training.script_runner import (
-#     TrainingCallbacks,
-#     run_epoch_with_batches,
-#     print_training_header,
-#     print_dataset_info,
-# )
-# from shared.training.dataset_loaders import (
-#     DatasetSplit,
-#     load_emnist_dataset,
-#     load_cifar10_dataset,
-#     print_dataset_summary,
-# )
+# Training script utilities (Issue #3034)
+from shared.training.script_runner import (
+    TrainingCallbacks,
+    run_epoch_with_batches,
+    print_training_header,
+    print_dataset_info,
+)
+from shared.training.dataset_loaders import (
+    DatasetSplit,
+    load_emnist_dataset,
+    load_cifar10_dataset,
+    print_dataset_summary,
+)
