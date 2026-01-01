@@ -20,12 +20,12 @@ Array API Categories:
 - Arithmetic: add, subtract, multiply, divide, floor_divide, modulo, power ✓
 - Comparison: equal, not_equal, less, less_equal, greater, greater_equal ✓
 - Reduction: sum, mean, max, min (all-elements only) ✓
-- Matrix: matmul, transpose, dot, outer (See Issue #3032)
-- Shape manipulation: reshape, squeeze, unsqueeze, concatenate (See Issue #3032)
-- Broadcasting: Full support for different-shape operations (See Issue #3032)
-- Element-wise math: exp, log, sqrt, sin, cos, tanh (See Issue #3032)
-- Statistical: var, std, median, percentile (See Issue #3032)
-- Indexing: slicing, advanced indexing (See Issue #3032)
+- Matrix: matmul, transpose, dot, outer ✓ (shared/core/matrix.mojo)
+- Shape manipulation: reshape, squeeze, unsqueeze, concatenate ✓ (shared/core/shape.mojo)
+- Broadcasting: Full n-dim support for different-shape operations ✓ (shared/core/broadcasting.mojo)
+- Element-wise math: exp, log, sqrt, sin, cos, tanh ✓ (shared/core/elementwise.mojo)
+- Statistical: var, std, median, percentile ✓ (shared/core/reduction.mojo)
+- Indexing: slicing, advanced indexing ✓ (__getitem__ methods)
 
 Reference: https://data-apis.org/array-api/latest/API_specification/index.html
 """

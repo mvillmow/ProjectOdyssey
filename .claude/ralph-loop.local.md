@@ -1,10 +1,10 @@
 ---
 active: true
-iteration: 1
+iteration: 2
 max_iterations: 0
 completion_promise: null
-started_at: "2026-01-01T05:20:40Z"
+started_at: "2026-01-01T04:15:45Z"
 ---
 
-Fix all FIXME/TODO items in shared/ with proper planning and implementation.
-Each FIXME should be its own commit rebased against main with a PR.
+Fix all FIXME/TODO items in shared/ directory with proper planning.
+Each FIXME should be its own commit, rebased against main, with a PR.
