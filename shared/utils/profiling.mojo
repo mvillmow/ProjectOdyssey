@@ -621,35 +621,27 @@ fn export_profiling_report(
     Args:
         report: Report to export.
         filepath: Output file path.
-        format: Export format (json, csv, txt).
+        format: Export format (json, txt).
 
     Returns:
-        True if export is prepared (file writing not yet supported).
+        True if export was successful, False otherwise.
 
-    Note:
-        This function prepares the report in the requested format but does not
-        write to a file, as Mojo v0.26.1 does not yet have stable file I/O
-        in the standard library. Callers can use the report.to_json() or
-        report.to_string() methods directly to get formatted output.
-
-        Future versions of Mojo with FileIO support will enable actual file
-        writing in this function. For now, this is a placeholder to maintain
-        API compatibility.
+    Raises:
+        Error if file cannot be opened for writing.
     """
-    # Format selection (prepared for future file I/O support)
-    var _content: String
+    # Format selection
+    var content: String
     if format == "json":
-        _content = report.to_json()
+        content = report.to_json()
     elif format == "txt" or format == "text":
-        _content = report.to_string()
+        content = report.to_string()
     else:
         # Default to text format for unknown formats
-        _content = report.to_string()
+        content = report.to_string()
 
-    # Blocked: Mojo FileIO unstable
-    # TODO: Enable actual file writing when Mojo FileIO is stable
-    # Once available, write _content to filepath using Mojo's file APIs
-    # Similar to: File(filepath, "w").write(_content)
+    # Write content to file using Mojo's built-in file I/O
+    with open(filepath, "w") as f:
+        f.write(content)
 
     return True
 
