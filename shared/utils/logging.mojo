@@ -17,6 +17,8 @@ Example:
     ```
 """
 
+from os.env import getenv
+
 
 # ============================================================================
 # Log Level Enumeration
@@ -434,13 +436,34 @@ fn get_log_level_from_env() -> Int:
 
     Returns:
         Log level integer (default: INFO if not set).
+
+    Note:
+        Only works on macOS and Linux. Returns INFO on other platforms.
     """
-    # Try to get environment variable
-    # Note: Mojo doesn't have os.getenv, so we use print + stderr approach
-    # For now, return default INFO level
-    # Blocked: Mojo stdlib limitation - no os.getenv equivalent
-    # TODO: Implement env var reading when Mojo adds stdlib support
-    return LogLevel.INFO
+    # Get environment variable value (empty string if not set)
+    var log_level_str = getenv("ML_ODYSSEY_LOG_LEVEL", "")
+
+    # Handle empty/unset case
+    if len(log_level_str) == 0:
+        return LogLevel.INFO
+
+    # Convert to uppercase for case-insensitive matching
+    var upper_str = log_level_str.upper()
+
+    # Parse log level string
+    if upper_str == "DEBUG":
+        return LogLevel.DEBUG
+    elif upper_str == "INFO":
+        return LogLevel.INFO
+    elif upper_str == "WARNING" or upper_str == "WARN":
+        return LogLevel.WARNING
+    elif upper_str == "ERROR":
+        return LogLevel.ERROR
+    elif upper_str == "CRITICAL":
+        return LogLevel.CRITICAL
+    else:
+        # Invalid value, default to INFO
+        return LogLevel.INFO
 
 
 fn get_logger(name: String, level: Int = LogLevel.INFO) -> Logger:
