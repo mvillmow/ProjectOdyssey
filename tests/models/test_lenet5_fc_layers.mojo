@@ -183,11 +183,10 @@ fn test_fc3_forward_float32() raises:
 fn test_fc3_forward_float16() raises:
     """Test FC3 (84→10) forward pass with float16.
 
-    FIXME(#3009): This test may fail due to float16 precision limitations.
+    NOTE: This test may be sensitive to float16 precision limitations.
     FC3 performs 84 multiplications per output, which can cause accumulation
     errors in float16 (limited to ~3.3 decimal digits precision).
-
-    If this test fails, we need to implement float32 accumulation in linear().
+    Known limitation - see issue #3009 for discussion.
     """
     var dtype = DType.float16
     var _result = create_fc3_parameters(dtype)
