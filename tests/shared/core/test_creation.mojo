@@ -308,23 +308,30 @@ fn test_arange_float() raises:
 
 
 fn test_from_array_1d() raises:
-    """Test creating tensor from 1D array."""
-    # TODO: Implement once from_array() is available
-    # Not yet implemented
+    """Test creating tensor from 1D array.
+
+    NOTE(#3013): from_array() is not yet implemented. This test is a
+    placeholder for array-to-tensor conversion. Current workaround
+    is to use arange(), zeros(), or manual element initialization.
+    """
     pass
 
 
 fn test_from_array_2d() raises:
-    """Test creating tensor from 2D nested array."""
-    # TODO: Implement once from_array() is available
-    # Not yet implemented
+    """Test creating tensor from 2D nested array.
+
+    NOTE(#3013): from_array() is not yet implemented. See test_from_array_1d
+    for details.
+    """
     pass
 
 
 fn test_from_array_3d() raises:
-    """Test creating tensor from 3D nested array."""
-    # TODO: Implement once from_array() is available
-    # Not yet implemented
+    """Test creating tensor from 3D nested array.
+
+    NOTE(#3013): from_array() is not yet implemented. See test_from_array_1d
+    for details.
+    """
     pass
 
 
