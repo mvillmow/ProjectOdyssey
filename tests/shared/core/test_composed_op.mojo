@@ -67,7 +67,8 @@ struct ScaleMul(Copyable, Differentiable, Movable):
 
     fn backward(self, grad_output: ExTensor) raises -> ExTensor:
         """Backward pass: multiply gradient by scale."""
-        var grad_input = grad_output.copy()
+        # Use clone() for deep copy - copy() creates a shallow view that shares data
+        var grad_input = grad_output.clone()
         # Multiply all gradients by scale
         for i in range(grad_input.numel()):
             grad_input._set_float64(i, grad_output._get_float64(i) * self.scale)
@@ -101,7 +102,8 @@ struct ScaleAdd(Copyable, Differentiable, Movable):
 
     fn backward(self, grad_output: ExTensor) raises -> ExTensor:
         """Backward pass: gradient passes through unchanged."""
-        return grad_output.copy()
+        # Use clone() for deep copy - copy() creates a shallow view that shares data
+        return grad_output.clone()
 
 
 # ============================================================================
