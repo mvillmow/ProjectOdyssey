@@ -379,9 +379,36 @@ fn test_eye_rectangular() raises:
 
 fn test_eye_offset_diagonal() raises:
     """Test creating identity matrix with offset diagonal (k parameter)."""
-    # TODO: Implement once eye() supports k parameter for offset diagonal
-    # This would create identity with 1s on a different diagonal
-    pass
+    # Test k=1 (superdiagonal - ones above main diagonal)
+    var t1 = eye(4, 4, 1, DType.float32)
+    assert_dim(t1, 2, "eye should be 2D")
+    assert_numel(t1, 16, "eye(4,4) should have 16 elements")
+
+    for i in range(4):
+        for j in range(4):
+            var flat_idx = i * 4 + j
+            if j == i + 1:  # superdiagonal
+                assert_value_at(
+                    t1, flat_idx, 1.0, 1e-8, "superdiagonal should be 1.0"
+                )
+            else:
+                assert_value_at(
+                    t1, flat_idx, 0.0, 1e-8, "non-superdiagonal should be 0.0"
+                )
+
+    # Test k=-1 (subdiagonal - ones below main diagonal)
+    var t2 = eye(4, 4, -1, DType.float32)
+    for i in range(4):
+        for j in range(4):
+            var flat_idx = i * 4 + j
+            if j == i - 1:  # subdiagonal
+                assert_value_at(
+                    t2, flat_idx, 1.0, 1e-8, "subdiagonal should be 1.0"
+                )
+            else:
+                assert_value_at(
+                    t2, flat_idx, 0.0, 1e-8, "non-subdiagonal should be 0.0"
+                )
 
 
 # ============================================================================
