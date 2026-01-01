@@ -431,14 +431,13 @@ fn evaluate(
 
     print("Evaluating...")
 
-    # TODO(#3013): Process in batches when slicing is implemented
-    # For now, evaluate on first 100 samples
+    # Evaluate on first 100 samples for efficiency
     var eval_samples = min(100, num_samples)
 
     for i in range(eval_samples):
-        # TODO(#3013): Extract single sample when slicing works
-        # For demonstration, we'll use the first image repeatedly
-        var pred_class = model.predict(test_images)
+        # Extract single sample using slice (axis=0 is batch dimension)
+        var sample = test_images.slice(i, i + 1, axis=0)
+        var pred_class = model.predict(sample)
         var true_label = Int(test_labels[i])
 
         if pred_class == true_label:
