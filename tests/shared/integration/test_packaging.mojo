@@ -85,8 +85,8 @@ fn test_core_training_integration() raises:
     var data = zeros([10, 5], DType.float32)
 
     # Create optimizer using training
-    var optimizer = SGD(learning_rate=0.01)
-    var loss_fn = MSELoss()
+    var _ = SGD(learning_rate=0.01)
+    var _ = MSELoss()
 
     # Verify types are correct
     assert_true(True, "Integration test passed")
@@ -124,7 +124,7 @@ fn test_training_data_integration() raises:
     var dataset = ExTensorDataset(data^, labels^)
 
     # Create optimizer
-    var optimizer = SGD(learning_rate=0.01)
+    var _ = SGD(learning_rate=0.01)
 
     # Verify integration
     assert_true(True, "Training-data integration works")
@@ -154,11 +154,11 @@ fn test_complete_training_workflow() raises:
     var dataset = ExTensorDataset(data^, labels^)
 
     # 3. Create optimizer and loss (training)
-    var optimizer = SGD(learning_rate=0.01)
-    var loss_fn = MSELoss()
+    var _ = SGD(learning_rate=0.01)
+    var _ = MSELoss()
 
     # 4. Create logger (utils)
-    var logger = Logger("training.log")
+    var _ = Logger("training.log")
 
     # 5. Verify workflow components work together
     assert_true(True, "All workflow components created")
@@ -183,12 +183,12 @@ fn test_paper_implementation_pattern() raises:
     var input_data = zeros([1, 1, 28, 28], DType.float32)
 
     # Training setup
-    var optimizer = SGD(learning_rate=0.001)
-    var scheduler = CosineAnnealingLR(0.001, 50)
+    var _ = SGD(learning_rate=0.001)
+    var _ = CosineAnnealingLR(0.001, 50)
 
     # Callbacks
-    var early_stop = EarlyStopping()
-    var checkpoint = ModelCheckpoint()
+    var _ = EarlyStopping()
+    var _ = ModelCheckpoint()
 
     # Create dataset
     var data = zeros([10, 1, 28, 28], DType.float32)
@@ -248,7 +248,7 @@ fn test_api_version_compatibility() raises:
     from shared import VERSION
 
     # Verify version follows semantic versioning
-    var version_parts = VERSION.split(".")
+    var _ = VERSION.split(".")
     # assert_equal(len(version_parts), 3)  # major.minor.patch
 
     print("✓ API version compatibility test passed")
