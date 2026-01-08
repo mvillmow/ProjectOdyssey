@@ -2,6 +2,7 @@
 name: gh-fix-pr-feedback
 description: "Address PR review feedback by making changes and replying to comments. Use when a PR has open review comments needing responses."
 category: github
+agent: implementation-engineer
 ---
 
 # Fix PR Review Feedback

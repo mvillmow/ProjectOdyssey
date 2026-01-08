@@ -2,6 +2,7 @@
 name: gh-implement-issue
 description: "End-to-end implementation workflow for a GitHub issue from planning through PR creation. Use when starting work on an issue from scratch."
 category: github
+agent: implementation-specialist
 ---
 
 # Implement GitHub Issue

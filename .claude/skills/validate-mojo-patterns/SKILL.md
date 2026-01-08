@@ -3,6 +3,7 @@ name: validate-mojo-patterns
 description: "Validate Mojo code patterns (out self, mut, List, etc.) against best practices. Use to ensure code follows project standards."
 category: mojo
 mcp_fallback: none
+agent: mojo-language-review-specialist
 ---
 
 # Validate Mojo Patterns

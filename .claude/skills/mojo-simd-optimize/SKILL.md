@@ -3,6 +3,7 @@ name: mojo-simd-optimize
 description: "Apply SIMD optimizations to Mojo code for parallel computation. Use when optimizing performance-critical tensor and array operations."
 mcp_fallback: none
 category: mojo
+agent: performance-engineer
 ---
 
 # SIMD Optimization Skill

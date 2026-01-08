@@ -2,6 +2,7 @@
 name: review-pr-changes
 description: "Review PR changes with structured checklist for quality and standards compliance. Use for comprehensive PR code review."
 category: review
+agent: code-review-orchestrator
 ---
 
 # Review PR Changes with Checklist

@@ -2,6 +2,7 @@
 name: gh-read-issue-context
 description: "Read context from GitHub issue including body and comments. Use before starting implementation work or when prior context is needed."
 category: github
+agent: implementation-specialist
 ---
 
 # Read Issue Context

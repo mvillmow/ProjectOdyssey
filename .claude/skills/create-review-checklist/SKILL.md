@@ -3,6 +3,7 @@ name: create-review-checklist
 description: "Generate review checklists for different change types. Use to customize review focus based on what was changed."
 category: review
 mcp_fallback: none
+agent: code-review-orchestrator
 ---
 
 # Create Review Checklists

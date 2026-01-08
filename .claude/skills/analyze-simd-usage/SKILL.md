@@ -3,6 +3,7 @@ name: analyze-simd-usage
 description: "Analyze SIMD usage opportunities in Mojo code. Use to find performance optimization opportunities."
 category: mojo
 mcp_fallback: none
+agent: performance-review-specialist
 ---
 
 # Analyze SIMD Usage Opportunities

@@ -2,6 +2,7 @@
 name: gh-create-pr-linked
 description: "Create a pull request properly linked to a GitHub issue using gh pr create --issue. Use when creating a PR that implements or addresses a specific issue."
 category: github
+agent: implementation-engineer
 ---
 
 # Create PR Linked to Issue

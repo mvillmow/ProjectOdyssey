@@ -3,6 +3,7 @@ name: mojo-lint-syntax
 description: "Validate Mojo syntax against current v0.26.1+ standards. Use to catch syntax errors before compilation."
 category: mojo
 mcp_fallback: none
+agent: mojo-syntax-validator
 ---
 
 # Lint Mojo Syntax

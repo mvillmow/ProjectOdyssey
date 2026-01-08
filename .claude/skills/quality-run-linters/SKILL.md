@@ -3,6 +3,7 @@ name: quality-run-linters
 description: Run all configured linters including mojo format, markdownlint, and pre-commit hooks. Use before committing code to ensure quality standards are met.
 mcp_fallback: none
 category: quality
+agent: implementation-engineer
 ---
 
 # Run Linters Skill

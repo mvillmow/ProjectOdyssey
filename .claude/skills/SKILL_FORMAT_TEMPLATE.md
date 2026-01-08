@@ -99,6 +99,9 @@ All skills must have:
 - `description`: One sentence with "Use when" trigger
 - `category`: Skill category (github, mojo, documentation, etc.)
 - `mcp_fallback`: MCP server fallback (if applicable)
+- `agent`: (Optional) Specify which agent type should execute this skill. Examples:
+  `mojo-syntax-validator`, `code-review-orchestrator`, `implementation-engineer`.
+  Use this to provide specialized context for skill execution.
 
 ### Section Order
 

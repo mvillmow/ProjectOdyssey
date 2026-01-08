@@ -3,6 +3,7 @@ name: mojo-format
 description: "Format Mojo code using mojo format command. Use when preparing code for commit or when formatting checks fail."
 mcp_fallback: none
 category: mojo
+agent: mojo-syntax-validator
 ---
 
 # Mojo Format Skill
