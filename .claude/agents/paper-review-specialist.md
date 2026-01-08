@@ -7,6 +7,17 @@ tools: Read,Grep,Glob
 model: sonnet
 delegates_to: []
 receives_from: [code-review-orchestrator]
+hooks:
+  PreToolUse:
+    - matcher: "Edit"
+      action: "block"
+      reason: "Review specialists are read-only - cannot modify files"
+    - matcher: "Write"
+      action: "block"
+      reason: "Review specialists are read-only - cannot create files"
+    - matcher: "Bash"
+      action: "block"
+      reason: "Review specialists are read-only - cannot run commands"
 ---
 
 # Paper Review Specialist

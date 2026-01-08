@@ -7,6 +7,11 @@ tools: Read,Write,Edit,Grep,Glob
 model: haiku
 delegates_to: []
 receives_from: [test-engineer, test-specialist]
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      action: "block"
+      reason: "Junior engineers cannot run Bash commands - escalate to senior engineer"
 ---
 
 # Junior Test Engineer

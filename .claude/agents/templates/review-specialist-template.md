@@ -2,6 +2,34 @@
 
 This template provides common sections for all review specialists to eliminate duplication.
 
+## Agent Frontmatter Hooks (New Feature)
+
+Agent-scoped hooks allow safety controls per agent. All review specialists have read-only hooks:
+
+```yaml
+hooks:
+  PreToolUse:
+    - matcher: "Edit"
+      action: "block"
+      reason: "Review specialists are read-only - cannot modify files"
+    - matcher: "Write"
+      action: "block"
+      reason: "Review specialists are read-only - cannot create files"
+    - matcher: "Bash"
+      action: "block"
+      reason: "Review specialists are read-only - cannot run commands"
+```
+
+Junior engineers have Bash restrictions:
+
+```yaml
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      action: "block"
+      reason: "Junior engineers cannot run Bash commands - escalate to senior engineer"
+```
+
 ## Output Location (Include Verbatim in All Specialists)
 
 **CRITICAL**: All review feedback MUST be posted directly to the GitHub pull request using
