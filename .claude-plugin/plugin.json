@@ -25,6 +25,24 @@
         "errors_resolved": 132,
         "test_pass_rate": "100%"
       }
+    },
+    {
+      "name": "investigate-mojo-heap-corruption",
+      "category": "debugging",
+      "description": "Workflow for investigating and fixing Mojo 0.26.1 heap corruption crashes in integration tests",
+      "tags": ["mojo", "debugging", "heap-corruption", "ci-failures", "runtime-crashes", "float-conversions"],
+      "skillPath": "skills/investigate-mojo-heap-corruption/SKILL.md",
+      "referencesPath": "skills/investigate-mojo-heap-corruption/references/notes.md",
+      "relatedADRs": ["ADR-009"],
+      "verified": true,
+      "ciEnvironment": "GitHub Actions",
+      "mojoVersion": "0.26.1",
+      "metrics": {
+        "crash_identified": "Test 9 - test_fp16_vs_fp32_accuracy",
+        "root_cause": "Unnecessary Float32->Float64 conversion",
+        "fix_applied": "Native Float32 comparison",
+        "crash_resolved": true
+      }
     }
   ]
 }
