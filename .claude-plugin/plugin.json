@@ -1,48 +1,22 @@
 {
   "name": "ml-odyssey-skills",
   "version": "1.0.0",
-  "description": "Collection of debugging and workflow skills for ML Odyssey project",
+  "description": "Skills migrated to ProjectMnemosyne for cross-project reuse",
   "author": "ML Odyssey Team",
   "created": "2025-12-29",
-  "skills": [
-    {
-      "name": "verify-issue-before-work",
-      "category": "tooling",
-      "description": "Verify GitHub issue state and existing implementation before starting work to avoid duplicate effort",
-      "tags": ["workflow", "github", "productivity", "verification"],
-      "skillPath": "skills/verify-issue-before-work/SKILL.md",
-      "referencesPath": "skills/verify-issue-before-work/references/notes.md"
-    },
-    {
-      "name": "fix-implicitlycopyable-removal",
-      "category": "debugging",
-      "description": "Systematic approach to removing ImplicitlyCopyable trait from Mojo structs and fixing resulting compilation errors",
-      "tags": ["mojo", "ownership", "memory-safety", "refactoring", "ci-fix"],
-      "skillPath": "skills/fix-implicitlycopyable-removal/SKILL.md",
-      "referencesPath": "skills/fix-implicitlycopyable-removal/references/notes.md",
-      "metrics": {
-        "files_fixed": 27,
-        "errors_resolved": 132,
-        "test_pass_rate": "100%"
-      }
-    },
-    {
-      "name": "investigate-mojo-heap-corruption",
-      "category": "debugging",
-      "description": "Workflow for investigating and fixing Mojo 0.26.1 heap corruption crashes in integration tests",
-      "tags": ["mojo", "debugging", "heap-corruption", "ci-failures", "runtime-crashes", "float-conversions"],
-      "skillPath": "skills/investigate-mojo-heap-corruption/SKILL.md",
-      "referencesPath": "skills/investigate-mojo-heap-corruption/references/notes.md",
-      "relatedADRs": ["ADR-009"],
-      "verified": true,
-      "ciEnvironment": "GitHub Actions",
-      "mojoVersion": "0.26.1",
-      "metrics": {
-        "crash_identified": "Test 9 - test_fp16_vs_fp32_accuracy",
-        "root_cause": "Unnecessary Float32->Float64 conversion",
-        "fix_applied": "Native Float32 comparison",
-        "crash_resolved": true
-      }
-    }
-  ]
+  "note": "All retrospective skills have been migrated to ProjectMnemosyne",
+  "migration": {
+    "target_repository": "https://github.com/HomericIntelligence/ProjectMnemosyne",
+    "migrated_skills": [
+      "verify-issue-before-work",
+      "fix-implicitlycopyable-removal",
+      "investigate-mojo-heap-corruption"
+    ],
+    "migration_prs": [
+      "https://github.com/HomericIntelligence/ProjectMnemosyne/pull/80",
+      "https://github.com/HomericIntelligence/ProjectMnemosyne/pull/81"
+    ],
+    "migration_date": "2026-01-09"
+  },
+  "skills": []
 }
