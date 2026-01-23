@@ -19,7 +19,23 @@ fn test_core_imports() raises:
     from shared.core import ExTensor, zeros, ones, randn
     from shared.core import relu, sigmoid, tanh, softmax, gelu
 
-    # If we reach here, imports succeeded
+    # Critical validation: ensure imports are actual functions/classes, not None
+    assert_true(ExTensor != None, "ExTensor should be importable")
+    assert_true(zeros != None, "zeros function should be importable")
+    assert_true(ones != None, "ones function should be importable")
+    assert_true(randn != None, "randn function should be importable")
+    assert_true(relu != None, "relu function should be importable")
+    assert_true(sigmoid != None, "sigmoid function should be importable")
+    assert_true(tanh != None, "tanh function should be importable")
+    assert_true(softmax != None, "softmax function should be importable")
+    assert_true(gelu != None, "gelu function should be importable")
+
+    # Test that functions are actually callable
+    var test_tensor = zeros([3, 3], DType.float32)
+    assert_true(test_tensor.rank() == 2, "zeros should create tensor with correct rank")
+    assert_true(test_tensor.shape()[0] == 3, "zeros should create tensor with correct first dimension")
+    assert_true(test_tensor.shape()[1] == 3, "zeros should create tensor with correct second dimension")
+
     print("✓ Core imports test passed")
 
 
@@ -254,13 +270,32 @@ fn test_nested_metric_imports() raises:
 
 
 fn test_version_info() raises:
-    """Test version info is accessible."""
+    """Test version info is accessible and has proper format."""
     from shared import VERSION, AUTHOR, LICENSE
 
-    # Verify types are correct
+    # Critical validation - ensure values are not empty/None
+    assert_true(VERSION != "", "VERSION should not be empty")
+    assert_true(AUTHOR != "", "AUTHOR should not be empty") 
+    assert_true(LICENSE != "", "LICENSE should not be empty")
+    
+    # Test expected format and values
     assert_true(VERSION == "0.1.0", "Version should be 0.1.0")
     assert_true(AUTHOR == "ML Odyssey Team", "Author should be ML Odyssey Team")
     assert_true(LICENSE == "BSD", "License should be BSD")
+    
+    # Additional critical tests - ensure these are actual string values, not None
+    assert_true(VERSION.__len__() > 0, "VERSION string should have length > 0")
+    assert_true(AUTHOR.__len__() > 0, "AUTHOR string should have length > 0")
+    assert_true(LICENSE.__len__() > 0, "LICENSE string should have length > 0")
+    
+    # Test version format more thoroughly
+    var version_parts = VERSION.split(".")
+    assert_true(version_parts.__len__() == 3, "Version should have 3 parts")
+    
+    # Test that version parts are numeric
+    for i in range(version_parts.__len__()):
+        var part = version_parts[i]
+        assert_true(part.isdigit(), "Version part " + str(i) + " should be numeric")
 
     print("✓ Version info test passed")
 
