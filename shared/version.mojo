@@ -17,6 +17,8 @@ comptime VERSION = "0.1.0"
 comptime VERSION_MAJOR = 0
 comptime VERSION_MINOR = 1
 comptime VERSION_PATCH = 0
+comptime AUTHOR = "ML Odyssey Team"
+comptime LICENSE = "MIT"
 
 
 fn get_version() -> String:

@@ -261,6 +261,7 @@ fn test_nested_metric_imports() raises:
 fn test_version_info() raises:
     """Test version info is accessible and has proper format."""
     from shared import VERSION, AUTHOR, LICENSE
+    from sys.ffi import atol
 
     # Critical validation - ensure values are not empty/None
     assert_true(VERSION != "", "VERSION should not be empty")
@@ -279,16 +280,16 @@ fn test_version_info() raises:
     
     # Test version format follows semantic versioning (major.minor.patch)
     var version_parts = VERSION.split(".")
-    assert_true(version_parts.__len__() == 3, "Version should have 3 parts")
+    assert_true(version_parts.__len__() == 3, "Version should have 3 parts (major.minor.patch)")
     
     # Test that version parts are numeric
     for i in range(version_parts.__len__()):
         var part = version_parts[i]
         # Test numeric format by trying to convert to Int and checking result
         try:
-            var numeric_value = int(part)
+            var numeric_value = atol(part)
             assert_true(numeric_value >= 0, "Version part " + str(i) + " should be non-negative numeric")
-        except:
+        except e:
             assert_true(False, "Version part " + str(i) + " should be numeric")
 
     print("✓ Version info test passed")
