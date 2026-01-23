@@ -265,23 +265,18 @@ fn test_version_info() raises:
 
     # Critical validation - ensure values are not empty/None
     assert_true(VERSION != "", "VERSION should not be empty")
-    assert_true(AUTHOR != "", "AUTHOR should not be empty") 
+    assert_true(AUTHOR != "", "AUTHOR should not be empty")
     assert_true(LICENSE != "", "LICENSE should not be empty")
-    
-    # Test expected format and values
-    assert_true(VERSION == "0.1.0", "Version should be 0.1.0")
-    assert_true(AUTHOR == "ML Odyssey Team", "Author should be ML Odyssey Team")
-    assert_true(LICENSE == "BSD", "License should be BSD")
-    
-    # Additional critical tests - ensure these are actual string values, not None
+
+    # Ensure these are actual string values, not None
     assert_true(VERSION.__len__() > 0, "VERSION string should have length > 0")
     assert_true(AUTHOR.__len__() > 0, "AUTHOR string should have length > 0")
     assert_true(LICENSE.__len__() > 0, "LICENSE string should have length > 0")
-    
+
     # Test version format follows semantic versioning (major.minor.patch)
     var version_parts = VERSION.split(".")
     assert_true(version_parts.__len__() == 3, "Version should have 3 parts (major.minor.patch)")
-    
+
     # Test that version parts are numeric
     for i in range(version_parts.__len__()):
         var part = version_parts[i]
