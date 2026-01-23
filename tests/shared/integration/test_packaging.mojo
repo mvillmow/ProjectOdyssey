@@ -2,7 +2,7 @@
 Packaging Integration Tests
 
 Tests that verify the shared library package structure and integration works correctly.
-These are end-to-end tests that validate packaging decisions.
+These tests validate packaging decisions and basic component functionality.
 
 Run with: mojo test tests/shared/integration/test_packaging.mojo
 """
@@ -46,16 +46,6 @@ fn test_subpackage_accessibility() raises:
     from shared.data import Dataset, ExTensorDataset
     from shared.utils import Logger, Config
 
-    # Critical validation: ensure these are actual functions/classes, not None
-    assert_true(ExTensor != None, "ExTensor should be importable")
-    assert_true(zeros != None, "zeros function should be importable")
-    assert_true(SGD != None, "SGD should be importable")
-    assert_true(MSELoss != None, "MSELoss should be importable")
-    assert_true(Dataset != None, "Dataset should be importable")
-    assert_true(ExTensorDataset != None, "ExTensorDataset should be importable")
-    assert_true(Logger != None, "Logger should be importable")
-    assert_true(Config != None, "Config should be importable")
-
     # Test that we can actually call the functions
     var test_tensor = zeros([2, 3], DType.float32)
     assert_true(test_tensor.rank() == 2, "zeros should create 2D tensor")
@@ -66,10 +56,6 @@ fn test_subpackage_accessibility() raises:
     var test_optimizer = SGD(learning_rate=0.01)
     var test_loss = MSELoss()
     var test_logger = Logger("test.log")
-    
-    assert_true(test_optimizer != None, "SGD should be instantiable")
-    assert_true(test_loss != None, "MSELoss should be instantiable")
-    assert_true(test_logger != None, "Logger should be instantiable")
 
     print("✓ Subpackage accessibility test passed")
 

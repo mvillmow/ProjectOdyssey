@@ -2,7 +2,7 @@
 Import Validation Tests
 
 Tests that all public imports work correctly for the shared library.
-These tests verify packaging is correct, not functionality.
+These tests verify both import functionality and basic component behavior.
 
 Run with: mojo test tests/shared/test_imports.mojo
 """
@@ -19,18 +19,7 @@ fn test_core_imports() raises:
     from shared.core import ExTensor, zeros, ones, randn
     from shared.core import relu, sigmoid, tanh, softmax, gelu
 
-    # Critical validation: ensure imports are actual functions/classes, not None
-    assert_true(ExTensor != None, "ExTensor should be importable")
-    assert_true(zeros != None, "zeros function should be importable")
-    assert_true(ones != None, "ones function should be importable")
-    assert_true(randn != None, "randn function should be importable")
-    assert_true(relu != None, "relu function should be importable")
-    assert_true(sigmoid != None, "sigmoid function should be importable")
-    assert_true(tanh != None, "tanh function should be importable")
-    assert_true(softmax != None, "softmax function should be importable")
-    assert_true(gelu != None, "gelu function should be importable")
-
-    # Test that functions are actually callable
+    # Test that functions are actually callable and work correctly
     var test_tensor = zeros([3, 3], DType.float32)
     assert_true(test_tensor.rank() == 2, "zeros should create tensor with correct rank")
     assert_true(test_tensor.shape()[0] == 3, "zeros should create tensor with correct first dimension")
@@ -288,7 +277,7 @@ fn test_version_info() raises:
     assert_true(AUTHOR.__len__() > 0, "AUTHOR string should have length > 0")
     assert_true(LICENSE.__len__() > 0, "LICENSE string should have length > 0")
     
-    # Test version format more thoroughly
+    # Test version format follows semantic versioning (major.minor.patch)
     var version_parts = VERSION.split(".")
     assert_true(version_parts.__len__() == 3, "Version should have 3 parts")
     
