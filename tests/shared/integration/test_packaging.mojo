@@ -330,10 +330,11 @@ fn test_deprecated_imports() raises:
 fn test_api_version_compatibility() raises:
     """Test API version compatibility."""
     from shared import VERSION
+    from sys.ffi import atol
 
-    # Verify version follows semantic versioning (major.minor.patch)
+    # Verify version follows semantic versioning (major.minor.patch format)
     var version_parts = VERSION.split(".")
-    assert_equal(len(version_parts), 3, "Version should have 3 parts (major.minor.patch)")
+    assert_equal(version_parts.__len__(), 3, "Version should have 3 parts (major.minor.patch)")
     
     # Verify each part is numeric
     var major = version_parts[0]
@@ -342,19 +343,19 @@ fn test_api_version_compatibility() raises:
     
     # Basic format validation (should be digits)
     try:
-        var major_int = Int(major)
+        var major_int = atol(major)
         assert_true(major_int >= 0, "Major version should be non-negative")
     except:
         assert_true(False, "Major version should be numeric")
     
     try:
-        var minor_int = Int(minor)
+        var minor_int = atol(minor)
         assert_true(minor_int >= 0, "Minor version should be non-negative")
     except:
         assert_true(False, "Minor version should be numeric")
     
     try:
-        var patch_int = Int(patch)
+        var patch_int = atol(patch)
         assert_true(patch_int >= 0, "Patch version should be non-negative")
     except:
         assert_true(False, "Patch version should be numeric")

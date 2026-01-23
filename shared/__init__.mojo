@@ -43,11 +43,8 @@ See Issue #3033 for tracking: 12 placeholder tests for packaging integration.
 Tests require corresponding modules to be implemented first.
 """
 
-# Package version
-from shared.version import VERSION
-
-comptime AUTHOR = "ML Odyssey Team"
-comptime LICENSE = "MIT"
+# Package version and metadata
+from shared.version import VERSION, AUTHOR, LICENSE
 
 # ============================================================================
 # Core Exports - Most commonly used components
