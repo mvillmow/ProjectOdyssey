@@ -22,8 +22,9 @@ fn test_core_imports() raises:
     # Test that functions are actually callable and work correctly
     var test_tensor = zeros([3, 3], DType.float32)
     assert_true(test_tensor.dim() == 2, "zeros should create tensor with correct rank")
-    assert_true(test_tensor.shape()[0] == 3, "zeros should create tensor with correct first dimension")
-    assert_true(test_tensor.shape()[1] == 3, "zeros should create tensor with correct second dimension")
+    var test_shape = test_tensor.shape()
+    assert_true(test_shape[0] == 3, "zeros should create tensor with correct first dimension")
+    assert_true(test_shape[1] == 3, "zeros should create tensor with correct second dimension")
 
     print("✓ Core imports test passed")
 
