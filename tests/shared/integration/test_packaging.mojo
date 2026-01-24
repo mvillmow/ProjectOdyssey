@@ -20,7 +20,7 @@ fn test_package_version() raises:
 
     assert_equal(VERSION, "0.1.0")
     assert_equal(AUTHOR, "ML Odyssey Team")
-    assert_equal(LICENSE, "MIT")
+    assert_equal(LICENSE, "BSD")
 
     print("✓ Package version test passed")
 

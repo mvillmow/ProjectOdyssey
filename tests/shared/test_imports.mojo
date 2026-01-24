@@ -260,7 +260,7 @@ fn test_version_info() raises:
     # Verify types are correct
     assert_true(VERSION == "0.1.0", "Version should be 0.1.0")
     assert_true(AUTHOR == "ML Odyssey Team", "Author should be ML Odyssey Team")
-    assert_true(LICENSE == "MIT", "License should be MIT")
+    assert_true(LICENSE == "BSD", "License should be BSD")
 
     print("✓ Version info test passed")
 

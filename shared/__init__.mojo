@@ -47,7 +47,7 @@ Tests require corresponding modules to be implemented first.
 from shared.version import VERSION
 
 comptime AUTHOR = "ML Odyssey Team"
-comptime LICENSE = "MIT"
+comptime LICENSE = "BSD"
 
 # ============================================================================
 # Core Exports - Most commonly used components
