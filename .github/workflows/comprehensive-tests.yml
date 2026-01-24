@@ -699,8 +699,9 @@ jobs:
         uses: actions/download-artifact@v7
         with:
           path: all-results/
-          pattern: "*"
+          pattern: "test-results-*"  # Only download test result artifacts, not build artifacts
           merge-multiple: false
+          run-id: ${{ github.run_id }}  # Only artifacts from this specific run
 
       - name: Generate combined report
         run: |
