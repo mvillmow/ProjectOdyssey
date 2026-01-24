@@ -139,7 +139,7 @@ fn test_core_data_integration() raises:
     assert_true(labels.dim() == 2, "Labels should be 2D tensor")
     assert_true(data_shape[0] == 10, "First dimension should be 10")
     assert_true(labels_shape[0] == 10, "Labels first dimension should be 10")
-    assert_true(dataset != None, "Dataset should be created")
+    assert_true(dataset.is_initialized(), "Dataset should be created")
 
     print("✓ Core-data integration test passed")
 
@@ -164,7 +164,7 @@ fn test_training_data_integration() raises:
     assert_true(data.dim() == 2, "Data should be 2D tensor")
     assert_true(labels.dim() == 2, "Labels should be 2D tensor")
     assert_true(optimizer.get_learning_rate() == 0.01, "Learning rate should be 0.01")
-    assert_true(dataset != None, "Dataset should be created")
+    assert_true(dataset.is_initialized(), "Dataset should be created")
 
     print("✓ Training-data integration test passed")
 
@@ -207,8 +207,8 @@ fn test_complete_training_workflow() raises:
     assert_true(data.dim() == 2, "Data should be 2D tensor")
     assert_true(labels.dim() == 2, "Labels should be 2D tensor")
     assert_true(optimizer.get_learning_rate() == 0.01, "Learning rate should be 0.01")
-    assert_true(dataset != None, "Dataset should be created")
-    assert_true(logger != None, "Logger should be created")
+    assert_true(dataset.is_initialized(), "Dataset should be created")
+    assert_true(logger.is_initialized(), "Logger should be created")
 
     print("✓ Complete workflow test passed")
 
@@ -245,7 +245,7 @@ fn test_paper_implementation_pattern() raises:
     # Verify all components are properly instantiated
     assert_true(input_data.dim() == 4, "Input data should be 4D tensor")
     assert_true(optimizer.get_learning_rate() == 0.001, "Learning rate should be 0.001")
-    assert_true(dataset != None, "Dataset should be created")
+    assert_true(dataset.is_initialized(), "Dataset should be created")
 
     print("✓ Paper implementation pattern test passed")
 
@@ -329,7 +329,7 @@ fn test_deprecated_imports() raises:
 fn test_api_version_compatibility() raises:
     """Test API version compatibility."""
     from shared import VERSION
-    from sys.ffi import atol
+    from sys import atoi as atol
 
     # Verify version follows semantic versioning (major.minor.patch format)
     var version_parts = VERSION.split(".")
@@ -386,7 +386,7 @@ fn test_cross_module_computation() raises:
     var bias2 = zeros([10], DType.float32)
 
     # Forward pass - this is where integration failures would occur
-    var hidden = matmul(data, weights1)  # (32,64) × (64,128) = (32,128)
+    var hidden = weights1.__matmul__(data)  # (32,64) × (64,128) = (32,128)
     var hidden_activated = relu(hidden)
     var logits = matmul(hidden_activated, weights2)  # (32,128) × (128,10) = (32,10)
 
@@ -456,7 +456,7 @@ fn test_error_propagation() raises:
 
     # This should work
     var good_dataset = ExTensorDataset(good_data^, good_labels^)
-    assert_true(good_dataset != None, "Valid dataset should be created")
+    assert_true(good_dataset.is_initialized(), "Valid dataset should be created")
 
     # Test optimizer with edge case learning rates
     var fast_optimizer = SGD(learning_rate=1000.0)  # Very large
@@ -496,7 +496,7 @@ fn test_integration_stress() raises:
     var b3 = zeros([output_dim], DType.float32)
 
     # Forward pass through 3-layer network
-    var x1 = matmul(train_data, w1)  # (128,784) × (784,256) = (128,256)
+    var x1 = w1.__matmul__(train_data)  # (128,784) × (784,256) = (128,256)
     var x1_activated = relu(x1)
 
     var x2 = matmul(x1_activated, w2)  # (128,256) × (256,256) = (128,256)
