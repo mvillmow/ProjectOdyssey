@@ -115,7 +115,9 @@ fn test_core_training_integration() raises:
     assert_true(data.dim() == 2, "Data should be 2D tensor")
     assert_true(data_shape[0] == 10, "First dimension should be 10")
     assert_true(data_shape[1] == 5, "Second dimension should be 5")
-    assert_true(optimizer.get_learning_rate() == 0.01, "Learning rate should be 0.01")
+    assert_true(
+        optimizer.get_learning_rate() == 0.01, "Learning rate should be 0.01"
+    )
 
     print("✓ Core-training integration test passed")
 
@@ -163,7 +165,9 @@ fn test_training_data_integration() raises:
     var labels_shape = labels.shape()
     assert_true(data.dim() == 2, "Data should be 2D tensor")
     assert_true(labels.dim() == 2, "Labels should be 2D tensor")
-    assert_true(optimizer.get_learning_rate() == 0.01, "Learning rate should be 0.01")
+    assert_true(
+        optimizer.get_learning_rate() == 0.01, "Learning rate should be 0.01"
+    )
     assert_true(dataset.is_initialized(), "Dataset should be created")
 
     print("✓ Training-data integration test passed")
@@ -206,7 +210,9 @@ fn test_complete_training_workflow() raises:
     assert_true(bias.dim() == 1, "Bias should be 1D tensor")
     assert_true(data.dim() == 2, "Data should be 2D tensor")
     assert_true(labels.dim() == 2, "Labels should be 2D tensor")
-    assert_true(optimizer.get_learning_rate() == 0.01, "Learning rate should be 0.01")
+    assert_true(
+        optimizer.get_learning_rate() == 0.01, "Learning rate should be 0.01"
+    )
     assert_true(dataset.is_initialized(), "Dataset should be created")
     assert_true(logger.is_initialized(), "Logger should be created")
 
@@ -244,7 +250,9 @@ fn test_paper_implementation_pattern() raises:
 
     # Verify all components are properly instantiated
     assert_true(input_data.dim() == 4, "Input data should be 4D tensor")
-    assert_true(optimizer.get_learning_rate() == 0.001, "Learning rate should be 0.001")
+    assert_true(
+        optimizer.get_learning_rate() == 0.001, "Learning rate should be 0.001"
+    )
     assert_true(dataset.is_initialized(), "Dataset should be created")
 
     print("✓ Paper implementation pattern test passed")
@@ -323,7 +331,9 @@ fn test_deprecated_imports() raises:
 
     assert_true(VERSION != "", "Version should be accessible")
 
-    print("✓ Deprecated imports test passed - no deprecated APIs currently exist")
+    print(
+        "✓ Deprecated imports test passed - no deprecated APIs currently exist"
+    )
 
 
 fn test_api_version_compatibility() raises:
@@ -333,7 +343,11 @@ fn test_api_version_compatibility() raises:
 
     # Verify version follows semantic versioning (major.minor.patch format)
     var version_parts = VERSION.split(".")
-    assert_equal(version_parts.__len__(), 3, "Version should have 3 parts (major.minor.patch)")
+    assert_equal(
+        version_parts.__len__(),
+        3,
+        "Version should have 3 parts (major.minor.patch)",
+    )
 
     # Verify each part is numeric
     var major = version_parts[0]
@@ -366,6 +380,7 @@ fn test_api_version_compatibility() raises:
 # Critical Integration Tests - Catching Real Failures
 # ============================================================================
 
+
 fn test_cross_module_computation() raises:
     """Test that components actually work together in real computations."""
     from shared.core import zeros, ones, relu, matmul
@@ -388,7 +403,9 @@ fn test_cross_module_computation() raises:
     # Forward pass - this is where integration failures would occur
     var hidden = weights1.__matmul__(data)  # (32,64) × (64,128) = (32,128)
     var hidden_activated = relu(hidden)
-    var logits = matmul(hidden_activated, weights2)  # (32,128) × (128,10) = (32,10)
+    var logits = matmul(
+        hidden_activated, weights2
+    )  # (32,128) × (128,10) = (32,10)
 
     # Critical assertions that would catch shape/dtype errors
     var logits_shape = logits.shape()
@@ -417,17 +434,25 @@ fn test_tensor_operations_safety() raises:
     # Test zero-sized tensors
     var empty_data = zeros([0, 5], DType.float32)
     var empty_labels = zeros([0, 3], DType.float32)
-    assert_true(empty_data.num_elements() == 0, "Empty tensor should have 0 elements")
+    assert_true(
+        empty_data.num_elements() == 0, "Empty tensor should have 0 elements"
+    )
 
     # Test single-element tensors
     var single_data = zeros([1], DType.float32)
     var single_labels = zeros([1], DType.float32)
-    assert_true(single_data.num_elements() == 1, "Single element tensor should have 1 element")
+    assert_true(
+        single_data.num_elements() == 1,
+        "Single element tensor should have 1 element",
+    )
 
     # Test large tensors (memory safety)
     try:
         var large_tensor = zeros([1000, 1000], DType.float32)
-        assert_true(large_tensor.num_elements() == 1000000, "Large tensor should have 1M elements")
+        assert_true(
+            large_tensor.num_elements() == 1000000,
+            "Large tensor should have 1M elements",
+        )
     except:
         # If allocation fails, that's actually a valid failure case
         print("✓ Large tensor allocation failed (acceptable)")
@@ -437,9 +462,16 @@ fn test_tensor_operations_safety() raises:
     var float_tensor = zeros([2, 2], DType.float32)
     var bool_tensor = zeros([2, 2], DType.bool)
 
-    assert_true(int_tensor.dtype() == DType.int32, "Int tensor should maintain dtype")
-    assert_true(float_tensor.dtype() == DType.float32, "Float tensor should maintain dtype")
-    assert_true(bool_tensor.dtype() == DType.bool, "Bool tensor should maintain dtype")
+    assert_true(
+        int_tensor.dtype() == DType.int32, "Int tensor should maintain dtype"
+    )
+    assert_true(
+        float_tensor.dtype() == DType.float32,
+        "Float tensor should maintain dtype",
+    )
+    assert_true(
+        bool_tensor.dtype() == DType.bool, "Bool tensor should maintain dtype"
+    )
 
     print("✓ Tensor operations safety test passed")
 
@@ -456,14 +488,22 @@ fn test_error_propagation() raises:
 
     # This should work
     var good_dataset = ExTensorDataset(good_data^, good_labels^)
-    assert_true(good_dataset.is_initialized(), "Valid dataset should be created")
+    assert_true(
+        good_dataset.is_initialized(), "Valid dataset should be created"
+    )
 
     # Test optimizer with edge case learning rates
     var fast_optimizer = SGD(learning_rate=1000.0)  # Very large
     var slow_optimizer = SGD(learning_rate=0.000001)  # Very small
 
-    assert_true(fast_optimizer.get_learning_rate() == 1000.0, "Large learning rate should be preserved")
-    assert_true(slow_optimizer.get_learning_rate() == 0.000001, "Small learning rate should be preserved")
+    assert_true(
+        fast_optimizer.get_learning_rate() == 1000.0,
+        "Large learning rate should be preserved",
+    )
+    assert_true(
+        slow_optimizer.get_learning_rate() == 0.000001,
+        "Small learning rate should be preserved",
+    )
 
     print("✓ Error propagation test passed")
 
@@ -509,11 +549,18 @@ fn test_integration_stress() raises:
     var x2_shape = x2_activated.shape()
     var x3_shape = x3.shape()
     assert_true(x1_activated.dim() == 2, "First layer output should be 2D")
-    assert_true(x1_shape[0] == batch_size and x1_shape[1] == hidden_dim, "First layer should match expected shape")
+    assert_true(
+        x1_shape[0] == batch_size and x1_shape[1] == hidden_dim,
+        "First layer should match expected shape",
+    )
     assert_true(x2_activated.dim() == 2, "Second layer output should be 2D")
-    assert_true(x2_shape[0] == batch_size, "Second layer batch size should match")
+    assert_true(
+        x2_shape[0] == batch_size, "Second layer batch size should match"
+    )
     assert_true(x3.dim() == 2, "Final output should be 2D")
-    assert_true(x3_shape[0] == batch_size, "Final output batch size should match")
+    assert_true(
+        x3_shape[0] == batch_size, "Final output batch size should match"
+    )
     assert_true(x3_shape[1] == output_dim, "Final output classes should match")
 
     # Test with training components
@@ -524,7 +571,9 @@ fn test_integration_stress() raises:
     var loss = loss_fn.compute(x3, train_labels)
     var loss_shape = loss.shape()
     assert_true(loss.dim() == 1, "Loss should be reduced")
-    assert_true(loss_shape[0] == batch_size, "Loss should have one value per sample")
+    assert_true(
+        loss_shape[0] == batch_size, "Loss should have one value per sample"
+    )
 
     print("✓ Integration stress test passed")
 
