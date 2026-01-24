@@ -492,9 +492,7 @@ fn test_error_propagation() raises:
 
     # This should work
     var good_dataset = ExTensorDataset(good_data, good_labels)
-    assert_true(
-        len(good_dataset) > 0, "Valid dataset should be created"
-    )
+    assert_true(len(good_dataset) > 0, "Valid dataset should be created")
 
     # Test optimizer with edge case learning rates
     var fast_optimizer = SGD(learning_rate=1000.0)  # Very large
