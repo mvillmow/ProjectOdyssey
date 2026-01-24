@@ -1,0 +1,43 @@
+{
+  "name": "fix-ci-memory-safety-failures",
+  "version": "1.0.0",
+  "category": "debugging",
+  "description": "Diagnose and fix CI failures caused by memory safety issues in Mojo, particularly UnsafePointer access through copied structs and Python FFI interference",
+  "created": "2026-01-24",
+  "pr": 3109,
+  "status": "verified",
+  "tags": [
+    "memory-safety",
+    "mojo",
+    "ci-failures",
+    "segfault",
+    "unsafe-pointer",
+    "defensive-coding",
+    "python-ffi",
+    "api-compatibility"
+  ],
+  "use_cases": [
+    "CI segfault in libKGENCompilerRTShared.so",
+    "UnsafePointer access crashes",
+    "Tests pass locally but fail in CI",
+    "Python interop interference with Mojo memory",
+    "List iteration crashes when accessing struct fields",
+    "API compatibility errors (missing methods, wrong imports)"
+  ],
+  "success_metrics": {
+    "ci_failures_before": 3,
+    "ci_failures_after": 0,
+    "time_to_fix": "30 minutes",
+    "files_modified": 4,
+    "commits": 4
+  },
+  "key_insights": [
+    "UnsafePointer through copies (list[i].field._data) creates invalid pointers",
+    "Python FFI can interfere with Mojo memory management",
+    "Defense in depth: local copy + null check both needed",
+    "CI environment differs from local (memory protections, allocator)",
+    "Pre-commit formatting must cover ALL modified files",
+    "API compatibility: verify method existence before calling",
+    "Use matmul() function, not __matmul__() method for consistency"
+  ]
+}
