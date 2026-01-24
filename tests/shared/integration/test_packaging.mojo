@@ -403,7 +403,9 @@ fn test_cross_module_computation() raises:
     # Forward pass - this is where integration failures would occur
     var hidden = weights1.__matmul__(data)  # (32,64) × (64,128) = (32,128)
     var hidden_activated = relu(hidden)
-    var logits = matmul(hidden_activated, weights2)  # (32,128) × (128,10) = (32,10)
+    var logits = matmul(
+        hidden_activated, weights2
+    )  # (32,128) × (128,10) = (32,10)
 
     # Critical assertions that would catch shape/dtype errors
     var logits_shape = logits.shape()
