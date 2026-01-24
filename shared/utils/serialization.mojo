@@ -108,9 +108,13 @@ fn save_tensor(tensor: ExTensor, filepath: String, name: String = "") raises:
             save_tensor(weights, "checkpoint/conv1.bin", "conv1_weights")
             ```
     """
-    var shape = tensor.shape()
-    var dtype = tensor.dtype()
-    var numel = tensor.numel()
+    # Create local copy to ensure stable data pointer
+    # This prevents issues when tensor is accessed through List[NamedTensor]
+    var local_tensor = tensor
+
+    var shape = local_tensor.shape()
+    var dtype = local_tensor.dtype()
+    var numel = local_tensor.numel()
 
     # Build metadata line: dtype and shape dimensions
     var dtype_str = String(dtype)
@@ -123,7 +127,7 @@ fn save_tensor(tensor: ExTensor, filepath: String, name: String = "") raises:
     # Convert tensor data to hex
     var dtype_size = get_dtype_size(dtype)
     var total_bytes = numel * dtype_size
-    var hex_data = bytes_to_hex(tensor._data, total_bytes)
+    var hex_data = bytes_to_hex(local_tensor._data, total_bytes)
 
     # Write to file
     with open(filepath, "w") as f:
@@ -503,6 +507,10 @@ fn bytes_to_hex(data: UnsafePointer[UInt8], num_bytes: Int) -> String:
             # Returns "3f800000..." for float32 values
             ```
     """
+    # Defensive null check for pointer safety
+    if not data:
+        return ""
+
     var hex_chars = "0123456789abcdef"
     var result = String("")
 
